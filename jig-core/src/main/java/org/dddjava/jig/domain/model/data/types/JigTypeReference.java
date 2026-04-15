@@ -51,8 +51,8 @@ public record JigTypeReference(TypeId id,
         if (id.isVoid()) return Stream.empty();
 
         return Stream.of(
-                        // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
-                        id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
+                        // Type[] の場合は基本型（Type）のみを返す。配列型としての TypeId は依存関係追跡には不要。
+                        Stream.of(id.isArray() ? id.unarray() : id),
                         typeAnnotations.stream().map(JigAnnotationReference::id),
                         typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().toTypeIdStream())
                 )

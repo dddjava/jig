@@ -38,11 +38,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
                         jigTypeMembers.toTypeIdStream()
                 )
                 .distinct()
-                // [L からはじまるarrayが別になるのは嬉しくないので。水際的にここで処置しておくが、源泉近くで対応したい。
-                .map(TypeId::unarray)
-                // enumの匿名継承クラス(Hoge$1など)は元のクラス名に正規化する。水際的にここで処置しておくが、源泉近くで対応したい。
-                .map(TypeId::normalize)
-                // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。水際的にここで処置しておくが、源泉近くで対応したい。
+                // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。
                 .filter(typeId -> !typeId.isJavaLanguageType())
                 .collect(toSet());
         return new TypeIds(collect);

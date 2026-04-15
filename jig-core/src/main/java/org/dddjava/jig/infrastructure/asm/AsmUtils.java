@@ -30,7 +30,7 @@ class AsmUtils {
     }
 
     static TypeId type2TypeId(Type typeValue) {
-        return TypeId.valueOf(typeValue.getClassName());
+        return JvmTypeName.fromAsmType(typeValue).toTypeId();
     }
 
     /**
@@ -38,7 +38,7 @@ class AsmUtils {
      * クラスファイル上でのパッケージ名は `/` で区切られている。
      */
     static TypeId jvmBinaryName2TypeId(String jvmBinaryName) {
-        return TypeId.valueOf(jvmBinaryName.replace('/', '.'));
+        return JvmTypeName.fromBinaryName(jvmBinaryName).toTypeId();
     }
 
     static JigTypeReference jvmBinaryName2JigTypeReference(String jvmBinaryName) {

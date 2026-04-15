@@ -83,8 +83,7 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
         return relationships.stream()
                 .filter(classRelation -> classRelation.toIs(typeId))
                 .map(TypeRelationship::from)
-                .collect(TypeIds.collector())
-                .normalize();
+                .collect(TypeIds.collector());
     }
 
     public List<TypeRelationship> list() {

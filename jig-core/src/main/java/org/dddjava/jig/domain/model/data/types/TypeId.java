@@ -83,18 +83,6 @@ public record TypeId(String value) implements Comparable<TypeId> {
         return PackageId.valueOf(value.substring(0, value.lastIndexOf(".")));
     }
 
-    public TypeId normalize() {
-        // コンパイラが生成する継承クラス名を元の名前にする
-        // enumで Hoge$1 などになっているものが対象
-        if (value.indexOf('$') == -1) {
-            return this;
-        }
-        // $の後ろが数字の場合のみ除去する。
-        // こうしないとネストクラスが外側のクラスとして扱われてしまう。
-        // class Hoge$1 {} のようなクラスの記述は可能だが、慣習的にも作らないのでこのケースは考慮しない。
-        return valueOf(value.replaceFirst("\\$\\d+", ""));
-    }
-
     public boolean isBoolean() {
         Class<?>[] booleanTypes = {Boolean.class, boolean.class};
         return Arrays.stream(booleanTypes).anyMatch(clazz -> clazz.getName().equals(value));

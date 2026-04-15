@@ -43,6 +43,11 @@ public class AsmClassSourceReader {
             }
             return Optional.empty();
         }
+        // コンパイラが生成する匿名クラス（Hoge$1.class など）をスキップする。
+        // JIG では Hoge$1 を Hoge として扱うが、クラスファイルを読む段階でスキップする方が明確。
+        if (path.getFileName().toString().matches(".*\\$\\d+\\.class")) {
+            return Optional.empty();
+        }
 
         return readClassBytes(path)
                 .flatMap(this::getClassDeclaration);

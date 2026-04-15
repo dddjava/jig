@@ -44,10 +44,6 @@ public record TypeIds(Set<TypeId> values) {
         return new PackageIds(availablePackages);
     }
 
-    public TypeIds normalize() {
-        return values.stream().map(TypeId::normalize).distinct().collect(collector());
-    }
-
     public int size() {
         return values.size();
     }

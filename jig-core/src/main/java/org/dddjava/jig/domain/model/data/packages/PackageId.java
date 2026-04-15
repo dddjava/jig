@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.data.packages;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,11 +19,7 @@ public class PackageId implements Comparable<PackageId> {
     private static final Map<String, PackageId> cache = new ConcurrentHashMap<>();
 
     public static PackageId valueOf(String value) {
-        if (cache.containsKey(value)) return cache.get(value);
-
-        var instance = new PackageId(value);
-        cache.put(value, instance);
-        return instance;
+        return cache.computeIfAbsent(value, PackageId::new);
     }
 
     public static PackageId defaultPackage() {
@@ -53,24 +48,9 @@ public class PackageId implements Comparable<PackageId> {
     }
 
     public Optional<PackageId> parentIfExist() {
-        PackageId parent = parent();
-        if (parent.value.equals("(default)")) return Optional.empty();
-        return Optional.of(parent);
-    }
-
-    // TODO (default) がでてきた場合にを型で識別できないので、使わないようにした方が良さそう
-    public PackageId parent() {
-        String[] split = value.split("\\.");
-
-        if (split.length == 1) {
-            return defaultPackage();
-        }
-
-        StringJoiner sj = new StringJoiner(".");
-        for (int i = 0; i < split.length - 1; i++) {
-            sj.add(split[i]);
-        }
-        return valueOf(sj.toString());
+        int lastDot = value.lastIndexOf(".");
+        if (lastDot == -1) return Optional.empty();
+        return Optional.of(valueOf(value.substring(0, lastDot)));
     }
 
     public String simpleName() {

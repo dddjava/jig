@@ -52,6 +52,7 @@ public record JigTypeReference(TypeId id,
 
         return Stream.of(
                         // Type[] の場合は基本型（Type）のみを返す。配列型としての TypeId は依存関係追跡には不要。
+                        // TODO TypeIdで `Type[]` を扱わなくしたい
                         Stream.of(id.isArray() ? id.unarray() : id),
                         typeAnnotations.stream().map(JigAnnotationReference::id),
                         typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().toTypeIdStream())

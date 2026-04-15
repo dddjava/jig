@@ -109,14 +109,17 @@ public record TypeId(String value) implements Comparable<TypeId> {
         return value.compareTo(others.value);
     }
 
+    // TODO TypeIdで `Type[]` を扱わなくしたい
     public TypeId unarray() {
         return valueOf(value.replace("[L", "").replace(";", "").replace("[]", ""));
     }
 
     public boolean isArray() {
+        // TODO TypeIdで `Type[]` を扱わなくしたい
         return value.endsWith("[]");
     }
 
+    // TODO TypeIdで `Type[]` を扱わなくしたい
     public TypeId convertArray() {
         return valueOf(value + "[]");
     }

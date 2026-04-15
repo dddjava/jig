@@ -10,8 +10,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.function.Predicate.not;
-
 public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsights) {
     public String fqn() {
         return typeId.value();
@@ -23,10 +21,8 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
 
     public int numberOfUsingTypes() {
         return Math.toIntExact(methodInsights.stream()
-                .flatMap(methodInsight -> methodInsight.jigMethod().usingTypes().values().stream())
-                .filter(not(TypeId::isJavaStandardLanguageType))
-                .distinct()
-                .count());
+                .mapToLong(methodInsight -> methodInsight.jigMethod().usingTypes().size())
+                .sum());
     }
 
     public int cyclomaticComplexity() {

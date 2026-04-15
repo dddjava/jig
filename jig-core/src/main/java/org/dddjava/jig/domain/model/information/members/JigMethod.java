@@ -12,7 +12,10 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIds;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.function.Predicate.not;
 
 /**
  * メソッド
@@ -52,7 +55,10 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration) {
     }
 
     public TypeIds usingTypes() {
-        return new TypeIds(jigMethodDeclaration.associatedTypes());
+        return new TypeIds(jigMethodDeclaration.associatedTypes()
+                .stream()
+                .filter(not(TypeId::isJavaStandardLanguageType))
+                .collect(Collectors.toSet()));
     }
 
     public boolean isObjectMethod() {

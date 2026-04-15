@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.SimpleInstruction;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
-import static java.util.function.Predicate.not;
-
 public record MethodInsight(JigMethod jigMethod) {
     public String fqn() {
         return jigMethod.fqn();
@@ -17,12 +15,7 @@ public record MethodInsight(JigMethod jigMethod) {
     }
 
     public int numberOfUsingTypes() {
-        return Math.toIntExact(jigMethod.usingTypes()
-                // この除外はusingのほうに持って行った方がいい気はする
-                .values()
-                .stream()
-                .filter(not(TypeId::isJavaStandardLanguageType))
-                .count());
+        return Math.toIntExact(jigMethod.usingTypes().size());
     }
 
     public int numberOfUsingMethods() {

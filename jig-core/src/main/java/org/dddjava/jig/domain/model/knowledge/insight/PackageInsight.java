@@ -1,11 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.insight;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
-
-import static java.util.function.Predicate.not;
 
 public record PackageInsight(PackageId packageId, Collection<TypeInsight> typeInsights) {
     public String fqn() {
@@ -23,10 +20,8 @@ public record PackageInsight(PackageId packageId, Collection<TypeInsight> typeIn
     public int numberOfUsingTypes() {
         return Math.toIntExact(typeInsights.stream()
                 .flatMap(typeInsight -> typeInsight.methodInsights().stream())
-                .flatMap(methodInsight -> methodInsight.jigMethod().usingTypes().values().stream())
-                .filter(not(TypeId::isJavaStandardLanguageType))
-                .distinct()
-                .count());
+                .mapToLong(methodInsight -> methodInsight.jigMethod().usingTypes().size())
+                .sum());
     }
 
     public int cyclomaticComplexity() {

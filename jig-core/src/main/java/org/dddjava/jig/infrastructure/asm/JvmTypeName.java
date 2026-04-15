@@ -3,6 +3,8 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.objectweb.asm.Type;
 
+import java.util.regex.Pattern;
+
 /**
  * JVMバイトコード上の型名
  *
@@ -14,6 +16,8 @@ import org.objectweb.asm.Type;
  * このクラスはこれらの生のJVM型名をラップし、ドメインの {@link TypeId} への変換を担う。
  */
 record JvmTypeName(String value) {
+
+    private static final Pattern COMPILER_GENERATED_SUFFIX = Pattern.compile("\\$\\d+$");
 
     /**
      * JVMバイナリ名（スラッシュ区切り）からJvmTypeNameを生成する。
@@ -34,8 +38,6 @@ record JvmTypeName(String value) {
      * コンパイラ生成の匿名クラス名（{@code $digit} サフィックス）は正規化する。
      */
     TypeId toTypeId() {
-        // コンパイラが生成する継承クラス名（Hoge$1 など）を元の名前に正規化する
-        String normalized = value.replaceFirst("\\$\\d+$", "");
-        return TypeId.valueOf(normalized);
+        return TypeId.valueOf(COMPILER_GENERATED_SUFFIX.matcher(value).replaceFirst(""));
     }
 }

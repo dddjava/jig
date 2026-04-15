@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * ASMを使用して*.classファイルを読むエントリーポイント
@@ -22,6 +23,7 @@ import java.util.Optional;
 @Repository
 public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
+    private static final Pattern COMPILER_GENERATED_CLASS_PATTERN = Pattern.compile(".*\\$\\d+\\.class");
 
     private static volatile boolean loggedSkippedModules = false;
 
@@ -44,8 +46,7 @@ public class AsmClassSourceReader {
             return Optional.empty();
         }
         // コンパイラが生成する匿名クラス（Hoge$1.class など）をスキップする。
-        // JIG では Hoge$1 を Hoge として扱うが、クラスファイルを読む段階でスキップする方が明確。
-        if (path.getFileName().toString().matches(".*\\$\\d+\\.class")) {
+        if (COMPILER_GENERATED_CLASS_PATTERN.matcher(path.getFileName().toString()).matches()) {
             return Optional.empty();
         }
 

@@ -45,6 +45,8 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
     @Nullable
+    private String classInternalName;
+    @Nullable
     private TypeId typeId;
 
     @Nullable
@@ -70,6 +72,7 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
 
     @Override
     public void visit(int version, int access, String classInternalName, @Nullable String signature, String superName, String[] interfaces) {
+        this.classInternalName = classInternalName;
         var typeId = this.typeId = AsmUtils.jvmBinaryName2TypeId(classInternalName);
         var jigTypeModifiers = resolveTypeModifiers(access);
         var jigTypeKind = resolveTypeKind(access);
@@ -204,6 +207,12 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
         if ((access & Opcodes.ACC_RECORD) != 0) return JavaTypeDeclarationKind.RECORD;
         // 不明なものはCLASSにしておく
         return JavaTypeDeclarationKind.CLASS;
+    }
+
+    @Override
+    public String classInternalName() {
+        // visitの先頭で入るのでNullなことはほぼない
+        return Objects.requireNonNull(classInternalName);
     }
 
     @Override

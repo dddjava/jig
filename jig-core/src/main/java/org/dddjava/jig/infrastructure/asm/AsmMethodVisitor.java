@@ -60,12 +60,19 @@ class AsmMethodVisitor extends MethodVisitor {
         var jigMethodId = JigMethodId.from(contextClass.typeId(), name,
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> AsmUtils.type2TypeId(type)).toList());
 
-        return new AsmMethodVisitor(contextClass,
+        var asmMethodVisitor = new AsmMethodVisitor(contextClass,
                 it -> {
                     JigMethodHeader jigMethodHeader = it.jigMethodHeader(jigMethodId, access, methodType, throwsList, Optional.ofNullable(signature));
                     contextClass.finishVisitMethod(jigMethodHeader, it.methodInstructionCollector);
                 }
         );
+
+        // enumの定数順を解析する
+        if (contextClass.isEnum() && name.equals("<clinit>")) {
+            return new AsmEnumClinitMethodVisitor(contextClass, asmMethodVisitor);
+        } else {
+            return asmMethodVisitor;
+        }
     }
 
     private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, Type methodType, List<JigTypeReference> throwsList, Optional<String> optSignature) {

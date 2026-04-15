@@ -14,6 +14,8 @@ public interface ContextClass {
 
     int api();
 
+    String classInternalName();
+
     TypeId typeId();
 
     boolean isEnum();

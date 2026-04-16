@@ -533,6 +533,68 @@ test.describe("outbound.js", () => {
         });
     });
 
+    // ----- groupDirectExternalAccessors -----
+
+    test.describe("groupDirectExternalAccessors", () => {
+        test("外部アクセサがなければ空配列を返す", () => {
+            const result = OutboundApp.groupDirectExternalAccessors(makeEmptyData());
+            assert.equal(result.length, 0);
+        });
+
+        test("外部アクセサのメソッドが参照する外部型でグルーピングする", () => {
+            const data = {
+                ...makeEmptyData(),
+                otherExternalAccessors: [{
+                    fqn: "com.example.ApiClient",
+                    methods: [{
+                        name: "call",
+                        externals: [{fqn: "com.example.ExtService", method: "get"}]
+                    }]
+                }]
+            };
+            const result = OutboundApp.groupDirectExternalAccessors(data);
+            assert.equal(result.length, 1);
+            assert.equal(result[0].externalType.fqn, "com.example.ExtService");
+            assert.equal(result[0].directAccessors.length, 1);
+            assert.equal(result[0].directAccessors[0].fqn, "com.example.ApiClient");
+        });
+
+        test("同じアクセサが複数の外部型を参照する場合、外部型ごとに分かれる", () => {
+            const data = {
+                ...makeEmptyData(),
+                otherExternalAccessors: [{
+                    fqn: "com.example.ApiClient",
+                    methods: [{
+                        name: "call",
+                        externals: [
+                            {fqn: "com.example.ExtA", method: "a"},
+                            {fqn: "com.example.ExtB", method: "b"}
+                        ]
+                    }]
+                }]
+            };
+            const result = OutboundApp.groupDirectExternalAccessors(data);
+            assert.equal(result.length, 2);
+        });
+
+        test("同じアクセサが同じ外部型を複数メソッドで参照する場合は重複排除する", () => {
+            const data = {
+                ...makeEmptyData(),
+                otherExternalAccessors: [{
+                    fqn: "com.example.ApiClient",
+                    methods: [
+                        {name: "callA", externals: [{fqn: "com.example.Ext", method: "get"}]},
+                        {name: "callB", externals: [{fqn: "com.example.Ext", method: "post"}]}
+                    ]
+                }]
+            };
+            const result = OutboundApp.groupDirectExternalAccessors(data);
+            assert.equal(result.length, 1);
+            assert.equal(result[0].directAccessors.length, 1);
+            assert.equal(result[0].directAccessors[0].methods.length, 2);
+        });
+    });
+
     // ----- generateExternalTypeMermaidCode -----
 
     test.describe("generateExternalTypeMermaidCode", () => {
@@ -558,6 +620,49 @@ test.describe("outbound.js", () => {
             const code = OutboundApp.generateExternalTypeMermaidCode(group);
             assert.ok(code !== null);
             assert.ok(code.includes("ExtService"), `外部型名が含まれない: ${code}`);
+        });
+
+        test("ポートなしで directAccessors のみのグループもコードを生成する", () => {
+            const group = {
+                externalType: {fqn: "com.example.ExtService"},
+                operations: [],
+                directAccessors: [{
+                    fqn: "com.example.ApiClient",
+                    methods: [{
+                        name: "call",
+                        externals: [{fqn: "com.example.ExtService", method: "get"}]
+                    }]
+                }]
+            };
+            const code = OutboundApp.generateExternalTypeMermaidCode(group);
+            assert.ok(code !== null, "ポートなしでもコードが生成される");
+            assert.ok(code.includes("ExtService"), `外部型名が含まれない: ${code}`);
+        });
+
+        test("externalAccessor 表示オンで directAccessors のアクセサノードが含まれる", () => {
+            const group = {
+                externalType: {fqn: "com.example.ExtService"},
+                operations: [],
+                directAccessors: [{
+                    fqn: "com.example.ApiClient",
+                    methods: [{
+                        name: "call",
+                        externals: [{fqn: "com.example.ExtService", method: "get"}]
+                    }]
+                }]
+            };
+            const visibility = {
+                port: true, operation: true, adapter: true, execution: true,
+                accessor: true, accessorMethod: false,
+                target: true,
+                externalAccessor: true, externalAccessorMethod: false,
+                externalType: true, externalTypeMethod: true,
+                direction: "LR",
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
+            };
+            const code = OutboundApp.generateExternalTypeMermaidCode(group, visibility);
+            assert.ok(code !== null);
+            assert.ok(code.includes("ApiClient"), `アクセサ名が含まれない: ${code}`);
         });
     });
 

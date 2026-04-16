@@ -50,10 +50,24 @@ const OutboundApp = (() => {
             const allOperations = grouped.flatMap(group =>
                 group.operations.map(operation => ({...operation, outboundPort: group.outboundPort})));
 
+            const operationExternalGrouped = this.groupOperationsByExternalType(allOperations);
+            const directExternalGrouped = this.groupDirectExternalAccessors(data);
+            const externalGroupedMap = new Map();
+            operationExternalGrouped.forEach(g => externalGroupedMap.set(g.externalType.fqn, {...g, directAccessors: []}));
+            directExternalGrouped.forEach(g => {
+                if (externalGroupedMap.has(g.externalType.fqn)) {
+                    externalGroupedMap.get(g.externalType.fqn).directAccessors = g.directAccessors;
+                } else {
+                    externalGroupedMap.set(g.externalType.fqn, {...g, operations: []});
+                }
+            });
+            const externalGrouped = Array.from(externalGroupedMap.values())
+                .sort((a, b) => Jig.glossary.getTypeTerm(a.externalType.fqn).title.localeCompare(Jig.glossary.getTypeTerm(b.externalType.fqn).title, "ja"));
+
             return {
                 grouped,
                 persistenceGrouped: this.groupOperationsByPersistenceTarget(allOperations),
-                externalGrouped: this.groupOperationsByExternalType(allOperations)
+                externalGrouped
             };
         },
 
@@ -177,6 +191,32 @@ const OutboundApp = (() => {
             });
             return Array.from(map.values())
                 .sort((a, b) => Jig.glossary.getTypeTerm(a.externalType.fqn).title.localeCompare(Jig.glossary.getTypeTerm(b.externalType.fqn).title, "ja"));
+        },
+
+        groupDirectExternalAccessors(data) {
+            const map = new Map();
+            data.otherExternalAccessors.forEach(accessor => {
+                accessor.methods.forEach(method => {
+                    method.externals.forEach(ext => {
+                        if (!map.has(ext.fqn)) {
+                            map.set(ext.fqn, {externalType: {fqn: ext.fqn}, directAccessors: []});
+                        }
+                        const group = map.get(ext.fqn);
+                        let existing = group.directAccessors.find(a => a.fqn === accessor.fqn);
+                        if (!existing) {
+                            existing = {fqn: accessor.fqn, methods: []};
+                            group.directAccessors.push(existing);
+                        }
+                        if (!existing.methods.find(m => m.name === method.name)) {
+                            existing.methods.push({
+                                name: method.name,
+                                externals: method.externals.filter(e => e.fqn === ext.fqn)
+                            });
+                        }
+                    });
+                });
+            });
+            return Array.from(map.values());
         },
 
         formatPersistenceAccessors(persistenceAccessors) {
@@ -634,6 +674,13 @@ const OutboundApp = (() => {
                 extTypeNodes: new Map()
             };
 
+            const filterToExternalType = accessor => ({
+                ...accessor,
+                methods: accessor.methods
+                    .map(m => ({...m, externals: m.externals.filter(ext => ext.fqn === externalType.fqn)}))
+                    .filter(m => m.externals.length > 0)
+            });
+
             group.operations.forEach(operation => {
                 const relevantAccessors = operation.externalAccessors.filter(accessor =>
                     accessor.methods.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
@@ -643,15 +690,12 @@ const OutboundApp = (() => {
                 relevantAccessors.forEach(accessor => {
                     let currentNode = this.addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
                     currentNode = this.addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs);
-
-                    const filteredAccessor = {
-                        ...accessor,
-                        methods: accessor.methods
-                            .map(m => ({...m, externals: m.externals.filter(ext => ext.fqn === externalType.fqn)}))
-                            .filter(m => m.externals.length > 0)
-                    };
-                    this.addExternalAccessorNode(builder, currentNode, filteredAccessor, visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+                    this.addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
                 });
+            });
+
+            (group.directAccessors || []).forEach(accessor => {
+                this.addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
             });
 
             if (builder.isEmpty()) return null;
@@ -893,6 +937,7 @@ const OutboundApp = (() => {
         groupOperationsByOutboundPort: ModelBuilder.groupOperationsByOutboundPort.bind(ModelBuilder),
         groupOperationsByPersistenceTarget: ModelBuilder.groupOperationsByPersistenceTarget.bind(ModelBuilder),
         groupOperationsByExternalType: ModelBuilder.groupOperationsByExternalType.bind(ModelBuilder),
+        groupDirectExternalAccessors: ModelBuilder.groupDirectExternalAccessors.bind(ModelBuilder),
         formatPersistenceAccessors: ModelBuilder.formatPersistenceAccessors.bind(ModelBuilder),
         renderOutboundList: Renderer.renderOutboundList.bind(Renderer),
         renderPersistenceList: Renderer.renderPersistenceList.bind(Renderer),

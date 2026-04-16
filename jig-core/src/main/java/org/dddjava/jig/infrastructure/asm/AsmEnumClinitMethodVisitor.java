@@ -8,7 +8,10 @@ import java.util.ArrayList;
 
 
 /**
- * Enumのクラスイニシャライザを解析して定義順を
+ * enum固有の情報を取得するVisitor
+ *
+ * ## Enum#ordinal() の取得
+ * 通常はクラスイニシャライザで以下のようなバイトコードになる。
  *
  * ```
  * 0: new           #1                  // class MyEnum
@@ -19,6 +22,10 @@ import java.util.ArrayList;
  * 9: invokespecial #50                 // Method "<init>":(Ljava/lang/String;ILjava/lang/CharSequence;)V
  * 12: putstatic     #3                  // Field HOGE:LMyEnum;
  * ```
+ *
+ * コンストラクタは第一引数が定数名、第二引数がordinal、第三引数以降がJavaコード上にあらわれるコンストラクタ引数。
+ * つまりnew,dupのあとのldcが定数名、iconst(など）がordinalとして保持し、コンストラクタに対するinvokespecial時に解釈すればよい。
+ * ただしこのバイトコードになる保証はない。
  */
 class AsmEnumClinitMethodVisitor extends MethodVisitor {
     private final ContextClass contextClass;

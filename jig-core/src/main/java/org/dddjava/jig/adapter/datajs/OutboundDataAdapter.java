@@ -4,7 +4,6 @@ import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 
@@ -36,10 +35,10 @@ public class OutboundDataAdapter implements DataAdapter {
 
     @Override
     public String buildJson(JigRepository jigRepository) {
-        return buildOutboundJson(jigService.outboundAdapters(jigRepository), jigRepository.externalAccessorRepositories());
+        return buildOutboundJson(jigService.outboundAdapters(jigRepository), jigRepository.externalAccessorRepositories().otherExternalAccessorRepository());
     }
 
-    public static String buildOutboundJson(OutboundAdapters outboundAdapters, ExternalAccessorRepositories externalAccessorRepositories) {
+    public static String buildOutboundJson(OutboundAdapters outboundAdapters, OtherExternalAccessorRepository otherExternalAccessorRepository) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
 
@@ -130,7 +129,7 @@ public class OutboundDataAdapter implements DataAdapter {
         return Json.object("outboundPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
                 .and("outboundAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
                 .and("persistenceAccessors", persistenceAccessors(persistenceAccessorFqns, persistenceAccessorMethodsMap))
-                .and("otherExternalAccessors", externalAccessors(externalAccessorRepositories.otherExternalAccessorRepository()))
+                .and("otherExternalAccessors", externalAccessors(otherExternalAccessorRepository))
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();
@@ -139,7 +138,7 @@ public class OutboundDataAdapter implements DataAdapter {
     private static Object persistenceAccessors(LinkedHashSet<String> persistenceAccessorFqns, LinkedHashMap<String, List<JsonObjectBuilder>> accessorMethodsMap) {
         List<JsonObjectBuilder> accessorsList = new ArrayList<>();
         persistenceAccessorFqns.forEach(typeFqn -> {
-            List<JsonObjectBuilder> methods = accessorMethodsMap.getOrDefault(typeFqn, List.of());
+            List<JsonObjectBuilder> methods = accessorMethodsMap.get(typeFqn);
             accessorsList.add(Json.object("fqn", typeFqn)
                     .and("methods", Json.arrayObjects(methods)));
         });

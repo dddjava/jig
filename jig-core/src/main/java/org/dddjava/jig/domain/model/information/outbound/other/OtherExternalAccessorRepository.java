@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.outbound.other;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -26,14 +27,14 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
                     // インスタンスフィールドのうち、JIG範囲外かつJava標準型でない型を「外部型」として抽出
                     // TODO: 外部型でないものの条件を増やしたり、除外を設定で追加できるようにしたい
                     Set<TypeId> externalFieldTypes = jigType.instanceJigFields().fields().stream()
-                            .map(jigField -> jigField.typeId())
+                            .map(JigField::typeId)
                             .filter(typeId -> !jigTypes.contains(typeId))
                             .filter(typeId -> !typeId.isJavaStandardLanguageType())
                             .collect(Collectors.toSet());
 
                     // 外部型を持たないものは外部アクセサではない
                     if (externalFieldTypes.isEmpty()) {
-                        return Stream.of();
+                        return Stream.empty();
                     }
 
                     // アクセサメソッドとその呼び出しを個別に収集
@@ -47,19 +48,14 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
                                 var externalMethodCalls = jigMethod.lambdaInlinedMethodCallStream()
                                         .filter(mc -> externalFieldTypes.contains(mc.methodOwner()))
                                         .toList();
-                                if (externalMethodCalls.isEmpty()) {
-                                    return Stream.empty();
-                                }
-                                return Stream.of(new OtherExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls));
+                                return externalMethodCalls.isEmpty() ? Stream.empty()
+                                        : Stream.of(new OtherExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls));
                             })
                             .toList();
 
                     // フィールドのメソッドを呼び出している処理が一つもない場合は外部アクセサではない
-                    if (operations.isEmpty()) {
-                        return Stream.of();
-                    }
-
-                    return Stream.of(new OtherExternalAccessor(jigType.id(), operations));
+                    return operations.isEmpty() ? Stream.empty()
+                            : Stream.of(new OtherExternalAccessor(jigType.id(), operations));
                 })
                 .toList();
         return new OtherExternalAccessorRepository(result);

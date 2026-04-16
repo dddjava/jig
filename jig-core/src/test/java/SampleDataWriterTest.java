@@ -38,7 +38,7 @@ class SampleDataWriterTest {
 
         // outbound-data.js
         {
-            var json = OutboundDataAdapter.buildOutboundJson(outboundAdapters);
+            var json = OutboundDataAdapter.buildOutboundJson(outboundAdapters, externalAccessorRepositories);
             Path sampleFile = Path.of("src/main/resources/templates/data/outbound-data.js");
             Files.writeString(sampleFile,
                     "// 表示確認用のサンプルデータ\n" +

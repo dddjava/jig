@@ -4,7 +4,9 @@ import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
+import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -34,10 +36,10 @@ public class OutboundDataAdapter implements DataAdapter {
 
     @Override
     public String buildJson(JigRepository jigRepository) {
-        return buildOutboundJson(jigService.outboundAdapters(jigRepository));
+        return buildOutboundJson(jigService.outboundAdapters(jigRepository), jigRepository.externalAccessorRepositories());
     }
 
-    public static String buildOutboundJson(OutboundAdapters outboundAdapters) {
+    public static String buildOutboundJson(OutboundAdapters outboundAdapters, ExternalAccessorRepositories externalAccessorRepositories) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
 
@@ -47,16 +49,12 @@ public class OutboundDataAdapter implements DataAdapter {
         var accessorMethodIds = new LinkedHashSet<String>();
         var targetsSet = new LinkedHashSet<String>();
 
-        var externalAccessorFqns = new LinkedHashSet<String>();
-        var externalAccessorMethods = new LinkedHashMap<String, LinkedHashMap<String, List<JsonObjectBuilder>>>();
-
         // links
         var operationToExecution = new ArrayList<JsonObjectBuilder>();
         var executionToAccessor = new ArrayList<JsonObjectBuilder>();
         var executionToExternalAccessor = new ArrayList<JsonObjectBuilder>();
 
         // 重複排除用
-        var externalAccessorMethodKeys = new LinkedHashSet<String>();
         var executionToExternalAccessorKeys = new LinkedHashSet<String>();
 
         outboundAdapters.stream().forEach(outboundAdapter -> {
@@ -106,22 +104,6 @@ public class OutboundDataAdapter implements DataAdapter {
                         adapterExecution.otherExternalAccessorOperations().forEach(accessorOperation -> {
                             String accessorFqn = accessorOperation.accessorTypeId().fqn();
                             String accessorMethodName = accessorOperation.accessorMethodName();
-                            externalAccessorFqns.add(accessorFqn);
-
-                            accessorOperation.externalMethodCalls().forEach(methodCall -> {
-
-                                String externalFqn = methodCall.methodOwner().fqn();
-                                String externalMethodName = methodCall.methodName();
-
-                                String methodKey = accessorFqn + "|" + accessorMethodName + "|" + externalFqn + "|" + externalMethodName;
-                                if (externalAccessorMethodKeys.add(methodKey)) {
-                                    externalAccessorMethods
-                                            .computeIfAbsent(accessorFqn, k -> new LinkedHashMap<>())
-                                            .computeIfAbsent(accessorMethodName, k -> new ArrayList<>())
-                                            .add(Json.object("fqn", externalFqn)
-                                                    .and("method", externalMethodName));
-                                }
-                            });
 
                             String linkKey = adapterExecutionFqn + "|" + accessorFqn + "|" + accessorMethodName;
                             if (executionToExternalAccessorKeys.add(linkKey)) {
@@ -148,7 +130,7 @@ public class OutboundDataAdapter implements DataAdapter {
         return Json.object("outboundPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
                 .and("outboundAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
                 .and("persistenceAccessors", persistenceAccessors(persistenceAccessorFqns, persistenceAccessorMethodsMap))
-                .and("otherExternalAccessors", otherExternalAccessors(externalAccessorFqns, externalAccessorMethods))
+                .and("otherExternalAccessors", externalAccessors(externalAccessorRepositories.otherExternalAccessorRepository()))
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();
@@ -164,18 +146,22 @@ public class OutboundDataAdapter implements DataAdapter {
         return Json.arrayObjects(accessorsList);
     }
 
-    private static Object otherExternalAccessors(LinkedHashSet<String> externalAccessorFqns, LinkedHashMap<String, LinkedHashMap<String, List<JsonObjectBuilder>>> externalAccessorMethods) {
-        List<JsonObjectBuilder> externalAccessorsList = new ArrayList<>();
-        externalAccessorFqns.forEach(accessorFqn -> {
-            LinkedHashMap<String, List<JsonObjectBuilder>> methodsMap = externalAccessorMethods.getOrDefault(accessorFqn, new LinkedHashMap<>());
-            List<JsonObjectBuilder> methodsList = new ArrayList<>();
-            methodsMap.forEach((methodName, externals) -> {
-                methodsList.add(Json.object("name", methodName)
-                        .and("externals", Json.arrayObjects(externals)));
-            });
-            externalAccessorsList.add(Json.object("fqn", accessorFqn)
-                    .and("methods", Json.arrayObjects(methodsList)));
-        });
-        return Json.arrayObjects(externalAccessorsList);
+    private static Object externalAccessors(OtherExternalAccessorRepository otherExternalAccessorRepository) {
+        List<JsonObjectBuilder> list = otherExternalAccessorRepository.values().stream()
+                .map(externalAccessor -> Json
+                        .object("fqn", externalAccessor.typeId().fqn())
+                        // TODO メソッドとして出すならJsonSupportにかえたい。かえないならmethodsじゃなくoperationsで出力する方がよさそう。
+                        .and("methods", Json.arrayObjects(externalAccessor.operations().stream()
+                                .map(operation -> Json
+                                        // TODO メソッド名だけ出力しているため、オーバーロードされてると区別つかない
+                                        .object("name", operation.accessorJigMethod().name())
+                                        .and("externals", Json.arrayObjects(operation.externalMethodCalls().stream()
+                                                .map(methodCall -> Json
+                                                        .object("fqn", methodCall.methodOwner().fqn())
+                                                        .and("method", methodCall.methodName()))
+                                                .toList())))
+                                .toList())))
+                .toList();
+        return Json.arrayObjects(list);
     }
 }

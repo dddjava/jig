@@ -4,6 +4,8 @@ import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
+import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 
@@ -35,17 +37,13 @@ public class OutboundDataAdapter implements DataAdapter {
 
     @Override
     public String buildJson(JigRepository jigRepository) {
-        return buildOutboundJson(jigService.outboundAdapters(jigRepository), jigRepository.externalAccessorRepositories().otherExternalAccessorRepository());
+        return buildOutboundJson(jigService.outboundAdapters(jigRepository), jigRepository.externalAccessorRepositories());
     }
 
-    public static String buildOutboundJson(OutboundAdapters outboundAdapters, OtherExternalAccessorRepository otherExternalAccessorRepository) {
+    public static String buildOutboundJson(OutboundAdapters outboundAdapters, ExternalAccessorRepositories externalAccessorRepositories) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
 
-        // 永続化
-        var persistenceAccessorFqns = new LinkedHashSet<String>();
-        var persistenceAccessorMethodsMap = new LinkedHashMap<String, List<JsonObjectBuilder>>();
-        var accessorMethodIds = new LinkedHashSet<String>();
         var targetsSet = new LinkedHashSet<String>();
 
         // links
@@ -78,26 +76,11 @@ public class OutboundDataAdapter implements DataAdapter {
                                 .and("execution", adapterExecutionFqn));
 
                         adapterExecution.persistenceAccessorOperations().forEach(persistenceAccessorOperation -> {
-                            String methodId = persistenceAccessorOperation.id().value();
-                            String typeFqn = persistenceAccessorOperation.id().typeId().fqn();
-                            var targetOperationTypes = Json.object();
-                            List<String> targets = persistenceAccessorOperation.targetOperationTypes().persistenceTargets().stream()
-                                    .map(persistenceOperation -> {
-                                        String operationType = persistenceOperation.operationType().name();
-                                        targetOperationTypes.and(persistenceOperation.persistenceTarget().name(), operationType);
-                                        return persistenceOperation.persistenceTarget().name();
-                                    }).toList();
-
-                            targetsSet.addAll(targets);
-                            persistenceAccessorFqns.add(typeFqn);
-                            if (accessorMethodIds.add(methodId)) {
-                                persistenceAccessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
-                                        .add(Json.object("id", methodId)
-                                                .and("targetOperationTypes", targetOperationTypes));
-                            }
+                            persistenceAccessorOperation.targetOperationTypes().persistenceTargets()
+                                    .forEach(pt -> targetsSet.add(pt.persistenceTarget().name()));
 
                             executionToAccessor.add(Json.object("execution", adapterExecutionFqn)
-                                    .and("accessor", methodId));
+                                    .and("accessor", persistenceAccessorOperation.id().value()));
                         });
 
                         adapterExecution.otherExternalAccessorOperations().forEach(accessorOperation -> {
@@ -128,20 +111,29 @@ public class OutboundDataAdapter implements DataAdapter {
 
         return Json.object("outboundPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
                 .and("outboundAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
-                .and("persistenceAccessors", persistenceAccessors(persistenceAccessorFqns, persistenceAccessorMethodsMap))
-                .and("otherExternalAccessors", externalAccessors(otherExternalAccessorRepository))
+                .and("persistenceAccessors", persistenceAccessors(externalAccessorRepositories.persistenceAccessorRepository()))
+                .and("otherExternalAccessors", externalAccessors(externalAccessorRepositories.otherExternalAccessorRepository()))
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();
     }
 
-    private static Object persistenceAccessors(LinkedHashSet<String> persistenceAccessorFqns, LinkedHashMap<String, List<JsonObjectBuilder>> accessorMethodsMap) {
-        List<JsonObjectBuilder> accessorsList = new ArrayList<>();
-        persistenceAccessorFqns.forEach(typeFqn -> {
-            List<JsonObjectBuilder> methods = accessorMethodsMap.get(typeFqn);
-            accessorsList.add(Json.object("fqn", typeFqn)
-                    .and("methods", Json.arrayObjects(methods)));
-        });
+    private static Object persistenceAccessors(PersistenceAccessorRepository persistenceAccessorRepository) {
+        List<JsonObjectBuilder> accessorsList = persistenceAccessorRepository.values().stream()
+                .map(accessor -> {
+                    List<JsonObjectBuilder> methods = accessor.persistenceAccessorOperations().stream()
+                            .map(operation -> {
+                                var targetOperationTypes = Json.object();
+                                operation.targetOperationTypes().persistenceTargets()
+                                        .forEach(pt -> targetOperationTypes.and(pt.persistenceTarget().name(), pt.operationType().name()));
+                                return Json.object("id", operation.id().value())
+                                        .and("targetOperationTypes", targetOperationTypes);
+                            })
+                            .toList();
+                    return Json.object("fqn", accessor.typeId().fqn())
+                            .and("methods", Json.arrayObjects(methods));
+                })
+                .toList();
         return Json.arrayObjects(accessorsList);
     }
 

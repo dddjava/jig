@@ -5,6 +5,9 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
 
 
 /**
@@ -29,6 +32,14 @@ import java.util.ArrayList;
  */
 class AsmEnumClinitMethodVisitor extends MethodVisitor {
     private final ContextClass contextClass;
+    private final Consumer<AsmEnumClinitMethodVisitor> finisher;
+
+    public List<String> constantList() {
+        return constants.stream()
+                .sorted(Comparator.comparingInt(Constant::ordinal))
+                .map(c -> c.name())
+                .toList();
+    }
 
     record Constant(String name, int ordinal) {
     }
@@ -44,9 +55,10 @@ class AsmEnumClinitMethodVisitor extends MethodVisitor {
         currentOrdinal = -1;
     }
 
-    AsmEnumClinitMethodVisitor(ContextClass contextClass, AsmMethodVisitor asmMethodVisitor) {
+    AsmEnumClinitMethodVisitor(ContextClass contextClass, AsmMethodVisitor asmMethodVisitor, Consumer<AsmEnumClinitMethodVisitor> finisher) {
         super(contextClass.api(), asmMethodVisitor);
         this.contextClass = contextClass;
+        this.finisher = finisher;
     }
 
     @Override
@@ -113,7 +125,7 @@ class AsmEnumClinitMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitEnd() {
-        // TODO constantを使えるようになんとかする
+        finisher.accept(this);
         super.visitEnd();
     }
 }

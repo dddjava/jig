@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -62,9 +64,23 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     record Pair<T1, T2>(T1 header, T2 body) {
     }
 
+    /**
+     * フィールドを保持するコレクション
+     */
     private final Collection<JigFieldHeader> fieldHeaders = new ArrayList<>();
+
+    /**
+     * メソッドを保持するコレクション
+     */
     private final Collection<Pair<JigMethodHeader, List<Instruction>>> methodCollector = new ArrayList<>();
+
     private final Set<String> recordComponentNames = new HashSet<>();
+
+    /**
+     * Enum定数の並び順を保持する。enumの時だけ設定される。
+     */
+    @Nullable
+    private List<String> orderedEnumConstants;
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -222,6 +238,11 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     }
 
     ClassDeclaration classDeclaration() {
+        if (jigTypeHeader == null) {
+            // jigTypeHeaderはvisitEndで入るので、visitEnd後しかこのメソッドは呼んではいけない
+            throw new IllegalStateException("jigTypeHeader is not set yet. Call visitEnd() first.");
+        }
+
         // lambda合成メソッドを名前でひけるように収集
         Map<String, List<Instruction>> lambdaMethodMap = methodCollector.stream()
                 .filter(collectedMethod ->
@@ -238,7 +259,26 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
                 })
                 .toList();
 
-        // jigTypeHeaderはvisitEndで入るので、visitEnd後しかこのメソッドは呼んではいけない
+        if (isEnum() && orderedEnumConstants != null) {
+            // enum定数かどうかで分ける
+            Map<Boolean, List<JigFieldHeader>> partitionedFieldHeaders = fieldHeaders.stream()
+                    .collect(Collectors.partitioningBy(it -> it.isEnumConstant()));
+            List<JigFieldHeader> enumConstantsField = partitionedFieldHeaders.getOrDefault(true, List.of());
+
+            // ordinalが解析できたenum定数の数とenumConstantと判定されたフィールドの数が一致する場合のみ並び替える
+            // コンパイラの変更などでバイトコードからordinalが解析できない場合などを想定して回避しておく
+            if (orderedEnumConstants.size() == enumConstantsField.size()) {
+                List<JigFieldHeader> orderedFieldHeaders = Stream.concat(
+                        // enum定数をordinal順で並び替える
+                        enumConstantsField.stream()
+                                .sorted(Comparator.comparingInt(it -> orderedEnumConstants.indexOf(it.name()))),
+                        // enum定数以外のフィールドを後ろに追加
+                        partitionedFieldHeaders.getOrDefault(false, List.of()).stream()
+                ).toList();
+                return new ClassDeclaration(Objects.requireNonNull(jigTypeHeader), orderedFieldHeaders, methodDeclarations);
+            }
+        }
+
         return new ClassDeclaration(Objects.requireNonNull(jigTypeHeader), fieldHeaders, methodDeclarations);
     }
 
@@ -291,5 +331,11 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     public void finishVisitMethod(JigMethodHeader jigMethodHeader, List<Instruction> methodInstructionList) {
         // lambda式の展開のためにこの形で保持しておく
         methodCollector.add(new Pair<>(jigMethodHeader, methodInstructionList));
+    }
+
+    @Override
+    public void finishVisitEnumConstantOrder(List<String> orderedEnumConstants) {
+        // フィールドを並び替えるために保持しておく
+        this.orderedEnumConstants = orderedEnumConstants;
     }
 }

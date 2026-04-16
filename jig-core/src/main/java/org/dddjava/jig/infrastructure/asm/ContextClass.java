@@ -27,4 +27,6 @@ public interface ContextClass {
     void finishVisitMethod(JigMethodHeader jigMethodHeader, List<Instruction> methodInstructionList);
 
     boolean isRecordComponentName(String name);
+
+    void finishVisitEnumConstantOrder(List<String> enumConstantOrder);
 }

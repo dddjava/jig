@@ -69,7 +69,8 @@ class AsmMethodVisitor extends MethodVisitor {
 
         // enumの定数順を解析する
         if (contextClass.isEnum() && name.equals("<clinit>")) {
-            return new AsmEnumClinitMethodVisitor(contextClass, asmMethodVisitor);
+            return new AsmEnumClinitMethodVisitor(contextClass, asmMethodVisitor,
+                    it -> contextClass.finishVisitEnumConstantOrder(it.constantList()));
         } else {
             return asmMethodVisitor;
         }

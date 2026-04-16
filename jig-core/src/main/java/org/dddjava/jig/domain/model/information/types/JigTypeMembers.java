@@ -36,7 +36,6 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
     }
 
     public Stream<JigField> enumConstantStream() {
-        // TODO enumの順でソートしないと異なる順番の可能性がある
         return staticFields.stream()
                 .filter(jigField -> jigField.jigFieldHeader().isEnumConstant());
     }

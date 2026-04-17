@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter.datajs;
 
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
+import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
@@ -64,13 +65,11 @@ public class OutboundDataAdapter implements DataAdapter {
 
                 outboundPort.operationStream().forEach(portOperation -> {
                     String portOperationFqn = portOperation.jigMethod().fqn();
-                    portOperations.add(Json.object("fqn", portOperationFqn)
-                            .and("signature", portOperation.jigMethod().simpleMethodSignatureText()));
+                    portOperations.add(JsonSupport.buildMethodJson(portOperation.jigMethod()));
 
                     outboundAdapter.findExecution(portOperation).ifPresent(adapterExecution -> {
                         String adapterExecutionFqn = adapterExecution.jigMethod().fqn();
-                        execList.add(Json.object("fqn", adapterExecutionFqn)
-                                .and("signature", adapterExecution.jigMethod().simpleMethodSignatureText()));
+                        execList.add(JsonSupport.buildMethodJson(adapterExecution.jigMethod()));
 
                         operationToExecution.add(Json.object("operation", portOperationFqn)
                                 .and("execution", adapterExecutionFqn));

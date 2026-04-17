@@ -361,7 +361,7 @@ const OutboundApp = (() => {
                     itemList.appendChild(Jig.dom.createElement("article", {
                         className: "outbound-operation-item jig-card jig-card--item",
                         children: [
-                            Jig.dom.createElement("h4", {textContent: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title}),
+                            Jig.dom.type.methodItem(operation.outboundPortOperation),
                             mermaidContainer,
                             Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}),
                             Jig.dom.createElement("ul", {

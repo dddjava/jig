@@ -54,13 +54,18 @@ function setupDom() {
     return doc;
 }
 
+// buildMethodJson の出力形式に準じたメソッドオブジェクトを生成するヘルパー
+function makeMethodData(fqn) {
+    return {fqn, visibility: "PUBLIC", parameters: [], returnTypeRef: {fqn: "void"}, isDeprecated: false};
+}
+
 // テスト用の操作グループ（Mermaid コード生成・DOM 描画で再利用）
 const simpleGroup = {
     outboundPort: {fqn: "com.example.Port", label: "Port"},
     operations: [{
-        outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
+        outboundPortOperation: makeMethodData("com.example.Port#save()"),
         outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
-        outboundAdapterExecution: {fqn: "com.example.Adapter#save()", label: "save"},
+        outboundAdapterExecution: makeMethodData("com.example.Adapter#save()"),
         persistenceAccessors: [],
         externalAccessors: []
     }]

@@ -278,8 +278,8 @@ test.describe("outbound.js", () => {
                 externalAccessors: [{
                     fqn: "com.example.Client",
                     label: "Client",
-                    methods: [{
-                        name: "fetch",
+                    operations: [{
+                        ...makeMethodData("com.example.Client#fetch()"),
                         externals: [{fqn: "com.example.ExtType", label: "ExtType", method: "get"}]
                     }]
                 }]
@@ -298,7 +298,7 @@ test.describe("outbound.js", () => {
                 persistenceAccessors: [],
                 externalAccessors: [{
                     fqn: "com.example.Client", label: "Client",
-                    methods: [{name: "call", externals: [{fqn: "com.example.Ext", label: "Ext", method: "m"}]}]
+                    operations: [{...makeMethodData("com.example.Client#call()"), externals: [{fqn: "com.example.Ext", label: "Ext", method: "m"}]}]
                 }]
             });
             const grouped = OutboundApp.groupOperationsByExternalType([makeOp("p1", "P1"), makeOp("p2", "P2")]);
@@ -550,8 +550,8 @@ test.describe("outbound.js", () => {
                 ...makeEmptyData(),
                 otherExternalAccessors: [{
                     fqn: "com.example.ApiClient",
-                    methods: [{
-                        name: "call",
+                    operations: [{
+                        ...makeMethodData("com.example.ApiClient#call()"),
                         externals: [{fqn: "com.example.ExtService", method: "get"}]
                     }]
                 }]
@@ -568,8 +568,8 @@ test.describe("outbound.js", () => {
                 ...makeEmptyData(),
                 otherExternalAccessors: [{
                     fqn: "com.example.ApiClient",
-                    methods: [{
-                        name: "call",
+                    operations: [{
+                        ...makeMethodData("com.example.ApiClient#call()"),
                         externals: [
                             {fqn: "com.example.ExtA", method: "a"},
                             {fqn: "com.example.ExtB", method: "b"}
@@ -586,16 +586,16 @@ test.describe("outbound.js", () => {
                 ...makeEmptyData(),
                 otherExternalAccessors: [{
                     fqn: "com.example.ApiClient",
-                    methods: [
-                        {name: "callA", externals: [{fqn: "com.example.Ext", method: "get"}]},
-                        {name: "callB", externals: [{fqn: "com.example.Ext", method: "post"}]}
+                    operations: [
+                        {...makeMethodData("com.example.ApiClient#callA()"), externals: [{fqn: "com.example.Ext", method: "get"}]},
+                        {...makeMethodData("com.example.ApiClient#callB()"), externals: [{fqn: "com.example.Ext", method: "post"}]}
                     ]
                 }]
             };
             const result = OutboundApp.groupDirectExternalAccessors(data);
             assert.equal(result.length, 1);
             assert.equal(result[0].directAccessors.length, 1);
-            assert.equal(result[0].directAccessors[0].methods.length, 2);
+            assert.equal(result[0].directAccessors[0].operations.length, 2);
         });
     });
 
@@ -614,8 +614,8 @@ test.describe("outbound.js", () => {
                     externalAccessors: [{
                         fqn: "com.example.Client",
                         label: "Client",
-                        methods: [{
-                            name: "fetch",
+                        operations: [{
+                            ...makeMethodData("com.example.Client#fetch()"),
                             externals: [{fqn: "com.example.ExtService", label: "ExtService", method: "get"}]
                         }]
                     }]
@@ -632,8 +632,8 @@ test.describe("outbound.js", () => {
                 operations: [],
                 directAccessors: [{
                     fqn: "com.example.ApiClient",
-                    methods: [{
-                        name: "call",
+                    operations: [{
+                        ...makeMethodData("com.example.ApiClient#call()"),
                         externals: [{fqn: "com.example.ExtService", method: "get"}]
                     }]
                 }]
@@ -649,8 +649,8 @@ test.describe("outbound.js", () => {
                 operations: [],
                 directAccessors: [{
                     fqn: "com.example.ApiClient",
-                    methods: [{
-                        name: "call",
+                    operations: [{
+                        ...makeMethodData("com.example.ApiClient#call()"),
                         externals: [{fqn: "com.example.ExtService", method: "get"}]
                     }]
                 }]

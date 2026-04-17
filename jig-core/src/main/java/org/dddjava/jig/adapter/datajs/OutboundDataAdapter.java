@@ -140,11 +140,8 @@ public class OutboundDataAdapter implements DataAdapter {
         List<JsonObjectBuilder> list = otherExternalAccessorRepository.values().stream()
                 .map(externalAccessor -> Json
                         .object("fqn", externalAccessor.typeId().fqn())
-                        // TODO メソッドとして出すならJsonSupportにかえたい。かえないならmethodsじゃなくoperationsで出力する方がよさそう。
-                        .and("methods", Json.arrayObjects(externalAccessor.operations().stream()
-                                .map(operation -> Json
-                                        // TODO メソッド名だけ出力しているため、オーバーロードされてると区別つかない
-                                        .object("name", operation.accessorJigMethod().name())
+                        .and("operations", Json.arrayObjects(externalAccessor.operations().stream()
+                                .map(operation -> JsonSupport.buildMethodJson(operation.accessorJigMethod())
                                         .and("externals", Json.arrayObjects(operation.externalMethodCalls().stream()
                                                 .map(methodCall -> Json
                                                         .object("fqn", methodCall.methodOwner().fqn())

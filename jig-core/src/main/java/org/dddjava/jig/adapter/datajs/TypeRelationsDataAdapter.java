@@ -31,7 +31,8 @@ public class TypeRelationsDataAdapter implements DataAdapter {
         var typeRelationships = jigService.typeRelationships(jigRepository);
         return Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
                 .map(relation -> Json.object("from", relation.from().fqn())
-                        .and("to", relation.to().fqn()))
+                        .and("to", relation.to().fqn())
+                        .and("typeRelationKind", relation.typeRelationKind().name()))
                 .toList())).build();
     }
 }

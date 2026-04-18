@@ -19,14 +19,6 @@ public record JigTypeHeader(TypeId id,
                             JigTypeAttributes jigTypeAttributes,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
-    public Set<TypeId> containedIds() {
-        Set<TypeId> ids = new HashSet<>();
-        ids.add(id);
-        ids.addAll(jigTypeAttributes.typeIdSet());
-        ids.addAll(baseTypeDataBundle.typeIdSet());
-        return ids;
-    }
-
     public String simpleName() {
         return id.asSimpleText();
     }

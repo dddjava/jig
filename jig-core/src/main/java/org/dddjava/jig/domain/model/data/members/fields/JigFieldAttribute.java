@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.stream.Stream;
 
 /**
  * フィールドの属性
@@ -14,10 +13,6 @@ import java.util.stream.Stream;
 record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                          Collection<JigAnnotationReference> declarationAnnotations,
                          EnumSet<JigFieldFlag> flags) {
-    Stream<TypeId> toTypeIdStream() {
-        return declarationAnnotations.stream().map(JigAnnotationReference::id);
-    }
-
     public boolean isDeprecated() {
         return declarationAnnotations.stream()
                 .anyMatch(annotation -> annotation.id().equals(TypeId.DEPRECATED_ANNOTATION));

@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -28,10 +27,6 @@ public record JigFieldHeader(JigFieldId id,
 
     public String simpleText() {
         return jigTypeReference.simpleName() + ' ' + id.name();
-    }
-
-    public Stream<TypeId> toTypeIdStream() {
-        return Stream.concat(jigTypeReference.toTypeIdStream(), jigFieldAttribute().toTypeIdStream());
     }
 
     public String simpleNameWithGenerics() {

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
@@ -20,13 +19,6 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
     public Collection<JigMethodDeclaration> jigMethodDeclarations() {
         return Stream.concat(staticMethods.stream(), instanceMethods.stream())
                 .map(jigMethod -> jigMethod.jigMethodDeclaration()).toList();
-    }
-
-    public Stream<TypeId> toTypeIdStream() {
-        return Stream.concat(
-                allJigFieldStream().flatMap(jigFields -> jigFields.jigFieldHeader().toTypeIdStream()),
-                allJigMethodStream().flatMap(jigMethod -> jigMethod.jigMethodDeclaration().associatedTypes().stream())
-        );
     }
 
     public Optional<JigField> findFieldByName(String name) {

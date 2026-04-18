@@ -2,18 +2,10 @@ package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
-import java.util.Optional;
-
 /**
  * 型の関係
  */
 public record TypeRelationship(TypeId from, TypeId to, TypeRelationKind typeRelationKind) {
-
-    static Optional<TypeRelationship> of不明(TypeId from, TypeId to) {
-        // 自己参照を除く
-        if (from.equals(to)) return Optional.empty();
-        return Optional.of(of(from, to, TypeRelationKind.不明));
-    }
 
     static TypeRelationship of型引数(TypeId from, TypeId to) {
         return of(from, to, TypeRelationKind.型引数);

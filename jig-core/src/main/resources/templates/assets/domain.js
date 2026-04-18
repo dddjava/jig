@@ -349,10 +349,47 @@ const DomainApp = (() => {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
+        function visibilityMark(v) {
+            return v === 'PUBLIC' ? '+' : v === 'PROTECTED' ? '#' : v === 'PRIVATE' ? '-' : '~';
+        }
+
+        function methodLine(method, isStatic) {
+            const hashIdx = method.fqn.lastIndexOf('#');
+            const parenIdx = method.fqn.indexOf('(', hashIdx);
+            const methodName = parenIdx > 0
+                ? method.fqn.substring(hashIdx + 1, parenIdx)
+                : method.fqn.substring(hashIdx + 1);
+            const params = (method.parameters || [])
+                .map(p => Jig.glossary.typeSimpleName(p.typeRef.fqn))
+                .join(', ');
+            const returnType = method.returnTypeRef
+                ? ' ' + Jig.glossary.typeSimpleName(method.returnTypeRef.fqn)
+                : '';
+            const staticMark = isStatic ? '$' : '';
+            return `${visibilityMark(method.visibility)}${methodName}(${params})${staticMark}${returnType}`;
+        }
+
         const safeDirection = direction === 'TB' ? 'TB' : 'LR';
         const lines = [`classDiagram`, `direction ${safeDirection}`];
         involvedFqns.forEach(fqn => {
-            lines.push(`  class ${fqnToNodeId(fqn)}["${Jig.glossary.typeSimpleName(fqn)}"]`);
+            const nodeId = fqnToNodeId(fqn);
+            const simpleName = Jig.glossary.typeSimpleName(fqn);
+            const domainType = typesMap?.get(fqn);
+            const fields = domainType?.fields || [];
+            const methods = domainType?.methods || [];
+            const staticMethods = domainType?.staticMethods || [];
+
+            if (fields.length > 0 || methods.length > 0 || staticMethods.length > 0) {
+                lines.push(`  class ${nodeId}["${simpleName}"] {`);
+                fields.forEach(f => {
+                    lines.push(`    ${Jig.glossary.typeSimpleName(f.typeRef.fqn)} ${f.name}`);
+                });
+                methods.forEach(m => lines.push(`    ${methodLine(m, false)}`));
+                staticMethods.forEach(m => lines.push(`    ${methodLine(m, true)}`));
+                lines.push(`  }`);
+            } else {
+                lines.push(`  class ${nodeId}["${simpleName}"]`);
+            }
         });
         edges.forEach(r => {
             lines.push(`  ${fqnToNodeId(r.from)} --> ${fqnToNodeId(r.to)}`);

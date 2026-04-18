@@ -1,7 +1,9 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
@@ -28,10 +30,43 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
 
     public static TypeRelationships internalRelation(JigTypes jigTypes) {
         return jigTypes.orderedStream()
-                .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .filter(jigTypes::contains)
-                        .flatMap(typeId -> TypeRelationship.of不明(jigType.id(), typeId).stream()))
+                .flatMap(jigType -> classifiedRelationStream(jigType, jigTypes))
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
+    }
+
+    private static Stream<TypeRelationship> classifiedRelationStream(JigType jigType, JigTypes jigTypes) {
+        TypeId id = jigType.id();
+        JigTypeMembers members = jigType.jigTypeMembers();
+
+        Stream<TypeRelationship> headerStream = headerTypeRelationshipStream(jigType.jigTypeHeader(), id)
+                .filter(rel -> jigTypes.contains(rel.to()));
+
+        Stream<TypeRelationship> fieldStream = members.allJigFieldStream()
+                .map(field -> field.typeId())
+                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.不明));
+
+        var methods = members.allJigMethodStream().toList();
+
+        Stream<TypeRelationship> returnTypeStream = methods.stream()
+                .map(JigMethod::returnType)
+                .map(JigTypeReference::id)
+                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.メソッド戻り値));
+
+        Stream<TypeRelationship> paramStream = methods.stream()
+                .flatMap(JigMethod::parameterTypeStream)
+                .map(JigTypeReference::id)
+                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.メソッド引数));
+
+        Stream<TypeRelationship> instructionStream = methods.stream()
+                .flatMap(method -> method.instructions().associatedTypeStream())
+                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.不明));
+
+        return Stream.of(headerStream, fieldStream, returnTypeStream, paramStream, instructionStream)
+                .flatMap(Function.identity());
     }
 
     public static TypeRelationships from(JigType jigType) {

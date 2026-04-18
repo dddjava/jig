@@ -9,8 +9,6 @@ import org.dddjava.jig.domain.model.information.members.JigMethods;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toSet;
-
 /**
  * JIGが識別する型
  */
@@ -30,18 +28,6 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
 
     public JigTypeVisibility visibility() {
         return jigTypeHeader.jigTypeAttributes().jigTypeVisibility();
-    }
-
-    public TypeIds usingTypes() {
-        var collect = Stream.concat(
-                        jigTypeHeader.containedIds().stream(),
-                        jigTypeMembers.toTypeIdStream()
-                )
-                .distinct()
-                // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。
-                .filter(typeId -> !typeId.isJavaStandardLanguageType())
-                .collect(toSet());
-        return new TypeIds(collect);
     }
 
     public boolean hasAnnotation(TypeId typeId) {

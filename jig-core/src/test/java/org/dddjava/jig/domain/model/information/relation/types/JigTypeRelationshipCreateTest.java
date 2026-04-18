@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JigTypeRelationshipCreateTest {
 
@@ -29,12 +30,9 @@ public class JigTypeRelationshipCreateTest {
         JigType jigType = TestSupport.buildJigType(SimpleClass.class);
         TypeRelationships sut = TypeRelationships.from(jigType);
 
-        assertEquals(1, sut.size());
-        assertEquals(
-                TypeRelationship.of(
-                        TestSupport.getTypeIdFromClass(SimpleClass.class), TestSupport.getTypeIdFromClass(Object.class),
-                        TypeRelationKind.継承クラス),
-                sut.relationships().stream().findFirst().orElseThrow());
+        TypeId from = TestSupport.getTypeIdFromClass(SimpleClass.class);
+        assertTrue(sut.relationships().contains(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(Object.class), TypeRelationKind.継承クラス)));
     }
 
     @Test
@@ -42,16 +40,15 @@ public class JigTypeRelationshipCreateTest {
         JigType jigType = TestSupport.buildJigType(ComplexClass.class);
         TypeRelationships sut = TypeRelationships.from(jigType);
 
-        assertEquals(5, sut.size());
-        Comparator<TypeRelationship> comparing = Comparator.comparing(TypeRelationship::to);
         TypeId from = TestSupport.getTypeIdFromClass(ComplexClass.class);
-        assertEquals(Stream.of(
-                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(CharSequence.class), TypeRelationKind.型引数),
-                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(ComplexSubClass.class), TypeRelationKind.継承クラス),
-                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.型引数),
-                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(ComplexInterface.class), TypeRelationKind.実装インタフェース),
-                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(Integer.class), TypeRelationKind.型引数)
-                ).sorted(comparing).toList(),
-                sut.list().stream().sorted(comparing).toList());
+        var expected = Stream.of(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(CharSequence.class), TypeRelationKind.型引数),
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(ComplexSubClass.class), TypeRelationKind.継承クラス),
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.型引数),
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(ComplexInterface.class), TypeRelationKind.実装インタフェース),
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(Integer.class), TypeRelationKind.型引数)
+        ).toList();
+        assertTrue(sut.relationships().containsAll(expected),
+                "Expected relations not found. Actual: " + sut.relationships());
     }
 }

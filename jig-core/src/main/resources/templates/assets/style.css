@@ -607,6 +607,10 @@ pre.mermaid {
     font-size: 0;
 }
 
+.mermaid svg a:hover {
+    text-decoration: none;
+}
+
 .mermaid-diagram {
     margin-top: 10px;
     position: relative;

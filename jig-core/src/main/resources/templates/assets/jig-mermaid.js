@@ -1521,7 +1521,7 @@ globalThis.Jig.mermaid = (() => {
 
         addClick(id, url) {
             if (!id || !url) return;
-            this._clicks.push(`  click ${id} "${url}"`);
+            this._clicks.push(`  click ${id} href "${url}" _self`);
         }
 
         build(direction = 'LR') {

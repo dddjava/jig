@@ -395,7 +395,7 @@ const DomainApp = (() => {
             lines.push(`  ${fqnToNodeId(r.from)} --> ${fqnToNodeId(r.to)}`);
         });
         involvedFqns.forEach(fqn => {
-            lines.push(`  click ${fqnToNodeId(fqn)} href "#${fqnToHtmlId(fqn)}"`);
+            lines.push(`  click ${fqnToNodeId(fqn)} "#${fqnToHtmlId(fqn)}"`);
         });
         return lines.join('\n');
     }

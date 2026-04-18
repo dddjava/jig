@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
+import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
+import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -44,7 +46,7 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
         Stream<TypeRelationship> fieldStream = members.allJigFieldStream()
                 .map(field -> field.typeId())
                 .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
-                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.不明));
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.フィールド型));
 
         var methods = members.allJigMethodStream().toList();
 
@@ -60,12 +62,29 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
                 .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
                 .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.メソッド引数));
 
-        Stream<TypeRelationship> instructionStream = methods.stream()
-                .flatMap(method -> method.instructions().associatedTypeStream())
+        var methodCalls = methods.stream()
+                .flatMap(method -> method.instructions().methodCallStream())
+                .toList();
+
+        Stream<TypeRelationship> callOwnerStream = methodCalls.stream()
+                .map(MethodCall::methodOwner)
+                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.呼び出しメソッドのオーナー));
+
+        Stream<TypeRelationship> callReturnStream = methodCalls.stream()
+                .map(MethodCall::returnType)
+                .filter(toId -> !toId.isVoid() && !id.equals(toId) && jigTypes.contains(toId))
+                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.呼び出しメソッドの戻り値));
+
+        Stream<TypeRelationship> otherInstructionStream = methods.stream()
+                .flatMap(method -> method.instructions().instructions().stream()
+                        .filter(instr -> !(instr instanceof MethodCall) && !(instr instanceof DynamicMethodCall))
+                        .flatMap(instr -> instr.associatedTypeStream()))
                 .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
                 .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.不明));
 
-        return Stream.of(headerStream, fieldStream, returnTypeStream, paramStream, instructionStream)
+        return Stream.of(headerStream, fieldStream, returnTypeStream, paramStream,
+                        callOwnerStream, callReturnStream, otherInstructionStream)
                 .flatMap(Function.identity());
     }
 

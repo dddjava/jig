@@ -44,23 +44,34 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
                 .filter(rel -> jigTypes.contains(rel.to()));
 
         Stream<TypeRelationship> fieldStream = members.allJigFieldStream()
-                .map(field -> field.typeId())
-                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
-                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.フィールド型));
+                .flatMap(field -> typeReferenceRelationshipStream(id, field.jigTypeReference(), TypeRelationKind.フィールド型))
+                .filter(rel -> !id.equals(rel.to()) && jigTypes.contains(rel.to()));
+
+        Stream<TypeRelationship> fieldAnnotationStream = members.allJigFieldStream()
+                .flatMap(field -> field.jigFieldHeader().declarationAnnotationStream())
+                .map(anno -> TypeRelationship.of(id, anno.id(), TypeRelationKind.使用アノテーション))
+                .filter(rel -> !id.equals(rel.to()) && jigTypes.contains(rel.to()));
 
         var methods = members.allJigMethodStream().toList();
 
         Stream<TypeRelationship> returnTypeStream = methods.stream()
-                .map(JigMethod::returnType)
-                .map(JigTypeReference::id)
-                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
-                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.メソッド戻り値));
+                .flatMap(method -> typeReferenceRelationshipStream(id, method.returnType(), TypeRelationKind.メソッド戻り値))
+                .filter(rel -> !id.equals(rel.to()) && jigTypes.contains(rel.to()));
 
         Stream<TypeRelationship> paramStream = methods.stream()
                 .flatMap(JigMethod::parameterTypeStream)
-                .map(JigTypeReference::id)
-                .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
-                .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.メソッド引数));
+                .flatMap(typeRef -> typeReferenceRelationshipStream(id, typeRef, TypeRelationKind.メソッド引数))
+                .filter(rel -> !id.equals(rel.to()) && jigTypes.contains(rel.to()));
+
+        Stream<TypeRelationship> methodAnnotationStream = methods.stream()
+                .flatMap(JigMethod::declarationAnnotationStream)
+                .map(anno -> TypeRelationship.of(id, anno.id(), TypeRelationKind.使用アノテーション))
+                .filter(rel -> !id.equals(rel.to()) && jigTypes.contains(rel.to()));
+
+        Stream<TypeRelationship> throwsStream = methods.stream()
+                .flatMap(JigMethod::throwTypeStream)
+                .flatMap(typeRef -> typeReferenceRelationshipStream(id, typeRef, TypeRelationKind.throws宣言))
+                .filter(rel -> !id.equals(rel.to()) && jigTypes.contains(rel.to()));
 
         var methodCalls = methods.stream()
                 .flatMap(method -> method.instructions().methodCallStream())
@@ -83,7 +94,8 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
                 .filter(toId -> !id.equals(toId) && jigTypes.contains(toId))
                 .map(toId -> TypeRelationship.of(id, toId, TypeRelationKind.不明));
 
-        return Stream.of(headerStream, fieldStream, returnTypeStream, paramStream,
+        return Stream.of(headerStream, fieldStream, fieldAnnotationStream,
+                        returnTypeStream, paramStream, methodAnnotationStream, throwsStream,
                         callOwnerStream, callReturnStream, otherInstructionStream)
                 .flatMap(Function.identity());
     }

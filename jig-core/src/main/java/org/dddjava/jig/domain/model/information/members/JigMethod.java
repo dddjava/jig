@@ -105,6 +105,10 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration) {
         return header().parameterTypeStream();
     }
 
+    public Stream<JigTypeReference> throwTypeStream() {
+        return header().throwTypeStream();
+    }
+
     public TypeId declaringType() {
         return header().id().tuple().declaringTypeId();
     }

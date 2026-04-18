@@ -84,6 +84,10 @@ public record JigMethodHeader(JigMethodId id,
         return jigMethodAttribute.parameterList().stream().map(JigMethodParameter::typeReference);
     }
 
+    public Stream<JigTypeReference> throwTypeStream() {
+        return jigMethodAttribute.throwTypes().stream();
+    }
+
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
         return jigMethodAttribute.declarationAnnotations().stream();
     }

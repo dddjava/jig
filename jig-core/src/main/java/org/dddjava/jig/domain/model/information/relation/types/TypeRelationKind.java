@@ -13,5 +13,6 @@ public enum TypeRelationKind {
     呼び出しメソッドのオーナー,
     呼び出しメソッドの戻り値,
     ローカル変数,
+    throws宣言,
     不明
 }

@@ -349,55 +349,41 @@ const DomainApp = (() => {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
-        function visibilityMark(v) {
-            return v === 'PUBLIC' ? '+' : v === 'PROTECTED' ? '#' : v === 'PRIVATE' ? '-' : '~';
-        }
+        const builder = new Jig.mermaid.ClassDiagramBuilder();
 
-        function methodLine(method, isStatic) {
-            const hashIdx = method.fqn.lastIndexOf('#');
-            const parenIdx = method.fqn.indexOf('(', hashIdx);
-            const methodName = parenIdx > 0
-                ? method.fqn.substring(hashIdx + 1, parenIdx)
-                : method.fqn.substring(hashIdx + 1);
-            const params = (method.parameters || [])
-                .map(p => Jig.glossary.typeSimpleName(p.typeRef.fqn))
-                .join(', ');
-            const returnType = method.returnTypeRef
-                ? ' ' + Jig.glossary.typeSimpleName(method.returnTypeRef.fqn)
-                : '';
-            const staticMark = isStatic ? '$' : '';
-            return `${visibilityMark(method.visibility)}${methodName}(${params})${staticMark}${returnType}`;
-        }
-
-        const safeDirection = direction === 'TB' ? 'TB' : 'LR';
-        const lines = [`classDiagram`, `direction ${safeDirection}`];
         involvedFqns.forEach(fqn => {
             const nodeId = fqnToNodeId(fqn);
-            const simpleName = Jig.glossary.typeSimpleName(fqn);
-            const domainType = typesMap?.get(fqn);
-            const fields = domainType?.fields || [];
-            const methods = domainType?.methods || [];
-            const staticMethods = domainType?.staticMethods || [];
+            builder.addClass(nodeId, Jig.glossary.typeSimpleName(fqn));
 
-            if (fields.length > 0 || methods.length > 0 || staticMethods.length > 0) {
-                lines.push(`  class ${nodeId}["${simpleName}"] {`);
-                fields.forEach(f => {
-                    lines.push(`    ${Jig.glossary.typeSimpleName(f.typeRef.fqn)} ${f.name}`);
-                });
-                methods.forEach(m => lines.push(`    ${methodLine(m, false)}`));
-                staticMethods.forEach(m => lines.push(`    ${methodLine(m, true)}`));
-                lines.push(`  }`);
-            } else {
-                lines.push(`  class ${nodeId}["${simpleName}"]`);
-            }
+            const domainType = typesMap?.get(fqn);
+            (domainType?.fields || []).forEach(f => {
+                builder.addField(nodeId, Jig.glossary.typeSimpleName(f.typeRef.fqn), f.name);
+            });
+            (domainType?.methods || []).forEach(m => {
+                const {name, params, returnType} = parseMethodInfo(m);
+                builder.addMethod(nodeId, m.visibility, name, params, returnType, false);
+            });
+            (domainType?.staticMethods || []).forEach(m => {
+                const {name, params, returnType} = parseMethodInfo(m);
+                builder.addMethod(nodeId, m.visibility, name, params, returnType, true);
+            });
+
+            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
         });
-        edges.forEach(r => {
-            lines.push(`  ${fqnToNodeId(r.from)} --> ${fqnToNodeId(r.to)}`);
-        });
-        involvedFqns.forEach(fqn => {
-            lines.push(`  click ${fqnToNodeId(fqn)} "#${fqnToHtmlId(fqn)}"`);
-        });
-        return lines.join('\n');
+        edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to)));
+
+        return builder.build(direction);
+    }
+
+    function parseMethodInfo(method) {
+        const hashIdx = method.fqn.lastIndexOf('#');
+        const parenIdx = method.fqn.indexOf('(', hashIdx);
+        const name = parenIdx > 0
+            ? method.fqn.substring(hashIdx + 1, parenIdx)
+            : method.fqn.substring(hashIdx + 1);
+        const params = (method.parameters || []).map(p => Jig.glossary.typeSimpleName(p.typeRef.fqn));
+        const returnType = method.returnTypeRef ? Jig.glossary.typeSimpleName(method.returnTypeRef.fqn) : '';
+        return {name, params, returnType};
     }
 
     /**

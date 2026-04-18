@@ -1477,6 +1477,71 @@ globalThis.Jig.mermaid = (() => {
         return source;
     }
 
+    // classDiagram ビルダー
+    class ClassDiagramBuilder {
+        constructor() {
+            this._classes = new Map(); // id -> {label, members: string[]}
+            this._edges = [];
+            this._edgeSet = new Set();
+            this._clicks = [];
+        }
+
+        _escape(text) {
+            return (text || "").replace(/"/g, '\\"');
+        }
+
+        addClass(id, label) {
+            if (!this._classes.has(id)) {
+                this._classes.set(id, {label: this._escape(label), members: []});
+            }
+            return id;
+        }
+
+        addField(classId, typeName, fieldName) {
+            const cls = this._classes.get(classId);
+            if (cls) cls.members.push(`    ${typeName} ${fieldName}`);
+        }
+
+        addMethod(classId, visibility, methodName, params, returnType, isStatic = false) {
+            const cls = this._classes.get(classId);
+            if (!cls) return;
+            const visChar = visibility === 'PUBLIC' ? '+' : visibility === 'PROTECTED' ? '#' : visibility === 'PRIVATE' ? '-' : '~';
+            const staticMark = isStatic ? '$' : '';
+            const ret = returnType ? ` ${returnType}` : '';
+            cls.members.push(`    ${visChar}${methodName}(${params.join(', ')})${staticMark}${ret}`);
+        }
+
+        addEdge(from, to) {
+            const key = `${from}::${to}`;
+            if (!this._edgeSet.has(key)) {
+                this._edgeSet.add(key);
+                this._edges.push({from, to});
+            }
+        }
+
+        addClick(id, url) {
+            if (!id || !url) return;
+            this._clicks.push(`  click ${id} "${url}"`);
+        }
+
+        build(direction = 'LR') {
+            const safeDirection = direction === 'TB' ? 'TB' : 'LR';
+            const lines = [`classDiagram`, `direction ${safeDirection}`];
+            this._classes.forEach((cls, id) => {
+                if (cls.members.length > 0) {
+                    lines.push(`  class ${id}["${cls.label}"] {`);
+                    cls.members.forEach(m => lines.push(m));
+                    lines.push(`  }`);
+                } else {
+                    lines.push(`  class ${id}["${cls.label}"]`);
+                }
+            });
+            this._edges.forEach(e => lines.push(`  ${e.from} --> ${e.to}`));
+            this._clicks.forEach(c => lines.push(c));
+            return lines.join('\n');
+        }
+    }
+
     return {
         builder,
         graph,
@@ -1485,6 +1550,7 @@ globalThis.Jig.mermaid = (() => {
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
+        ClassDiagramBuilder,
     };
 })();
 

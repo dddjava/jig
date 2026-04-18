@@ -239,14 +239,13 @@ const DomainApp = (() => {
     }
 
     /**
-     * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
+     * 型の直接関連エッジと関与 FQN セットを収集する（deprecated フィルタ適用済み）
      * @param {DomainType} type
      * @param {Array} typeRelations
      * @param {Map} typesMap
-     * @param {string} direction
-     * @returns {string | null}
+     * @returns {{edges: Array, involvedFqns: Set<string>} | null}
      */
-    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+    function collectTypeRelationEdges(type, typeRelations, typesMap) {
         const allRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -255,7 +254,6 @@ const DomainApp = (() => {
 
         if (outgoing.length === 0 && incoming.length === 0) return null;
 
-        // Deprecated ノード非表示の場合、deprecated 型を除外
         const filteredOut = domainSettings.showDeprecatedNodes
             ? outgoing
             : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated);
@@ -265,16 +263,28 @@ const DomainApp = (() => {
 
         if (filteredOut.length === 0 && filteredIn.length === 0) return null;
 
-        // エッジの重複排除（A→B と B→A が両方ある場合も含む）
         const edgeMap = new Map();
         [...filteredOut, ...filteredIn].forEach(r => edgeMap.set(`${r.from}::${r.to}`, r));
         const edges = Array.from(edgeMap.values());
 
         const involvedFqns = new Set([type.fqn]);
-        edges.forEach(r => {
-            involvedFqns.add(r.from);
-            involvedFqns.add(r.to);
-        });
+        edges.forEach(r => { involvedFqns.add(r.from); involvedFqns.add(r.to); });
+
+        return {edges, involvedFqns};
+    }
+
+    /**
+     * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
+     * @param {DomainType} type
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
+     * @param {string} direction
+     * @returns {string | null}
+     */
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+        if (!result) return null;
+        const {edges, involvedFqns} = result;
 
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
@@ -321,6 +331,36 @@ const DomainApp = (() => {
         builder.addStyle(selfId, "font-weight:bold");
 
         return builder.build(direction);
+    }
+
+    /**
+     * クラスカードに表示するクラス図（classDiagram形式、物理名ラベル）
+     * @param {DomainType} type
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
+     * @param {string} direction
+     * @returns {string | null}
+     */
+    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+        if (!result) return null;
+        const {edges, involvedFqns} = result;
+
+        const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
+        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+
+        const safeDirection = direction === 'TB' ? 'TB' : 'LR';
+        const lines = [`classDiagram`, `direction ${safeDirection}`];
+        involvedFqns.forEach(fqn => {
+            lines.push(`  class ${fqnToNodeId(fqn)}["${Jig.glossary.typeSimpleName(fqn)}"]`);
+        });
+        edges.forEach(r => {
+            lines.push(`  ${fqnToNodeId(r.from)} --> ${fqnToNodeId(r.to)}`);
+        });
+        involvedFqns.forEach(fqn => {
+            lines.push(`  click ${fqnToNodeId(fqn)} href "#${fqnToHtmlId(fqn)}"`);
+        });
+        return lines.join('\n');
     }
 
     /**
@@ -766,17 +806,41 @@ const DomainApp = (() => {
             const staticList = createMethodsList("staticメソッド", type.staticMethods);
             if (staticList) section.appendChild(staticList);
 
-            Jig.mermaid.diagram.createAndRegister(section, (container) => {
-                const diagramDef = {container, pkg: undefined, type, diagramType: 'classDirect', typeRelations, typesMap};
-                renderDiagram(container, diagramDef);
-                // 見出しはまだ追加されていない場合のみ追加
-                if (!section.querySelector('h4.diagram-heading')) {
-                    section.insertBefore(Jig.dom.createElement("h4", {
-                        textContent: "クラス関連図",
-                        className: "diagram-heading"
-                    }), container);
-                }
-            });
+            if (createTypeRelationDiagram(type, typeRelations, typesMap) !== null) {
+                const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
+                const tabDefs = [
+                    {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
+                    {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
+                ];
+                const panels = {};
+                tabDefs.forEach((tab, i) => {
+                    panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
+                });
+                tabDefs.forEach((tab, i) => {
+                    const btn = Jig.dom.createElement("button", {
+                        className: "diagram-tab" + (i === 0 ? " active" : ""),
+                        textContent: tab.label,
+                    });
+                    btn.addEventListener('click', () => {
+                        tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
+                        Object.values(panels).forEach(p => p.classList.add('hidden'));
+                        btn.classList.add('active');
+                        panels[tab.id].classList.remove('hidden');
+                    });
+                    tabsBar.appendChild(btn);
+                });
+
+                section.appendChild(Jig.dom.createElement("section", {
+                    className: "jig-card--item domain-diagrams-section",
+                    children: [tabsBar, ...Object.values(panels)],
+                }));
+
+                tabDefs.forEach(tab => {
+                    Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
+                        renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
+                    });
+                });
+            }
 
             const relatedList = createRelatedClassesList(type, typeRelations, typesMap);
             if (relatedList) section.appendChild(relatedList);
@@ -823,6 +887,11 @@ const DomainApp = (() => {
             }
         } else if (diagramType === 'classDirect') {
             const generator = (dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir);
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        } else if (diagramType === 'classDefinition') {
+            const generator = (dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir);
             if (generator(domainSettings.diagramDirection)) {
                 Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
             }
@@ -1096,6 +1165,7 @@ const DomainApp = (() => {
         getDirectChildPackages,
         createRelationDiagram,
         createTypeRelationDiagram,
+        createTypeClassDiagramSource,
         createPackageRelationDiagram,
         createPackageDirectRelationDiagram,
         buildPackages,

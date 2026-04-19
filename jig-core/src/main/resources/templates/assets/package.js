@@ -337,42 +337,40 @@ const PackageApp = (() => {
         }
 
         container.style.display = '';
-        const heading = document.createElement('h3');
-        heading.textContent = '相互依存と原因';
-        const list = document.createElement('ul');
+        const heading = Jig.dom.createElement('h3', {textContent: '相互依存と原因'});
+        const list = Jig.dom.createElement('ul');
 
         items.forEach(item => {
-            const itemNode = document.createElement('li');
-            const pairDiv = document.createElement('div');
-            pairDiv.className = 'pair';
-
-            const pairLabelSpan = document.createElement('span');
-            pairLabelSpan.textContent = item.pairLabel;
-            pairDiv.appendChild(pairLabelSpan);
-
-            const diagramButton = document.createElement('button');
-            diagramButton.type = 'button';
-            diagramButton.textContent = 'ダイアグラムを表示';
-            diagramButton.className = 'diagram-button';
-            pairDiv.appendChild(diagramButton);
-
-            const textButton = document.createElement('button');
-            textButton.type = 'button';
-            textButton.textContent = 'テキストを表示';
-            textButton.className = 'text-button';
-            pairDiv.appendChild(textButton);
-
-            itemNode.appendChild(pairDiv);
-
-            const causesEl = document.createElement('pre');
-            causesEl.className = 'causes';
-            causesEl.textContent = item.causes?.length ? item.causes.join('\n') : '';
-            causesEl.style.display = 'none';
-            itemNode.appendChild(causesEl);
-
-            const diagramContainer = document.createElement('div');
-            diagramContainer.className = 'mutual-dependency-diagram';
-            itemNode.appendChild(diagramContainer);
+            const diagramButton = Jig.dom.createElement('button', {
+                className: 'diagram-button',
+                textContent: 'ダイアグラムを表示',
+                attributes: {type: 'button'}
+            });
+            const textButton = Jig.dom.createElement('button', {
+                className: 'text-button',
+                textContent: 'テキストを表示',
+                attributes: {type: 'button'}
+            });
+            const causesEl = Jig.dom.createElement('pre', {
+                className: 'causes',
+                textContent: item.causes?.length ? item.causes.join('\n') : '',
+                style: {display: 'none'}
+            });
+            const diagramContainer = Jig.dom.createElement('div', {className: 'mutual-dependency-diagram'});
+            const itemNode = Jig.dom.createElement('li', {
+                children: [
+                    Jig.dom.createElement('div', {
+                        className: 'pair',
+                        children: [
+                            Jig.dom.createElement('span', {textContent: item.pairLabel}),
+                            diagramButton,
+                            textButton
+                        ]
+                    }),
+                    causesEl,
+                    diagramContainer
+                ]
+            });
 
             diagramButton.addEventListener('click', () => {
                 renderMutualDependencyDiagram(item, itemNode, context);

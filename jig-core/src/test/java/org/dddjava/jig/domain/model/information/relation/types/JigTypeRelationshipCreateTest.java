@@ -20,6 +20,11 @@ public class JigTypeRelationshipCreateTest {
         java.util.List<String> items;
     }
 
+    private static class ClassWithGenericMethod {
+        java.util.Optional<String> get() { return java.util.Optional.empty(); }
+        void add(java.util.List<String> items) {}
+    }
+
     private static class ComplexSubClass<T> extends SimpleClass {
     }
 
@@ -41,6 +46,27 @@ public class JigTypeRelationshipCreateTest {
         assertTrue(sut.relationships().contains(
                 TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.フィールド型引数)),
                 "String はフィールド型引数であること");
+    }
+
+    @Test
+    void genericMethodTest() {
+        JigType jigType = TestSupport.buildJigType(ClassWithGenericMethod.class);
+        TypeRelationships sut = TypeRelationships.from(jigType);
+
+        TypeId from = TestSupport.getTypeIdFromClass(ClassWithGenericMethod.class);
+        assertTrue(sut.relationships().contains(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(java.util.Optional.class), TypeRelationKind.メソッド戻り値)),
+                "Optional はメソッド戻り値であること");
+        assertTrue(sut.relationships().contains(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.メソッド戻り値型引数)),
+                "String はメソッド戻り値型引数であること");
+        assertTrue(sut.relationships().contains(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(java.util.List.class), TypeRelationKind.メソッド引数)),
+                "List はメソッド引数であること");
+        // String は メソッド戻り値型引数 と メソッド引数型引数 の両方で現れるが、from-to-kind のトリプルで重複排除されない
+        assertTrue(sut.relationships().stream().anyMatch(rel ->
+                        rel.equals(TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.メソッド引数型引数))),
+                "List<String> の String はメソッド引数型引数であること");
     }
 
     @Test

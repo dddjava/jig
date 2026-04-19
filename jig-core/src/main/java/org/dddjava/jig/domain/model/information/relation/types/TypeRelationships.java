@@ -59,12 +59,12 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
         var methods = members.allJigMethodStream().toList();
 
         Stream<TypeRelationship> returnTypeStream = methods.stream()
-                .flatMap(method -> typeReferenceRelationshipStream(id, method.returnType(), TypeRelationKind.メソッド戻り値))
+                .flatMap(method -> typeReferenceRelationshipStream(id, method.returnType(), TypeRelationKind.メソッド戻り値, TypeRelationKind.メソッド戻り値型引数))
                 .filter(rel -> !id.equals(rel.to()));
 
         Stream<TypeRelationship> paramStream = methods.stream()
                 .flatMap(JigMethod::parameterTypeStream)
-                .flatMap(typeRef -> typeReferenceRelationshipStream(id, typeRef, TypeRelationKind.メソッド引数))
+                .flatMap(typeRef -> typeReferenceRelationshipStream(id, typeRef, TypeRelationKind.メソッド引数, TypeRelationKind.メソッド引数型引数))
                 .filter(rel -> !id.equals(rel.to()));
 
         Stream<TypeRelationship> methodAnnotationStream = methods.stream()

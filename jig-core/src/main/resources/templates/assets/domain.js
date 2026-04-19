@@ -349,6 +349,14 @@ const DomainApp = (() => {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
+        function edgeTypeFromKinds(kinds) {
+            if (!kinds) return 'dependency';
+            if (kinds.includes('継承クラス')) return 'realization';
+            if (kinds.includes('実装インタフェース')) return 'inheritance';
+            if (kinds.includes('フィールド型')) return 'association';
+            return 'dependency';
+        }
+
         const builder = new Jig.mermaid.ClassDiagramBuilder();
 
         involvedFqns.forEach(fqn => {
@@ -370,7 +378,7 @@ const DomainApp = (() => {
 
             builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
         });
-        edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to)));
+        edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
 
         return builder.build(direction);
     }

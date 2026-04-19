@@ -1477,6 +1477,8 @@ globalThis.Jig.mermaid = (() => {
         return source;
     }
 
+    const CLASS_DIAGRAM_ARROW_MAP = {association: '-->', inheritance: '--|>', realization: '..|>', dependency: '..>'};
+
     // classDiagram ビルダー
     class ClassDiagramBuilder {
         constructor() {
@@ -1511,11 +1513,11 @@ globalThis.Jig.mermaid = (() => {
             cls.members.push(`    ${visChar}${methodName}(${params.join(', ')})${staticMark}${ret}`);
         }
 
-        addEdge(from, to) {
+        addEdge(from, to, edgeType = 'dependency') {
             const key = `${from}::${to}`;
             if (!this._edgeSet.has(key)) {
                 this._edgeSet.add(key);
-                this._edges.push({from, to});
+                this._edges.push({from, to, edgeType});
             }
         }
 
@@ -1536,7 +1538,7 @@ globalThis.Jig.mermaid = (() => {
                     lines.push(`  class ${id}["${cls.label}"]`);
                 }
             });
-            this._edges.forEach(e => lines.push(`  ${e.from} --> ${e.to}`));
+            this._edges.forEach(e => lines.push(`  ${e.from} ${CLASS_DIAGRAM_ARROW_MAP[e.edgeType] ?? '..>'} ${e.to}`));
             this._clicks.forEach(c => lines.push(c));
             return lines.join('\n');
         }

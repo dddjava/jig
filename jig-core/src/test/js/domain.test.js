@@ -16,7 +16,7 @@ require('../../main/resources/templates/assets/jig-dom.js');
 const Jig = globalThis.Jig;
 
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
-const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
+const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createTypeClassDiagramSource, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
 
 // ヘルパー関数：domainData を設定し、Jig.data.domain の派生キャッシュを再構築する
 function setupDomainData(domainPackageRoots, types) {
@@ -527,6 +527,72 @@ test.describe('domain.js', () => {
             const idThird = Jig.util.fqnToId("n", 'org.third');
             assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
+        });
+    });
+
+    test.describe('createTypeClassDiagramSource', () => {
+        function makeTypesMap(fqns) {
+            return new Map(fqns.map(fqn => [fqn, {fqn, isDeprecated: false, fields: [], methods: [], staticMethods: []}]));
+        }
+
+        test('kinds に「フィールド型」を含む場合 --> を使用する', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['フィールド型']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} --> ${idB}`), `association エッジが含まれること: ${result}`);
+        });
+
+        test('kinds に「継承クラス」を含む場合 ..|> を使用する', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['継承クラス']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} ..|> ${idB}`), `realization エッジが含まれること: ${result}`);
+        });
+
+        test('kinds に「実装インタフェース」を含む場合 --|> を使用する', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['実装インタフェース']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} --|> ${idB}`), `inheritance エッジが含まれること: ${result}`);
+        });
+
+        test('kinds がそれ以外の場合 ..> を使用する', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['メソッド引数']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} ..> ${idB}`), `dependency エッジが含まれること: ${result}`);
+        });
+
+        test('kinds がない場合 ..> を使用する', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B'}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} ..> ${idB}`), `dependency エッジが含まれること: ${result}`);
+        });
+
+        test('継承クラスはフィールド型より優先される', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['フィールド型', '継承クラス']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} ..|> ${idB}`), `継承クラスが優先されること: ${result}`);
         });
     });
 });

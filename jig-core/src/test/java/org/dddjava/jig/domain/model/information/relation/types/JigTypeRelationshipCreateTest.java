@@ -16,6 +16,10 @@ public class JigTypeRelationshipCreateTest {
     private static class SimpleClass {
     }
 
+    private static class ClassWithGenericField {
+        java.util.List<String> items;
+    }
+
     private static class ComplexSubClass<T> extends SimpleClass {
     }
 
@@ -23,6 +27,20 @@ public class JigTypeRelationshipCreateTest {
     }
 
     private static class ComplexClass<T1 extends CharSequence> extends ComplexSubClass<String> implements ComplexInterface<Integer> {
+    }
+
+    @Test
+    void genericFieldTest() {
+        JigType jigType = TestSupport.buildJigType(ClassWithGenericField.class);
+        TypeRelationships sut = TypeRelationships.from(jigType);
+
+        TypeId from = TestSupport.getTypeIdFromClass(ClassWithGenericField.class);
+        assertTrue(sut.relationships().contains(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(java.util.List.class), TypeRelationKind.フィールド型)),
+                "List はフィールド型であること");
+        assertTrue(sut.relationships().contains(
+                TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.フィールド型引数)),
+                "String はフィールド型引数であること");
     }
 
     @Test

@@ -48,7 +48,7 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
                 .filter(rel -> !id.equals(rel.to()));
 
         Stream<TypeRelationship> fieldStream = members.allJigFieldStream()
-                .flatMap(field -> typeReferenceRelationshipStream(id, field.jigTypeReference(), TypeRelationKind.フィールド型))
+                .flatMap(field -> typeReferenceRelationshipStream(id, field.jigTypeReference(), TypeRelationKind.フィールド型, TypeRelationKind.フィールド型引数))
                 .filter(rel -> !id.equals(rel.to()));
 
         Stream<TypeRelationship> fieldAnnotationStream = members.allJigFieldStream()
@@ -123,12 +123,16 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
     }
 
     private static Stream<TypeRelationship> typeReferenceRelationshipStream(TypeId id, JigTypeReference jigTypeReference, TypeRelationKind typeRelationKind) {
+        return typeReferenceRelationshipStream(id, jigTypeReference, typeRelationKind, TypeRelationKind.型引数);
+    }
+
+    private static Stream<TypeRelationship> typeReferenceRelationshipStream(TypeId id, JigTypeReference jigTypeReference, TypeRelationKind typeRelationKind, TypeRelationKind typeArgumentKind) {
         return Stream.of(
                         // 自身
                         Stream.of(TypeRelationship.of(id, jigTypeReference.id(), typeRelationKind)),
                         // 型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
                         jigTypeReference.typeArgumentList().stream()
-                                .map(typeArg -> TypeRelationship.of(id, typeArg.typeId(), TypeRelationKind.型引数)),
+                                .map(typeArg -> TypeRelationship.of(id, typeArg.typeId(), typeArgumentKind)),
                         // 型アノテーション
                         annotationTypeRelationshipStream(jigTypeReference.typeAnnotations(), id))
                 .flatMap(Function.identity());

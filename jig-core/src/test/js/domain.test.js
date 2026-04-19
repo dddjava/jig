@@ -575,6 +575,16 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idA} ..> ${idB}`), `dependency エッジが含まれること: ${result}`);
         });
 
+        test('kinds に「フィールド型引数」を含む場合 --> を使用する', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['フィールド型引数']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} --> ${idB}`), `フィールド型引数も association エッジであること: ${result}`);
+        });
+
         test('kinds がない場合 ..> を使用する', () => {
             const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
             const typeA = typesMap.get('org.example.A');

@@ -337,15 +337,9 @@ const PackageApp = (() => {
         }
 
         container.style.display = '';
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.textContent = '相互依存と原因';
+        const heading = document.createElement('h3');
+        heading.textContent = '相互依存と原因';
         const list = document.createElement('ul');
-
-        const applyFilterAndRender = (fqns) => {
-            context.packageFilterFqn = fqns;
-            renderHierarchyDiagramAndTable(context);
-        };
 
         items.forEach(item => {
             const itemNode = document.createElement('li');
@@ -356,41 +350,45 @@ const PackageApp = (() => {
             pairLabelSpan.textContent = item.pairLabel;
             pairDiv.appendChild(pairLabelSpan);
 
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = 'フィルタにセット';
-            button.className = 'filter-button';
-            const [package1, package2] = item.pairLabel.split(' <-> ');
-            button.addEventListener('click', () => applyFilterAndRender([package1, package2]));
-            pairDiv.appendChild(button);
+            const diagramButton = document.createElement('button');
+            diagramButton.type = 'button';
+            diagramButton.textContent = 'ダイアグラムを表示';
+            diagramButton.className = 'diagram-button';
+            pairDiv.appendChild(diagramButton);
+
+            const textButton = document.createElement('button');
+            textButton.type = 'button';
+            textButton.textContent = 'テキストを表示';
+            textButton.className = 'text-button';
+            pairDiv.appendChild(textButton);
 
             itemNode.appendChild(pairDiv);
 
-            if (item.causes?.length) {
-                const detailBody = document.createElement('pre');
-                detailBody.className = 'causes';
-                detailBody.textContent = item.causes.join('\n');
-                itemNode.appendChild(detailBody);
-            }
+            const causesEl = document.createElement('pre');
+            causesEl.className = 'causes';
+            causesEl.textContent = item.causes?.length ? item.causes.join('\n') : '';
+            causesEl.style.display = 'none';
+            itemNode.appendChild(causesEl);
 
-            const diagramButton = document.createElement('button');
-            diagramButton.type = 'button';
-            diagramButton.textContent = '関連図を描画';
-            diagramButton.className = 'diagram-button';
-            diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, itemNode, context));
-            itemNode.appendChild(diagramButton);
-
-            const diagramContainer = document.createElement('pre');
-            diagramContainer.className = 'mermaid mutual-dependency-diagram';
-            diagramContainer.style.display = 'none';
+            const diagramContainer = document.createElement('div');
+            diagramContainer.className = 'mutual-dependency-diagram';
             itemNode.appendChild(diagramContainer);
+
+            diagramButton.addEventListener('click', () => {
+                renderMutualDependencyDiagram(item, itemNode, context);
+                diagramButton.remove();
+            });
+
+            textButton.addEventListener('click', () => {
+                causesEl.style.display = '';
+                textButton.remove();
+            });
 
             list.appendChild(itemNode);
         });
         container.innerHTML = '';
-        details.appendChild(summary);
-        details.appendChild(list);
-        container.appendChild(details);
+        container.appendChild(heading);
+        container.appendChild(list);
     }
 
     function renderMutualDependencyDiagram(item, itemNode, context) {
@@ -402,11 +400,6 @@ const PackageApp = (() => {
             diagram.innerHTML = '';
             diagram.style.display = 'none';
             return;
-        }
-
-        const button = itemNode.querySelector('.diagram-button');
-        if (button) {
-            button.style.display = 'none';
         }
 
         diagram.style.display = 'block';

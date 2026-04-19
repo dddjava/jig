@@ -703,30 +703,27 @@ test.describe('package.js', () => {
                 );
 
                 assert.equal(container.style.display, '');
-                assert.equal(container.children.length, 1);
-                const details = container.children[0];
-                assert.equal(details.tagName, 'details');
-                // summary, list(ul)
-                assert.equal(details.children[0].tagName, 'summary');
-                assert.equal(details.children[1].tagName, 'ul');
+                assert.equal(container.children.length, 2);
+                // heading, list(ul)
+                assert.equal(container.children[0].tagName, 'h3');
+                assert.equal(container.children[1].tagName, 'ul');
 
-                const li = details.children[1].children[0];
-                assert.equal(li.children[0].className, 'pair');
+                const li = container.children[1].children[0];
+                const pairDiv = li.children[0];
+                assert.equal(pairDiv.className, 'pair');
+                assert.equal(pairDiv.children[1].className, 'diagram-button');
+                assert.equal(pairDiv.children[2].className, 'text-button');
                 assert.equal(li.children[1].className, 'causes');
-                assert.equal(li.children[2].className, 'diagram-button');
-                assert.equal(li.children[3].className, 'mermaid mutual-dependency-diagram');
+                assert.equal(li.children[1].style.display, 'none');
+                assert.equal(li.children[2].className, 'mutual-dependency-diagram');
             });
 
-            test('renderMutualDependencyDiagram: 描画後にボタンを非表示にする', () => {
+            test('renderMutualDependencyDiagram: ダイアグラムを描画する', () => {
                 const doc = setupDocument();
                 const itemNode = new Element('li', doc);
-                const diagram = new Element('pre', doc);
+                const diagram = new Element('div', doc);
                 diagram.className = 'mutual-dependency-diagram';
                 itemNode.appendChild(diagram);
-                const button = new Element('button', doc);
-                button.className = 'diagram-button';
-                button.style = {}; // Initialize style object
-                itemNode.appendChild(button);
 
                 const renderWithControls = test.mock.fn(() => {
                 });
@@ -735,8 +732,7 @@ test.describe('package.js', () => {
                 const item = {causes: ['a.A -> b.B']};
                 PackageApp.renderMutualDependencyDiagram(item, itemNode, testContext);
 
-                assert.equal(button.style.display, 'none');
-                assert.ok(diagram.style.display === 'block' || diagram.style.display === ''); // Mermaid rendering might change this
+                assert.ok(diagram.style.display === 'block' || diagram.style.display === '');
                 assert.equal(renderWithControls.mock.calls.length, 1);
             });
 

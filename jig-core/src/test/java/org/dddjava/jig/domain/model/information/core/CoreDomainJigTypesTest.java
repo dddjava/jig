@@ -34,8 +34,6 @@ class CoreDomainJigTypesTest {
         ));
         var actual = condition.coreDomainJigTypes(jigTypes).domainPackageRoots();
 
-        // FIXME
-        // assertEquals(List.of("com.example.domain.model"), actual);
         assertEquals(List.of("com.example.domain.model"), actual);
     }
 

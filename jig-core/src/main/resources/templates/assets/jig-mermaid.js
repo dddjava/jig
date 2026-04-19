@@ -1173,7 +1173,7 @@ globalThis.Jig.mermaid = (() => {
 
                 ensureCopySourceButton(container, currentSource);
                 ensureDownloadButton(container);
-                if (/^\s*(?:graph|flowchart)\s/m.test(currentSource)) {
+                if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
                     ensureDirectionButton(container, newDirection, renderDiagram);
                 }
 
@@ -1200,8 +1200,9 @@ globalThis.Jig.mermaid = (() => {
             let initialDirection = direction;
             if (!initialDirection) {
                 const text = diagramFn("LR");
-                const match = text?.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
-                initialDirection = match ? match[2] : "LR";
+                const graphMatch = text?.match(/^\s*(?:graph|flowchart)\s+(TB|TD|LR)\b/m);
+                const classDiagMatch = text?.match(/^\s*direction\s+(TB|LR)\b/m);
+                initialDirection = graphMatch?.[1] ?? classDiagMatch?.[1] ?? "LR";
             }
 
             renderDiagram(initialDirection);

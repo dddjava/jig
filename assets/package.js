@@ -4,46 +4,48 @@ const PackageApp = (() => {
     // 状態/DOMヘルパー
     // stateは「UI状態・設定値など長期的に保持する値」に限定する。
     // 一時的な中間データはstateに保存せず、関数内のローカル変数で扱う。
-    const state = {
+    const hierarchyState = {
         packageRelationCache: null,
         diagramNodeIdToFqn: new Map(),
         aggregationDepth: 0,
         packageFilterFqn: [],
-        focusCallerMode: '1', // '0':なし, '1':直接, '-1':すべて
-        focusCalleeMode: '1', // '0':なし, '1':直接, '-1':すべて
-        focusedPackageFqn: null,
+        hierarchyCollapsedPackages: [],
         diagramDirection: 'TB',
         mutualDependencyDiagramDirection: 'LR',
         transitiveReductionEnabled: true,
     };
 
-    const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
+    const exploreState = {
+        exploreTargetPackages: [],   // 指定したパッケージFQN[]（複数可）
+        exploreCollapsedPackages: [], // 折りたたみ中のパッケージFQN[]
+        exploreCallerMode: '1',      // '0':なし, '1':直接, '-1':すべて
+        exploreCalleeMode: '1',      // '0':なし, '1':直接, '-1':すべて
+        diagramNodeIdToFqn: new Map(),
+        diagramDirection: 'TB',
+    };
+
+    const HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
+    const EXPLORE_DIAGRAM_CLICK_HANDLER_NAME = 'explorePackageDiagram';
+    const TAB = {HIERARCHY: 'hierarchy', EXPLORE: 'explore'};
 
     const dom = {
-        getFocusTarget: () => document.getElementById('focus-target'),
-        setFocusTargetText: (element, text) => {
-            if (element) element.textContent = text;
-        },
-
-        getPackageTableBody: () => document.querySelector('#package-table tbody'),
-        getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
-        getPackageFilterInput: () => document.getElementById('package-filter-input'),
-        getApplyPackageFilterButton: () => document.getElementById('apply-package-filter'),
         getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
         getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
         getDepthSelect: () => document.getElementById('package-depth-select'),
         getDepthUpButton: () => document.getElementById('depth-up-button'),
         getDepthDownButton: () => document.getElementById('depth-down-button'),
-        getFocusCallerModeSelect: () => document.getElementById('focus-caller-mode-select'),
-        getFocusCalleeModeSelect: () => document.getElementById('focus-callee-mode-select'),
-        getClearFocusButton: () => document.getElementById('clear-focus'),
-        getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
-        getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
         getTransitiveReductionToggle: () => document.getElementById('transitive-reduction-toggle'),
         getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
         getDiagram: () => document.getElementById('package-relation-diagram'),
+        getExploreDiagram: () => document.getElementById('package-explore-diagram'),
+        getHierarchyPackageList: () => document.getElementById('hierarchy-package-table'),
+        getHierarchyListFilter: () => document.getElementById('hierarchy-list-filter'),
+        getExplorePackageList: () => document.getElementById('explore-package-table'),
+        getExploreListFilter: () => document.getElementById('explore-list-filter'),
+        getExploreClearSelectionButton: () => document.getElementById('explore-clear-selection'),
+        getExploreCallerModeRadios: () => document.querySelectorAll('input[name="explore-caller-mode"]'),
+        getExploreCalleeModeRadios: () => document.querySelectorAll('input[name="explore-callee-mode"]'),
         getDocumentBody: () => document.body,
-        getPackageDataScript: () => document.getElementById('package-data'),
     };
 
     // データ取得/整形
@@ -68,67 +70,47 @@ const PackageApp = (() => {
         return Jig.glossary.getTypeTerm(fqn).title;
     }
 
-    function getMaxPackageDepth(context) {
-        const {packages} = getPackageRelationData(context);
-        return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
+    function getMaxPackageDepth() {
+        const data = parsePackageRelationData(Jig.data.package.get() ?? {});
+        return data.packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
-    // 集計
-    function buildAggregationStats(packages, relations, maxDepth) {
-        const stats = new Map();
-        for (let depth = 0; depth <= maxDepth; depth += 1) {
-            const aggregatedPackages = new Set(packages.map(item => Jig.util.getAggregatedFqn(item.fqn, depth)));
-            const relationKeys = new Set();
-            relations.forEach(relation => {
-                const from = Jig.util.getAggregatedFqn(relation.from, depth);
-                const to = Jig.util.getAggregatedFqn(relation.to, depth);
-                if (from === to) return;
-                relationKeys.add(`${from}::${to}`);
-            });
-            stats.set(depth, {
-                packageCount: aggregatedPackages.size,
-                relationCount: relationKeys.size,
-            });
-        }
-        return stats;
-    }
+    function aggregatePackageData(packages, relations, depth) {
+        if (!depth || depth <= 0) return {packages, relations};
 
-    function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, focusedPackageFqn, maxDepth, aggregationDepth, focusCallerMode, focusCalleeMode) {
-        let filteredPackages = packageFilterFqn.length > 0
-            ? packages.filter(item => Jig.util.isWithinPackageFilters(item.fqn, packageFilterFqn))
-            : packages;
-        let filteredRelations = packageFilterFqn.length > 0
-            ? relations.filter(relation => Jig.util.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.util.isWithinPackageFilters(relation.to, packageFilterFqn))
-            : relations;
-
-        if (focusedPackageFqn) {
-            const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
-            const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
-            filteredPackages = filteredPackages.filter(item =>
-                focusSet.has(Jig.util.getAggregatedFqn(item.fqn, aggregationDepth))
-            );
-
-            const filterDirectRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
-                const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
-                return isCaller || isCallee;
-            };
-
-            const filterTransitiveRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                return focusSet.has(from) && focusSet.has(to);
-            };
-
-            if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
-                filteredRelations = filteredRelations.filter(filterTransitiveRelation);
-            } else if (focusCallerMode === '1' || focusCalleeMode === '1') {
-                filteredRelations = filteredRelations.filter(filterDirectRelation);
+        const packageMap = new Map();
+        packages.forEach(pkg => {
+            const aggFqn = Jig.util.getAggregatedFqn(pkg.fqn, depth);
+            if (!packageMap.has(aggFqn)) {
+                packageMap.set(aggFqn, {fqn: aggFqn, classCount: 0});
             }
-        }
-        return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
+            packageMap.get(aggFqn).classCount += (pkg.classCount ?? 0);
+        });
+
+        const relationKeys = new Set();
+        const aggregatedRelations = [];
+        relations.forEach(rel => {
+            const from = Jig.util.getAggregatedFqn(rel.from, depth);
+            const to = Jig.util.getAggregatedFqn(rel.to, depth);
+            if (from === to) return;
+            const key = `${from}::${to}`;
+            if (!relationKeys.has(key)) {
+                relationKeys.add(key);
+                aggregatedRelations.push({from, to});
+            }
+        });
+
+        return {packages: Array.from(packageMap.values()), relations: aggregatedRelations};
+    }
+
+    function filterByPackageFilter(packages, relations, packageFilterFqn) {
+        if (packageFilterFqn.length === 0) return {packages, relations};
+        return {
+            packages: packages.filter(pkg => Jig.util.isWithinPackageFilters(pkg.fqn, packageFilterFqn)),
+            relations: relations.filter(r =>
+                Jig.util.isWithinPackageFilters(r.from, packageFilterFqn) &&
+                Jig.util.isWithinPackageFilters(r.to, packageFilterFqn)),
+        };
     }
 
     // フィルタ/正規化
@@ -145,7 +127,7 @@ const PackageApp = (() => {
 
     function findDefaultPackageFilterCandidate(domainPackageRoots) {
         if (domainPackageRoots?.length) {
-            return domainPackageRoots.join('\n');
+            return domainPackageRoots;
         }
         return null;
     }
@@ -158,24 +140,6 @@ const PackageApp = (() => {
 
     function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
         return rowFqns.map(fqn => Jig.util.isWithinPackageFilters(fqn, packageFilterFqn));
-    }
-
-    function buildFocusRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, focusCallerMode, focusCalleeMode, focusedPackageFqn) {
-        if (!focusedPackageFqn) {
-            return rowFqns.map(rowFqn => Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn));
-        }
-
-        const filteredRelations = packageFilterFqn.length > 0
-            ? relations.filter(relation =>
-                Jig.util.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.util.isWithinPackageFilters(relation.to, packageFilterFqn)
-            )
-            : relations;
-        const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
-        const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
-        return rowFqns.map(rowFqn => {
-            const aggregatedRow = Jig.util.getAggregatedFqn(rowFqn, aggregationDepth);
-            return Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn) && focusSet.has(aggregatedRow);
-        });
     }
 
     function traverseGraph(root, adjacencyMap) {
@@ -254,68 +218,62 @@ const PackageApp = (() => {
         return focusSet;
     }
 
-    function filterFocusDiagramRelations(uniqueRelations, packageFqns, aggregatedRoot, aggregationDepth, focusCallerMode, focusCalleeMode) {
-        const nextVisibleSet = new Set(packageFqns);
-        let nextRelations = uniqueRelations;
-        if (aggregatedRoot) {
-            const focusSet = collectFocusSet(aggregatedRoot, uniqueRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
+    // 関連探索: 複数の起点からcaller/calleeセットを収集する
+    function collectExploreNodeSets(targetPackages, relations, callerMode, calleeMode) {
+        const targetSet = new Set(targetPackages);
+        const callerSet = new Set();
+        const calleeSet = new Set();
 
-            const filterDirectRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
-                const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
-                return isCaller || isCallee;
-            };
+        if (targetSet.size === 0) return {targetSet, callerSet, calleeSet};
 
-            const filterTransitiveRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                return focusSet.has(from) && focusSet.has(to);
-            };
-
-            if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
-                nextRelations = uniqueRelations.filter(filterTransitiveRelation);
-            } else if (focusCallerMode === '1' || focusCalleeMode === '1') {
-                nextRelations = uniqueRelations.filter(filterDirectRelation);
+        if (callerMode !== '0') {
+            if (callerMode === '1') {
+                relations.forEach(relation => {
+                    if (targetSet.has(relation.to)) callerSet.add(relation.from);
+                });
             } else {
-                nextRelations = uniqueRelations.filter(relation =>
-                    focusSet.has(Jig.util.getAggregatedFqn(relation.from, aggregationDepth)) &&
-                    focusSet.has(Jig.util.getAggregatedFqn(relation.to, aggregationDepth))
-                );
+                const reverseAdjacency = buildReverseAdjacency(relations, 0);
+                targetSet.forEach(target => {
+                    const callers = traverseGraph(target, reverseAdjacency);
+                    callers.forEach(caller => {
+                        if (!targetSet.has(caller)) callerSet.add(caller);
+                    });
+                });
             }
-
-            nextVisibleSet.clear();
-            focusSet.forEach(value => nextVisibleSet.add(value));
         }
-        nextRelations.forEach(relation => {
-            nextVisibleSet.add(relation.from);
-            nextVisibleSet.add(relation.to);
+
+        if (calleeMode !== '0') {
+            if (calleeMode === '1') {
+                relations.forEach(relation => {
+                    if (targetSet.has(relation.from)) calleeSet.add(relation.to);
+                });
+            } else {
+                const forwardAdjacency = buildForwardAdjacency(relations, 0);
+                targetSet.forEach(target => {
+                    const callees = traverseGraph(target, forwardAdjacency);
+                    callees.forEach(callee => {
+                        if (!targetSet.has(callee)) calleeSet.add(callee);
+                    });
+                });
+            }
+        }
+
+        // callerSet/calleeSet からターゲットを除外
+        targetSet.forEach(t => {
+            callerSet.delete(t);
+            calleeSet.delete(t);
         });
-        return {uniqueRelations: nextRelations, packageFqns: nextVisibleSet};
+
+        return {targetSet, callerSet, calleeSet};
     }
 
-    function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, focusedPackageFqn, aggregationDepth, focusCallerMode, focusCalleeMode, transitiveReductionEnabled) {
-        const base = Jig.mermaid.builder.buildVisibleDiagramRelations(
+    function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
+        return Jig.mermaid.builder.buildVisibleDiagramRelations(
             packages,
             relations,
             causeRelationEvidence,
             {packageFilterFqn, aggregationDepth, transitiveReductionEnabled}
         );
-        const aggregatedRoot = focusedPackageFqn ? Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
-        const {uniqueRelations, packageFqns} = filterFocusDiagramRelations(
-            base.uniqueRelations,
-            base.packageFqns,
-            aggregatedRoot,
-            aggregationDepth,
-            focusCallerMode,
-            focusCalleeMode
-        );
-        return {
-            uniqueRelations,
-            packageFqns,
-            filteredCauseRelationEvidence: base.filteredCauseRelationEvidence,
-        };
     }
 
     // テーブル描画
@@ -333,176 +291,12 @@ const PackageApp = (() => {
         }));
     }
 
-    function buildPackageTableRowSpecs(rows) {
-        return rows.map(item => ({
-            fqn: item.fqn,
-            name: getGlossaryTitle(item.fqn),
-            classCount: item.classCount,
-            incomingCount: item.incomingCount ?? 0,
-            outgoingCount: item.outgoingCount ?? 0,
-        }));
-    }
-
-    function buildPackageTableActionSpecs() {
-        return {
-            filter: {
-                ariaLabel: 'このパッケージで絞り込み',
-                screenReaderText: '絞り込み',
-            },
-            focus: {
-                ariaLabel: 'フォーカス',
-                screenReaderText: 'フォーカス',
-            },
-        };
-    }
-
-    function buildPackageTableRowElement(spec, applyFilter, applyFocusForRow) {
-        const tr = document.createElement('tr');
-        const actionSpecs = buildPackageTableActionSpecs();
-
-        const actionTd = document.createElement('td');
-        const actionButton = document.createElement('button');
-        actionButton.type = 'button';
-        actionButton.className = 'package-filter-icon';
-        actionButton.setAttribute('aria-label', actionSpecs.filter.ariaLabel);
-        const actionText = document.createElement('span');
-        actionText.className = 'screen-reader-only';
-        actionText.textContent = actionSpecs.filter.screenReaderText;
-        actionButton.appendChild(actionText);
-        actionButton.addEventListener('click', () => applyFilter(spec.fqn));
-        actionTd.appendChild(actionButton);
-        tr.appendChild(actionTd);
-
-        const focusTd = document.createElement('td');
-        const focusButton = document.createElement('button');
-        focusButton.type = 'button';
-        focusButton.className = 'focus-icon';
-        focusButton.setAttribute('aria-label', actionSpecs.focus.ariaLabel);
-        const focusText = document.createElement('span');
-        focusText.className = 'screen-reader-only';
-        focusText.textContent = actionSpecs.focus.screenReaderText;
-        focusButton.appendChild(focusText);
-        focusButton.addEventListener('click', () => applyFocusForRow(spec.fqn));
-        focusTd.appendChild(focusButton);
-        tr.appendChild(focusTd);
-
-        const fqnTd = document.createElement('td');
-        fqnTd.textContent = spec.fqn;
-        fqnTd.className = 'fqn';
-        tr.appendChild(fqnTd);
-
-        const nameTd = document.createElement('td');
-        nameTd.textContent = spec.name;
-        tr.appendChild(nameTd);
-
-        const glossaryTd = document.createElement('td');
-        glossaryTd.className = 'glossary-cell';
-        const glossaryLink = document.createElement('a');
-        glossaryLink.className = 'glossary-link-icon';
-        glossaryLink.href = `glossary.html#${encodeURIComponent(spec.fqn)}`;
-        glossaryLink.setAttribute('aria-label', '用語集');
-        const glossaryText = document.createElement('span');
-        glossaryText.className = 'screen-reader-only';
-        glossaryText.textContent = '用語集';
-        glossaryLink.appendChild(glossaryText);
-        glossaryTd.appendChild(glossaryLink);
-        tr.appendChild(glossaryTd);
-
-        const classCountTd = document.createElement('td');
-        classCountTd.textContent = String(spec.classCount);
-        classCountTd.className = 'number';
-        tr.appendChild(classCountTd);
-
-        const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(spec.incomingCount ?? 0);
-        incomingCountTd.className = 'number';
-        tr.appendChild(incomingCountTd);
-
-        const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(spec.outgoingCount ?? 0);
-        outgoingCountTd.className = 'number';
-        tr.appendChild(outgoingCountTd);
-
-        return tr;
-    }
-
-    function renderPackageTable(context) {
-        const {packages, relations} = getPackageRelationData(context);
-        const rows = buildPackageTableRowData(packages, relations);
-        const rowSpecs = buildPackageTableRowSpecs(rows);
-
-        const tbody = dom.getPackageTableBody();
-
-        const input = dom.getPackageFilterInput();
-        const applyFilter = fqn => {
-            if (input) {
-                input.value = fqn;
-            }
-            context.packageFilterFqn = normalizePackageFilterValue(input.value);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
-        };
-        const applyFocusForRow = fqn => {
-            setFocusAndRender(fqn, context);
-        };
-
-        rowSpecs.forEach(spec => {
-            const tr = buildPackageTableRowElement(spec, applyFilter, applyFocusForRow);
-            tbody.appendChild(tr);
-        });
-    }
-
-    function filterFocusTableRows(fqn, context) {
-        const rows = dom.getPackageTableRows();
-        const {relations} = getPackageRelationData(context);
-        const rowFqns = Array.from(rows, row => {
-            const fqnCell = row.querySelector('td.fqn');
-            return fqnCell ? fqnCell.textContent : '';
-        });
-        const visibility = buildFocusRowVisibility(
-            rowFqns,
-            relations,
-            context.packageFilterFqn,
-            context.aggregationDepth,
-            context.focusCallerMode,
-            context.focusCalleeMode,
-            fqn
-        );
-        rows.forEach((row, index) => {
-            row.classList.toggle('hidden', !visibility[index]);
-        });
-    }
-
-    function renderFocusLabel(context) {
-        const target = dom.getFocusTarget();
-        dom.setFocusTargetText(target, context.focusedPackageFqn ? context.focusedPackageFqn : '未選択');
-    }
-
-    function setFocusAndRender(fqn, context) {
-        context.focusedPackageFqn = fqn;
-        renderDiagramAndTable(context);
-        renderFocusLabel(context);
-    }
-
-    function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
-        if (typeof window === 'undefined') return;
-        window[DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
-            const fqn = context.diagramNodeIdToFqn.get(nodeId);
-            if (!fqn) return;
-            applyFocus(fqn, context);
-        };
-    }
-
-    function applyDefaultPackageFilterIfPresent(context) {
-        const input = dom.getPackageFilterInput();
-        if (!input || normalizePackageFilterValue(input.value).length) return false;
-        const {domainPackageRoots} = getPackageRelationData(context);
-        const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
-        if (!candidate) return false;
-        input.value = candidate;
-        context.packageFilterFqn = normalizePackageFilterValue(input.value);
-        renderDiagramAndTable(context);
-        return true;
+    function createNumberTd(value, countName) {
+        const td = document.createElement('td');
+        td.textContent = String(value ?? 0);
+        td.className = 'number';
+        if (countName) td.dataset.count = countName;
+        return td;
     }
 
     // 相互依存/依存関係の簡略表示
@@ -548,50 +342,9 @@ const PackageApp = (() => {
         summary.textContent = '相互依存と原因';
         const list = document.createElement('ul');
 
-        const settingsRow = document.createElement('div');
-        settingsRow.className = 'control-row';
-        const settingsLabel = document.createElement('span');
-        settingsLabel.className = 'control-label';
-        settingsLabel.textContent = '図の向き:';
-        settingsRow.appendChild(settingsLabel);
-
-        ['TB', 'LR'].forEach(direction => {
-            const label = document.createElement('label');
-            label.className = 'radio-label';
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = 'mutual-dependency-diagram-direction';
-            radio.value = direction;
-            radio.checked = context.mutualDependencyDiagramDirection === direction;
-            radio.addEventListener('change', () => {
-                if (radio.checked) {
-                    context.mutualDependencyDiagramDirection = direction;
-                    const itemsWithDiagram = Array.from(list.querySelectorAll('li')).filter(li => {
-                        const diag = li.querySelector('.mutual-dependency-diagram');
-                        return diag && diag.style.display !== 'none';
-                    });
-                    itemsWithDiagram.forEach(li => {
-                        const itemLabel = li.querySelector('.pair span').textContent;
-                        const item = items.find(i => i.pairLabel === itemLabel);
-                        if (item) {
-                            renderMutualDependencyDiagram(item, li, context);
-                        }
-                    });
-                }
-            });
-            label.appendChild(radio);
-            label.appendChild(document.createTextNode(direction === 'TB' ? ' 縦' : ' 横'));
-            settingsRow.appendChild(label);
-        });
-
-        const applyFilterAndRender = (fqnsString) => {
-            const input = dom.getPackageFilterInput();
-            if (input) {
-                input.value = fqnsString;
-            }
-            context.packageFilterFqn = normalizePackageFilterValue(fqnsString);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
+        const applyFilterAndRender = (fqns) => {
+            context.packageFilterFqn = fqns;
+            renderHierarchyDiagramAndTable(context);
         };
 
         items.forEach(item => {
@@ -608,7 +361,7 @@ const PackageApp = (() => {
             button.textContent = 'フィルタにセット';
             button.className = 'filter-button';
             const [package1, package2] = item.pairLabel.split(' <-> ');
-            button.addEventListener('click', () => applyFilterAndRender(`${package1}\n${package2}`));
+            button.addEventListener('click', () => applyFilterAndRender([package1, package2]));
             pairDiv.appendChild(button);
 
             itemNode.appendChild(pairDiv);
@@ -636,7 +389,6 @@ const PackageApp = (() => {
         });
         container.innerHTML = '';
         details.appendChild(summary);
-        details.appendChild(settingsRow);
         details.appendChild(list);
         container.appendChild(details);
     }
@@ -848,19 +600,19 @@ const PackageApp = (() => {
         return {source: lines.join('\n')};
     }
 
-    function renderPackageDiagram(context, packageFilterFqn, focusedPackageFqn) {
+    function renderHierarchyDiagram(context) {
         const diagram = dom.getDiagram();
         if (!diagram) return;
 
-        const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn);
-        applyDiagramRenderPlan(context, renderPlan);
+        const renderPlan = buildHierarchyDiagramRenderPlan(context);
+        applyHierarchyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
-        const generator = (dir) => buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, dir).source;
+        const generator = (dir) => buildHierarchyDiagramRenderPlan(context, dir).source;
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
     }
 
-    function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, direction = context.diagramDirection) {
+    function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection) {
         const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
         const {
             uniqueRelations,
@@ -870,16 +622,13 @@ const PackageApp = (() => {
             packages,
             relations,
             causeRelationEvidence,
-            packageFilterFqn,
-            focusedPackageFqn,
+            context.packageFilterFqn,
             context.aggregationDepth,
-            context.focusCallerMode,
-            context.focusCalleeMode,
             context.transitiveReductionEnabled
         );
         const {source, nodeIdToFqn, mutualPairs} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            {diagramDirection: direction, focusedPackageFqn, clickHandlerName: DIAGRAM_CLICK_HANDLER_NAME}
+            {diagramDirection: direction, clickHandlerName: HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME}
         );
         return {
             source,
@@ -890,7 +639,7 @@ const PackageApp = (() => {
         };
     }
 
-    function applyDiagramRenderPlan(context, renderPlan) {
+    function applyHierarchyDiagramRenderPlan(context, renderPlan) {
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
         renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
     }
@@ -900,50 +649,365 @@ const PackageApp = (() => {
         diagram.textContent = source;
     }
 
-    function renderDiagramAndTable(context) {
-        renderPackageDiagram(context, context.packageFilterFqn, context.focusedPackageFqn);
-        filterFocusTableRows(context.focusedPackageFqn, context);
-        renderAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
+    function renderHierarchyDiagramAndTable(context) {
+        renderHierarchyDiagram(context);
+        renderHierarchyPackageList(context);
+        renderAggregationDepthSelectOptions(getMaxPackageDepth(), context);
+        syncStateToURL();
+    }
+
+    // 関連探索ダイアグラム
+
+    function buildCollapsedSubpackageMap(selectedPackages) {
+        const tbody = dom.getExplorePackageList()?.querySelector('tbody');
+        if (!tbody) return new Map();
+        const selectedSet = new Set(selectedPackages);
+        // 最も近い祖先を優先するため長さ降順でソート
+        const sortedSelected = [...selectedPackages].sort((a, b) => b.length - a.length);
+        const map = new Map();
+        tbody.querySelectorAll('tr[data-fqn].hidden-by-collapse').forEach(tr => {
+            const fqn = tr.dataset.fqn;
+            if (selectedSet.has(fqn)) return;
+            const parent = sortedSelected.find(p => fqn.startsWith(p + '.'));
+            if (parent) map.set(fqn, parent);
+        });
+        return map;
+    }
+
+    function renderExploreDiagram(context) {
+        const diagram = dom.getExploreDiagram();
+        if (!diagram) {
+            syncStateToURL();
+            return;
+        }
+
+        const {relations} = getPackageRelationData(context);
+
+        const collapsedToParent = buildCollapsedSubpackageMap(context.exploreTargetPackages);
+        const effectiveTargets = [...context.exploreTargetPackages, ...collapsedToParent.keys()];
+
+        const {targetSet, callerSet, calleeSet} = collectExploreNodeSets(
+            effectiveTargets,
+            relations,
+            context.exploreCallerMode,
+            context.exploreCalleeMode
+        );
+
+        if (targetSet.size === 0) {
+            setDiagramSource(diagram, '');
+            diagram.innerHTML = '<span class="placeholder-text">対象パッケージを追加してください</span>';
+            syncStateToURL();
+            return;
+        }
+
+        const resolve = fqn => collapsedToParent.get(fqn) ?? fqn;
+        const resolvedTargetSet = new Set([...targetSet].map(resolve));
+        const resolvedCallerSet = new Set([...callerSet].map(resolve).filter(fqn => !resolvedTargetSet.has(fqn)));
+        const resolvedCalleeSet = new Set([...calleeSet].map(resolve).filter(fqn => !resolvedTargetSet.has(fqn)));
+
+        const visibleFqns = new Set([...resolvedTargetSet, ...resolvedCallerSet, ...resolvedCalleeSet]);
+
+        const seenRelations = new Set();
+        const visibleRelations = [];
+        relations.forEach(r => {
+            const from = resolve(r.from);
+            const to = resolve(r.to);
+            if (from === to) return;
+            if (!visibleFqns.has(from) || !visibleFqns.has(to)) return;
+            const key = `${from}::${to}`;
+            if (seenRelations.has(key)) return;
+            seenRelations.add(key);
+            visibleRelations.push({from, to});
+        });
+
+        const exploreOptions = (dir) => ({
+            targetFqns: resolvedTargetSet,
+            callerFqns: resolvedCallerSet,
+            calleeFqns: resolvedCalleeSet,
+            diagramDirection: dir,
+            clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+        });
+
+        const renderPlan = Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(context.diagramDirection));
+        setDiagramSource(diagram, renderPlan.source);
+        context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
+
+        const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir)).source;
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+        syncStateToURL();
+    }
+
+    function getRelativeFqn(fqn, fqnSet) {
+        const parts = fqn.split('.');
+        for (let i = parts.length - 1; i > 0; i--) {
+            const ancestor = parts.slice(0, i).join('.');
+            if (fqnSet.has(ancestor)) {
+                const relative = fqn.substring(ancestor.length + 1);
+                return {ancestor, relative};
+            }
+        }
+        return {ancestor: undefined, relative: fqn};
+    }
+
+    function renderPackageList(config) {
+        const container = config.getContainer();
+        if (!container) return;
+
+        // TBODYが既に存在する場合はクラスのみ更新する
+        const existingTbody = container.querySelector('tbody');
+        if (existingTbody) {
+            existingTbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
+                tr.classList.toggle('explore-target-selected', config.isSelected(tr.dataset.fqn));
+            });
+            return;
+        }
+
+        // 初回のみテーブルを構築する
+        const {packages, relations, domainPackageRoots} = getPackageRelationData(hierarchyState);
+        // domainPackageRoots に含まれるが packages にないものを追加する
+        const packageFqnSet = new Set(packages.map(p => p.fqn));
+        const allPackages = [
+            ...packages,
+            ...(domainPackageRoots ?? [])
+                .filter(fqn => !packageFqnSet.has(fqn))
+                .map(fqn => ({fqn, classCount: 0})),
+        ];
+        const rowDataMap = new Map(buildPackageTableRowData(allPackages, relations).map(r => [r.fqn, r]));
+        const sortedPackages = [...allPackages].sort((a, b) => a.fqn.localeCompare(b.fqn));
+
+        // ソート済みなので隣接する次のパッケージとのFQN前方一致で O(n) 判定
+        const hasChildrenSet = new Set();
+        for (let i = 0; i < sortedPackages.length - 1; i++) {
+            if (sortedPackages[i + 1].fqn.startsWith(sortedPackages[i].fqn + '.')) {
+                hasChildrenSet.add(sortedPackages[i].fqn);
+            }
+        }
+
+        const fqnSet = new Set(sortedPackages.map(p => p.fqn));
+        const collapsedSet = new Set(config.getCollapsedPackages());
+        const tbody = document.createElement('tbody');
+
+        function refreshCountDisplay(targetTr) {
+            const toggleBtn = targetTr.querySelector('.explore-collapse-toggle');
+            const isCollapsed = toggleBtn?.getAttribute('aria-expanded') === 'false';
+            const fqn = targetTr.dataset.fqn;
+            let classCount, incomingCount, outgoingCount;
+            if (!isCollapsed) {
+                ({classCount, incomingCount, outgoingCount} = rowDataMap.get(fqn));
+            } else {
+                classCount = 0; incomingCount = 0; outgoingCount = 0;
+                const prefix = fqn + '.';
+                rowDataMap.forEach((data, key) => {
+                    if (key === fqn || key.startsWith(prefix)) {
+                        classCount += data.classCount;
+                        incomingCount += data.incomingCount;
+                        outgoingCount += data.outgoingCount;
+                    }
+                });
+            }
+            targetTr.querySelector('td[data-count="class"]').textContent = String(classCount);
+            targetTr.querySelector('td[data-count="incoming"]').textContent = String(incomingCount);
+            targetTr.querySelector('td[data-count="outgoing"]').textContent = String(outgoingCount);
+        }
+
+        sortedPackages.forEach(pkg => {
+            const tr = document.createElement('tr');
+            tr.dataset.fqn = pkg.fqn;
+            const rowData = rowDataMap.get(pkg.fqn);
+            if (config.isSelected(pkg.fqn)) tr.classList.add('explore-target-selected');
+            if ([...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
+                tr.classList.add('hidden-by-collapse');
+            }
+
+            tr.addEventListener('click', () => config.onRowClick(pkg.fqn));
+
+            const toggleTd = document.createElement('td');
+            if (hasChildrenSet.has(pkg.fqn)) {
+                const toggleBtn = document.createElement('button');
+                const initiallyCollapsed = collapsedSet.has(pkg.fqn);
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'explore-collapse-toggle';
+                toggleBtn.textContent = initiallyCollapsed ? '▶' : '▼';
+                toggleBtn.setAttribute('aria-expanded', String(!initiallyCollapsed));
+                toggleBtn.setAttribute('aria-label', initiallyCollapsed ? '配下を展開' : '配下を折りたたむ');
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
+                    toggleBtn.setAttribute('aria-expanded', String(!collapsing));
+                    toggleBtn.textContent = collapsing ? '▶' : '▼';
+                    toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
+                    const childPrefix = pkg.fqn + '.';
+                    tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                        if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                            childTr.classList.toggle('hidden-by-collapse', collapsing);
+                        }
+                    });
+                    config.onCollapseChange(pkg.fqn, collapsing, childPrefix, tbody);
+                    refreshCountDisplay(tr);
+                    if (!collapsing) {
+                        tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                            if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                                refreshCountDisplay(childTr);
+                            }
+                        });
+                    }
+                });
+                toggleTd.appendChild(toggleBtn);
+            }
+            tr.appendChild(toggleTd);
+
+            const {ancestor, relative} = getRelativeFqn(pkg.fqn, fqnSet);
+            const depth = ancestor ? ancestor.split('.').length : 0;
+
+            const fqnTd = document.createElement('td');
+            fqnTd.textContent = relative;
+            fqnTd.title = pkg.fqn;
+            fqnTd.className = 'fqn';
+            fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
+            tr.appendChild(fqnTd);
+
+            const nameTd = document.createElement('td');
+            nameTd.textContent = getGlossaryTitle(pkg.fqn);
+            tr.appendChild(nameTd);
+
+            tr.appendChild(createNumberTd(rowData.classCount, 'class'));
+            tr.appendChild(createNumberTd(rowData.incomingCount, 'incoming'));
+            tr.appendChild(createNumberTd(rowData.outgoingCount, 'outgoing'));
+
+            tbody.appendChild(tr);
+        });
+
+        Array.from(tbody.children).forEach(tr => {
+            if (tr.querySelector('.explore-collapse-toggle')?.getAttribute('aria-expanded') === 'false') {
+                refreshCountDisplay(tr);
+            }
+        });
+        container.appendChild(tbody);
+
+        const filterInput = config.getFilterInput();
+        if (filterInput) {
+            filterInput.addEventListener('input', () => {
+                const filterText = filterInput.value.toLowerCase();
+                tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
+                    const matches = !filterText || tr.dataset.fqn.toLowerCase().includes(filterText);
+                    tr.classList.toggle('hidden', !matches);
+                });
+            });
+        }
+    }
+
+    function buildHierarchyListConfig(context) {
+        const config = {
+            getContainer: () => dom.getHierarchyPackageList(),
+            getFilterInput: () => dom.getHierarchyListFilter(),
+            getCollapsedPackages: () => context.hierarchyCollapsedPackages,
+            isSelected: (fqn) => context.packageFilterFqn.includes(fqn),
+            onRowClick: (fqn) => {
+                if (context.packageFilterFqn.includes(fqn)) {
+                    context.packageFilterFqn = context.packageFilterFqn.filter(p => p !== fqn);
+                } else {
+                    context.packageFilterFqn = [...context.packageFilterFqn, fqn];
+                }
+                renderHierarchyDiagramAndTable(context);
+            },
+            onCollapseChange: (fqn, collapsing) => {
+                if (collapsing) {
+                    context.hierarchyCollapsedPackages = [...context.hierarchyCollapsedPackages, fqn];
+                } else {
+                    context.hierarchyCollapsedPackages = context.hierarchyCollapsedPackages.filter(p => p !== fqn);
+                }
+                syncStateToURL();
+            },
+        };
+        return config;
+    }
+
+    function buildExploreListConfig(context) {
+        const config = {
+            getContainer: () => dom.getExplorePackageList(),
+            getFilterInput: () => dom.getExploreListFilter(),
+            getCollapsedPackages: () => context.exploreCollapsedPackages,
+            isSelected: (fqn) => context.exploreTargetPackages.includes(fqn),
+            onRowClick: (fqn) => {
+                if (context.exploreTargetPackages.includes(fqn)) {
+                    context.exploreTargetPackages = context.exploreTargetPackages.filter(p => p !== fqn);
+                } else {
+                    context.exploreTargetPackages = [...context.exploreTargetPackages, fqn];
+                }
+                renderPackageList(config);
+                renderExploreDiagram(context);
+            },
+            onCollapseChange: (fqn, collapsing, childPrefix, tbody) => {
+                const selectedSet = new Set(context.exploreTargetPackages);
+                if (collapsing) {
+                    const childrenSelected = context.exploreTargetPackages.some(t => t.startsWith(childPrefix));
+                    if (childrenSelected) {
+                        context.exploreTargetPackages = [
+                            ...context.exploreTargetPackages.filter(t => !t.startsWith(childPrefix)),
+                            ...(selectedSet.has(fqn) ? [] : [fqn]),
+                        ];
+                        renderPackageList(config);
+                    }
+                    context.exploreCollapsedPackages = [...context.exploreCollapsedPackages, fqn];
+                } else {
+                    const childFqnsToAdd = [];
+                    tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                        const childFqn = childTr.dataset.fqn;
+                        if (childFqn.startsWith(childPrefix) && selectedSet.has(fqn) && !selectedSet.has(childFqn)) {
+                            childFqnsToAdd.push(childFqn);
+                        }
+                    });
+                    if (childFqnsToAdd.length > 0) {
+                        context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqnsToAdd];
+                        renderPackageList(config);
+                    }
+                    context.exploreCollapsedPackages = context.exploreCollapsedPackages.filter(p => p !== fqn);
+                }
+                const affectsSelection = context.exploreTargetPackages.some(t =>
+                    t === fqn || t.startsWith(fqn + '.') || fqn.startsWith(t + '.')
+                );
+                if (affectsSelection) {
+                    renderExploreDiagram(context);
+                } else {
+                    syncStateToURL();
+                }
+            },
+        };
+        return config;
+    }
+
+    function renderHierarchyPackageList(context) {
+        renderPackageList(buildHierarchyListConfig(context));
+    }
+
+    function renderExplorePackageList(context) {
+        renderPackageList(buildExploreListConfig(context));
     }
 
     // UI配線
     function setupPackageFilterControl(context) {
-        const input = dom.getPackageFilterInput();
-        const applyButton = dom.getApplyPackageFilterButton();
         const clearPackageButton = dom.getClearPackageFilterButton();
         const resetButton = dom.getResetPackageFilterButton();
-        if (!input || !applyButton || !clearPackageButton) return;
 
-        let initialDefaultFilterValue = '';
+        const {domainPackageRoots} = getPackageRelationData(context);
+        const defaultFqns = findDefaultPackageFilterCandidate(domainPackageRoots) ?? [];
+
+        if (clearPackageButton) clearPackageButton.addEventListener('click', () => {
+            context.packageFilterFqn = [];
+            renderHierarchyDiagramAndTable(context);
+        });
+        if (resetButton) resetButton.addEventListener('click', () => {
+            context.packageFilterFqn = defaultFqns;
+            renderHierarchyDiagramAndTable(context);
+        });
+    }
+
+    function applyDefaultPackageFilterIfPresent(context) {
         const {domainPackageRoots} = getPackageRelationData(context);
         const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
-        if (candidate) {
-            initialDefaultFilterValue = candidate;
-        }
+        if (!candidate || !candidate.length) return;
 
-        const applyFilter = () => {
-            context.packageFilterFqn = normalizePackageFilterValue(input.value);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
-        };
-        const clearPackageFilter = () => {
-            input.value = '';
-            context.packageFilterFqn = [];
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
-        };
-        const resetPackageFilter = () => {
-            input.value = initialDefaultFilterValue;
-            context.packageFilterFqn = normalizePackageFilterValue(initialDefaultFilterValue);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
-        };
-
-        applyButton.addEventListener('click', applyFilter);
-        clearPackageButton.addEventListener('click', clearPackageFilter);
-        if (resetButton) {
-            resetButton.addEventListener('click', resetPackageFilter);
-        }
+        context.packageFilterFqn = candidate;
     }
 
     function updateDepthButtonStates(select, upButton, downButton) {
@@ -959,7 +1023,7 @@ const PackageApp = (() => {
     function setupAggregationDepthControl(context) {
         const select = dom.getDepthSelect();
         if (!select) return;
-        const maxDepth = getMaxPackageDepth(context);
+        const maxDepth = getMaxPackageDepth();
         renderAggregationDepthSelectOptions(maxDepth, context);
         select.value = String(context.aggregationDepth);
 
@@ -968,8 +1032,7 @@ const PackageApp = (() => {
 
         select.addEventListener('change', () => {
             context.aggregationDepth = normalizeAggregationDepthValue(select.value);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
+            renderHierarchyDiagramAndTable(context);
             renderAggregationDepthSelectOptions(maxDepth, context);
             updateDepthButtonStates(select, upButton, downButton);
         });
@@ -1003,18 +1066,7 @@ const PackageApp = (() => {
     function renderAggregationDepthSelectOptions(maxDepth, context) {
         const select = dom.getDepthSelect();
         if (!select) return;
-        const {packages, relations} = getPackageRelationData(context);
-        const aggregationStats = buildAggregationStatsForFilters(
-            packages,
-            relations,
-            context.packageFilterFqn,
-            context.focusedPackageFqn,
-            maxDepth,
-            context.aggregationDepth,
-            context.focusCallerMode,
-            context.focusCalleeMode
-        );
-        const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
+        const options = buildAggregationDepthOptions(maxDepth);
         renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
 
         const upButton = dom.getDepthUpButton();
@@ -1022,22 +1074,10 @@ const PackageApp = (() => {
         updateDepthButtonStates(select, upButton, downButton);
     }
 
-    function buildAggregationDepthOptions(aggregationStats, maxDepth) {
-        const options = [];
-        const noAggregationStats = aggregationStats.get(0);
-        options.push({
-            value: '0',
-            text: `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`,
-        });
+    function buildAggregationDepthOptions(maxDepth) {
+        const options = [{value: '0', text: '集約なし'}];
         for (let depth = 1; depth <= maxDepth; depth += 1) {
-            const stats = aggregationStats.get(depth);
-            if (!stats || stats.relationCount === 0) {
-                continue;
-            }
-            options.push({
-                value: String(depth),
-                text: `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`,
-            });
+            options.push({value: String(depth), text: `深さ${depth}`});
         }
         return options;
     }
@@ -1054,129 +1094,251 @@ const PackageApp = (() => {
         select.value = String(value);
     }
 
-    function setupFocusControl(context) {
-        const callerSelect = dom.getFocusCallerModeSelect();
-        const calleeSelect = dom.getFocusCalleeModeSelect();
-        const clearButton = dom.getClearFocusButton();
-        if (!callerSelect || !calleeSelect) return;
-
-        callerSelect.value = context.focusCallerMode;
-        calleeSelect.value = context.focusCalleeMode;
-
-        const applyFilter = () => {
-            if (context.focusedPackageFqn) {
-                renderDiagramAndTable(context);
-            }
-        };
-
-        callerSelect.addEventListener('change', () => {
-            context.focusCallerMode = callerSelect.value;
-            applyFilter();
-        });
-        calleeSelect.addEventListener('change', () => {
-            context.focusCalleeMode = calleeSelect.value;
-            applyFilter();
-        });
-
-        if (clearButton) {
-            clearButton.addEventListener('click', () => {
-                context.focusedPackageFqn = null;
-                context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
-                renderDiagramAndTable(context);
-                renderFocusLabel(context);
-            });
-        }
-    }
-
-    function setupDiagramDirectionControl(context) {
-        const radios = dom.getDiagramDirectionRadios();
-        radios.forEach(radio => {
-            if (radio.value === context.diagramDirection) {
-                radio.checked = true;
-            }
-            radio.addEventListener('change', () => {
-                if (!radio.checked) return;
-                context.diagramDirection = radio.value;
-                renderDiagramAndTable(context);
-            });
-        });
-    }
-
     function setupTransitiveReductionControl(context) {
         const checkbox = dom.getTransitiveReductionToggle();
         if (!checkbox) return;
         checkbox.checked = context.transitiveReductionEnabled;
         checkbox.addEventListener('change', () => {
             context.transitiveReductionEnabled = checkbox.checked;
-            renderDiagramAndTable(context);
+            renderHierarchyDiagramAndTable(context);
         });
+    }
+
+    function setupExploreControl(context) {
+        const clearButton = dom.getExploreClearSelectionButton();
+        const callerRadios = dom.getExploreCallerModeRadios();
+        const calleeRadios = dom.getExploreCalleeModeRadios();
+
+        if (clearButton) {
+            clearButton.addEventListener('click', () => {
+                context.exploreTargetPackages = [];
+                renderExplorePackageList(context);
+                renderExploreDiagram(context);
+            });
+        }
+
+        if (callerRadios.length > 0) {
+            callerRadios.forEach(radio => {
+                radio.checked = radio.value === context.exploreCallerMode;
+                radio.addEventListener('change', () => {
+                    if (!radio.checked) return;
+                    context.exploreCallerMode = radio.value;
+                    renderExploreDiagram(context);
+                });
+            });
+        }
+
+        if (calleeRadios.length > 0) {
+            calleeRadios.forEach(radio => {
+                radio.checked = radio.value === context.exploreCalleeMode;
+                radio.addEventListener('change', () => {
+                    if (!radio.checked) return;
+                    context.exploreCalleeMode = radio.value;
+                    renderExploreDiagram(context);
+                });
+            });
+        }
+    }
+
+    function registerHierarchyDiagramClickHandler(context) {
+        if (typeof window === 'undefined') return;
+        window[HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+            const fqn = context.diagramNodeIdToFqn.get(nodeId);
+            if (!fqn) return;
+            context.packageFilterFqn = [fqn];
+            renderHierarchyDiagramAndTable(context);
+        };
+    }
+
+    function registerExploreDiagramClickHandler(context) {
+        if (typeof window === 'undefined') return;
+        window[EXPLORE_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+            const fqn = context.diagramNodeIdToFqn.get(nodeId);
+            if (!fqn) return;
+            if (!context.exploreTargetPackages.includes(fqn)) {
+                context.exploreTargetPackages = [...context.exploreTargetPackages, fqn];
+                renderExplorePackageList(context);
+                renderExploreDiagram(context);
+            }
+        };
+    }
+
+    function renderTab(tabName) {
+        if (tabName === TAB.EXPLORE) {
+            renderExploreDiagram(exploreState);
+            renderExplorePackageList(exploreState);
+        } else if (tabName === TAB.HIERARCHY) {
+            renderHierarchyDiagramAndTable(hierarchyState);
+        }
+    }
+
+    function setupTabControl(onTabActivated) {
+        const tabs = document.querySelectorAll('.package-mode-tabs .tab-button');
+        const panels = document.querySelectorAll('.package-tab-panel');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('is-active'));
+                panels.forEach(p => p.classList.remove('is-active'));
+                tab.classList.add('is-active');
+                const panelId = `panel-${tab.dataset.tab}`;
+                const panel = document.getElementById(panelId);
+                if (panel) panel.classList.add('is-active');
+                onTabActivated(tab.dataset.tab);
+                syncStateToURL();
+            });
+        });
+    }
+
+    function syncStateToURL() {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams();
+        const activeTab = document.querySelector('.package-mode-tabs .tab-button.is-active')?.dataset.tab;
+
+        if (activeTab === TAB.EXPLORE) {
+            params.set('tab', TAB.EXPLORE);
+            exploreState.exploreTargetPackages.forEach(p => params.append('target', p));
+            exploreState.exploreCollapsedPackages.forEach(p => params.append('collapsed', p));
+            if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
+            if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
+        } else {
+            // デフォルトの hierarchy タブ
+            if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
+            hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
+            hierarchyState.hierarchyCollapsedPackages.forEach(p => params.append('hcollapsed', p));
+            if (!hierarchyState.transitiveReductionEnabled) params.set('reduction', 'false');
+        }
+
+        const queryString = params.toString();
+        const newURL = queryString
+            ? `${window.location.pathname}?${queryString}${window.location.hash}`
+            : `${window.location.pathname}${window.location.hash}`;
+        window.history.replaceState({}, '', newURL);
+    }
+
+    function loadStateFromURL() {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+
+        const depth = params.get('depth');
+        if (depth !== null) hierarchyState.aggregationDepth = Number(depth);
+
+        const filters = params.getAll('filter');
+        if (filters.length > 0) hierarchyState.packageFilterFqn = filters;
+
+        const hcollapsed = params.getAll('hcollapsed');
+        if (hcollapsed.length > 0) hierarchyState.hierarchyCollapsedPackages = hcollapsed;
+
+        const reduction = params.get('reduction');
+        if (reduction === 'false') hierarchyState.transitiveReductionEnabled = false;
+
+        const targets = params.getAll('target');
+        if (targets.length > 0) exploreState.exploreTargetPackages = targets;
+
+        const collapsed = params.getAll('collapsed');
+        if (collapsed.length > 0) exploreState.exploreCollapsedPackages = collapsed;
+
+        const caller = params.get('caller');
+        if (caller) exploreState.exploreCallerMode = caller;
+
+        const callee = params.get('callee');
+        if (callee) exploreState.exploreCalleeMode = callee;
+
+        const tab = params.get('tab');
+        if (tab) {
+            const tabButton = document.querySelector(`.package-mode-tabs .tab-button[data-tab="${tab}"]`);
+            if (tabButton) tabButton.click();
+        }
     }
 
     function init() {
         if (typeof document === 'undefined' || !document.body.classList.contains("package-relation")) return;
         Jig.dom.setupSortableTables();
-        renderPackageTable(state);
-        setupPackageFilterControl(state);
-        const {domainPackageRoots} = getPackageRelationData(state);
-        state.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
-        setupAggregationDepthControl(state);
-        setupFocusControl(state);
-        setupDiagramDirectionControl(state);
-        setupTransitiveReductionControl(state);
-        registerDiagramClickHandler(state);
-        const applied = applyDefaultPackageFilterIfPresent(state);
-        if (!applied) {
-            renderDiagramAndTable(state);
+        const renderedTabs = new Set();
+        setupTabControl(tabName => {
+            if (!renderedTabs.has(tabName)) {
+                renderedTabs.add(tabName);
+                renderTab(tabName);
+            }
+        });
+
+        // 階層探索の初期化
+        setupPackageFilterControl(hierarchyState);
+        const {domainPackageRoots} = getPackageRelationData(hierarchyState);
+        hierarchyState.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
+
+        // 関連探索の初期化（loadStateFromURL より前に行い、タブクリック時の描画を可能にする）
+        setupExploreControl(exploreState);
+        registerExploreDiagramClickHandler(exploreState);
+
+        loadStateFromURL();
+
+        setupAggregationDepthControl(hierarchyState);
+        setupTransitiveReductionControl(hierarchyState);
+        registerHierarchyDiagramClickHandler(hierarchyState);
+
+        if (hierarchyState.packageFilterFqn.length === 0) {
+            applyDefaultPackageFilterIfPresent(hierarchyState);
         }
-        renderFocusLabel(state);
+
+        // アクティブなタブのみ初期描画（loadStateFromURL のタブクリックで既に描画済みの場合はスキップ）
+        const activeTabName = document.querySelector('.package-mode-tabs .tab-button.is-active')?.dataset.tab ?? TAB.HIERARCHY;
+        if (!renderedTabs.has(activeTabName)) {
+            renderedTabs.add(activeTabName);
+            renderTab(activeTabName);
+        }
     }
 
     return {
         init,
-        state,
-        DIAGRAM_CLICK_HANDLER_NAME,
+        hierarchyState,
+        exploreState,
+        HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME,
+        EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+        TAB,
         dom,
+
+        syncStateToURL,
+        loadStateFromURL,
 
         // For testing
         getPackageRelationData,
         parsePackageRelationData,
         getGlossaryTitle,
         getMaxPackageDepth,
-        buildAggregationStats,
-        buildAggregationStatsForFilters,
+        aggregatePackageData,
+        filterByPackageFilter,
         normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,
         getInitialAggregationDepth,
         buildPackageRowVisibility,
-        buildFocusRowVisibility,
         collectFocusSet,
-        filterFocusDiagramRelations,
+        collectExploreNodeSets,
         buildVisibleDiagramElements,
         buildPackageTableRowData,
-        buildPackageTableRowSpecs,
-        buildPackageTableActionSpecs,
-        buildPackageTableRowElement,
-        renderPackageTable,
-        filterFocusTableRows,
-        renderFocusLabel,
-        setFocusAndRender,
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         renderMutualDependencyList,
         renderMutualDependencyDiagram,
         buildMutualDependencyDiagramSource,
-        renderPackageDiagram,
-        renderDiagramAndTable,
-        registerDiagramClickHandler,
+        renderHierarchyDiagram,
+        renderHierarchyDiagramAndTable,
+        buildHierarchyDiagramRenderPlan,
+        buildCollapsedSubpackageMap,
+        renderExploreDiagram,
+        renderHierarchyPackageList,
+        renderExplorePackageList,
+        registerHierarchyDiagramClickHandler,
+        registerExploreDiagramClickHandler,
         setupPackageFilterControl,
         setupAggregationDepthControl,
         renderAggregationDepthSelectOptions,
         buildAggregationDepthOptions,
         renderAggregationDepthOptionsIntoSelect,
-        setupFocusControl,
-        setupDiagramDirectionControl,
         setupTransitiveReductionControl,
+        setupExploreControl,
+        setupTabControl,
+        getRelativeFqn,
     };
 })();
 

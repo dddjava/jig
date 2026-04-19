@@ -785,7 +785,11 @@ globalThis.Jig.dom = (() => {
      */
     function createParameterElement(param, createTypeRefFn) {
         const fn = createTypeRefFn || createElementForTypeRef;
-        return createElement("span", {children: [param.name + ': ', fn(param.typeRef)]});
+        return createElement("span", {
+            children: param.nameSource === 'METHOD_PARAMETERS'
+                ? [param.name + ': ', fn(param.typeRef)]
+                : [fn(param.typeRef)]
+        });
     }
 
     /**
@@ -1182,7 +1186,6 @@ globalThis.Jig.mermaid = (() => {
          */
         function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
             const {diagramDirection, focusedPackageFqn, clickHandlerName, nodeClickUrlCallback} = options;
-            const escapeMermaidText = text => text.replace(/"/g, '\\"');
 
             // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
             const allParentFqns = buildParentFqns(packageFqns);
@@ -1241,6 +1244,78 @@ globalThis.Jig.mermaid = (() => {
             }
 
             return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+        }
+
+        /**
+         * 関連探索ダイアグラムのMermaidソースを生成する（ノード色分けあり）
+         * @param {Set<string>} packageFqns - 表示するパッケージFQNセット
+         * @param {Relation[]} uniqueRelations - 表示する関連
+         * @param {{targetFqns: Set<string>, callerFqns: Set<string>, calleeFqns: Set<string>, diagramDirection: string, clickHandlerName: string}} options
+         * @returns {{source: string, nodeIdToFqn: Map<string, string>}}
+         */
+        function buildExploreDiagramSource(packageFqns, uniqueRelations, options) {
+            const {targetFqns, callerFqns, calleeFqns, diagramDirection, clickHandlerName} = options;
+
+            const allParentFqns = buildParentFqns(packageFqns);
+            const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
+
+            const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
+                if (allParentFqns.has(fqn)) {
+                    // 明示的に選択されたターゲットは関連の有無によらず常に表示する
+                    if (targetFqns.has(fqn)) return true;
+                    return parentFqnsWithRelations.has(fqn);
+                }
+                return true;
+            }));
+
+            const lines = [
+                "---",
+                "config:",
+                "  theme: 'default'",
+                "  themeVariables:",
+                "    clusterBkg: '#ffffde'",
+                "---",
+                `graph ${diagramDirection}`];
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
+            const subgraphNodeIds = new Map();
+
+            const nodeLines = buildDiagramNodeLines(
+                packageFqnsToDisplay,
+                nodeIdByFqn,
+                {
+                    nodeIdToFqn,
+                    nodeLabelById,
+                    escapeMermaidText,
+                    clickHandlerName,
+                    parentFqnsWithRelations,
+                    subgraphNodeIds,
+                }
+            );
+            const {edgeLines, linkStyles} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
+
+            nodeLines.forEach(line => lines.push(line));
+            edgeLines.forEach(line => lines.push(line));
+            linkStyles.forEach(styleLine => lines.push(styleLine));
+
+            lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
+            lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
+            lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');
+            lines.push('classDef exploreCallee fill:#FFF0E6,stroke:#CC6600,stroke-width:2px');
+
+            // 各ノードにクラスを適用（優先度: target > caller > callee）
+            packageFqnsToDisplay.forEach(fqn => {
+                if (!nodeIdByFqn.has(fqn)) return;
+                const nodeId = nodeIdByFqn.get(fqn);
+                if (targetFqns && targetFqns.has(fqn)) {
+                    lines.push(`class ${nodeId} exploreTarget`);
+                } else if (callerFqns && callerFqns.has(fqn)) {
+                    lines.push(`class ${nodeId} exploreCaller`);
+                } else if (calleeFqns && calleeFqns.has(fqn)) {
+                    lines.push(`class ${nodeId} exploreCallee`);
+                }
+            });
+
+            return {source: lines.join('\n'), nodeIdToFqn};
         }
 
         /**
@@ -1522,6 +1597,7 @@ globalThis.Jig.mermaid = (() => {
             getNodeDefinition,
             edgeTypeForLength,
             buildMermaidDiagramSource,
+            buildExploreDiagramSource,
             buildDiagramNodeMaps,
             buildDiagramEdgeLines,
             buildDiagramNodeLines,
@@ -1738,6 +1814,16 @@ globalThis.Jig.mermaid = (() => {
         }
     })();
 
+    function renderMermaidDiagram(diagram) {
+        const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+        if (typeof renderResult.catch === 'function') {
+            renderResult.catch(error => {
+                console.error('Mermaid rendering error:', error);
+            });
+        }
+        return renderResult;
+    }
+
     const render = (() => {
         const DEFAULT_MAX_TEXT_SIZE = 50000;
         const EXTENDED_MAX_TEXT_SIZE = 200000;
@@ -1825,7 +1911,7 @@ globalThis.Jig.mermaid = (() => {
             diagram.classList.remove("too-large");
             diagram.innerHTML = source;
 
-            const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+            const renderResult = renderMermaidDiagram(diagram);
             if (renderResult && typeof renderResult.catch === "function") {
                 renderResult.catch(() => {
                     flashButtonLabel(button, "描画に失敗しました");
@@ -1833,7 +1919,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderTooLargeDiagram(diagram, source) {
+        function renderTooLargeDiagram(diagram, source, {messageText, onRender} = {}) {
             if (!diagram) return;
             diagram.classList.add("too-large");
             diagram.textContent = "";
@@ -1843,7 +1929,7 @@ globalThis.Jig.mermaid = (() => {
 
             const message = document.createElement("p");
             message.className = "mermaid-too-large__message";
-            message.textContent = "図の内容が大きすぎるため描画を省略しました。";
+            message.textContent = messageText ?? "図が大きいため表示を制限しています";
             container.appendChild(message);
 
             const actions = document.createElement("div");
@@ -1853,17 +1939,24 @@ globalThis.Jig.mermaid = (() => {
             renderButton.type = "button";
             renderButton.textContent = "上限を上げて描画する";
             renderButton.addEventListener("click", () => {
-                renderWithExtendedLimit(diagram, source, renderButton);
+                if (typeof onRender === "function") {
+                    onRender(renderButton);
+                } else {
+                    renderWithExtendedLimit(diagram, source, renderButton);
+                }
             });
             actions.appendChild(renderButton);
 
-            const copyButton = document.createElement("button");
-            copyButton.type = "button";
-            copyButton.textContent = "図の内容をコピー";
-            copyButton.addEventListener("click", () => {
-                copyMermaidText(source, copyButton);
+            const textButton = document.createElement("button");
+            textButton.type = "button";
+            textButton.textContent = "テキストで表示";
+            textButton.addEventListener("click", () => {
+                const pre = document.createElement("pre");
+                pre.textContent = source;
+                diagram.textContent = "";
+                diagram.appendChild(pre);
             });
-            actions.appendChild(copyButton);
+            actions.appendChild(textButton);
 
             container.appendChild(actions);
             diagram.appendChild(container);
@@ -2008,7 +2101,8 @@ globalThis.Jig.mermaid = (() => {
                 startOnLoad: false,
                 securityLevel: "loose",
                 maxTextSize: DEFAULT_MAX_TEXT_SIZE,
-                maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES
+                maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES,
+                suppressErrorRendering: true
             };
         }
 
@@ -2018,6 +2112,7 @@ globalThis.Jig.mermaid = (() => {
             const text = source != null ? String(source) : "";
             diagramEl.removeAttribute("data-processed");
             diagramEl.style.display = "";
+            diagramEl.classList.remove("too-large");
             setEdgeWarning(container, {visible: false});
 
             if (isTooLarge(text)) {
@@ -2031,22 +2126,16 @@ globalThis.Jig.mermaid = (() => {
             }
 
             try {
-                const result = globalThis.mermaid.run({nodes: [diagramEl]});
+                const result = renderMermaidDiagram(diagramEl);
                 if (result && typeof result.catch === "function") {
                     result.catch((err) => {
                         const message = err && err.message ? err.message : String(err);
                         if (message.includes("Edge limit exceeded")) {
                             const edgeCount = estimateEdgeCount(text);
                             const actionEdges = Math.max(edgeCount, DEFAULT_MAX_EDGES * 2);
-                            diagramEl.style.display = "none";
-                            setEdgeWarning(container, {
-                                visible: true,
-                                message: [
-                                    "関連数が多すぎるため描画を省略しました。",
-                                    `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
-                                    "描画する場合はボタンを押してください。"
-                                ].join("\n"),
-                                onAction: () => renderMermaidNode(diagramEl, text, actionEdges, container)
+                            renderTooLargeDiagram(diagramEl, text, {
+                                messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
+                                onRender: () => renderMermaidNode(diagramEl, text, actionEdges, container)
                             });
                         } else {
                             diagramEl.style.display = "none";
@@ -2099,15 +2188,10 @@ globalThis.Jig.mermaid = (() => {
 
                 const edgeCount = estimateEdgeCount(currentSource);
                 if (edgeCount > DEFAULT_MAX_EDGES) {
-                    diagramEl.style.display = "none";
-                    setEdgeWarning(container, {
-                        visible: true,
-                        message: [
-                            "関連数が多すぎるため描画を省略しました。",
-                            `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
-                            "描画する場合はボタンを押してください。"
-                        ].join("\n"),
-                        onAction: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
+                    setEdgeWarning(container, {visible: false});
+                    renderTooLargeDiagram(diagramEl, currentSource, {
+                        messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
+                        onRender: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
                     });
                     return;
                 }
@@ -2130,7 +2214,9 @@ globalThis.Jig.mermaid = (() => {
          */
         function setupLazyMermaidRender() {
             if (typeof window === "undefined" || !window.mermaid) return;
-            if (document.body.classList.contains("package-summary")) return;
+
+            // 一覧で図を表示しないドキュメントでは不要
+            if (document.body.classList.contains("package-relation")) return;
 
             const diagrams = Array.from(document.querySelectorAll(".mermaid"));
             if (diagrams.length === 0) return;
@@ -2171,7 +2257,7 @@ globalThis.Jig.mermaid = (() => {
                 }
 
                 diagram.innerHTML = source;
-                const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+                const renderResult = renderMermaidDiagram(diagram);
                 const handleFinish = () => {
                     rendered.add(diagram);
                     queued.delete(diagram);

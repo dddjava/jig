@@ -110,7 +110,7 @@ const UsecaseApp = (() => {
                 if (!relation?.from || !relation?.to) return;
                 const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
                 if (diagramContext.methodMap.has(callerClassFqn)) return;
-                addReverseCaller(relation.to, {fqn: callerClassFqn, kind: "inbound-class"});
+                addReverseCaller(relation.to, {fqn: relation.from, kind: "inbound-method"});
             });
         });
 
@@ -218,14 +218,13 @@ const UsecaseApp = (() => {
                     }
                 } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
                     if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const classFqn = getClassFqnFromMethodFqn(calleeFqn);
-                    const edgeKey = effectiveCallerFqn + '\u2192' + classFqn;
+                    const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
-                        edges.push({from: effectiveCallerFqn, to: classFqn});
+                        edges.push({from: effectiveCallerFqn, to: calleeFqn});
                     }
-                    if (!nodes.has(classFqn)) {
-                        nodes.set(classFqn, {fqn: classFqn, kind: "outbound"});
+                    if (!nodes.has(calleeFqn)) {
+                        nodes.set(calleeFqn, {fqn: calleeFqn, kind: "outbound-method"});
                     }
                 }
             }
@@ -786,20 +785,31 @@ const UsecaseApp = (() => {
                             const classSubgraphs = new Map();
                             currentUsecaseDiagram.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "outbound" || node.kind === "inbound-class" || node.kind === "domain-type") {
-                                    // 外部ポート / inboundクラス / ドメインモデル
+                                if (node.kind === "inbound-method") {
+                                    // inboundメソッド: クラス単位でsubgraphにグルーピング
+                                    const classFqn = getClassFqnFromMethodFqn(node.fqn);
+                                    const classNodeId = Jig.util.fqnToId("sg", classFqn);
+                                    const classLabel = Jig.glossary.getTypeTerm(classFqn).title;
+                                    const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel, 'LR');
+                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                    builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
+                                    builder.addClass(nodeId, "inbound");
+                                    builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
+                                } else if (node.kind === "outbound-method") {
+                                    // outboundメソッド: クラス単位でsubgraphにグルーピング
+                                    const classFqn = getClassFqnFromMethodFqn(node.fqn);
+                                    const classNodeId = Jig.util.fqnToId("sg", classFqn);
+                                    const classLabel = Jig.glossary.getTypeTerm(classFqn).title;
+                                    const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel, 'LR');
+                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                    builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
+                                    builder.addClass(nodeId, "outbound");
+                                    builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
+                                } else if (node.kind === "domain-type") {
                                     const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, 'class');
-                                    if (node.kind === "inbound-class") {
-                                        builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
-                                    } else if (node.kind === "outbound") {
-                                        builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", node.fqn));
-                                    } else if (node.kind === "domain-type") {
-                                        builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
-                                    }
+                                    builder.addClass(nodeId, "domain");
+                                    builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);
@@ -860,7 +870,7 @@ const UsecaseApp = (() => {
                 const depends = Jig.dom.createElement("div", {className: "depends"});
                 if (method.parameters.length > 0) {
                     const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
-                    parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "要求するもの（引数）"}));
+                    parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "入力"}));
                     method.parameters.forEach(param => {
                         parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.parameterElement(param)]}));
                     });
@@ -868,7 +878,7 @@ const UsecaseApp = (() => {
                 }
                 if (method.returnTypeRef.fqn !== 'void') {
                     const returnSection = Jig.dom.createElement("section", {className: "depends-section"});
-                    returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "得られるもの（戻り値）"}));
+                    returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "出力"}));
                     returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
                     depends.appendChild(returnSection);
                 }

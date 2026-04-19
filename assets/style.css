@@ -156,7 +156,8 @@ header a {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1em 2em;
     display: none;
-    overflow: auto;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 #jig-document-help-panel.is-active {
@@ -947,7 +948,7 @@ label {
 /* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */
 
 /* パッケージ概要の表示設定 */
-.package-relation details.controls,
+.package-relation .controls,
 .package-relation details.usage {
     background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
     border: 1px solid #ccc;
@@ -959,7 +960,7 @@ label {
     max-width: 980px;
 }
 
-.package-relation details.controls summary,
+.package-relation .controls summary,
 .package-relation details.usage summary {
     list-style: none;
     cursor: pointer;
@@ -967,49 +968,28 @@ label {
     font-weight: 600;
 }
 
-.package-relation details.controls > :not(summary),
+.package-relation .controls > *,
 .package-relation details.usage > :not(summary) {
     display: block;
     margin: 8px 0;
 }
 
-.package-relation details.controls .control-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.package-relation details.controls .focus-group {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* スペースを調整 */
-}
-
-.package-relation details.controls .control-label {
-    font-weight: 600;
-}
-
-.package-relation details.controls .radio-label {
+.package-relation .controls .radio-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
-.package-relation details.controls input[type="text"],
-.package-relation details.controls select {
+.package-relation .controls input[type="text"],
+.package-relation .controls select {
     padding: 6px 8px;
     border: 1px solid #bbb;
     border-radius: 6px;
     background-color: #fff;
 }
 
-.package-relation details.controls input[type="text"],
-.package-relation details.controls textarea {
-    min-width: 50ch;
-}
 
-.package-relation details.controls button {
+.package-relation .controls button {
     padding: 6px 10px;
     border: 1px solid #888;
     border-radius: 6px;
@@ -1017,19 +997,19 @@ label {
     cursor: pointer;
 }
 
-.package-relation details.controls #depth-up-button,
-.package-relation details.controls #depth-down-button {
+.package-relation .controls #depth-up-button,
+.package-relation .controls #depth-down-button {
     padding: 4px 8px;
     min-width: 32px;
     font-size: 14px;
     line-height: 1;
 }
 
-.package-relation details.controls button:hover {
+.package-relation .controls button:hover {
     background-color: #e6e6e6;
 }
 
-.package-relation details.controls .note {
+.package-relation .controls .note {
     font-size: 0.9em;
     color: #555;
 }
@@ -1098,6 +1078,7 @@ label {
     display: flex;
     justify-content: center;
     overflow: auto;
+    max-height: 50vh;
 }
 
 .package-relation #package-relation-diagram svg {
@@ -1172,18 +1153,130 @@ label {
 }
 
 @media (max-width: 720px) {
-    .package-relation details.controls .control-row {
+    .package-relation .controls .control-row {
         align-items: flex-start;
     }
 
-    .package-relation details.controls .control-label {
+    .package-relation .controls .control-label {
         width: 100%;
     }
 
-    .package-relation details.controls input[type="text"],
-    .package-relation details.controls select {
+    .package-relation .controls input[type="text"],
+    .package-relation .controls select {
         width: 100%;
     }
+}
+
+.package-relation .package-mode-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.package-relation .tab-button {
+    padding: 8px 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px 4px 0 0;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+
+.package-relation .tab-button:hover {
+    background-color: #dee2e6;
+}
+
+.package-relation .tab-button.is-active {
+    background-color: #fff;
+    border-color: #dee2e6;
+    border-bottom-color: #fff;
+    font-weight: 600;
+}
+
+.package-relation .package-tab-panel {
+    display: none;
+}
+
+.package-relation .package-tab-panel.is-active {
+    display: block;
+}
+
+.package-relation .controls select[multiple] {
+    min-width: 30ch;
+    max-width: 60ch;
+}
+
+.package-relation .explore-list-filter-row {
+    margin-top: 12px;
+}
+
+.package-relation .explore-list-filter-row input[type="text"] {
+    min-width: 30ch;
+}
+
+.package-relation #explore-package-list,
+.package-relation #hierarchy-package-list {
+    margin-top: 8px;
+}
+
+.package-relation #explore-package-table,
+.package-relation #hierarchy-package-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.package-relation #explore-package-table tbody tr,
+.package-relation #hierarchy-package-table tbody tr {
+    cursor: pointer;
+}
+
+.package-relation #explore-package-table tbody tr:hover,
+.package-relation #hierarchy-package-table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+.package-relation #explore-package-table tbody tr.explore-target-selected,
+.package-relation #hierarchy-package-table tbody tr.explore-target-selected {
+    background-color: #ffffce;
+}
+
+.package-relation #explore-package-table tbody tr.hidden-by-collapse,
+.package-relation #hierarchy-package-table tbody tr.hidden-by-collapse {
+    display: none;
+}
+
+.package-relation .explore-collapse-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 0.75em;
+    color: #666;
+    line-height: 1;
+}
+
+.package-relation .explore-collapse-toggle:hover {
+    color: #000;
+}
+
+.package-relation #package-explore-diagram {
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    max-height: 50vh;
+}
+
+.package-relation #package-explore-diagram svg {
+    margin: 0 auto;
+}
+
+.package-relation .placeholder-text {
+    color: #888;
+    font-style: italic;
+    padding: 20px;
+    display: block;
+    text-align: center;
+    font-size: 1rem; /* pre.mermaid が font-size: 0 を設定するため上書きが必要 */
 }
 
 .insight table {

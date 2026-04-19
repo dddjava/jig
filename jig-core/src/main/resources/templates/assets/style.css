@@ -590,8 +590,18 @@ body.hide-usecase-details .depends {
 
 .diagram-panel-options {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 12px;
     padding: 4px 0;
+    border: none;
+    margin: 0;
+}
+
+.diagram-panel-options > legend {
+    width: 100%;
+    font-size: 0.8em;
+    color: var(--color-text-secondary, #666);
 }
 
 .diagram-panel-option {

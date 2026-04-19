@@ -752,9 +752,10 @@ const DomainApp = (() => {
                         attributes: {type: "checkbox", class: "class-relation-external-incoming"}
                     });
                     incomingCheckbox.checked = true;
-                    panels['inner-class'].appendChild(Jig.dom.createElement("div", {
+                    panels['inner-class'].appendChild(Jig.dom.createElement("fieldset", {
                         className: "diagram-panel-options",
                         children: [
+                            Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
                             Jig.dom.createElement("label", {
                                 className: "diagram-panel-option",
                                 children: [outgoingCheckbox, document.createTextNode("関連先")]

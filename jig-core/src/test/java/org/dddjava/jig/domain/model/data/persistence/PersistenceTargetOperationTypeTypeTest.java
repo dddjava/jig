@@ -64,19 +64,19 @@ class PersistenceTargetOperationTypeTypeTest {
     void コロン付きパラメータのfromをテーブル名として誤検出しない() {
         // Spring Data JDBCの :from パラメータが FROM キーワードと誤認識されないこと
         String sql = "SELECT * FROM hoge WHERE id IN (:idList) AND date BETWEEN :from AND :to";
-        Query query = Query.from(sql);
-        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        Map<String, PersistenceOperationType> result = extractTypeMap(sql, PersistenceOperationType.SELECT);
 
-        assertEquals("[hoge]", targets.asText());
+        assertEquals(1, result.size());
+        assertEquals(PersistenceOperationType.SELECT, result.get("hoge"));
     }
 
     @Test
     void nextvalはサブクエリパターンの影響を受けない() {
         String sql = "SELECT nextval('seq_name')";
-        Query query = Query.from(sql);
-        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        Map<String, PersistenceOperationType> result = extractTypeMap(sql, PersistenceOperationType.SELECT);
 
-        assertEquals("[nextval('seq_name')]", targets.asText());
+        assertEquals(1, result.size());
+        assertEquals(PersistenceOperationType.SELECT, result.get("nextval('seq_name')"));
     }
 
     @Test
@@ -95,24 +95,22 @@ class PersistenceTargetOperationTypeTypeTest {
     void EXISTSサブクエリからテーブル名を正しく抽出する() {
         // EXISTS(SELECT ... FROM table FOR UPDATE OF "table") の形式
         String sql = "SELECT exists(SELECT 1 FROM hoge WHERE journey_id = :xxxxId FOR UPDATE OF \"hoge\")";
-        Query query = Query.from(sql);
-        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        Map<String, PersistenceOperationType> result = extractTypeMap(sql, PersistenceOperationType.SELECT);
 
-        assertEquals("[hoge]", targets.asText());
+        assertEquals(1, result.size());
+        assertEquals(PersistenceOperationType.SELECT, result.get("hoge"));
     }
 
     @Test
     void テーブル名の引用符は除去される() {
         String sql = "SELECT * FROM \"hoge\".\"fuga\" WHERE id = 1";
-        Query query = Query.from(sql);
-        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
-
-        assertEquals("[hoge.fuga]", targets.asText());
+        Map<String, PersistenceOperationType> result1 = extractTypeMap(sql, PersistenceOperationType.SELECT);
+        assertEquals(1, result1.size());
+        assertEquals(PersistenceOperationType.SELECT, result1.get("hoge.fuga"));
 
         String mysqlSql = "SELECT * FROM `db`.`table` WHERE id = 1";
-        Query query2 = Query.from(mysqlSql);
-        PersistenceTargetOperationTypes targets2 = PersistenceOperationType.SELECT.extractTable(query2, DUMMY_ID);
-
-        assertEquals("[db.table]", targets2.asText());
+        Map<String, PersistenceOperationType> result2 = extractTypeMap(mysqlSql, PersistenceOperationType.SELECT);
+        assertEquals(1, result2.size());
+        assertEquals(PersistenceOperationType.SELECT, result2.get("db.table"));
     }
 }

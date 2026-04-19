@@ -5,6 +5,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceTargetOperationTypes;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ import stub.infrastructure.datasource.trace.TraceHelper;
 import stub.infrastructure.datasource.trace.TraceMapper;
 import stub.infrastructure.datasource.trace.TraceOutboundAdapter;
 import testing.JigTest;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -78,7 +81,7 @@ class OutboundAdapterExecutionTest {
                 .orElseThrow();
 
         assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
-        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.targetOperationTypes().asText());
+        assertEquals(List.of("spring_data_table_name"), tableNames(persistenceAccessorOperation.targetOperationTypes()));
     }
 
     @Test
@@ -97,6 +100,13 @@ class OutboundAdapterExecutionTest {
                 .orElseThrow();
 
         assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
-        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.targetOperationTypes().asText());
+        assertEquals(List.of("spring_data_table_name"), tableNames(persistenceAccessorOperation.targetOperationTypes()));
+    }
+
+    private static List<String> tableNames(PersistenceTargetOperationTypes types) {
+        return types.persistenceTargets().stream()
+                .map(t -> t.persistenceTarget().name())
+                .sorted()
+                .toList();
     }
 }

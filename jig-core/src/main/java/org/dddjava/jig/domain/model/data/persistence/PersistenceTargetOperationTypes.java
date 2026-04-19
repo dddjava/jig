@@ -3,8 +3,6 @@ package org.dddjava.jig.domain.model.data.persistence;
 import java.util.Collection;
 import java.util.Collections;
 
-import static java.util.stream.Collectors.joining;
-
 /**
  * 永続化操作対象群
  */
@@ -17,16 +15,5 @@ public record PersistenceTargetOperationTypes(Collection<PersistenceTargetOperat
 
     public PersistenceTargetOperationTypes(PersistenceTargetOperationType persistenceTarget) {
         this(Collections.singletonList(persistenceTarget));
-    }
-
-    // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。
-    public String asText() {
-        // 文字列としてユニーク。ソートされてるのは自然なのでメソッド名に含めない。
-        return persistenceTargets.stream()
-                .map(PersistenceTargetOperationType::persistenceTarget)
-                .map(PersistenceTarget::name)
-                .distinct()
-                .sorted()
-                .collect(joining(", ", "[", "]"));
     }
 }

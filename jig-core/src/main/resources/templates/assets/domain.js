@@ -365,7 +365,7 @@ const DomainApp = (() => {
 
             const domainType = typesMap?.get(fqn);
             (domainType?.fields || []).forEach(f => {
-                builder.addField(nodeId, Jig.glossary.typeSimpleName(f.typeRef.fqn), f.name);
+                builder.addField(nodeId, typeNameWithGenerics(f.typeRef), f.name);
             });
             (domainType?.methods || []).forEach(m => {
                 const {name, params, returnType} = parseMethodInfo(m);
@@ -383,14 +383,20 @@ const DomainApp = (() => {
         return builder.build(direction);
     }
 
+    function typeNameWithGenerics(typeRef) {
+        const baseName = Jig.glossary.typeSimpleName(typeRef.fqn);
+        if (!typeRef.typeArgumentRefs?.length) return baseName;
+        return `${baseName}~${typeRef.typeArgumentRefs.map(typeNameWithGenerics).join(', ')}~`;
+    }
+
     function parseMethodInfo(method) {
         const hashIdx = method.fqn.lastIndexOf('#');
         const parenIdx = method.fqn.indexOf('(', hashIdx);
         const name = parenIdx > 0
             ? method.fqn.substring(hashIdx + 1, parenIdx)
             : method.fqn.substring(hashIdx + 1);
-        const params = (method.parameters || []).map(p => Jig.glossary.typeSimpleName(p.typeRef.fqn));
-        const returnType = method.returnTypeRef ? Jig.glossary.typeSimpleName(method.returnTypeRef.fqn) : '';
+        const params = (method.parameters || []).map(p => typeNameWithGenerics(p.typeRef));
+        const returnType = method.returnTypeRef ? typeNameWithGenerics(method.returnTypeRef) : '';
         return {name, params, returnType};
     }
 

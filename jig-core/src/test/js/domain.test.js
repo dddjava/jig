@@ -594,5 +594,62 @@ test.describe('domain.js', () => {
             const idB = Jig.util.fqnToId("n", 'org.example.B');
             assert.ok(result.includes(`${idA} ..|> ${idB}`), `継承クラスが優先されること: ${result}`);
         });
+
+        test('フィールドのジェネリクス型が ~ 構文で表示される', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [{name: 'items', typeRef: {fqn: 'java.util.List', typeArgumentRefs: [{fqn: 'org.example.B'}]}}],
+                    methods: [], staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['フィールド型']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            assert.ok(result.includes('List~B~'), `フィールドにジェネリクスが含まれること: ${result}`);
+        });
+
+        test('メソッド戻り値のジェネリクス型が ~ 構文で表示される', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [],
+                    methods: [{
+                        fqn: 'org.example.A#getItems()',
+                        visibility: 'PUBLIC',
+                        parameters: [],
+                        returnTypeRef: {fqn: 'java.util.Optional', typeArgumentRefs: [{fqn: 'org.example.B'}]}
+                    }],
+                    staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['メソッド戻り値']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            assert.ok(result.includes('Optional~B~'), `メソッド戻り値にジェネリクスが含まれること: ${result}`);
+        });
+
+        test('メソッドパラメータのジェネリクス型が ~ 構文で表示される', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [],
+                    methods: [{
+                        fqn: 'org.example.A#process()',
+                        visibility: 'PUBLIC',
+                        parameters: [{typeRef: {fqn: 'java.util.List', typeArgumentRefs: [{fqn: 'org.example.B'}]}}],
+                        returnTypeRef: {fqn: 'void'}
+                    }],
+                    staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['メソッド引数']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            assert.ok(result.includes('List~B~'), `メソッドパラメータにジェネリクスが含まれること: ${result}`);
+        });
     });
 });

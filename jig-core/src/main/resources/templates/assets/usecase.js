@@ -515,10 +515,6 @@ const UsecaseApp = (() => {
         const section = Jig.dom.createElement("section", {
             className: "in-page-sidebar__section",
             children: [
-                Jig.dom.createElement("p", {
-                    className: "in-page-sidebar__title",
-                    textContent: "ユースケース"
-                }),
                 Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
                     children: filteredItems.map(({usecase, methods}) => {

@@ -62,6 +62,7 @@ public class InboundDataAdapter implements DataAdapter {
                 });
 
                 entrypointList.add(JsonSupport.buildMethodJson(entrypoint.jigMethod())
+                        .and("entrypointType", entrypoint.entrypointType().name())
                         .and("path", entrypoint.pathText()));
             });
 

@@ -18,6 +18,7 @@ const mockInboundData = {
                     parameters: [],
                     returnTypeRef: {fqn: "void"},
                     isDeprecated: false,
+                    entrypointType: "HTTP_API",
                     path: "GET /method1"
                 }
             ]
@@ -203,7 +204,7 @@ test.describe('InboundApp', () => {
 
         const sidebar = document.getElementById('inbound-sidebar-list');
         assert.equal(sidebar.children.length, 1);
-        assert.equal(sidebar.querySelector('p').textContent, 'コントローラー');
+        assert.equal(sidebar.querySelector('p').textContent, 'HTTPコントローラー');
         assert.equal(sidebar.querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');

@@ -174,7 +174,15 @@
  */
 
 /**
+ * @typedef {Object} InboundEntrypoint
+ * @property {string} fqn
+ * @property {string} entrypointType - "HTTP_API" | "QUEUE_LISTENER" | "OTHER"
+ * @property {string} path
+ */
+
+/**
  * @typedef {Object} Controller
+ * @property {InboundEntrypoint[]} [entrypoints]
  * @property {Relation[]} [relations]
  */
 

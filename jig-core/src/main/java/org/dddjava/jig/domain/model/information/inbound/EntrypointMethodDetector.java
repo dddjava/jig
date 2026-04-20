@@ -35,7 +35,10 @@ class EntrypointMethodDetector {
                                 SpringAnnotations.PATCH_MAPPING)),
                 new EntrypointAnnotation(EntrypointType.QUEUE_LISTENER,
                         List.of(SpringAnnotations.COMPONENT),
-                        List.of(SpringAnnotations.RABBIT_LISTENER))
+                        List.of(SpringAnnotations.RABBIT_LISTENER)),
+                new EntrypointAnnotation(EntrypointType.SCHEDULER,
+                        List.of(),
+                        List.of(SpringAnnotations.SCHEDULED))
         );
     }
 
@@ -46,7 +49,8 @@ class EntrypointMethodDetector {
     Collection<Entrypoint> collectMethod(JigType jigType) {
         return entrypointAnnotations.stream()
                 .flatMap(entrypointAnnotation -> {
-                    if (entrypointAnnotation.classAnnotations().stream()
+                    if (entrypointAnnotation.classAnnotations().isEmpty()
+                            || entrypointAnnotation.classAnnotations().stream()
                             .anyMatch(jigType::hasAnnotation)) {
                         return jigType.instanceJigMethodStream()
                                 .filter(jigMethod -> entrypointAnnotation.methodAnnotations().stream()
@@ -80,6 +84,8 @@ class EntrypointMethodDetector {
             }
         } else if (entrypointAnnotation.entrypointType() == EntrypointType.QUEUE_LISTENER) {
             return new QueueListenerEntrypointMapping(jigMethod);
+        } else if (entrypointAnnotation.entrypointType() == EntrypointType.SCHEDULER) {
+            return new SchedulerEntrypointMapping(jigMethod);
         }
         // デフォルト
         return EntrypointMapping.DEFAULT;

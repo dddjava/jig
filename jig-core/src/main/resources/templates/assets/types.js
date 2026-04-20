@@ -176,7 +176,7 @@
 /**
  * @typedef {Object} InboundEntrypoint
  * @property {string} fqn
- * @property {string} entrypointType - "HTTP_API" | "QUEUE_LISTENER" | "OTHER"
+ * @property {string} entrypointType - "HTTP_API" | "QUEUE_LISTENER" | "SCHEDULER" | "OTHER"
  * @property {string} path
  */
 

@@ -26,4 +26,7 @@ public class SpringAnnotations {
 
     // org.springframework.amqp.rabbit.annotation
     public static final TypeId RABBIT_LISTENER = TypeId.valueOf("org.springframework.amqp.rabbit.annotation.RabbitListener");
+
+    // org.springframework.scheduling.annotation
+    public static final TypeId SCHEDULED = TypeId.valueOf("org.springframework.scheduling.annotation.Scheduled");
 }

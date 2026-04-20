@@ -171,6 +171,7 @@ const InboundApp = (() => {
         const typeLabels = {
             HTTP_API: "HTTPコントローラー",
             QUEUE_LISTENER: "キューリスナー",
+            SCHEDULER: "スケジューラー",
             OTHER: "その他",
         };
 

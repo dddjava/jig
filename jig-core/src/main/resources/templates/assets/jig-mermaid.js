@@ -15,7 +15,10 @@ globalThis.Jig.mermaid = (() => {
             class: '["$LABEL"]',
             package: '@{shape: st-rect, label: "$LABEL"}',
             database: '[("$LABEL")]',
-            external: '(("$LABEL"))'
+            external: '(("$LABEL"))',
+            request: '>"$LABEL"]',
+            scheduler: '@{shape: delay, label: "$LABEL"}',
+            queue: '@{shape: horizontal-cylinder, label: "$LABEL"}'
         };
 
         function escapeId(id) {

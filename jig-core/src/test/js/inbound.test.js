@@ -4,7 +4,7 @@ const {DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // モック用のデータ
 const mockInboundData = {
-    controllers: [
+    inboundAdapters: [
         {
             fqn: "com.example.ControllerA",
             classPath: "/api",
@@ -234,7 +234,7 @@ test.describe('InboundApp', () => {
     });
 
     test('renderMain should handle empty data', () => {
-        globalThis.inboundData = {controllers: []};
+        globalThis.inboundData = {inboundAdapters: []};
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
@@ -245,7 +245,7 @@ test.describe('InboundApp', () => {
         // method1 → internalMethod → serviceMethod (depth=2)
         // method2 → serviceMethod2 (depth=1, maxDepth=2 なので ---> になる)
         globalThis.inboundData = {
-            controllers: [{
+            inboundAdapters: [{
                 fqn: "com.example.ControllerA",
                 classPath: "/api",
                 relations: [

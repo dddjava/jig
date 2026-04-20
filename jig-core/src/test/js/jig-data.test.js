@@ -104,9 +104,9 @@ test.describe('jig-data.js', () => {
             assert.equal(jigData.inbound.get(), null);
         });
 
-        test('getControllers() は controllers を返す、未設定時は空配列', () => {
+        test('getControllers() は inboundAdapters を返す、未設定時は空配列', () => {
             assert.deepEqual(jigData.inbound.getControllers(), []);
-            globalThis.inboundData = {controllers: [{fqn: 'C'}]};
+            globalThis.inboundData = {inboundAdapters: [{fqn: 'C'}]};
             assert.deepEqual(jigData.inbound.getControllers(), [{fqn: 'C'}]);
         });
     });

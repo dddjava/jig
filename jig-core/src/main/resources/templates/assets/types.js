@@ -180,7 +180,7 @@
 
 /**
  * @typedef {Object} InboundData
- * @property {Controller[]} [controllers]
+ * @property {Controller[]} [inboundAdapters]
  */
 
 /**

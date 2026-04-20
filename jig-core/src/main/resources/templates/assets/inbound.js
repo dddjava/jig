@@ -150,14 +150,14 @@ const InboundApp = (() => {
 
         Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
             state.sidebarFilterText = text;
-            renderSidebar(state.data.controllers || []);
+            renderSidebar(state.data.inboundAdapters || []);
         });
 
         render();
     }
 
     function render() {
-        const controllers = state.data.controllers || [];
+        const controllers = state.data.inboundAdapters || [];
         renderSidebar(controllers);
         renderMain(controllers);
     }

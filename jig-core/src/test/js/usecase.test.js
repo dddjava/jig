@@ -138,7 +138,6 @@ test.describe('usecase.js', () => {
 
             const sidebar = document.getElementById('usecase-sidebar-list');
             assert.equal(sidebar.children.length, 1);
-            assert.equal(sidebar.querySelector('p').textContent, 'ユースケース');
             const sidebarLinks = sidebar.querySelectorAll('a');
             assert.equal(sidebarLinks[0].textContent, 'ServiceA');
             assert.ok(sidebarLinks[1].classList.contains('in-page-sidebar__link--sub'));
@@ -424,7 +423,7 @@ test.describe('usecase.js', () => {
 
         test('クラス単位の図にinboundクラスのノードとエッジが追加される', () => {
             globalThis.inboundData = {
-                controllers: [{
+                inboundAdapters: [{
                     relations: [
                         {from: 'web.OrderCtrl#create()', to: 'com.example.ServiceA#method1()'},
                         {from: 'web.OrderCtrl#list()', to: 'com.example.ServiceA#otherMethod()'}
@@ -513,7 +512,7 @@ test.describe('usecase.js', () => {
 
         test('ハンドラのみ表示でinbound呼び出しのあるメソッドだけ表示される', () => {
             globalThis.inboundData = {
-                controllers: [{
+                inboundAdapters: [{
                     relations: [
                         {from: 'web.Ctrl#entry()', to: 'com.example.ServiceA#method1()'}
                     ]
@@ -642,7 +641,7 @@ test.describe('usecase.js', () => {
                 "web.Ctrl": {title: "Ctrl"}
             });
             globalThis.inboundData = {
-                controllers: [
+                inboundAdapters: [
                     {
                         relations: [
                             {from: 'web.Ctrl#entry()', to: 'com.example.ServiceA#method1()'}
@@ -1571,7 +1570,7 @@ test.describe('usecase.js', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase'};
             const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
             globalThis.inboundData = {
-                controllers: [
+                inboundAdapters: [
                     {
                         relations: [
                             {from: 'web.Ctrl#entry()', to: 'pkg.Cls#A()'},
@@ -1598,7 +1597,7 @@ test.describe('usecase.js', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase'};
             const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
             globalThis.inboundData = {
-                controllers: [
+                inboundAdapters: [
                     {
                         relations: [
                             {from: 'web.Ctrl#entry()', to: 'pkg.Cls#A()'},

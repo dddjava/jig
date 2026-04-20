@@ -96,7 +96,7 @@ globalThis.Jig.data = (() => {
             return globalThis.inboundData ?? null;
         },
         getControllers() {
-            return globalThis.inboundData?.controllers ?? [];
+            return globalThis.inboundData?.inboundAdapters ?? [];
         },
     };
 

@@ -76,6 +76,6 @@ public class InboundDataAdapter implements DataAdapter {
                     .and("entrypoints", Json.arrayObjects(entrypointList)));
         });
 
-        return Json.object("controllers", Json.arrayObjects(controllerList)).build();
+        return Json.object("inboundAdapters", Json.arrayObjects(controllerList)).build();
     }
 }

@@ -1741,9 +1741,17 @@ table td.number {
     cursor: pointer;
     font-size: 16px;
     line-height: 1;
-    opacity: 0.6;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity 0.15s;
     z-index: 1;
+}
+
+.mermaid-diagram:hover > .mermaid-copy-button,
+.mermaid-diagram:hover > .mermaid-download-button,
+.mermaid-diagram:hover > .mermaid-direction-button {
+    opacity: 0.6;
+    pointer-events: auto;
 }
 
 .mermaid-copy-button::after,

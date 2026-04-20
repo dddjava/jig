@@ -162,29 +162,27 @@ const InboundApp = (() => {
         renderMain(controllers);
     }
 
-    const TYPE_LABELS = {
-        HTTP_API: "HTTPコントローラー",
-        QUEUE_LISTENER: "キューリスナー",
-        OTHER: "その他",
-    };
-
     function renderSidebar(adapters) {
         const sidebar = document.getElementById("inbound-sidebar-list");
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
         const filterText = state.sidebarFilterText.toLowerCase();
+        const typeLabels = {
+            HTTP_API: "HTTPコントローラー",
+            QUEUE_LISTENER: "キューリスナー",
+            OTHER: "その他",
+        };
 
-        for (const [type, label] of Object.entries(TYPE_LABELS)) {
-            const matched = adapters.filter(c =>
-                c.entrypoints?.some(ep => ep.entrypointType === type) &&
-                (!filterText || Jig.glossary.getTypeTerm(c.fqn).title.toLowerCase().includes(filterText))
-            );
-            if (matched.length === 0) continue;
-            const items = matched.map(c => ({
-                id: Jig.util.fqnToId("adapter", c.fqn),
-                label: Jig.glossary.getTypeTerm(c.fqn).title
-            }));
+        for (const [type, label] of Object.entries(typeLabels)) {
+            const items = adapters
+                .filter(c => c.entrypoints?.some(ep => ep.entrypointType === type))
+                .flatMap(c => {
+                    const title = Jig.glossary.getTypeTerm(c.fqn).title;
+                    if (filterText && !title.toLowerCase().includes(filterText)) return [];
+                    return [{id: Jig.util.fqnToId("adapter", c.fqn), label: title}];
+                });
+            if (items.length === 0) continue;
             Jig.dom.sidebar.renderSection(sidebar, label, items);
         }
     }

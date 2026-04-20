@@ -34,7 +34,7 @@ class EntrypointMethodDetector {
                                 SpringAnnotations.DELETE_MAPPING,
                                 SpringAnnotations.PATCH_MAPPING)),
                 new EntrypointAnnotation(EntrypointType.QUEUE_LISTENER,
-                        List.of(SpringAnnotations.COMPONENT),
+                        List.of(),
                         List.of(SpringAnnotations.RABBIT_LISTENER)),
                 new EntrypointAnnotation(EntrypointType.SCHEDULER,
                         List.of(),

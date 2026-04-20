@@ -9,12 +9,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRelations) {
+public record InboundAdapters(List<InboundAdapter> groups, MethodRelations methodRelations) {
 
-    public static InputAdapters from(JigTypes jigTypes) {
-        return new InputAdapters(
+    public static InboundAdapters from(JigTypes jigTypes) {
+        return new InboundAdapters(
                 jigTypes.orderedStream()
-                        .flatMap(jigType -> InputAdapter.from(jigType).stream())
+                        .flatMap(jigType -> InboundAdapter.from(jigType).stream())
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 MethodRelations.from(jigTypes));
@@ -26,7 +26,7 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
 
     private Stream<Entrypoint> httpEntrypointStream() {
         return groups.stream()
-                .flatMap(inputAdapter -> inputAdapter.entrypoints().stream())
+                .flatMap(inboundAdapter -> inboundAdapter.entrypoints().stream())
                 .filter(entrypointMethod -> entrypointMethod.entrypointType() == EntrypointType.HTTP_API);
     }
 

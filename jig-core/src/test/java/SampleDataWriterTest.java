@@ -94,8 +94,8 @@ class SampleDataWriterTest {
 
         // inbound-data.js
         {
-            var inputAdapters = jigService.inputAdapters(repository);
-            var json = InboundDataAdapter.buildInboundJson(inputAdapters, jigTypes);
+            var inboundAdapters = jigService.inboundAdapters(repository);
+            var json = InboundDataAdapter.buildInboundJson(inboundAdapters, jigTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/inbound-data.js");
             Files.writeString(sampleFile,
                     "// 表示確認用のサンプルデータ\n" +

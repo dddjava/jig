@@ -6,7 +6,7 @@ import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -37,22 +37,22 @@ public class InboundDataAdapter implements DataAdapter {
     @Override
     public String buildJson(JigRepository jigRepository) {
         var contextJigTypes = jigService.jigTypes(jigRepository);
-        var inputAdapters = jigService.inputAdapters(jigRepository);
-        return buildInboundJson(inputAdapters, contextJigTypes);
+        var inboundAdapters = jigService.inboundAdapters(jigRepository);
+        return buildInboundJson(inboundAdapters, contextJigTypes);
     }
 
-    public static String buildInboundJson(InputAdapters inputAdapters, JigTypes jigTypes) {
+    public static String buildInboundJson(InboundAdapters inboundAdapters, JigTypes jigTypes) {
         List<JsonObjectBuilder> controllerList = new ArrayList<>();
 
-        MethodRelations springComponentMethodRelations = inputAdapters.methodRelations().filterApplicationComponent(jigTypes).inlineLambda();
+        MethodRelations springComponentMethodRelations = inboundAdapters.methodRelations().filterApplicationComponent(jigTypes).inlineLambda();
 
-        inputAdapters.groups().forEach(inputAdapter -> {
-            var jigType = inputAdapter.jigType();
+        inboundAdapters.groups().forEach(inboundAdapter -> {
+            var jigType = inboundAdapter.jigType();
 
             List<JsonObjectBuilder> edges = new ArrayList<>();
             List<JsonObjectBuilder> entrypointList = new ArrayList<>();
 
-            inputAdapter.entrypoints().forEach(entrypoint -> {
+            inboundAdapter.entrypoints().forEach(entrypoint -> {
                 var entrypointMethodId = entrypoint.jigMethod().jigMethodId();
 
                 MethodRelations declaredMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethodId, jigTypes::isService);
@@ -65,7 +65,7 @@ public class InboundDataAdapter implements DataAdapter {
                         .and("path", entrypoint.pathText()));
             });
 
-            var classPath = inputAdapter.entrypoints().stream()
+            var classPath = inboundAdapter.entrypoints().stream()
                     .findFirst()
                     .map(Entrypoint::classPathText)
                     .orElse("");

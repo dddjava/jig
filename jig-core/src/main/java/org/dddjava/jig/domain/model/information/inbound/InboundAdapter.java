@@ -12,18 +12,18 @@ import java.util.Optional;
  * - SpringMVCのControllerのRequestMapping
  * - SpringRabbitのRabbitListener
  */
-public record InputAdapter(JigType jigType, Collection<Entrypoint> entrypoints) {
-    public InputAdapter {
+public record InboundAdapter(JigType jigType, Collection<Entrypoint> entrypoints) {
+    public InboundAdapter {
         if (entrypoints.isEmpty()) throw new IllegalArgumentException("entrypointMethods is empty");
     }
 
     static final EntrypointMethodDetector entrypointMethodDetector = new EntrypointMethodDetector();
 
-    static Optional<InputAdapter> from(JigType jigType) {
+    static Optional<InboundAdapter> from(JigType jigType) {
         return Optional.of(entrypointMethodDetector.collectMethod(jigType))
-                // 1つもエントリーポイントがない場合はInputAdapterではないものとして弾く
+                // 1つもエントリーポイントがない場合はInboundAdapterではないものとして弾く
                 .filter(detectedMethods -> !detectedMethods.isEmpty())
-                .map(detectedMethods -> new InputAdapter(jigType, detectedMethods));
+                .map(detectedMethods -> new InboundAdapter(jigType, detectedMethods));
     }
 
 }

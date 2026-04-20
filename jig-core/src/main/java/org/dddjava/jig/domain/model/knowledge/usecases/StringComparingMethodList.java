@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.usecases;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 import java.util.List;
@@ -24,9 +24,9 @@ public record StringComparingMethodList(List<JigMethod> methods) {
             List.of(TypeId.OBJECT)
     );
 
-    public static StringComparingMethodList from(InputAdapters inputAdapters, ServiceMethods serviceMethods) {
+    public static StringComparingMethodList from(InboundAdapters inboundAdapters, ServiceMethods serviceMethods) {
         Stream<JigMethod> targetMethodStream = Stream.concat(
-                inputAdapters.listEntrypoint().stream()
+                inboundAdapters.listEntrypoint().stream()
                         .map(entrypointMethod -> entrypointMethod.jigMethod()),
                 serviceMethods.list().stream()
                         .map(serviceMethod -> serviceMethod.method())

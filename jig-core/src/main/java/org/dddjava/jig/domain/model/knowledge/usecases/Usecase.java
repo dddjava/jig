@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
@@ -32,7 +32,7 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
                       Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
                       UsecaseCategory usecaseCategory) {
 
-    public static Usecase from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutboundAdapters outboundAdapters) {
+    public static Usecase from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InboundAdapters inboundAdapters, OutboundAdapters outboundAdapters) {
         UsingMethods usingMethods = serviceMethod.usingMethods();
 
         Collection<JigMethodId> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodId -> serviceMethods.contains(jigMethodId));
@@ -47,7 +47,7 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
                 .map(OutboundPortOperation::jigMethod)
                 .toList();
 
-        Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
+        Collection<Entrypoint> entrypointMethods = inboundAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
         return new Usecase(serviceMethod, usingRepositoryMethods, usingServiceMethods, userServiceMethods, usecaseCategory);
     }

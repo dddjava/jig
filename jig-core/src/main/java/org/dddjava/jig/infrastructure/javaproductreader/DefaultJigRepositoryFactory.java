@@ -14,7 +14,7 @@ import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.information.outbound.springdata.SpringDataJdbcStatementsReader;
@@ -125,7 +125,7 @@ public class DefaultJigRepositoryFactory {
             var existingTermIds = glossaryRepository.all().terms().stream()
                     .map(Term::id)
                     .collect(Collectors.toSet());
-            InputAdapters.from(jigTypes).listEntrypoint().forEach(entrypoint ->
+            InboundAdapters.from(jigTypes).listEntrypoint().forEach(entrypoint ->
                     entrypoint.swaggerSummary().ifPresent(summary -> {
                         var termId = new TermId(entrypoint.jigMethod().fqn());
                         if (existingTermIds.contains(termId)) {

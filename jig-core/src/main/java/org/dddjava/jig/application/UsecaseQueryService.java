@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
@@ -22,10 +22,10 @@ public class UsecaseQueryService {
         this.infrastructureQueryService = infrastructureQueryService;
     }
 
-    public InputAdapters inputAdapters(JigRepository jigRepository) {
-        var inputAdapters = InputAdapters.from(typesQueryService.jigTypes(jigRepository));
-        if (inputAdapters.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
-        return inputAdapters;
+    public InboundAdapters inboundAdapters(JigRepository jigRepository) {
+        var inboundAdapters = InboundAdapters.from(typesQueryService.jigTypes(jigRepository));
+        if (inboundAdapters.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
+        return inboundAdapters;
     }
 
     public ServiceMethods serviceMethods(JigRepository jigRepository) {
@@ -38,7 +38,7 @@ public class UsecaseQueryService {
     public ServiceAngles serviceAngles(JigRepository jigRepository) {
         var serviceMethods = serviceMethods(jigRepository);
         var outboundAdapters = infrastructureQueryService.outboundAdapters(jigRepository);
-        return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outboundAdapters);
+        return ServiceAngles.from(serviceMethods, inboundAdapters(jigRepository), outboundAdapters);
     }
 
 }

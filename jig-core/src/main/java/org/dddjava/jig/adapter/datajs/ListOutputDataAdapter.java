@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -65,7 +65,7 @@ public class ListOutputDataAdapter implements DataAdapter {
     }
 
     public static String buildListJson(JigRepository repository, JigService jigService) {
-        InputAdapters inputAdapters = jigService.inputAdapters(repository);
+        InboundAdapters inboundAdapters = jigService.inboundAdapters(repository);
         ServiceAngles serviceAngles = jigService.serviceAngles(repository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(repository);
         MethodSmells methodSmells = jigService.methodSmells(repository);
@@ -83,7 +83,7 @@ public class ListOutputDataAdapter implements DataAdapter {
                 .filter(jigPackage -> coreDomainPackages.contains(jigPackage.packageId()))
                 .sorted(Comparator.comparing(JigPackage::packageId))
                 .toList();
-        String controllerJson = inputAdapters.listEntrypoint().stream()
+        String controllerJson = inboundAdapters.listEntrypoint().stream()
                 .map(ListOutputDataAdapter::formatControllerJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String serviceJson = serviceAngles.list().stream()

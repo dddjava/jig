@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.usecases;
 
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
@@ -16,12 +16,12 @@ public record ServiceAngles(Collection<Entry> entries) {
     private record Entry(JigType jigType, Collection<Usecase> usecases) {
     }
 
-    public static ServiceAngles from(ServiceMethods serviceMethods, InputAdapters inputAdapters, OutboundAdapters outboundAdapters) {
+    public static ServiceAngles from(ServiceMethods serviceMethods, InboundAdapters inboundAdapters, OutboundAdapters outboundAdapters) {
 
         return new ServiceAngles(serviceMethods
                 .streamAndMap((jigType, serviceMethodList) -> {
                     var serviceAngleList = serviceMethodList.stream()
-                            .map(serviceMethod -> Usecase.from(serviceMethod, serviceMethods, inputAdapters, outboundAdapters))
+                            .map(serviceMethod -> Usecase.from(serviceMethod, serviceMethods, inboundAdapters, outboundAdapters))
                             .toList();
                     return new Entry(jigType, serviceAngleList);
                 }).toList());

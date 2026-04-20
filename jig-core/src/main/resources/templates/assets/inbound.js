@@ -94,9 +94,11 @@ const InboundApp = (() => {
             });
 
             // パスノードとdotted edge
+            const pathNodeShapes = {HTTP_API: '>"$LABEL"]', QUEUE_LISTENER: 'external', SCHEDULER: 'database'};
             data.controller.entrypoints.forEach(ep => {
                 const pathNodeId = Jig.util.fqnToId("path", ep.fqn);
-                builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
+                const pathShape = pathNodeShapes[ep.entrypointType] || '>"$LABEL"]';
+                builder.addNode(pathNodeId, ep.path, pathShape);
                 builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
             });
 

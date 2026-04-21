@@ -260,8 +260,8 @@ const InboundApp = (() => {
         if (typeRows.QUEUE_LISTENER.length > 0) {
             subSections.push(buildTypeSubSection('メッセージリスナー',
                 ['パス', 'エントリーポイント'],
-                typeRows.QUEUE_LISTENER.map(({ep, cardId, classPath}) => [
-                    Jig.dom.createCell(classPath + (ep.path || '')),
+                typeRows.QUEUE_LISTENER.map(({ep, cardId}) => [
+                    Jig.dom.createCell(ep.path || ''),
                     linkCell(ep.fqn, cardId)
                 ])
             ));
@@ -270,8 +270,8 @@ const InboundApp = (() => {
         if (typeRows.SCHEDULER.length > 0) {
             subSections.push(buildTypeSubSection('スケジューラー',
                 ['パス', 'エントリーポイント'],
-                typeRows.SCHEDULER.map(({ep, cardId, classPath}) => [
-                    Jig.dom.createCell(classPath + (ep.path || '')),
+                typeRows.SCHEDULER.map(({ep, cardId}) => [
+                    Jig.dom.createCell(ep.path || ''),
                     linkCell(ep.fqn, cardId)
                 ])
             ));

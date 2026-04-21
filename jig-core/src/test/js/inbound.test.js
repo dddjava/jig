@@ -225,7 +225,7 @@ test.describe('InboundApp', () => {
         assert.equal(cells[0].textContent, '/api/method1'); // クラスパス+メソッドパス
         assert.equal(cells[1].textContent, 'GET');
         const link = cells[2].querySelector('a');
-        assert.equal(link.textContent, 'com.example.ControllerA#method1()');
+        assert.equal(link.textContent, 'ControllerA method1');
         assert.ok(link.getAttribute('href').startsWith('#'));
 
         const controllerSection = mainList.children[1];

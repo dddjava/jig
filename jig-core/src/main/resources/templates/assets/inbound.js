@@ -199,10 +199,15 @@ const InboundApp = (() => {
             : ['', path || ''];
     }
 
+    function entrypointLabel(fqn) {
+        const typeFqn = fqn.split('#')[0];
+        return Jig.glossary.getTypeTerm(typeFqn).title + ' ' + Jig.glossary.getMethodTerm(fqn, true).title;
+    }
+
     function linkCell(fqn, cardId) {
         return Jig.dom.createElement("td", {
             children: [Jig.dom.createElement("a", {
-                textContent: fqn,
+                textContent: entrypointLabel(fqn),
                 attributes: {href: '#' + cardId}
             })]
         });

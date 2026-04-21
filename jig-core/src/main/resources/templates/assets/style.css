@@ -2029,3 +2029,22 @@ p.jig-data-warning {
     margin: 1rem;
     border-radius: 2px;
 }
+
+
+/* 入力インタフェース サマリーテーブル */
+.entrypoint-summary-section {
+    margin-bottom: 0;
+}
+
+.entrypoint-summary {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    table-layout: fixed;
+}
+
+.entrypoint-summary td, .entrypoint-summary th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

@@ -173,8 +173,8 @@ const InboundApp = (() => {
 
         const filterText = state.sidebarFilterText.toLowerCase();
         const typeLabels = {
-            HTTP_API: "HTTPコントローラー",
-            QUEUE_LISTENER: "キューリスナー",
+            HTTP_API: "リクエストハンドラ",
+            QUEUE_LISTENER: "メッセージリスナー",
             SCHEDULER: "スケジューラー",
             OTHER: "その他",
         };
@@ -199,45 +199,84 @@ const InboundApp = (() => {
             : ['', path || ''];
     }
 
-    function renderSummaryTable(inboundTypes) {
-        const rows = [];
-        inboundTypes.forEach(inboundType => {
-            const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, inboundType.fqn);
-            (inboundType.entrypoints || []).forEach(ep => rows.push({ep, cardId}));
+    function linkCell(fqn, cardId) {
+        return Jig.dom.createElement("td", {
+            children: [Jig.dom.createElement("a", {
+                textContent: fqn,
+                attributes: {href: '#' + cardId}
+            })]
         });
-        if (rows.length === 0) return null;
+    }
 
-        return Jig.dom.createElement("table", {
-            className: "entrypoint-summary",
+    function buildSummarySection(title, headers, rows) {
+        return Jig.dom.createElement("section", {
+            className: "jig-card jig-card--type entrypoint-summary-section",
             children: [
-                Jig.dom.createElement("thead", {
-                    children: [Jig.dom.createElement("tr", {
-                        children: [
-                            Jig.dom.createElement("th", {textContent: "メソッド"}),
-                            Jig.dom.createElement("th", {textContent: "パス"}),
-                            Jig.dom.createElement("th", {textContent: "エントリーポイント"})
-                        ]
-                    })]
-                }),
-                Jig.dom.createElement("tbody", {
-                    children: rows.map(({ep, cardId}) => {
-                        const [method, path] = splitHttpPath(ep.path);
-                        return Jig.dom.createElement("tr", {
-                            children: [
-                                Jig.dom.createCell(method),
-                                Jig.dom.createCell(path),
-                                Jig.dom.createElement("td", {
-                                    children: [Jig.dom.createElement("a", {
-                                        textContent: ep.fqn,
-                                        attributes: {href: '#' + cardId}
-                                    })]
-                                })
-                            ]
-                        });
-                    })
+                Jig.dom.createElement("h3", {textContent: title}),
+                Jig.dom.createElement("table", {
+                    className: "entrypoint-summary",
+                    children: [
+                        Jig.dom.createElement("thead", {
+                            children: [Jig.dom.createElement("tr", {
+                                children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
+                            })]
+                        }),
+                        Jig.dom.createElement("tbody", {
+                            children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
+                        })
+                    ]
                 })
             ]
         });
+    }
+
+    function renderSummaryTable(inboundTypes) {
+        const typeRows = {HTTP_API: [], QUEUE_LISTENER: [], SCHEDULER: []};
+        inboundTypes.forEach(inboundType => {
+            const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, inboundType.fqn);
+            (inboundType.entrypoints || []).forEach(ep => {
+                if (typeRows[ep.entrypointType]) typeRows[ep.entrypointType].push({ep, cardId});
+            });
+        });
+
+        const sections = [];
+
+        if (typeRows.HTTP_API.length > 0) {
+            const sorted = [...typeRows.HTTP_API].sort((a, b) => {
+                const [, pathA] = splitHttpPath(a.ep.path);
+                const [, pathB] = splitHttpPath(b.ep.path);
+                return pathA.localeCompare(pathB);
+            });
+            sections.push(buildSummarySection('リクエストハンドラ',
+                ['パス', 'メソッド', 'エントリーポイント'],
+                sorted.map(({ep, cardId}) => {
+                    const [method, path] = splitHttpPath(ep.path);
+                    return [Jig.dom.createCell(path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)];
+                })
+            ));
+        }
+
+        if (typeRows.QUEUE_LISTENER.length > 0) {
+            sections.push(buildSummarySection('メッセージリスナー',
+                ['パス', 'エントリーポイント'],
+                typeRows.QUEUE_LISTENER.map(({ep, cardId}) => [
+                    Jig.dom.createCell(ep.path || ''),
+                    linkCell(ep.fqn, cardId)
+                ])
+            ));
+        }
+
+        if (typeRows.SCHEDULER.length > 0) {
+            sections.push(buildSummarySection('スケジューラー',
+                ['パス', 'エントリーポイント'],
+                typeRows.SCHEDULER.map(({ep, cardId}) => [
+                    Jig.dom.createCell(ep.path || ''),
+                    linkCell(ep.fqn, cardId)
+                ])
+            ));
+        }
+
+        return sections;
     }
 
     function renderMain(inboundTypes) {
@@ -250,8 +289,7 @@ const InboundApp = (() => {
             return;
         }
 
-        const summaryTable = renderSummaryTable(inboundTypes);
-        if (summaryTable) container.appendChild(summaryTable);
+        renderSummaryTable(inboundTypes).forEach(section => container.appendChild(section));
 
         inboundTypes.forEach(inboundType => {
             const typeTerm = Jig.glossary.getTypeTerm(inboundType.fqn);

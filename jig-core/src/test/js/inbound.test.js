@@ -205,21 +205,23 @@ test.describe('InboundApp', () => {
 
         const sidebar = document.getElementById('inbound-sidebar-list');
         assert.equal(sidebar.children.length, 1);
-        assert.equal(sidebar.querySelector('p').textContent, 'HTTPコントローラー');
+        assert.equal(sidebar.querySelector('p').textContent, 'リクエストハンドラ');
         assert.equal(sidebar.querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
-        assert.equal(mainList.children.length, 2); // サマリーテーブル + コントローラーセクション
+        assert.equal(mainList.children.length, 2); // サマリーセクション + コントローラーセクション
 
-        // サマリーテーブル
-        const summaryTable = mainList.children[0];
-        assert.equal(summaryTable.tagName.toLowerCase(), 'table');
-        assert.ok(summaryTable.classList.has('entrypoint-summary'));
+        // サマリーセクション（リクエストハンドラ）
+        const summarySection = mainList.children[0];
+        assert.ok(summarySection.classList.has('entrypoint-summary-section'));
+        assert.equal(summarySection.querySelector('h3').textContent, 'リクエストハンドラ');
+        const summaryTable = summarySection.querySelector('table.entrypoint-summary');
+        assert.ok(summaryTable);
         const rows = summaryTable.querySelectorAll('tbody tr');
         assert.equal(rows.length, 1);
         const cells = rows[0].children;
-        assert.equal(cells[0].textContent, 'GET');
-        assert.equal(cells[1].textContent, '/method1');
+        assert.equal(cells[0].textContent, '/method1'); // パスが先頭
+        assert.equal(cells[1].textContent, 'GET');      // メソッドが2列目
         const link = cells[2].querySelector('a');
         assert.equal(link.textContent, 'com.example.ControllerA#method1()');
         assert.ok(link.getAttribute('href').startsWith('#'));
@@ -276,6 +278,7 @@ test.describe('InboundApp', () => {
                         parameters: [],
                         returnTypeRef: {fqn: "void"},
                         isDeprecated: false,
+                        entrypointType: "HTTP_API",
                         path: "GET /method1"
                     },
                     {
@@ -284,6 +287,7 @@ test.describe('InboundApp', () => {
                         parameters: [],
                         returnTypeRef: {fqn: "void"},
                         isDeprecated: false,
+                        entrypointType: "HTTP_API",
                         path: "GET /method2"
                     }
                 ]

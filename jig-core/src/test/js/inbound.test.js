@@ -204,9 +204,11 @@ test.describe('InboundApp', () => {
         InboundApp.init();
 
         const sidebar = document.getElementById('inbound-sidebar-list');
-        assert.equal(sidebar.children.length, 1);
-        assert.equal(sidebar.querySelector('p').textContent, 'リクエストハンドラ');
-        assert.equal(sidebar.querySelector('a').textContent, 'ControllerA');
+        assert.equal(sidebar.children.length, 2); // エントリーポイント一覧リンク + リクエストハンドラ
+        assert.equal(sidebar.children[0].querySelector('a').textContent, 'エントリーポイント一覧');
+        assert.equal(sidebar.children[0].querySelector('a').getAttribute('href'), '#entrypoint-summary');
+        assert.equal(sidebar.children[1].querySelector('p').textContent, 'リクエストハンドラ');
+        assert.equal(sidebar.children[1].querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
         assert.equal(mainList.children.length, 2); // サマリーセクション + コントローラーセクション

@@ -423,13 +423,15 @@ globalThis.Jig.dom = (() => {
     function createSection(title, items) {
         if (!items || items.length === 0) return null;
 
+        const titleEl = title ? createElement("p", {
+            className: "in-page-sidebar__title",
+            textContent: title
+        }) : null;
+
         return createElement("section", {
             className: "in-page-sidebar__section",
             children: [
-                createElement("p", {
-                    className: "in-page-sidebar__title",
-                    textContent: title
-                }),
+                titleEl,
                 createElement("ul", {
                     className: "in-page-sidebar__links",
                     children: items.map(({id, label}) => createElement("li", {

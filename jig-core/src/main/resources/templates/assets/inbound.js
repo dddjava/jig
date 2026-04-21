@@ -171,6 +171,8 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
+        Jig.dom.sidebar.renderSection(sidebar, null, [{id: "entrypoint-summary", label: "エントリーポイント一覧"}]);
+
         const filterText = state.sidebarFilterText.toLowerCase();
         const typeLabels = {
             HTTP_API: "リクエストハンドラ",
@@ -286,6 +288,7 @@ const InboundApp = (() => {
 
         return Jig.dom.createElement("section", {
             className: "jig-card jig-card--type entrypoint-summary-section",
+            id: "entrypoint-summary",
             children: [
                 Jig.dom.createElement("h3", {textContent: "エントリーポイント一覧"}),
                 ...subSections

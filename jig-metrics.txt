@@ -8,35 +8,35 @@ jig_analysis_class_count_total 232.0
 # HELP jig_analysis_time_seconds  
 # TYPE jig_analysis_time_seconds summary
 jig_analysis_time_seconds_count{phase="class_file_parsing"} 1
-jig_analysis_time_seconds_sum{phase="class_file_parsing"} 0.318498375
+jig_analysis_time_seconds_sum{phase="class_file_parsing"} 0.210415913
 jig_analysis_time_seconds_count{phase="code_analysis_total"} 1
-jig_analysis_time_seconds_sum{phase="code_analysis_total"} 1.397832254
+jig_analysis_time_seconds_sum{phase="code_analysis_total"} 1.096753321
 jig_analysis_time_seconds_count{phase="java_source_parsing"} 1
-jig_analysis_time_seconds_sum{phase="java_source_parsing"} 0.849841521
+jig_analysis_time_seconds_sum{phase="java_source_parsing"} 0.701750012
 jig_analysis_time_seconds_count{phase="jig_repository_creation"} 1
-jig_analysis_time_seconds_sum{phase="jig_repository_creation"} 2.98539E-4
+jig_analysis_time_seconds_sum{phase="jig_repository_creation"} 2.79472E-4
 jig_analysis_time_seconds_count{phase="mybatis_reading"} 1
-jig_analysis_time_seconds_sum{phase="mybatis_reading"} 0.002201057
+jig_analysis_time_seconds_sum{phase="mybatis_reading"} 0.001738931
 jig_analysis_time_seconds_count{phase="package_info_parsing"} 1
-jig_analysis_time_seconds_sum{phase="package_info_parsing"} 0.138002112
+jig_analysis_time_seconds_sum{phase="package_info_parsing"} 0.09540118
 jig_analysis_time_seconds_count{phase="repository_creation"} 1
-jig_analysis_time_seconds_sum{phase="repository_creation"} 1.41694856
+jig_analysis_time_seconds_sum{phase="repository_creation"} 1.108211176
 # HELP jig_analysis_time_seconds_max  
 # TYPE jig_analysis_time_seconds_max gauge
-jig_analysis_time_seconds_max{phase="class_file_parsing"} 0.318498375
-jig_analysis_time_seconds_max{phase="code_analysis_total"} 1.397832254
-jig_analysis_time_seconds_max{phase="java_source_parsing"} 0.849841521
-jig_analysis_time_seconds_max{phase="jig_repository_creation"} 2.98539E-4
-jig_analysis_time_seconds_max{phase="mybatis_reading"} 0.002201057
-jig_analysis_time_seconds_max{phase="package_info_parsing"} 0.138002112
-jig_analysis_time_seconds_max{phase="repository_creation"} 1.41694856
+jig_analysis_time_seconds_max{phase="class_file_parsing"} 0.210415913
+jig_analysis_time_seconds_max{phase="code_analysis_total"} 1.096753321
+jig_analysis_time_seconds_max{phase="java_source_parsing"} 0.701750012
+jig_analysis_time_seconds_max{phase="jig_repository_creation"} 2.79472E-4
+jig_analysis_time_seconds_max{phase="mybatis_reading"} 0.001738931
+jig_analysis_time_seconds_max{phase="package_info_parsing"} 0.09540118
+jig_analysis_time_seconds_max{phase="repository_creation"} 1.108211176
 # HELP jig_execution_time_seconds  
 # TYPE jig_execution_time_seconds summary
 jig_execution_time_seconds_count{phase="total_execution"} 1
-jig_execution_time_seconds_sum{phase="total_execution"} 2.279366331
+jig_execution_time_seconds_sum{phase="total_execution"} 1.829001218
 # HELP jig_execution_time_seconds_max  
 # TYPE jig_execution_time_seconds_max gauge
-jig_execution_time_seconds_max{phase="total_execution"} 2.279366331
+jig_execution_time_seconds_max{phase="total_execution"} 1.829001218
 # HELP jvm_buffer_count_buffers An estimate of the number of buffers in the pool
 # TYPE jvm_buffer_count_buffers gauge
 jvm_buffer_count_buffers{id="direct"} 2.0
@@ -61,20 +61,20 @@ jvm_gc_concurrent_phase_time_seconds_sum{action="end of concurrent GC pause",cau
 jvm_gc_concurrent_phase_time_seconds_max{action="end of concurrent GC pause",cause="No GC",gc="G1 Concurrent GC"} 0.002
 # HELP jvm_gc_live_data_size_bytes Size of long-lived heap memory pool after reclamation
 # TYPE jvm_gc_live_data_size_bytes gauge
-jvm_gc_live_data_size_bytes 7876608.0
+jvm_gc_live_data_size_bytes 7612416.0
 # HELP jvm_gc_max_data_size_bytes Max size of long-lived heap memory pool
 # TYPE jvm_gc_max_data_size_bytes gauge
-jvm_gc_max_data_size_bytes 4.192206848E9
+jvm_gc_max_data_size_bytes 4.194304E9
 # HELP jvm_gc_memory_allocated_bytes_total Incremented for an increase in the size of the (young) heap memory pool after one GC to before the next
 # TYPE jvm_gc_memory_allocated_bytes_total counter
-jvm_gc_memory_allocated_bytes_total 7.04643072E8
+jvm_gc_memory_allocated_bytes_total 6.62700032E8
 # HELP jvm_gc_memory_promoted_bytes_total Count of positive increases in the size of the old generation memory pool before GC to after GC
 # TYPE jvm_gc_memory_promoted_bytes_total counter
-jvm_gc_memory_promoted_bytes_total 6777312.0
+jvm_gc_memory_promoted_bytes_total 6513120.0
 # HELP jvm_gc_pause_seconds Time spent in GC pause
 # TYPE jvm_gc_pause_seconds summary
-jvm_gc_pause_seconds_count{action="end of minor GC",cause="G1 Evacuation Pause",gc="G1 Young Generation"} 11
-jvm_gc_pause_seconds_sum{action="end of minor GC",cause="G1 Evacuation Pause",gc="G1 Young Generation"} 0.055
+jvm_gc_pause_seconds_count{action="end of minor GC",cause="G1 Evacuation Pause",gc="G1 Young Generation"} 9
+jvm_gc_pause_seconds_sum{action="end of minor GC",cause="G1 Evacuation Pause",gc="G1 Young Generation"} 0.047
 jvm_gc_pause_seconds_count{action="end of minor GC",cause="Metadata GC Threshold",gc="G1 Young Generation"} 1
 jvm_gc_pause_seconds_sum{action="end of minor GC",cause="Metadata GC Threshold",gc="G1 Young Generation"} 0.006
 # HELP jvm_gc_pause_seconds_max Time spent in GC pause
@@ -87,14 +87,14 @@ jvm_memory_committed_bytes{area="heap",id="G1 Eden Space"} 1.09051904E8
 jvm_memory_committed_bytes{area="heap",id="G1 Old Gen"} 6.9206016E7
 jvm_memory_committed_bytes{area="heap",id="G1 Survivor Space"} 8388608.0
 jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'non-nmethods'"} 2555904.0
-jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'"} 3604480.0
-jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'"} 1.3828096E7
+jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'"} 3866624.0
+jvm_memory_committed_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'"} 1.4024704E7
 jvm_memory_committed_bytes{area="nonheap",id="Compressed Class Space"} 4325376.0
-jvm_memory_committed_bytes{area="nonheap",id="Metaspace"} 3.0277632E7
+jvm_memory_committed_bytes{area="nonheap",id="Metaspace"} 3.0343168E7
 # HELP jvm_memory_max_bytes The maximum amount of memory in bytes that can be used for memory management
 # TYPE jvm_memory_max_bytes gauge
 jvm_memory_max_bytes{area="heap",id="G1 Eden Space"} -1.0
-jvm_memory_max_bytes{area="heap",id="G1 Old Gen"} 4.192206848E9
+jvm_memory_max_bytes{area="heap",id="G1 Old Gen"} 4.194304E9
 jvm_memory_max_bytes{area="heap",id="G1 Survivor Space"} -1.0
 jvm_memory_max_bytes{area="nonheap",id="CodeHeap 'non-nmethods'"} 5836800.0
 jvm_memory_max_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'"} 1.22912768E8
@@ -103,14 +103,14 @@ jvm_memory_max_bytes{area="nonheap",id="Compressed Class Space"} 1.073741824E9
 jvm_memory_max_bytes{area="nonheap",id="Metaspace"} -1.0
 # HELP jvm_memory_used_bytes The amount of used memory
 # TYPE jvm_memory_used_bytes gauge
-jvm_memory_used_bytes{area="heap",id="G1 Eden Space"} 5.8720256E7
-jvm_memory_used_bytes{area="heap",id="G1 Old Gen"} 7876608.0
-jvm_memory_used_bytes{area="heap",id="G1 Survivor Space"} 7555136.0
-jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'non-nmethods'"} 1502464.0
-jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'"} 3569408.0
-jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'"} 1.3824E7
-jvm_memory_used_bytes{area="nonheap",id="Compressed Class Space"} 4074152.0
-jvm_memory_used_bytes{area="nonheap",id="Metaspace"} 2.975064E7
+jvm_memory_used_bytes{area="heap",id="G1 Eden Space"} 9.8566144E7
+jvm_memory_used_bytes{area="heap",id="G1 Old Gen"} 7612416.0
+jvm_memory_used_bytes{area="heap",id="G1 Survivor Space"} 7760336.0
+jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'non-nmethods'"} 1635840.0
+jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'non-profiled nmethods'"} 3860480.0
+jvm_memory_used_bytes{area="nonheap",id="CodeHeap 'profiled nmethods'"} 1.3998976E7
+jvm_memory_used_bytes{area="nonheap",id="Compressed Class Space"} 4073648.0
+jvm_memory_used_bytes{area="nonheap",id="Metaspace"} 2.9786592E7
 # HELP jvm_threads_daemon_threads The current number of live daemon threads
 # TYPE jvm_threads_daemon_threads gauge
 jvm_threads_daemon_threads 6.0
@@ -133,7 +133,7 @@ jvm_threads_states_threads{state="timed-waiting"} 2.0
 jvm_threads_states_threads{state="waiting"} 1.0
 # HELP process_start_time_seconds Start time of the process since unix epoch.
 # TYPE process_start_time_seconds gauge
-process_start_time_seconds 1.776708356624E9
+process_start_time_seconds 1.776782104143E9
 # HELP process_uptime_seconds The uptime of the Java virtual machine
 # TYPE process_uptime_seconds gauge
-process_uptime_seconds 4.081
+process_uptime_seconds 3.028

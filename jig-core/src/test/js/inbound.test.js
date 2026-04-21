@@ -145,21 +145,13 @@ test.describe('InboundApp', () => {
             el.id = id;
             doc.body.appendChild(el);
         });
-        // 表示設定ラジオボタン
-        [
-            {id: 'display-type-all', value: 'all', checked: true},
-            {id: 'display-type-http', value: 'HTTP_API'},
-            {id: 'display-type-queue', value: 'QUEUE_LISTENER'},
-            {id: 'display-type-scheduler', value: 'SCHEDULER'},
-        ].forEach(({id, value, checked}) => {
-            const radio = doc.createElement('input');
-            radio.id = id;
-            radio.setAttribute('type', 'radio');
-            radio.setAttribute('name', 'display-type');
-            radio.value = value;
-            radio._checked = !!checked;
-            doc.body.appendChild(radio);
-        });
+        // 表示設定パネル
+        const settingsEl = doc.createElement('details');
+        settingsEl.id = 'sidebar-settings';
+        const fieldset = doc.createElement('fieldset');
+        fieldset.id = 'display-type-fieldset';
+        settingsEl.appendChild(fieldset);
+        doc.body.appendChild(settingsEl);
         global.marked = {parse: (text) => text}; // markedのモック
         global.mermaid = {
             initialize: () => {
@@ -415,6 +407,16 @@ test.describe('InboundApp', () => {
         assert.equal(tbody.children[0].style.display, '', 'クリアすると全行表示');
     });
 
+    test('エントリーポイント種別が1種類以下の場合は表示設定パネルを非表示にする', () => {
+        globalThis.inboundData = mockInboundData; // HTTP_APIのみ
+        setGlossaryData(mockGlossaryData);
+        InboundApp.init();
+
+        const settingsEl = document.getElementById('sidebar-settings');
+        assert.equal(settingsEl.style.display, 'none');
+        assert.equal(document.querySelectorAll('input[name="display-type"]').length, 0);
+    });
+
     test('表示設定ラジオボタンで絞り込むとサマリー・カード・サイドバーが絞り込まれる', () => {
         globalThis.inboundData = {
             inboundAdapters: [
@@ -441,8 +443,10 @@ test.describe('InboundApp', () => {
         const mainList = document.getElementById('inbound-list');
         assert.equal(mainList.children.length, 3); // サマリー(2タイプ) + カード2枚
 
-        // HTTP_API のみに絞り込む
-        const radioHttp = document.getElementById('display-type-http');
+        // HTTP_API のみに絞り込む（動的生成されたラジオボタンを取得）
+        const radios = document.querySelectorAll('input[name="display-type"]');
+        const radioHttp = Array.from(radios).find(r => r.value === 'HTTP_API');
+        assert.ok(radioHttp, 'HTTP_APIラジオボタンが動的生成されている');
         radioHttp._checked = true;
         radioHttp.dispatchEvent(new EventStub('change'));
 

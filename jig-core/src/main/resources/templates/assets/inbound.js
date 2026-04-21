@@ -159,14 +159,7 @@ const InboundApp = (() => {
             renderSidebar(filteredAdapters());
         });
 
-        document.querySelectorAll('input[name="display-type"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                if (radio.checked) {
-                    state.displayType = radio.value;
-                    render();
-                }
-            });
-        });
+        initDisplayTypeSettings();
 
         render();
     }
@@ -175,6 +168,45 @@ const InboundApp = (() => {
         const all = state.data.inboundAdapters || [];
         if (state.displayType === 'all') return all;
         return all.filter(c => c.entrypoints?.some(ep => ep.entrypointType === state.displayType));
+    }
+
+    function initDisplayTypeSettings() {
+        const settingsEl = document.getElementById('sidebar-settings');
+        const fieldset = document.getElementById('display-type-fieldset');
+        if (!settingsEl || !fieldset) return;
+
+        const types = new Set(
+            (state.data.inboundAdapters || []).flatMap(c => (c.entrypoints || []).map(ep => ep.entrypointType)).filter(Boolean)
+        );
+
+        if (types.size <= 1) {
+            settingsEl.style.display = 'none';
+            return;
+        }
+
+        const options = [
+            {value: 'all', label: 'すべて'},
+            {value: 'HTTP_API', label: 'リクエストハンドラ'},
+            {value: 'QUEUE_LISTENER', label: 'メッセージリスナー'},
+            {value: 'SCHEDULER', label: 'スケジューラー'},
+        ].filter(opt => opt.value === 'all' || types.has(opt.value));
+
+        options.forEach(({value, label}, idx) => {
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'display-type';
+            radio.value = value;
+            if (idx === 0) radio.checked = true;
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    state.displayType = value;
+                    render();
+                }
+            });
+            const labelEl = document.createElement('label');
+            labelEl.append(radio, ' ' + label);
+            fieldset.appendChild(labelEl);
+        });
     }
 
     function render() {

@@ -211,17 +211,19 @@ test.describe('InboundApp', () => {
         const mainList = document.getElementById('inbound-list');
         assert.equal(mainList.children.length, 2); // サマリーセクション + コントローラーセクション
 
-        // サマリーセクション（リクエストハンドラ）
-        const summarySection = mainList.children[0];
-        assert.ok(summarySection.classList.has('entrypoint-summary-section'));
-        assert.equal(summarySection.querySelector('h3').textContent, 'リクエストハンドラ');
-        const summaryTable = summarySection.querySelector('table.entrypoint-summary');
+        // サマリーカード（エントリーポイント一覧）
+        const summaryCard = mainList.children[0];
+        assert.ok(summaryCard.classList.has('entrypoint-summary-section'));
+        assert.equal(summaryCard.querySelector('h3').textContent, 'エントリーポイント一覧');
+        // リクエストハンドラのサブセクション
+        assert.equal(summaryCard.querySelector('h4').textContent, 'リクエストハンドラ');
+        const summaryTable = summaryCard.querySelector('table.entrypoint-summary');
         assert.ok(summaryTable);
         const rows = summaryTable.querySelectorAll('tbody tr');
         assert.equal(rows.length, 1);
         const cells = rows[0].children;
         assert.equal(cells[0].textContent, '/api/method1'); // クラスパス+メソッドパス
-        assert.equal(cells[1].textContent, 'GET');      // メソッドが2列目
+        assert.equal(cells[1].textContent, 'GET');
         const link = cells[2].querySelector('a');
         assert.equal(link.textContent, 'com.example.ControllerA#method1()');
         assert.ok(link.getAttribute('href').startsWith('#'));

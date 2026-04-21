@@ -208,11 +208,11 @@ const InboundApp = (() => {
         });
     }
 
-    function buildSummarySection(title, headers, rows) {
+    function buildTypeSubSection(title, headers, rows) {
         return Jig.dom.createElement("section", {
-            className: "jig-card jig-card--type entrypoint-summary-section",
+            className: "jig-card jig-card--item",
             children: [
-                Jig.dom.createElement("h3", {textContent: title}),
+                Jig.dom.createElement("h4", {textContent: title}),
                 Jig.dom.createElement("table", {
                     className: "entrypoint-summary",
                     children: [
@@ -240,7 +240,7 @@ const InboundApp = (() => {
             });
         });
 
-        const sections = [];
+        const subSections = [];
 
         if (typeRows.HTTP_API.length > 0) {
             const sorted = [...typeRows.HTTP_API].sort((a, b) => {
@@ -248,7 +248,7 @@ const InboundApp = (() => {
                 const [, pathB] = splitHttpPath(b.ep.path);
                 return (a.classPath + pathA).localeCompare(b.classPath + pathB);
             });
-            sections.push(buildSummarySection('リクエストハンドラ',
+            subSections.push(buildTypeSubSection('リクエストハンドラ',
                 ['パス', 'メソッド', 'エントリーポイント'],
                 sorted.map(({ep, cardId, classPath}) => {
                     const [method, path] = splitHttpPath(ep.path);
@@ -258,7 +258,7 @@ const InboundApp = (() => {
         }
 
         if (typeRows.QUEUE_LISTENER.length > 0) {
-            sections.push(buildSummarySection('メッセージリスナー',
+            subSections.push(buildTypeSubSection('メッセージリスナー',
                 ['パス', 'エントリーポイント'],
                 typeRows.QUEUE_LISTENER.map(({ep, cardId, classPath}) => [
                     Jig.dom.createCell(classPath + (ep.path || '')),
@@ -268,7 +268,7 @@ const InboundApp = (() => {
         }
 
         if (typeRows.SCHEDULER.length > 0) {
-            sections.push(buildSummarySection('スケジューラー',
+            subSections.push(buildTypeSubSection('スケジューラー',
                 ['パス', 'エントリーポイント'],
                 typeRows.SCHEDULER.map(({ep, cardId, classPath}) => [
                     Jig.dom.createCell(classPath + (ep.path || '')),
@@ -277,7 +277,15 @@ const InboundApp = (() => {
             ));
         }
 
-        return sections;
+        if (subSections.length === 0) return null;
+
+        return Jig.dom.createElement("section", {
+            className: "jig-card jig-card--type entrypoint-summary-section",
+            children: [
+                Jig.dom.createElement("h3", {textContent: "エントリーポイント一覧"}),
+                ...subSections
+            ]
+        });
     }
 
     function renderMain(inboundTypes) {
@@ -290,7 +298,8 @@ const InboundApp = (() => {
             return;
         }
 
-        renderSummaryTable(inboundTypes).forEach(section => container.appendChild(section));
+        const summaryCard = renderSummaryTable(inboundTypes);
+        if (summaryCard) container.appendChild(summaryCard);
 
         inboundTypes.forEach(inboundType => {
             const typeTerm = Jig.glossary.getTypeTerm(inboundType.fqn);

@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {DocumentStub, setGlossaryData} = require('./dom-stub.js');
+const {DocumentStub, EventStub, setGlossaryData} = require('./dom-stub.js');
 
 // モック用のデータ
 const mockInboundData = {
@@ -361,5 +361,42 @@ test.describe('InboundApp', () => {
         // usecase.htmlへのclickリンクは生成されない
         assert.ok(!mermaidPre.textContent.includes('click'));
         assert.ok(mermaidPre.textContent.includes('GET /method1'));
+    });
+
+    test('リクエストハンドラのフィルター入力でパス部分一致絞り込みができる', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.ControllerA",
+                classPath: "/api",
+                relations: [],
+                entrypoints: [
+                    {fqn: "com.example.ControllerA#methodA()", entrypointType: "HTTP_API", path: "GET /users"},
+                    {fqn: "com.example.ControllerA#methodB()", entrypointType: "HTTP_API", path: "GET /orders"}
+                ]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ControllerA": {title: "ControllerA", description: "", kind: "クラス"},
+            "com.example.ControllerA#methodA()": {title: "methodA", simpleText: "methodA", kind: "メソッド", description: ""},
+            "com.example.ControllerA#methodB()": {title: "methodB", simpleText: "methodB", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const filterInput = document.getElementById('inbound-list').querySelector('input.entrypoint-filter');
+        assert.ok(filterInput, 'フィルター入力欄が存在する');
+
+        const tbody = document.getElementById('inbound-list').querySelector('table.entrypoint-summary tbody');
+        assert.equal(tbody.children.length, 2);
+
+        filterInput.value = 'user';
+        filterInput.dispatchEvent(new EventStub('input'));
+
+        // パス昇順ソート: /api/orders → /api/users
+        assert.equal(tbody.children[0].style.display, 'none', '/api/orders はマッチしないので非表示');
+        assert.equal(tbody.children[1].style.display, '', '/api/users はマッチするので表示');
+
+        filterInput.value = '';
+        filterInput.dispatchEvent(new EventStub('input'));
+        assert.equal(tbody.children[0].style.display, '', 'クリアすると全行表示');
     });
 });

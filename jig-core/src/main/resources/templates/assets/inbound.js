@@ -215,25 +215,43 @@ const InboundApp = (() => {
         });
     }
 
-    function buildTypeSubSection(title, headers, rows) {
+    function buildTypeSubSection(title, headers, rows, withFilter = false) {
+        const tbody = Jig.dom.createElement("tbody", {
+            children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
+        });
+
+        const sectionChildren = [Jig.dom.createElement("h4", {textContent: title})];
+
+        if (withFilter) {
+            const filterInput = Jig.dom.createElement("input", {
+                className: "entrypoint-filter",
+                attributes: {type: "search", placeholder: "パスで絞り込み", autocomplete: "off"}
+            });
+            filterInput.addEventListener('input', () => {
+                const text = filterInput.value.toLowerCase();
+                for (const tr of tbody.children) {
+                    const path = (tr.children[0]?.textContent || '').toLowerCase();
+                    tr.style.display = text && !path.includes(text) ? 'none' : '';
+                }
+            });
+            sectionChildren.push(filterInput);
+        }
+
+        sectionChildren.push(Jig.dom.createElement("table", {
+            className: "entrypoint-summary",
+            children: [
+                Jig.dom.createElement("thead", {
+                    children: [Jig.dom.createElement("tr", {
+                        children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
+                    })]
+                }),
+                tbody
+            ]
+        }));
+
         return Jig.dom.createElement("section", {
             className: "jig-card jig-card--item",
-            children: [
-                Jig.dom.createElement("h4", {textContent: title}),
-                Jig.dom.createElement("table", {
-                    className: "entrypoint-summary",
-                    children: [
-                        Jig.dom.createElement("thead", {
-                            children: [Jig.dom.createElement("tr", {
-                                children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
-                            })]
-                        }),
-                        Jig.dom.createElement("tbody", {
-                            children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
-                        })
-                    ]
-                })
-            ]
+            children: sectionChildren
         });
     }
 
@@ -260,7 +278,8 @@ const InboundApp = (() => {
                 sorted.map(({ep, cardId, classPath}) => {
                     const [method, path] = splitHttpPath(ep.path);
                     return [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)];
-                })
+                }),
+                true
             ));
         }
 

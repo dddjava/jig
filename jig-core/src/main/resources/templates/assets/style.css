@@ -2048,3 +2048,13 @@ p.jig-data-warning {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.entrypoint-filter {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    border: 1px solid #d4d9e5;
+    border-radius: 4px;
+    font-size: 0.9em;
+}

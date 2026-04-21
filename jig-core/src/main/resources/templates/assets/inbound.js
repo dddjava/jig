@@ -238,7 +238,7 @@ const InboundApp = (() => {
         }
 
         sectionChildren.push(Jig.dom.createElement("table", {
-            className: "entrypoint-summary",
+            className: "entrypoint-summary" + (withFilter ? " entrypoint-summary--http" : ""),
             children: [
                 Jig.dom.createElement("thead", {
                     children: [Jig.dom.createElement("tr", {

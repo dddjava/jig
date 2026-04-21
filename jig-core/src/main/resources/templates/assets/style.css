@@ -2058,3 +2058,8 @@ p.jig-data-warning {
     border-radius: 4px;
     font-size: 0.9em;
 }
+
+.entrypoint-summary--http th:nth-child(2),
+.entrypoint-summary--http td:nth-child(2) {
+    width: 5em;
+}

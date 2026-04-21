@@ -145,6 +145,21 @@ test.describe('InboundApp', () => {
             el.id = id;
             doc.body.appendChild(el);
         });
+        // 表示設定ラジオボタン
+        [
+            {id: 'display-type-all', value: 'all', checked: true},
+            {id: 'display-type-http', value: 'HTTP_API'},
+            {id: 'display-type-queue', value: 'QUEUE_LISTENER'},
+            {id: 'display-type-scheduler', value: 'SCHEDULER'},
+        ].forEach(({id, value, checked}) => {
+            const radio = doc.createElement('input');
+            radio.id = id;
+            radio.setAttribute('type', 'radio');
+            radio.setAttribute('name', 'display-type');
+            radio.value = value;
+            radio._checked = !!checked;
+            doc.body.appendChild(radio);
+        });
         global.marked = {parse: (text) => text}; // markedのモック
         global.mermaid = {
             initialize: () => {
@@ -398,5 +413,51 @@ test.describe('InboundApp', () => {
         filterInput.value = '';
         filterInput.dispatchEvent(new EventStub('input'));
         assert.equal(tbody.children[0].style.display, '', 'クリアすると全行表示');
+    });
+
+    test('表示設定ラジオボタンで絞り込むとサマリー・カード・サイドバーが絞り込まれる', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.HttpController",
+                    classPath: "/api", relations: [],
+                    entrypoints: [{fqn: "com.example.HttpController#get()", entrypointType: "HTTP_API", path: "GET /items"}]
+                },
+                {
+                    fqn: "com.example.QueueListener",
+                    classPath: "", relations: [],
+                    entrypoints: [{fqn: "com.example.QueueListener#onMessage()", entrypointType: "QUEUE_LISTENER", path: "my-queue"}]
+                }
+            ]
+        };
+        setGlossaryData({
+            "com.example.HttpController": {title: "HttpController", description: "", kind: "クラス"},
+            "com.example.HttpController#get()": {title: "get", simpleText: "get", kind: "メソッド", description: ""},
+            "com.example.QueueListener": {title: "QueueListener", description: "", kind: "クラス"},
+            "com.example.QueueListener#onMessage()": {title: "onMessage", simpleText: "onMessage", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        assert.equal(mainList.children.length, 3); // サマリー(2タイプ) + カード2枚
+
+        // HTTP_API のみに絞り込む
+        const radioHttp = document.getElementById('display-type-http');
+        radioHttp._checked = true;
+        radioHttp.dispatchEvent(new EventStub('change'));
+
+        // サマリーカードは1セクション（リクエストハンドラのみ）
+        const summaryCard = mainList.children[0];
+        assert.equal(summaryCard.querySelectorAll('h4').length, 1);
+        assert.equal(summaryCard.querySelector('h4').textContent, 'リクエストハンドラ');
+
+        // カードは1枚（HttpController のみ）
+        assert.equal(mainList.children.length, 2); // サマリー + HttpController カード
+
+        // サイドバーはリクエストハンドラセクションのみ
+        const sidebar = document.getElementById('inbound-sidebar-list');
+        const sections = sidebar.querySelectorAll('section');
+        const sectionTitles = Array.from(sections).map(s => s.querySelector('p')?.textContent).filter(Boolean);
+        assert.ok(sectionTitles.every(t => t === 'リクエストハンドラ'), 'リクエストハンドラのみ表示');
     });
 });

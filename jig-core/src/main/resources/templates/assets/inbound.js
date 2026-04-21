@@ -6,6 +6,7 @@ const InboundApp = (() => {
     const state = {
         data: null,
         sidebarFilterText: '',
+        displayType: 'all',
     };
 
     const Diagram = {
@@ -146,6 +147,7 @@ const InboundApp = (() => {
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
         state.data = null;
         state.sidebarFilterText = '';
+        state.displayType = 'all';
 
         state.data = parseInboundData();
         if (!state.data) {
@@ -154,16 +156,31 @@ const InboundApp = (() => {
 
         Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
             state.sidebarFilterText = text;
-            renderSidebar(state.data.inboundAdapters || []);
+            renderSidebar(filteredAdapters());
+        });
+
+        document.querySelectorAll('input[name="display-type"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    state.displayType = radio.value;
+                    render();
+                }
+            });
         });
 
         render();
     }
 
+    function filteredAdapters() {
+        const all = state.data.inboundAdapters || [];
+        if (state.displayType === 'all') return all;
+        return all.filter(c => c.entrypoints?.some(ep => ep.entrypointType === state.displayType));
+    }
+
     function render() {
-        const controllers = state.data.inboundAdapters || [];
-        renderSidebar(controllers);
-        renderMain(controllers);
+        const adapters = filteredAdapters();
+        renderSidebar(adapters);
+        renderMain(adapters);
     }
 
     function renderSidebar(adapters) {

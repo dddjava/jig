@@ -234,8 +234,9 @@ const InboundApp = (() => {
         const typeRows = {HTTP_API: [], QUEUE_LISTENER: [], SCHEDULER: []};
         inboundTypes.forEach(inboundType => {
             const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, inboundType.fqn);
+            const classPath = inboundType.classPath || '';
             (inboundType.entrypoints || []).forEach(ep => {
-                if (typeRows[ep.entrypointType]) typeRows[ep.entrypointType].push({ep, cardId});
+                if (typeRows[ep.entrypointType]) typeRows[ep.entrypointType].push({ep, cardId, classPath});
             });
         });
 
@@ -245,13 +246,13 @@ const InboundApp = (() => {
             const sorted = [...typeRows.HTTP_API].sort((a, b) => {
                 const [, pathA] = splitHttpPath(a.ep.path);
                 const [, pathB] = splitHttpPath(b.ep.path);
-                return pathA.localeCompare(pathB);
+                return (a.classPath + pathA).localeCompare(b.classPath + pathB);
             });
             sections.push(buildSummarySection('リクエストハンドラ',
                 ['パス', 'メソッド', 'エントリーポイント'],
-                sorted.map(({ep, cardId}) => {
+                sorted.map(({ep, cardId, classPath}) => {
                     const [method, path] = splitHttpPath(ep.path);
-                    return [Jig.dom.createCell(path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)];
+                    return [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)];
                 })
             ));
         }
@@ -259,8 +260,8 @@ const InboundApp = (() => {
         if (typeRows.QUEUE_LISTENER.length > 0) {
             sections.push(buildSummarySection('メッセージリスナー',
                 ['パス', 'エントリーポイント'],
-                typeRows.QUEUE_LISTENER.map(({ep, cardId}) => [
-                    Jig.dom.createCell(ep.path || ''),
+                typeRows.QUEUE_LISTENER.map(({ep, cardId, classPath}) => [
+                    Jig.dom.createCell(classPath + (ep.path || '')),
                     linkCell(ep.fqn, cardId)
                 ])
             ));
@@ -269,8 +270,8 @@ const InboundApp = (() => {
         if (typeRows.SCHEDULER.length > 0) {
             sections.push(buildSummarySection('スケジューラー',
                 ['パス', 'エントリーポイント'],
-                typeRows.SCHEDULER.map(({ep, cardId}) => [
-                    Jig.dom.createCell(ep.path || ''),
+                typeRows.SCHEDULER.map(({ep, cardId, classPath}) => [
+                    Jig.dom.createCell(classPath + (ep.path || '')),
                     linkCell(ep.fqn, cardId)
                 ])
             ));

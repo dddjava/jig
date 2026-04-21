@@ -220,7 +220,7 @@ test.describe('InboundApp', () => {
         const rows = summaryTable.querySelectorAll('tbody tr');
         assert.equal(rows.length, 1);
         const cells = rows[0].children;
-        assert.equal(cells[0].textContent, '/method1'); // パスが先頭
+        assert.equal(cells[0].textContent, '/api/method1'); // クラスパス+メソッドパス
         assert.equal(cells[1].textContent, 'GET');      // メソッドが2列目
         const link = cells[2].querySelector('a');
         assert.equal(link.textContent, 'com.example.ControllerA#method1()');

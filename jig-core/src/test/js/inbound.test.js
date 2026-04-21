@@ -164,6 +164,7 @@ test.describe('InboundApp', () => {
         require('../../main/resources/templates/assets/jig-mermaid.js');
         globalThis.Jig.dom = {
             createElement,
+            createCell: (text, className) => createElement('td', {className: className || undefined, textContent: text}),
             parseMarkdown: (markdown) => String(markdown ?? ''),
             createMarkdownElement: (markdown) => createElement('div', {
                 className: 'markdown',
@@ -208,8 +209,22 @@ test.describe('InboundApp', () => {
         assert.equal(sidebar.querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
-        assert.equal(mainList.children.length, 1);
-        const controllerSection = mainList.children[0];
+        assert.equal(mainList.children.length, 2); // サマリーテーブル + コントローラーセクション
+
+        // サマリーテーブル
+        const summaryTable = mainList.children[0];
+        assert.equal(summaryTable.tagName.toLowerCase(), 'table');
+        assert.ok(summaryTable.classList.has('entrypoint-summary'));
+        const rows = summaryTable.querySelectorAll('tbody tr');
+        assert.equal(rows.length, 1);
+        const cells = rows[0].children;
+        assert.equal(cells[0].textContent, 'GET');
+        assert.equal(cells[1].textContent, '/method1');
+        const link = cells[2].querySelector('a');
+        assert.equal(link.textContent, 'com.example.ControllerA#method1()');
+        assert.ok(link.getAttribute('href').startsWith('#'));
+
+        const controllerSection = mainList.children[1];
         assert.equal(controllerSection.id, globalThis.Jig.util.fqnToId("adapter", 'com.example.ControllerA'));
         assert.equal(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
         assert.equal(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
@@ -317,7 +332,7 @@ test.describe('InboundApp', () => {
         };
         InboundApp.init();
 
-        const mermaidPre = document.getElementById('inbound-list').children[0].querySelector('.mermaid');
+        const mermaidPre = document.getElementById('inbound-list').children[1].querySelector('.mermaid');
         assert.ok(mermaidPre);
         const mermaidCode = mermaidPre.textContent;
         // method2 (depth=1, maxDepth=2) からのエッジは ---> になる
@@ -331,7 +346,7 @@ test.describe('InboundApp', () => {
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
-        const mermaidPre = mainList.children[0].querySelector('.mermaid');
+        const mermaidPre = mainList.children[1].querySelector('.mermaid');
         assert.ok(mermaidPre);
         // entrypointおよびmethodのsubgraphが生成される
         assert.ok(mermaidPre.textContent.includes('subgraph'));

@@ -1,6 +1,8 @@
 const InboundApp = (() => {
     const Jig = globalThis.Jig;
 
+    const ADAPTER_ID_PREFIX = "adapter";
+
     const state = {
         data: null,
         sidebarFilterText: '',
@@ -183,11 +185,59 @@ const InboundApp = (() => {
                 .flatMap(c => {
                     const title = Jig.glossary.getTypeTerm(c.fqn).title;
                     if (filterText && !title.toLowerCase().includes(filterText)) return [];
-                    return [{id: Jig.util.fqnToId("adapter", c.fqn), label: title}];
+                    return [{id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,c.fqn), label: title}];
                 });
             if (items.length === 0) continue;
             Jig.dom.sidebar.renderSection(sidebar, label, items);
         }
+    }
+
+    function splitHttpPath(path) {
+        const spaceIdx = (path || '').indexOf(' ');
+        return spaceIdx !== -1
+            ? [path.slice(0, spaceIdx), path.slice(spaceIdx + 1)]
+            : ['', path || ''];
+    }
+
+    function renderSummaryTable(inboundTypes) {
+        const rows = [];
+        inboundTypes.forEach(inboundType => {
+            const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, inboundType.fqn);
+            (inboundType.entrypoints || []).forEach(ep => rows.push({ep, cardId}));
+        });
+        if (rows.length === 0) return null;
+
+        return Jig.dom.createElement("table", {
+            className: "entrypoint-summary",
+            children: [
+                Jig.dom.createElement("thead", {
+                    children: [Jig.dom.createElement("tr", {
+                        children: [
+                            Jig.dom.createElement("th", {textContent: "メソッド"}),
+                            Jig.dom.createElement("th", {textContent: "パス"}),
+                            Jig.dom.createElement("th", {textContent: "エントリーポイント"})
+                        ]
+                    })]
+                }),
+                Jig.dom.createElement("tbody", {
+                    children: rows.map(({ep, cardId}) => {
+                        const [method, path] = splitHttpPath(ep.path);
+                        return Jig.dom.createElement("tr", {
+                            children: [
+                                Jig.dom.createCell(method),
+                                Jig.dom.createCell(path),
+                                Jig.dom.createElement("td", {
+                                    children: [Jig.dom.createElement("a", {
+                                        textContent: ep.fqn,
+                                        attributes: {href: '#' + cardId}
+                                    })]
+                                })
+                            ]
+                        });
+                    })
+                })
+            ]
+        });
     }
 
     function renderMain(inboundTypes) {
@@ -200,12 +250,15 @@ const InboundApp = (() => {
             return;
         }
 
+        const summaryTable = renderSummaryTable(inboundTypes);
+        if (summaryTable) container.appendChild(summaryTable);
+
         inboundTypes.forEach(inboundType => {
             const typeTerm = Jig.glossary.getTypeTerm(inboundType.fqn);
 
             const jigCard = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: Jig.util.fqnToId("adapter", inboundType.fqn),
+                id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,inboundType.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
                         children: [Jig.dom.createElement("a", {textContent: typeTerm.title})]
@@ -255,6 +308,7 @@ const InboundApp = (() => {
         parseInboundData,
         render,
         renderSidebar,
+        renderSummaryTable,
         renderMain,
         Diagram
     };

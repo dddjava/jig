@@ -464,7 +464,7 @@ globalThis.Jig.dom = (() => {
         return createElement(tagName, {
             id,
             className: ["jig-card", "jig-card--item", extraClass].filter(Boolean).join(" "),
-            children: [createElement("h4", {textContent: title})]
+            children: title !== undefined ? [createElement("h4", {textContent: title})] : []
         });
     }
 

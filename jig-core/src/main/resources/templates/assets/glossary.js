@@ -155,14 +155,12 @@ const GlossaryApp = (() => {
         const list = document.getElementById("term-list");
         if (!list) return;
 
-        const groups = {};
+        const groups = new Map();
         terms.forEach(term => {
-            const char = getInitialChar(term);
-            if (!groups[char]) groups[char] = [];
-            groups[char].push(term);
+            Jig.util.pushToMap(groups, getInitialChar(term), term);
         });
 
-        const sortedChars = Object.keys(groups).sort(termCollator.compare);
+        const sortedChars = [...groups.keys()].sort(termCollator.compare);
         const domainRoots = getDomainPackageRoots();
 
         renderJumpBar(sortedChars);
@@ -170,7 +168,7 @@ const GlossaryApp = (() => {
         list.textContent = "";
 
         sortedChars.forEach(char => {
-            const groupTerms = groups[char];
+            const groupTerms = groups.get(char);
             const groupSection = Jig.dom.createElement("section", {
                 className: "glossary-group",
                 id: `group-${char}`,
@@ -202,13 +200,12 @@ const GlossaryApp = (() => {
                     }
                 }
                 if (metaItems.length > 0) {
+                    const metaCard = Jig.dom.card.item({extraClass: "weak"});
+                    metaItems.forEach(item => metaCard.appendChild(item));
                     const details = Jig.dom.createElement("details", {
                         children: [
                             Jig.dom.createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報"}),
-                            Jig.dom.createElement("section", {
-                                className: "jig-card jig-card--item weak",
-                                children: metaItems
-                            })
+                            metaCard
                         ]
                     });
                     if (!isCompact) details.open = true;

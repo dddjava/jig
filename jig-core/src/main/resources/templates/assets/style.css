@@ -892,10 +892,6 @@ label {
     font-size: 0.65em;
 }
 
-.jig-card--compact h3 .kind-badge {
-    font-size: 0.65em;
-}
-
 .glossary-group-header {
     position: sticky;
     top: 3.5em; /* jump-bar の下に来るように調整 */
@@ -907,17 +903,6 @@ label {
     z-index: 15;
     font-size: 1.1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 概要表示用のコンパクトカード */
-.jig-card.jig-card--compact {
-    padding: 8px 12px;
-    border-left: 4px solid #1b3a66;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
 }
 
 .jig-card.jig-card--type {
@@ -952,11 +937,6 @@ label {
 
 .jig-card.jig-card--item:target {
     animation: jig-card-item-highlight 2s ease-out;
-}
-
-.jig-card.jig-card--compact h3 {
-    margin: 0;
-    font-size: 1rem;
 }
 
 /* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */

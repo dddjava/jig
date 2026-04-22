@@ -220,7 +220,6 @@ const GlossaryApp = (() => {
                     title: term.title || "",
                     kind: term.kind || "",
                     tagName: "article",
-                    extraClass: isCompact ? "jig-card--compact" : undefined
                 });
                 metaChildren.forEach(child => article.appendChild(child));
                 article.appendChild(Jig.dom.createMarkdownElement(term.description || ""));

@@ -414,7 +414,7 @@ test.describe('glossary.js', () => {
 
             const groupSection = list.children[0];
             const article = groupSection.children[1];
-            assert.equal(article.classList.contains('jig-card--compact'), true, '属性情報非表示（showAttributes=false）ではcompactクラスがあるはず');
+            assert.equal(article.classList.contains('jig-card--type'), true, '属性情報非表示（showAttributes=false）でもjig-card--typeクラスがあるはず');
             assert.ok(!article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), '属性情報非表示ではFQNがないはず');
         });
 

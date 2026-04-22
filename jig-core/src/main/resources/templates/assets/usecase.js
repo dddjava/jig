@@ -678,17 +678,8 @@ const UsecaseApp = (() => {
                 const methodTerm = Jig.glossary.getMethodTerm(method.fqn);
                 const methodDescription = methodTerm.description;
 
-                const methodSection = Jig.dom.createElement("article", {
-                    className: "jig-card jig-card--item",
-                    id: fqnToMethodId(method.fqn),
-                    children: [
-                        Jig.dom.createElement("h4", {textContent: methodTerm.title}),
-                        Jig.dom.createElement("div", {
-                            className: "declaration",
-                            textContent: methodTerm.shortDeclaration
-                        })
-                    ]
-                });
+                const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
+                methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
 
                 if (methodDescription) {
                     methodSection.appendChild(Jig.dom.createElement("section", {

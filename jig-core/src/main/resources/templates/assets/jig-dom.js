@@ -273,13 +273,9 @@ globalThis.Jig.dom = (() => {
             ]
         }));
 
-        return createElement("section", {
-            className: "methods-section jig-card jig-card--item fields",
-            children: [
-                createElement("h4", {textContent: "フィールド"}),
-                ...items
-            ]
-        });
+        const card = createItemCard({title: "フィールド", extraClass: "methods-section fields"});
+        items.forEach(item => card.appendChild(item));
+        return card;
     }
 
     /**
@@ -344,13 +340,9 @@ globalThis.Jig.dom = (() => {
     function createMethodsList(kind, methods, createTypeRefFn) {
         if (methods.length === 0) return null;
 
-        return createElement("section", {
-            className: "methods-section jig-card jig-card--item",
-            children: [
-                createElement("h4", {textContent: kind}),
-                ...methods.map(method => createMethodItem(method, createTypeRefFn))
-            ]
-        });
+        const card = createItemCard({title: kind, extraClass: "methods-section"});
+        methods.forEach(method => card.appendChild(createMethodItem(method, createTypeRefFn)));
+        return card;
     }
 
     function setTypeLinkResolver(resolver) {
@@ -468,6 +460,14 @@ globalThis.Jig.dom = (() => {
         input.addEventListener('input', () => onChange(input.value.trim()));
     }
 
+    function createItemCard({id, title, tagName = "section", extraClass} = {}) {
+        return createElement(tagName, {
+            id,
+            className: ["jig-card", "jig-card--item", extraClass].filter(Boolean).join(" "),
+            children: [createElement("h4", {textContent: title})]
+        });
+    }
+
     function createTypeCard({id, title, fqn, kind, attributes, tagName = "section"} = {}) {
         const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
         const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleEl] : [titleEl];
@@ -499,6 +499,7 @@ globalThis.Jig.dom = (() => {
 
         card: {
             type: createTypeCard,
+            item: createItemCard,
         },
         type: {
             setResolver: setTypeLinkResolver,

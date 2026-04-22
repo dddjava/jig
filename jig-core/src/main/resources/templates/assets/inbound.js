@@ -240,25 +240,21 @@ const InboundApp = (() => {
     }
 
     function buildTypeSubSection(title, headers, rows) {
-        return Jig.dom.createElement("section", {
-            className: "jig-card jig-card--item",
+        const card = Jig.dom.card.item({title});
+        card.appendChild(Jig.dom.createElement("table", {
+            className: "entrypoint-summary",
             children: [
-                Jig.dom.createElement("h4", {textContent: title}),
-                Jig.dom.createElement("table", {
-                    className: "entrypoint-summary",
-                    children: [
-                        Jig.dom.createElement("thead", {
-                            children: [Jig.dom.createElement("tr", {
-                                children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
-                            })]
-                        }),
-                        Jig.dom.createElement("tbody", {
-                            children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
-                        })
-                    ]
+                Jig.dom.createElement("thead", {
+                    children: [Jig.dom.createElement("tr", {
+                        children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
+                    })]
+                }),
+                Jig.dom.createElement("tbody", {
+                    children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
                 })
             ]
-        });
+        }));
+        return card;
     }
 
     function buildHttpSubSection(rows) {
@@ -278,24 +274,20 @@ const InboundApp = (() => {
             }
         });
 
-        return Jig.dom.createElement("section", {
-            className: "jig-card jig-card--item",
+        const card = Jig.dom.card.item({title: 'リクエストハンドラ'});
+        card.appendChild(filterInput);
+        card.appendChild(Jig.dom.createElement("table", {
+            className: "entrypoint-summary entrypoint-summary--http",
             children: [
-                Jig.dom.createElement("h4", {textContent: 'リクエストハンドラ'}),
-                filterInput,
-                Jig.dom.createElement("table", {
-                    className: "entrypoint-summary entrypoint-summary--http",
-                    children: [
-                        Jig.dom.createElement("thead", {
-                            children: [Jig.dom.createElement("tr", {
-                                children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.createElement("th", {textContent: h}))
-                            })]
-                        }),
-                        tbody
-                    ]
-                })
+                Jig.dom.createElement("thead", {
+                    children: [Jig.dom.createElement("tr", {
+                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.createElement("th", {textContent: h}))
+                    })]
+                }),
+                tbody
             ]
-        });
+        }));
+        return card;
     }
 
     function renderSummaryTable(adapters) {

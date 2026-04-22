@@ -605,13 +605,8 @@ const DomainApp = (() => {
             })
         });
 
-        const section = Jig.dom.createElement("section", {
-            className: "jig-card jig-card--item",
-            children: [
-                Jig.dom.createElement("h4", {textContent: "列挙値"}),
-                dl
-            ]
-        });
+        const section = Jig.dom.card.item({title: "列挙値"});
+        section.appendChild(dl);
 
         const parameterNames = type.enumInfo.parameterNames;
         if (parameterNames.length) {

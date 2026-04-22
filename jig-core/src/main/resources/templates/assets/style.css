@@ -1658,19 +1658,16 @@ table td.number {
     align-content: start;
 }
 
-.outbound-interface .outbound-group-card {
-}
-
-.outbound-interface .outbound-group-card > h3 {
+.outbound-interface .jig-card--type > h3 {
     margin: 0;
 }
 
-.outbound-interface .outbound-group-card > .fully-qualified-name {
+.outbound-interface .jig-card--type > .fully-qualified-name {
     margin-top: 4px;
     margin-bottom: 0;
 }
 
-.outbound-interface .outbound-group-card > .weak {
+.outbound-interface .jig-card--type > .weak {
     margin-top: 4px;
     margin-bottom: 10px;
 }

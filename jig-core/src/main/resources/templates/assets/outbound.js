@@ -315,7 +315,6 @@ const OutboundApp = (() => {
                     id: portId,
                     title: portLabel,
                     fqn: portFqnValue,
-                    extraClass: "outbound-group-card"
                 });
 
                 if (visibility.adapter) {
@@ -417,7 +416,6 @@ const OutboundApp = (() => {
                 const persistenceCard = Jig.dom.card.type({
                     id: targetId,
                     title: group.persistenceTarget,
-                    extraClass: "outbound-group-card"
                 });
                 persistenceCard.appendChild(persistenceMermaidContainer);
                 container.appendChild(persistenceCard);
@@ -458,7 +456,6 @@ const OutboundApp = (() => {
                     id: externalId,
                     title: externalLabel,
                     fqn: externalFqn,
-                    extraClass: "outbound-group-card"
                 });
                 externalCard.appendChild(externalMermaidContainer);
                 container.appendChild(externalCard);

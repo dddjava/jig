@@ -770,29 +770,29 @@ const UsecaseApp = (() => {
                             const classSubgraphs = new Map();
                             const ensureClassSubgraph = (fqn) => {
                                 const classFqn = getClassFqnFromMethodFqn(fqn);
-                                return builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), Jig.glossary.getTypeTerm(classFqn).title, 'LR');
+                                return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), Jig.glossary.getTypeTerm(classFqn).title, 'LR')};
                             };
                             currentUsecaseDiagram.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
                                 if (node.kind === "inbound-method") {
-                                    const subgraph = ensureClassSubgraph(node.fqn);
+                                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                                     const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                                     builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
                                     builder.addClass(nodeId, "inbound");
-                                    builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", getClassFqnFromMethodFqn(node.fqn)));
+                                    builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
                                 } else if (node.kind === "outbound-method") {
-                                    const subgraph = ensureClassSubgraph(node.fqn);
+                                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                                     const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                                     builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
                                     builder.addClass(nodeId, "outbound");
-                                    builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", getClassFqnFromMethodFqn(node.fqn)));
+                                    builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
                                 } else if (node.kind === "domain-type") {
                                     const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, 'class');
                                     builder.addClass(nodeId, "domain");
                                     builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                                 } else {
-                                    const subgraph = ensureClassSubgraph(node.fqn);
+                                    const {subgraph} = ensureClassSubgraph(node.fqn);
                                     if (node.kind === "usecase") {
                                         const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                                         builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');

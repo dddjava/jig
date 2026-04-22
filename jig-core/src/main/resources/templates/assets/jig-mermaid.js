@@ -674,8 +674,7 @@ globalThis.Jig.mermaid = (() => {
         function transitiveReduction(relations) {
             const graph = new Map();
             relations.forEach(relation => {
-                if (!graph.has(relation.from)) graph.set(relation.from, []);
-                graph.get(relation.from).push(relation.to);
+                Jig.util.pushToMap(graph, relation.from, relation.to);
             });
 
             const sccs = detectStronglyConnectedComponents(graph);
@@ -689,8 +688,7 @@ globalThis.Jig.mermaid = (() => {
             const acyclicGraph = new Map();
             relations.forEach(edge => {
                 if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
-                if (!acyclicGraph.has(edge.from)) acyclicGraph.set(edge.from, []);
-                acyclicGraph.get(edge.from).push(edge.to);
+                Jig.util.pushToMap(acyclicGraph, edge.from, edge.to);
             });
 
             function isReachableWithoutDirect(start, end) {

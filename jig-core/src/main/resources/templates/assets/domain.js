@@ -226,15 +226,14 @@ const DomainApp = (() => {
             }));
         }
 
-        return Jig.dom.createElement("section", {
-            className: "jig-card jig-card--item",
-            children: [Jig.dom.createElement("details", {
-                children: [
-                    Jig.dom.createElement("summary", {textContent: "関連情報"}),
-                    ...detailsContent
-                ]
-            })]
-        });
+        const card = Jig.dom.card.item();
+        card.appendChild(Jig.dom.createElement("details", {
+            children: [
+                Jig.dom.createElement("summary", {textContent: "関連情報"}),
+                ...detailsContent
+            ]
+        }));
+        return card;
     }
 
     /**

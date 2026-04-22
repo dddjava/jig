@@ -227,7 +227,7 @@ const DomainApp = (() => {
         }
 
         return Jig.dom.createElement("section", {
-            className: "jig-card--item",
+            className: "jig-card jig-card--item",
             children: [Jig.dom.createElement("details", {
                 children: [
                     Jig.dom.createElement("summary", {textContent: "関連情報"}),

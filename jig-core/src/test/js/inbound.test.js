@@ -177,6 +177,21 @@ test.describe('InboundApp', () => {
                 className: 'markdown',
                 innerHTML: String(markdown ?? '')
             }),
+            card: {
+                type: ({id, title, fqn, kind, extraClass, attributes, tagName = "section"} = {}) => {
+                    const h3 = createElement("h3");
+                    if (kind !== undefined) h3.appendChild(createElement("span", {className: "kind-badge", textContent: kind || "?"}));
+                    h3.appendChild(typeof title === 'string' ? createElement("span", {textContent: title}) : title);
+                    const card = createElement(tagName, {id, className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "), attributes});
+                    card.appendChild(h3);
+                    if (fqn != null) {
+                        card.appendChild(typeof fqn === 'string'
+                            ? createElement("div", {className: "fully-qualified-name", textContent: fqn})
+                            : fqn);
+                    }
+                    return card;
+                }
+            },
             sidebar: {
                 renderSection: (container, title, items) => {
                     if (!container) return;
@@ -239,7 +254,7 @@ test.describe('InboundApp', () => {
 
         const controllerSection = mainList.children[1];
         assert.equal(controllerSection.id, globalThis.Jig.util.fqnToId("adapter", 'com.example.ControllerA'));
-        assert.equal(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
+        assert.equal(controllerSection.querySelector('h3 span').textContent, 'ControllerA');
         assert.equal(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.equal(controllerSection.querySelector('.class-path').textContent, '/api');
         assert.equal(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');

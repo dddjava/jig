@@ -677,19 +677,12 @@ const DomainApp = (() => {
         const allPackages = Jig.data.domain.getPackages();
 
         packages.forEach(pkg => {
-            const section = Jig.dom.createElement("section", {
-                className: "jig-card jig-card--type",
+            const section = Jig.dom.card.type({
                 id: Jig.util.fqnToId("domain", pkg.fqn),
-                attributes: {"data-has-enum-children": pkgHasEnum(pkg, childPackagesMap, typesMap) ? "true" : "false"},
-                children: [
-                    Jig.dom.createElement("h3", {
-                        children: [Jig.dom.kind.badgeElement("パッケージ"), Jig.glossary.getTypeTerm(pkg.fqn).title]
-                    }),
-                    Jig.dom.createElement("div", {
-                        className: "fully-qualified-name",
-                        textContent: pkg.fqn
-                    })
-                ]
+                title: Jig.glossary.getTypeTerm(pkg.fqn).title,
+                fqn: pkg.fqn,
+                kind: "パッケージ",
+                attributes: {"data-has-enum-children": pkgHasEnum(pkg, childPackagesMap, typesMap) ? "true" : "false"}
             });
 
             const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
@@ -795,14 +788,12 @@ const DomainApp = (() => {
                 fqnDiv.textContent = type.fqn;
             }
 
-            const section = Jig.dom.createElement("section", {
-                className: "jig-card jig-card--type",
+            const section = Jig.dom.card.type({
                 id: Jig.util.fqnToId("domain", type.fqn),
-                attributes: {"data-has-enum": type.enumInfo ? "true" : "false"},
-                children: [
-                    Jig.dom.createElement("h3", {children: [Jig.dom.kind.badgeElement("クラス"), titleSpan]}),
-                    fqnDiv
-                ]
+                title: titleSpan,
+                fqn: fqnDiv,
+                kind: "クラス",
+                attributes: {"data-has-enum": type.enumInfo ? "true" : "false"}
             });
 
             const typeDescription = Jig.glossary.getTypeTerm(type.fqn).description;

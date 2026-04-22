@@ -600,18 +600,10 @@ const UsecaseApp = (() => {
             if (handlerFqns && visibleUsecaseMethods.length === 0) return;
 
             const term = Jig.glossary.getTypeTerm(usecase.fqn);
-            const section = Jig.dom.createElement("section", {
-                className: "jig-card jig-card--type",
+            const section = Jig.dom.card.type({
                 id: fqnToTypeId(usecase.fqn),
-                children: [
-                    Jig.dom.createElement("h3", {
-                        children: [Jig.dom.createElement("span", {textContent: term.title})]
-                    }),
-                    Jig.dom.createElement("div", {
-                        className: "declaration",
-                        textContent: usecase.fqn
-                    })
-                ]
+                title: term.title,
+                fqn: usecase.fqn
             });
 
             if (term.description) {

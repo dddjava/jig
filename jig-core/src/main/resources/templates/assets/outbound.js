@@ -311,10 +311,12 @@ const OutboundApp = (() => {
                 const portId = Jig.util.fqnToId("port", portFqnValue);
                 const portLabel = Jig.glossary.getTypeTerm(portFqnValue).title;
 
-                const cardChildren = [
-                    Jig.dom.createElement("h3", {textContent: portLabel}),
-                    Jig.dom.createElement("p", {className: "fully-qualified-name", textContent: portFqnValue})
-                ];
+                const portCard = Jig.dom.card.type({
+                    id: portId,
+                    title: portLabel,
+                    fqn: portFqnValue,
+                    extraClass: "outbound-group-card"
+                });
 
                 if (visibility.adapter) {
                     const adapterLabels = Array.from(new Set(group.operations.map(operation => {
@@ -323,19 +325,19 @@ const OutboundApp = (() => {
                         return label + (label !== fqn ? ` (${fqn})` : "");
                     })));
                     if (adapterLabels.length > 0) {
-                        cardChildren.push(Jig.dom.createElement("p", {
+                        portCard.appendChild(Jig.dom.createElement("p", {
                             className: "weak",
                             textContent: "Implementation: " + adapterLabels.join(", ")
                         }));
                     }
                 }
 
-                cardChildren.push(Jig.dom.createElement("p", {
+                portCard.appendChild(Jig.dom.createElement("p", {
                     className: "weak",
                     textContent: `${group.operations.length} operations`
                 }));
 
-                Jig.mermaid.diagram.createAndRegister(cardChildren, (container) => {
+                Jig.mermaid.diagram.createAndRegister(portCard, (container) => {
                     const currentVisibility = App.readVisibility();
                     const generator = (dir) => this.generatePortMermaidCode(group, {...currentVisibility, direction: dir});
                     if (generator(currentVisibility.direction)) {
@@ -378,13 +380,9 @@ const OutboundApp = (() => {
                 });
                 itemListDetails.appendChild(itemListSummary);
                 itemListDetails.appendChild(itemList);
-                cardChildren.push(itemListDetails);
+                portCard.appendChild(itemListDetails);
 
-                container.appendChild(Jig.dom.createElement("section", {
-                    className: "outbound-group-card jig-card jig-card--type",
-                    id: portId,
-                    children: cardChildren
-                }));
+                container.appendChild(portCard);
             });
 
             Jig.dom.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => ({
@@ -416,14 +414,13 @@ const OutboundApp = (() => {
                     }
                 });
 
-                container.appendChild(Jig.dom.createElement("section", {
-                    className: "outbound-group-card jig-card jig-card--type",
+                const persistenceCard = Jig.dom.card.type({
                     id: targetId,
-                    children: [
-                        Jig.dom.createElement("h3", {textContent: group.persistenceTarget}),
-                        persistenceMermaidContainer
-                    ]
-                }));
+                    title: group.persistenceTarget,
+                    extraClass: "outbound-group-card"
+                });
+                persistenceCard.appendChild(persistenceMermaidContainer);
+                container.appendChild(persistenceCard);
             });
 
             Jig.dom.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
@@ -457,15 +454,14 @@ const OutboundApp = (() => {
                     }
                 });
 
-                container.appendChild(Jig.dom.createElement("section", {
-                    className: "outbound-group-card jig-card jig-card--type",
+                const externalCard = Jig.dom.card.type({
                     id: externalId,
-                    children: [
-                        Jig.dom.createElement("h3", {textContent: externalLabel}),
-                        Jig.dom.createElement("p", {className: "fully-qualified-name", textContent: externalFqn}),
-                        externalMermaidContainer
-                    ]
-                }));
+                    title: externalLabel,
+                    fqn: externalFqn,
+                    extraClass: "outbound-group-card"
+                });
+                externalCard.appendChild(externalMermaidContainer);
+                container.appendChild(externalCard);
             });
 
             Jig.dom.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({

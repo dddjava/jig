@@ -367,18 +367,10 @@ const InboundApp = (() => {
         adapters.forEach(adapter => {
             const typeTerm = Jig.glossary.getTypeTerm(adapter.fqn);
 
-            const jigCard = Jig.dom.createElement("section", {
-                className: "jig-card jig-card--type",
+            const jigCard = Jig.dom.card.type({
                 id: Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
-                children: [
-                    Jig.dom.createElement("h3", {
-                        children: [Jig.dom.createElement("a", {textContent: typeTerm.title})]
-                    }),
-                    Jig.dom.createElement("div", {
-                        className: "fully-qualified-name",
-                        textContent: adapter.fqn
-                    })
-                ]
+                title: typeTerm.title,
+                fqn: adapter.fqn
             });
 
             if (typeTerm.description) {

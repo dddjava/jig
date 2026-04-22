@@ -468,6 +468,26 @@ globalThis.Jig.dom = (() => {
         input.addEventListener('input', () => onChange(input.value.trim()));
     }
 
+    function createTypeCard({id, title, fqn, kind, extraClass, attributes, tagName = "section"} = {}) {
+        const h3Children = kind !== undefined ? [kindBadgeElement(kind)] : [];
+        h3Children.push(typeof title === 'string' ? createElement("span", {textContent: title}) : title);
+
+        const card = createElement(tagName, {
+            id,
+            className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
+            attributes,
+            children: [createElement("h3", {children: h3Children})]
+        });
+
+        if (fqn != null) {
+            card.appendChild(typeof fqn === 'string'
+                ? createElement("div", {className: "fully-qualified-name", textContent: fqn})
+                : fqn);
+        }
+
+        return card;
+    }
+
     return {
         createElement,
         parseMarkdown,
@@ -477,6 +497,9 @@ globalThis.Jig.dom = (() => {
         downloadCsv,
         setupSortableTables,
 
+        card: {
+            type: createTypeCard,
+        },
         type: {
             setResolver: setTypeLinkResolver,
             clearResolver: clearTypeLinkResolver,

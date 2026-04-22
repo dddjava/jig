@@ -215,20 +215,15 @@ const GlossaryApp = (() => {
                     metaChildren.push(details);
                 }
 
-                const article = Jig.dom.createElement("article", {
+                const article = Jig.dom.card.type({
                     id: anchorId,
-                    className: `jig-card jig-card--type ${isCompact ? "jig-card--compact" : ""}`,
-                    children: [
-                        Jig.dom.createElement("h3", {
-                            children: [
-                                Jig.dom.kind.badgeElement(term.kind || ""),
-                                Jig.dom.createElement("span", {textContent: term.title || ""}),
-                            ]
-                        }),
-                        ...metaChildren,
-                        Jig.dom.createMarkdownElement(term.description || ""),
-                    ]
+                    title: term.title || "",
+                    kind: term.kind || "",
+                    tagName: "article",
+                    extraClass: isCompact ? "jig-card--compact" : undefined
                 });
+                metaChildren.forEach(child => article.appendChild(child));
+                article.appendChild(Jig.dom.createMarkdownElement(term.description || ""));
                 groupSection.appendChild(article);
             });
 

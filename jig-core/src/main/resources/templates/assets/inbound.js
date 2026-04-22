@@ -330,14 +330,9 @@ const InboundApp = (() => {
 
         if (subSections.length === 0) return null;
 
-        return Jig.dom.createElement("section", {
-            className: "jig-card jig-card--type entrypoint-summary-section",
-            id: "entrypoint-summary",
-            children: [
-                Jig.dom.createElement("h3", {textContent: "エントリーポイント一覧"}),
-                ...subSections
-            ]
-        });
+        const section = Jig.dom.card.type({id: "entrypoint-summary", title: "エントリーポイント一覧", extraClass: "entrypoint-summary-section"});
+        subSections.forEach(s => section.appendChild(s));
+        return section;
     }
 
     function renderMain(adapters) {

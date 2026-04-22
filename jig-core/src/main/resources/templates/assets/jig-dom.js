@@ -468,13 +468,13 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createTypeCard({id, title, fqn, kind, attributes, tagName = "section"} = {}) {
+    function createTypeCard({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) {
         const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
         const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleEl] : [titleEl];
 
         const card = createElement(tagName, {
             id,
-            className: "jig-card jig-card--type",
+            className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
             attributes,
             children: [createElement("h3", {children: h3Children})]
         });

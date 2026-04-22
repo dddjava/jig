@@ -185,12 +185,12 @@ test.describe('InboundApp', () => {
                         children: title !== undefined ? [createElement("h4", {textContent: title})] : []
                     });
                 },
-                type: ({id, title, fqn, kind, attributes, tagName = "section"} = {}) => {
+                type: ({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) => {
                     const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
                     const h3Children = kind !== undefined ? [createElement("span", {className: "kind-badge"}), titleEl] : [titleEl];
                     const card = createElement(tagName, {
                         id,
-                        className: "jig-card jig-card--type",
+                        className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
                         attributes,
                         children: [createElement("h3", {children: h3Children})]
                     });

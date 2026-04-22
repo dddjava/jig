@@ -1453,9 +1453,6 @@ globalThis.Jig.mermaid = (() => {
                 panels[tab.id] = Jig.dom.createElement("div", {
                     className: "diagram-panel" + (tab.id !== activeId ? " hidden" : "")
                 });
-            });
-
-            tabDefs.forEach(tab => {
                 const btn = Jig.dom.createElement("button", {
                     className: "diagram-tab" + (tab.id === activeId ? " active" : ""),
                     textContent: tab.label,
@@ -1471,7 +1468,7 @@ globalThis.Jig.mermaid = (() => {
             });
 
             const section = Jig.dom.createElement("div", {
-                className: className || undefined,
+                className,
                 children: [tabsBar, ...Object.values(panels)],
             });
             return {panels, section};

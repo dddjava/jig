@@ -57,6 +57,17 @@ const GlossaryApp = (() => {
         return term.fqn ? Jig.util.fqnToId("term", term.fqn) : `term-${index}`;
     }
 
+    function createMetaItem(label, value) {
+        return Jig.dom.createElement("div", {
+            children: [
+                Jig.dom.createElement("span", {className: "meta-label", textContent: label}),
+                typeof value === "string"
+                    ? Jig.dom.createElement("span", {className: "meta-value", textContent: value})
+                    : value,
+            ]
+        });
+    }
+
     function escapeCsvValue(value) {
         const text = String(value ?? "")
             .replace(/\r\n/g, "\n")
@@ -104,7 +115,6 @@ const GlossaryApp = (() => {
         if (!title) return "#";
         const first = title.charAt(0).toUpperCase();
 
-        // アルファベット
         if (/^[A-Z]$/.test(first)) return first;
 
         // ひらがな (3040-309F) / カタカナ (30A0-30FF)
@@ -112,10 +122,8 @@ const GlossaryApp = (() => {
             return first;
         }
 
-        // 数字
         if (/^[0-9]$/.test(first)) return first;
 
-        // その他（漢字含む）はそのまま
         return first;
     }
 
@@ -148,7 +156,6 @@ const GlossaryApp = (() => {
         const list = document.getElementById("term-list");
         if (!list) return;
 
-        // 頭文字によるグルーピング
         const groups = {};
         terms.forEach(term => {
             const char = getInitialChar(term);
@@ -157,8 +164,8 @@ const GlossaryApp = (() => {
         });
 
         const sortedChars = Object.keys(groups).sort(termCollator.compare);
+        const domainRoots = getDomainPackageRoots();
 
-        // ジャンプバーの更新
         renderJumpBar(sortedChars);
 
         list.textContent = "";
@@ -179,47 +186,20 @@ const GlossaryApp = (() => {
 
                 const metaChildren = [];
                 const metaItems = [];
-                if (term.fqn) {
-                    metaItems.push(Jig.dom.createElement("div", {
-                        children: [
-                            Jig.dom.createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
-                            Jig.dom.createElement("span", {className: "meta-value", textContent: term.fqn}),
-                        ]
-                    }));
-                }
-                if (term.simpleText) {
-                    metaItems.push(Jig.dom.createElement("div", {
-                        children: [
-                            Jig.dom.createElement("span", {className: "meta-label", textContent: "単純名"}),
-                            Jig.dom.createElement("span", {className: "meta-value", textContent: term.simpleText}),
-                        ]
-                    }));
-                }
-                if (term.kind) {
-                    metaItems.push(Jig.dom.createElement("div", {
-                        children: [
-                            Jig.dom.createElement("span", {className: "meta-label", textContent: "種類"}),
-                            Jig.dom.createElement("span", {className: "meta-value", textContent: term.kind}),
-                        ]
-                    }));
-                }
+                if (term.fqn) metaItems.push(createMetaItem("完全修飾名", term.fqn));
+                if (term.simpleText) metaItems.push(createMetaItem("単純名", term.simpleText));
+                if (term.kind) metaItems.push(createMetaItem("種類", term.kind));
                 if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
-                    const domainRoots = getDomainPackageRoots();
                     const fqn = term.fqn;
                     const isInDomain = domainRoots.length > 0 && domainRoots.some(root =>
                         fqn === root || fqn.startsWith(root + ".")
                     );
                     if (isInDomain) {
-                        metaItems.push(Jig.dom.createElement("div", {
-                            children: [
-                                Jig.dom.createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
-                                Jig.dom.createElement("a", {
-                                    className: "meta-value",
-                                    attributes: {href: "domain.html#" + Jig.util.fqnToId("domain", fqn)},
-                                    textContent: "ドメインモデル",
-                                }),
-                            ]
-                        }));
+                        metaItems.push(createMetaItem("関連ドキュメント", Jig.dom.createElement("a", {
+                            className: "meta-value",
+                            attributes: {href: "domain.html#" + Jig.util.fqnToId("domain", fqn)},
+                            textContent: "ドメインモデル",
+                        })));
                     }
                 }
                 if (metaItems.length > 0) {
@@ -260,7 +240,6 @@ const GlossaryApp = (() => {
     function renderFilteredTerms(terms, controls) {
         const filteredTerms = getFilteredTerms(terms, controls);
         const sortedTerms = sortTerms(filteredTerms, "name");
-        // renderGlossaryTerms に属性情報表示フラグを渡す
         renderTermSidebar(sortedTerms);
         renderGlossaryTerms(sortedTerms, controls.showAttributesCheckbox?.checked);
     }
@@ -279,15 +258,12 @@ const GlossaryApp = (() => {
         const domainPackageRoots = getDomainPackageRoots();
 
         return terms.filter(term => {
-            // 種類で絞り込む
             const kindText = term.kind || "";
             if (!kindVisibilityMap[kindText]) return false;
 
-            // 説明文有無での判定
             const description = term.description || "";
             if (!showEmptyDescription && !description) return false;
 
-            // ドメインパッケージでの絞り込み
             if (showOnlyDomain && domainPackageRoots.length > 0) {
                 const fqn = term.fqn || "";
                 const isInDomainPackage = domainPackageRoots.some(root =>
@@ -296,7 +272,6 @@ const GlossaryApp = (() => {
                 if (!isInDomainPackage) return false;
             }
 
-            // テキストフィルタ（名前の部分一致）
             if (filterText) {
                 if (!(term.title || "").toLowerCase().includes(filterText)) return false;
             }
@@ -323,17 +298,13 @@ const GlossaryApp = (() => {
             showOnlyDomain: document.getElementById("show-only-domain"),
         };
 
-        // domainPackageRootsが空の場合、show-only-domainチェックボックスをdisabledにする
         const domainPackageRoots = getDomainPackageRoots();
-        if (controls.showOnlyDomain) {
-            if (domainPackageRoots.length === 0) {
-                controls.showOnlyDomain.disabled = true;
-            }
+        if (controls.showOnlyDomain && domainPackageRoots.length === 0) {
+            controls.showOnlyDomain.disabled = true;
         }
 
         const updateArticles = () => renderFilteredTerms(terms, controls);
 
-        // "change" イベントを購読するコントロールを配列で管理
         const changeControls = [
             controls.showEmptyDescription,
             controls.showPackage,
@@ -382,7 +353,6 @@ const GlossaryApp = (() => {
             if (el) el.scrollIntoView();
         };
         window.addEventListener("hashchange", scrollToHash);
-        // 初期表示時
         scrollToHash();
     }
 

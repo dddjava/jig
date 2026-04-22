@@ -112,7 +112,7 @@ const DomainApp = (() => {
             children: [
                 Jig.dom.createElement("summary", {
                     className: "package",
-                    children: [summaryLink, document.createTextNode("/")]
+                    children: [summaryLink, "/"]
                 })
             ]
         });
@@ -563,7 +563,7 @@ const DomainApp = (() => {
                     })
                     : Jig.dom.type.elementForRef({fqn: child.fqn});
                 const cell = Jig.dom.createElement("td", {
-                    children: [document.createTextNode(prefix), link]
+                    children: [prefix, link]
                 });
                 return Jig.dom.createElement("tr", {children: [cell]});
             })
@@ -662,6 +662,32 @@ const DomainApp = (() => {
         return Array.from(relMap.values());
     }
 
+    function buildDiagramSection(tabDefs) {
+        const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
+        const panels = {};
+        tabDefs.forEach((tab, i) => {
+            panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
+        });
+        tabDefs.forEach((tab, i) => {
+            const btn = Jig.dom.createElement("button", {
+                className: "diagram-tab" + (i === 0 ? " active" : ""),
+                textContent: tab.label,
+            });
+            btn.addEventListener('click', () => {
+                tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
+                Object.values(panels).forEach(p => p.classList.add('hidden'));
+                btn.classList.add('active');
+                panels[tab.id].classList.remove('hidden');
+            });
+            tabsBar.appendChild(btn);
+        });
+        const section = Jig.dom.createElement("section", {
+            className: "jig-card--item domain-diagrams-section",
+            children: [tabsBar, ...Object.values(panels)],
+        });
+        return {panels, section};
+    }
+
     /**
      * @param {PackageType[]} packages
      * @param {Array} typeRelations
@@ -683,7 +709,7 @@ const DomainApp = (() => {
                 attributes: {"data-has-enum-children": pkgHasEnum(pkg, childPackagesMap, typesMap) ? "true" : "false"},
                 children: [
                     Jig.dom.createElement("h3", {
-                        children: [Jig.dom.kind.badgeElement("パッケージ"), document.createTextNode(Jig.glossary.getTypeTerm(pkg.fqn).title)]
+                        children: [Jig.dom.kind.badgeElement("パッケージ"), Jig.glossary.getTypeTerm(pkg.fqn).title]
                     }),
                     Jig.dom.createElement("div", {
                         className: "fully-qualified-name",
@@ -713,29 +739,8 @@ const DomainApp = (() => {
             ].filter(Boolean);
 
             if (tabDefs.length > 0) {
-                const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
-                const panels = {};
-                tabDefs.forEach((tab, i) => {
-                    panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
-                });
-                tabDefs.forEach((tab, i) => {
-                    const btn = Jig.dom.createElement("button", {
-                        className: "diagram-tab" + (i === 0 ? " active" : ""),
-                        textContent: tab.label,
-                    });
-                    btn.addEventListener('click', () => {
-                        tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
-                        Object.values(panels).forEach(p => p.classList.add('hidden'));
-                        btn.classList.add('active');
-                        panels[tab.id].classList.remove('hidden');
-                    });
-                    tabsBar.appendChild(btn);
-                });
-
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "jig-card--item domain-diagrams-section",
-                    children: [tabsBar, ...Object.values(panels)],
-                }));
+                const {panels, section: diagramSection} = buildDiagramSection(tabDefs);
+                section.appendChild(diagramSection);
 
                 if (panels['direct']) {
                     Jig.mermaid.diagram.createAndRegister(panels['direct'], (container) => {
@@ -764,11 +769,11 @@ const DomainApp = (() => {
                             Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
                             Jig.dom.createElement("label", {
                                 className: "diagram-panel-option",
-                                children: [outgoingCheckbox, document.createTextNode("関連先")]
+                                children: [outgoingCheckbox, "関連先"]
                             }),
                             Jig.dom.createElement("label", {
                                 className: "diagram-panel-option",
-                                children: [incomingCheckbox, document.createTextNode("関連元")]
+                                children: [incomingCheckbox, "関連元"]
                             }),
                         ]
                     }));
@@ -811,7 +816,7 @@ const DomainApp = (() => {
                     textContent: packageFqn,
                     attributes: {href: "#" + Jig.util.fqnToId("domain", packageFqn)}
                 }));
-                fqnDiv.appendChild(document.createTextNode("." + type.fqn.substring(lastDot + 1)));
+                fqnDiv.append("." + type.fqn.substring(lastDot + 1));
             } else {
                 fqnDiv.textContent = type.fqn;
             }
@@ -845,34 +850,12 @@ const DomainApp = (() => {
             if (staticList) section.appendChild(staticList);
 
             if (createTypeRelationDiagram(type, typeRelations, typesMap) !== null) {
-                const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
                 const tabDefs = [
                     {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
                     {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
                 ];
-                const panels = {};
-                tabDefs.forEach((tab, i) => {
-                    panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
-                });
-                tabDefs.forEach((tab, i) => {
-                    const btn = Jig.dom.createElement("button", {
-                        className: "diagram-tab" + (i === 0 ? " active" : ""),
-                        textContent: tab.label,
-                    });
-                    btn.addEventListener('click', () => {
-                        tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
-                        Object.values(panels).forEach(p => p.classList.add('hidden'));
-                        btn.classList.add('active');
-                        panels[tab.id].classList.remove('hidden');
-                    });
-                    tabsBar.appendChild(btn);
-                });
-
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "jig-card--item domain-diagrams-section",
-                    children: [tabsBar, ...Object.values(panels)],
-                }));
-
+                const {panels, section: diagramSection} = buildDiagramSection(tabDefs);
+                section.appendChild(diagramSection);
                 tabDefs.forEach(tab => {
                     Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
                         renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
@@ -913,26 +896,21 @@ const DomainApp = (() => {
         const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap} = diagram;
 
         container.innerHTML = "";
+
+        const renderIfNonNull = (generator) => {
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        };
+
         if (diagramType === 'packageDirect') {
-            const generator = (dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir);
-            if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-            }
+            renderIfNonNull((dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir));
         } else if (diagramType === 'package') {
-            const generator = (dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir);
-            if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-            }
+            renderIfNonNull((dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir));
         } else if (diagramType === 'classDirect') {
-            const generator = (dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir);
-            if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-            }
+            renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir));
         } else if (diagramType === 'classDefinition') {
-            const generator = (dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir);
-            if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-            }
+            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir));
         } else {
             // テスト環境など closest が使えない場合に対応
             const panel = typeof container.closest === 'function' ? container.closest('.diagram-panel') : null;
@@ -940,14 +918,11 @@ const DomainApp = (() => {
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
             const showExternalIncoming = incoming ? incoming.checked : true;
-            const generator = (dir) => createRelationDiagram(pkg, typeRelations, typesMap, {
+            renderIfNonNull((dir) => createRelationDiagram(pkg, typeRelations, typesMap, {
                 showExternalOutgoing,
                 showExternalIncoming,
                 direction: dir
-            });
-            if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-            }
+            }));
         }
     }
 

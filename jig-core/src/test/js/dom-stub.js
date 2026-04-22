@@ -262,6 +262,9 @@ class Element {
             }
             this.ownerDocument.elementsByName.get(value).push(this);
         }
+        if (name === "value") {
+            this.value = String(value);
+        }
     }
 
     getAttribute(name) {

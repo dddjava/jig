@@ -179,11 +179,14 @@ test.describe('InboundApp', () => {
             }),
             card: {
                 type: ({id, title, fqn, kind, extraClass, attributes, tagName = "section"} = {}) => {
-                    const h3 = createElement("h3");
-                    if (kind !== undefined) h3.appendChild(createElement("span", {className: "kind-badge", textContent: kind || "?"}));
-                    h3.appendChild(typeof title === 'string' ? createElement("span", {textContent: title}) : title);
-                    const card = createElement(tagName, {id, className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "), attributes});
-                    card.appendChild(h3);
+                    const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
+                    const h3Children = kind !== undefined ? [createElement("span", {className: "kind-badge"}), titleEl] : [titleEl];
+                    const card = createElement(tagName, {
+                        id,
+                        className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
+                        attributes,
+                        children: [createElement("h3", {children: h3Children})]
+                    });
                     if (fqn != null) {
                         card.appendChild(typeof fqn === 'string'
                             ? createElement("div", {className: "fully-qualified-name", textContent: fqn})

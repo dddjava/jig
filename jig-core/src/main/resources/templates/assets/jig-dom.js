@@ -468,13 +468,13 @@ globalThis.Jig.dom = (() => {
         input.addEventListener('input', () => onChange(input.value.trim()));
     }
 
-    function createTypeCard({id, title, fqn, kind, extraClass, attributes, tagName = "section"} = {}) {
+    function createTypeCard({id, title, fqn, kind, attributes, tagName = "section"} = {}) {
         const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
         const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleEl] : [titleEl];
 
         const card = createElement(tagName, {
             id,
-            className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
+            className: "jig-card jig-card--type",
             attributes,
             children: [createElement("h3", {children: h3Children})]
         });

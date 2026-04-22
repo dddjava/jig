@@ -178,12 +178,12 @@ test.describe('InboundApp', () => {
                 innerHTML: String(markdown ?? '')
             }),
             card: {
-                type: ({id, title, fqn, kind, extraClass, attributes, tagName = "section"} = {}) => {
+                type: ({id, title, fqn, kind, attributes, tagName = "section"} = {}) => {
                     const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
                     const h3Children = kind !== undefined ? [createElement("span", {className: "kind-badge"}), titleEl] : [titleEl];
                     const card = createElement(tagName, {
                         id,
-                        className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
+                        className: "jig-card jig-card--type",
                         attributes,
                         children: [createElement("h3", {children: h3Children})]
                     });

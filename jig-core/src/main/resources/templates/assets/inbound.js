@@ -35,16 +35,14 @@ const InboundApp = (() => {
         const entrypointGroups = new Map();
         controller.entrypoints.forEach(ep => {
             const typeFqn = ep.fqn.split('#')[0];
-            if (!entrypointGroups.has(typeFqn)) entrypointGroups.set(typeFqn, []);
-            entrypointGroups.get(typeFqn).push(ep);
+            Jig.util.pushToMap(entrypointGroups, typeFqn, ep);
         });
 
         const usecaseGroups = new Map();
         allFqns.forEach(fqn => {
             if (!entrypointFqns.has(fqn) && usecaseMethodToType.has(fqn)) {
                 const typeFqn = usecaseMethodToType.get(fqn);
-                if (!usecaseGroups.has(typeFqn)) usecaseGroups.set(typeFqn, []);
-                usecaseGroups.get(typeFqn).push(fqn);
+                Jig.util.pushToMap(usecaseGroups, typeFqn, fqn);
             }
         });
 
@@ -52,8 +50,7 @@ const InboundApp = (() => {
         allFqns.forEach(fqn => {
             if (!entrypointFqns.has(fqn) && !usecaseMethodToType.has(fqn)) {
                 const typeFqn = fqn.split('#')[0];
-                if (!methodGroups.has(typeFqn)) methodGroups.set(typeFqn, []);
-                methodGroups.get(typeFqn).push(fqn);
+                Jig.util.pushToMap(methodGroups, typeFqn, fqn);
             }
         });
 

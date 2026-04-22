@@ -140,6 +140,11 @@ globalThis.Jig.util = (() => {
         return fqns;
     }
 
+    function pushToMap(map, key, value) {
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(value);
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -149,6 +154,7 @@ globalThis.Jig.util = (() => {
         isWithinPackageFilters,
         getAggregatedFqn,
         collectTypeRefFqns,
+        pushToMap,
     }
 })();
 

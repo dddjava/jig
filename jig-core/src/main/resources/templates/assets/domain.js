@@ -27,8 +27,7 @@ const DomainApp = (() => {
             if (lastDot < 0) continue;
             const pkgFqn = type.fqn.substring(0, lastDot);
 
-            if (!packageTypesMap.has(pkgFqn)) packageTypesMap.set(pkgFqn, []);
-            packageTypesMap.get(pkgFqn).push({fqn: type.fqn});
+            Jig.util.pushToMap(packageTypesMap, pkgFqn, {fqn: type.fqn});
 
             let current = pkgFqn;
             while (true) {
@@ -298,8 +297,7 @@ const DomainApp = (() => {
         const byPackage = new Map();
         involvedFqns.forEach(fqn => {
             const pkg = packageOf(fqn);
-            if (!byPackage.has(pkg)) byPackage.set(pkg, []);
-            byPackage.get(pkg).push(fqn);
+            Jig.util.pushToMap(byPackage, pkg, fqn);
         });
         const edgeLengthByKey = new Map();
         byPackage.forEach(fqns => {

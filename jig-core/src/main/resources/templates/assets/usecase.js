@@ -95,8 +95,7 @@ const UsecaseApp = (() => {
          */
         function addReverseCaller(calleeFqn, callerNode) {
             if (!calleeFqn || !callerNode?.fqn) return;
-            if (!reverseCallerMap.has(calleeFqn)) reverseCallerMap.set(calleeFqn, []);
-            reverseCallerMap.get(calleeFqn).push(callerNode);
+            Jig.util.pushToMap(reverseCallerMap, calleeFqn, callerNode);
         }
 
         for (const method of diagramContext.methodMap.values()) {

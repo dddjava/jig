@@ -81,4 +81,29 @@ test.describe('jig-util.js', () => {
             assert.deepEqual(result, ['java.util.List']);
         });
     });
+
+    test.describe('pushToMap', () => {
+        const sut = jigUtil.pushToMap;
+
+        test('新しいキーに値を追加すると配列が作られる', () => {
+            const map = new Map();
+            sut(map, 'key', 'value');
+            assert.deepEqual(map.get('key'), ['value']);
+        });
+
+        test('既存のキーに値を追加すると配列に追記される', () => {
+            const map = new Map();
+            sut(map, 'key', 'first');
+            sut(map, 'key', 'second');
+            assert.deepEqual(map.get('key'), ['first', 'second']);
+        });
+
+        test('異なるキーは独立した配列を持つ', () => {
+            const map = new Map();
+            sut(map, 'a', 1);
+            sut(map, 'b', 2);
+            assert.deepEqual(map.get('a'), [1]);
+            assert.deepEqual(map.get('b'), [2]);
+        });
+    });
 });

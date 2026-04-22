@@ -662,32 +662,6 @@ const DomainApp = (() => {
         return Array.from(relMap.values());
     }
 
-    function buildDiagramSection(tabDefs) {
-        const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
-        const panels = {};
-        tabDefs.forEach((tab, i) => {
-            panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
-        });
-        tabDefs.forEach((tab, i) => {
-            const btn = Jig.dom.createElement("button", {
-                className: "diagram-tab" + (i === 0 ? " active" : ""),
-                textContent: tab.label,
-            });
-            btn.addEventListener('click', () => {
-                tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
-                Object.values(panels).forEach(p => p.classList.add('hidden'));
-                btn.classList.add('active');
-                panels[tab.id].classList.remove('hidden');
-            });
-            tabsBar.appendChild(btn);
-        });
-        const section = Jig.dom.createElement("section", {
-            className: "jig-card--item domain-diagrams-section",
-            children: [tabsBar, ...Object.values(panels)],
-        });
-        return {panels, section};
-    }
-
     /**
      * @param {PackageType[]} packages
      * @param {Array} typeRelations
@@ -739,7 +713,7 @@ const DomainApp = (() => {
             ].filter(Boolean);
 
             if (tabDefs.length > 0) {
-                const {panels, section: diagramSection} = buildDiagramSection(tabDefs);
+                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "jig-card--item domain-diagrams-section"});
                 section.appendChild(diagramSection);
 
                 if (panels['direct']) {
@@ -854,7 +828,7 @@ const DomainApp = (() => {
                     {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
                     {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
                 ];
-                const {panels, section: diagramSection} = buildDiagramSection(tabDefs);
+                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "jig-card--item domain-diagrams-section"});
                 section.appendChild(diagramSection);
                 tabDefs.forEach(tab => {
                     Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {

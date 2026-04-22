@@ -714,53 +714,26 @@ const UsecaseApp = (() => {
                 const hasSequenceDiagram = sequenceDiagramCode !== null;
 
                 if (hasUsecaseDiagram || hasSequenceDiagram) {
-                    const diagramContainer = Jig.dom.createElement("div", {className: "diagram-container"});
-                    methodSection.appendChild(diagramContainer);
-
-                    let usecasePanel = null;
-                    let sequencePanel = null;
+                    let usecaseTarget, sequenceTarget;
 
                     if (hasUsecaseDiagram && hasSequenceDiagram) {
                         const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
-                        const isUsecaseActive = selectedTab === 'usecase';
-
-                        const usecaseBtn = Jig.dom.createElement("button", {
-                            className: "diagram-tab" + (isUsecaseActive ? " active" : ""),
-                            textContent: "ユースケース図"
-                        });
-                        const sequenceBtn = Jig.dom.createElement("button", {
-                            className: "diagram-tab" + (!isUsecaseActive ? " active" : ""),
-                            textContent: "シーケンス図"
-                        });
-                        diagramContainer.appendChild(Jig.dom.createElement("div", {
-                            className: "diagram-tabs",
-                            children: [usecaseBtn, sequenceBtn]
-                        }));
-
-                        usecasePanel = Jig.dom.createElement("div", {className: "diagram-panel" + (isUsecaseActive ? "" : " hidden")});
-                        sequencePanel = Jig.dom.createElement("div", {className: "diagram-panel" + (!isUsecaseActive ? "" : " hidden")});
-
-                        usecaseBtn.addEventListener('click', () => {
-                            usecaseBtn.classList.add('active');
-                            sequenceBtn.classList.remove('active');
-                            usecasePanel.classList.remove('hidden');
-                            sequencePanel.classList.add('hidden');
-                            state.selectedTabs.set(method.fqn, 'usecase');
-                        });
-                        sequenceBtn.addEventListener('click', () => {
-                            sequenceBtn.classList.add('active');
-                            usecaseBtn.classList.remove('active');
-                            sequencePanel.classList.remove('hidden');
-                            usecasePanel.classList.add('hidden');
-                            state.selectedTabs.set(method.fqn, 'sequence');
-                        });
-
-                        diagramContainer.appendChild(usecasePanel);
-                        diagramContainer.appendChild(sequencePanel);
+                        const {panels, section} = Jig.mermaid.diagram.buildTabSection(
+                            [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
+                            {className: "diagram-container", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
+                        );
+                        methodSection.appendChild(section);
+                        usecaseTarget = panels['usecase'];
+                        sequenceTarget = panels['sequence'];
+                    } else {
+                        const container = Jig.dom.createElement("div", {className: "diagram-container"});
+                        methodSection.appendChild(container);
+                        if (hasUsecaseDiagram) usecaseTarget = container;
+                        else sequenceTarget = container;
                     }
 
                     if (hasUsecaseDiagram) {
-                        Jig.mermaid.diagram.createAndRegister(usecasePanel || diagramContainer, (mmdContainer) => {
+                        Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
                             mmdContainer.innerHTML = "";
                             const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
 
@@ -819,7 +792,7 @@ const UsecaseApp = (() => {
                     }
 
                     if (hasSequenceDiagram) {
-                        Jig.mermaid.diagram.createAndRegister(sequencePanel || diagramContainer, (sequenceContainer) => {
+                        Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
                             sequenceContainer.innerHTML = "";
                             const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
                             const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);

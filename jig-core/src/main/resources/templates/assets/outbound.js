@@ -359,18 +359,15 @@ const OutboundApp = (() => {
                         }
                     });
 
-                    itemList.appendChild(Jig.dom.createElement("article", {
-                        className: "outbound-operation-item jig-card jig-card--item",
-                        children: [
-                            Jig.dom.type.methodItem(operation.outboundPortOperation),
-                            mermaidContainer,
-                            Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}),
-                            Jig.dom.createElement("ul", {
-                                className: "outbound-persistence-detail-list",
-                                children: ModelBuilder.formatPersistenceAccessors(operation.persistenceAccessors).map(text => Jig.dom.createElement("li", {textContent: text}))
-                            })
-                        ]
+                    const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item"});
+                    operationItem.appendChild(Jig.dom.type.methodItem(operation.outboundPortOperation));
+                    operationItem.appendChild(mermaidContainer);
+                    operationItem.appendChild(Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}));
+                    operationItem.appendChild(Jig.dom.createElement("ul", {
+                        className: "outbound-persistence-detail-list",
+                        children: ModelBuilder.formatPersistenceAccessors(operation.persistenceAccessors).map(text => Jig.dom.createElement("li", {textContent: text}))
                     }));
+                    itemList.appendChild(operationItem);
                 });
                 const itemListDetails = Jig.dom.createElement("details", {});
                 const itemListSummary = Jig.dom.createElement("summary", {

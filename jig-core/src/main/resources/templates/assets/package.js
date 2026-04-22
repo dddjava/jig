@@ -165,8 +165,7 @@ const PackageApp = (() => {
             const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
             const key = reversed ? to : from;
             const value = reversed ? from : to;
-            if (!adjacency.has(key)) adjacency.set(key, new Set());
-            adjacency.get(key).add(value);
+            Jig.util.addToSetMap(adjacency, key, value);
         });
         return adjacency;
     }
@@ -291,10 +290,7 @@ const PackageApp = (() => {
             const toPackage = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
             if (fromPackage === toPackage) return;
             const key = fromPackage < toPackage ? `${fromPackage}::${toPackage}` : `${toPackage}::${fromPackage}`;
-            if (!relationMap.has(key)) {
-                relationMap.set(key, new Set());
-            }
-            relationMap.get(key).add(`${relation.from} -> ${relation.to}`);
+            Jig.util.addToSetMap(relationMap, key, `${relation.from} -> ${relation.to}`);
         });
         return Array.from(mutualPairs).sort().map(key => {
             const parts = key.split('::');
@@ -434,14 +430,10 @@ const PackageApp = (() => {
             to: Jig.util.getPackageFqnFromTypeFqn(to),
         }));
         const packageAdjacency = new Map();
-        const ensureAdjacent = packageFqn => {
-            if (!packageAdjacency.has(packageFqn)) packageAdjacency.set(packageFqn, new Set());
-            return packageAdjacency.get(packageFqn);
-        };
         packageRelations.forEach(({from, to}) => {
             if (!from || !to || from === to) return;
-            ensureAdjacent(from).add(to);
-            ensureAdjacent(to).add(from);
+            Jig.util.addToSetMap(packageAdjacency, from, to);
+            Jig.util.addToSetMap(packageAdjacency, to, from);
         });
         const shortestDistance = (start, goal) => {
             if (!start || !goal) return Number.POSITIVE_INFINITY;

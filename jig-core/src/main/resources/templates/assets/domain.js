@@ -998,62 +998,25 @@ const DomainApp = (() => {
             });
         }
 
-        const deprecatedCheckbox = document.getElementById('show-deprecated-nodes');
-        if (deprecatedCheckbox) {
-            deprecatedCheckbox.addEventListener('change', () => {
-                domainSettings.showDeprecatedNodes = deprecatedCheckbox.checked;
-                Jig.mermaid.diagram.rerenderVisible();
-            });
-        }
-
         const reductionCheckbox = document.getElementById('transitive-reduction-toggle');
-        if (reductionCheckbox) {
-            reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
-            reductionCheckbox.addEventListener('change', () => {
-                domainSettings.transitiveReductionEnabled = reductionCheckbox.checked;
-                Jig.mermaid.diagram.rerenderVisible();
-            });
-        }
+        if (reductionCheckbox) reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
 
-        const diagramsCheckbox = document.getElementById('show-diagrams');
-        if (diagramsCheckbox) {
-            diagramsCheckbox.addEventListener('change', () => {
-                domainSettings.showDiagrams = diagramsCheckbox.checked;
-                document.body.classList.toggle('hide-domain-diagrams', !domainSettings.showDiagrams);
+        [
+            {id: 'show-deprecated-nodes',       key: 'showDeprecatedNodes',        after: () => Jig.mermaid.diagram.rerenderVisible()},
+            {id: 'transitive-reduction-toggle', key: 'transitiveReductionEnabled', after: () => Jig.mermaid.diagram.rerenderVisible()},
+            {id: 'show-diagrams',               key: 'showDiagrams',               after: v => document.body.classList.toggle('hide-domain-diagrams', !v)},
+            {id: 'show-fields',                 key: 'showFields',                 after: applyVisibilitySettings},
+            {id: 'show-methods',                key: 'showMethods',                after: applyVisibilitySettings},
+            {id: 'show-static-methods',         key: 'showStaticMethods',          after: applyVisibilitySettings},
+            {id: 'show-enum-only',              key: 'showEnumOnly',               after: applyVisibilitySettings},
+        ].forEach(({id, key, after}) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', () => {
+                domainSettings[key] = el.checked;
+                after(el.checked);
             });
-        }
-
-        const fieldsCheckbox = document.getElementById('show-fields');
-        if (fieldsCheckbox) {
-            fieldsCheckbox.addEventListener('change', () => {
-                domainSettings.showFields = fieldsCheckbox.checked;
-                applyVisibilitySettings();
-            });
-        }
-
-        const methodsCheckbox = document.getElementById('show-methods');
-        if (methodsCheckbox) {
-            methodsCheckbox.addEventListener('change', () => {
-                domainSettings.showMethods = methodsCheckbox.checked;
-                applyVisibilitySettings();
-            });
-        }
-
-        const staticMethodsCheckbox = document.getElementById('show-static-methods');
-        if (staticMethodsCheckbox) {
-            staticMethodsCheckbox.addEventListener('change', () => {
-                domainSettings.showStaticMethods = staticMethodsCheckbox.checked;
-                applyVisibilitySettings();
-            });
-        }
-
-        const enumOnlyCheckbox = document.getElementById('show-enum-only');
-        if (enumOnlyCheckbox) {
-            enumOnlyCheckbox.addEventListener('change', () => {
-                domainSettings.showEnumOnly = enumOnlyCheckbox.checked;
-                applyVisibilitySettings();
-            });
-        }
+        });
 
         Jig.dom.sidebar.initTextFilter('domain-sidebar-filter', text => {
             domainSettings.sidebarFilterText = text;

@@ -106,4 +106,28 @@ test.describe('jig-util.js', () => {
             assert.deepEqual(map.get('b'), [2]);
         });
     });
+
+    test.describe('addToSetMap', () => {
+        const sut = jigUtil.addToSetMap;
+
+        test('新しいキーに値を追加するとSetが作られる', () => {
+            const map = new Map();
+            sut(map, 'key', 'value');
+            assert.deepStrictEqual(map.get('key'), new Set(['value']));
+        });
+
+        test('既存のキーに値を追加するとSetに追記される', () => {
+            const map = new Map();
+            sut(map, 'key', 'first');
+            sut(map, 'key', 'second');
+            assert.deepStrictEqual(map.get('key'), new Set(['first', 'second']));
+        });
+
+        test('同じ値を複数回追加しても重複しない', () => {
+            const map = new Map();
+            sut(map, 'key', 'value');
+            sut(map, 'key', 'value');
+            assert.deepStrictEqual(map.get('key'), new Set(['value']));
+        });
+    });
 });

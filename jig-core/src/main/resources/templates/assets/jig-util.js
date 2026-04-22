@@ -145,6 +145,11 @@ globalThis.Jig.util = (() => {
         map.get(key).push(value);
     }
 
+    function addToSetMap(map, key, value) {
+        if (!map.has(key)) map.set(key, new Set());
+        map.get(key).add(value);
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -155,6 +160,7 @@ globalThis.Jig.util = (() => {
         getAggregatedFqn,
         collectTypeRefFqns,
         pushToMap,
+        addToSetMap,
     }
 })();
 

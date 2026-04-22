@@ -138,7 +138,6 @@ const GlossaryApp = (() => {
                 href: `#group-${char}`,
                 textContent: char
             });
-            // スムーズなスクロールのためのイベント
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const targetId = `group-${char}`;

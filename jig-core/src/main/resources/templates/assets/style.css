@@ -576,12 +576,15 @@ body.hide-domain-diagrams .domain-diagrams-section {
 }
 
 .domain-diagrams-section {
-    padding: 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 12px;
     overflow: hidden;
 }
 
 .domain-diagrams-section .diagram-panel {
     padding: 12px;
+    background-color: #fff;
 }
 
 body.hide-usecase-diagrams .mermaid-diagram {

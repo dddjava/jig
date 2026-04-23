@@ -1457,7 +1457,7 @@ table td.number {
     margin-right: -3px;
 }
 
-.in-page-sidebar__section:hover .in-page-sidebar__toggle,
+.in-page-sidebar__title--collapsible:hover .in-page-sidebar__toggle,
 .in-page-sidebar__item-header:hover .in-page-sidebar__toggle {
     opacity: 1;
 }

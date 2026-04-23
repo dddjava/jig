@@ -272,7 +272,7 @@ globalThis.Jig.dom = (() => {
 
     // --- Sidebar ---
 
-    function buildCollapsibleTitle(title, links) {
+    function createSidebarToggle(targetEl) {
         const toggle = createElement("button", {
             className: "in-page-sidebar__toggle",
             attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
@@ -281,11 +281,15 @@ globalThis.Jig.dom = (() => {
             const collapsing = toggle.getAttribute("aria-expanded") === "true";
             toggle.setAttribute("aria-expanded", String(!collapsing));
             toggle.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
-            links.classList.toggle("in-page-sidebar__links--hidden", collapsing);
+            targetEl.classList.toggle("in-page-sidebar__links--hidden", collapsing);
         });
+        return toggle;
+    }
+
+    function buildCollapsibleTitle(title, links) {
         return createElement("p", {
             className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-            children: [createElement("span", {textContent: title}), toggle]
+            children: [createElement("span", {textContent: title}), createSidebarToggle(links)]
         });
     }
 
@@ -511,6 +515,7 @@ globalThis.Jig.dom = (() => {
             section: createSection,
             renderSection,
             initTextFilter: initSidebarTextFilter,
+            createToggle: createSidebarToggle,
         },
     };
 })();

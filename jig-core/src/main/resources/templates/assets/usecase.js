@@ -512,14 +512,7 @@ const UsecaseApp = (() => {
                 Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
                     children: filteredItems.map(({usecase, methods}) => {
-                        const children = [
-                            Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
-                                textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
-                            })
-                        ];
-                        children.push(Jig.dom.createElement("ul", {
+                        const methodList = Jig.dom.createElement("ul", {
                             className: "in-page-sidebar__links",
                             children: methods.map(method =>
                                 Jig.dom.createElement("li", {
@@ -533,10 +526,21 @@ const UsecaseApp = (() => {
                                     ]
                                 })
                             )
-                        }));
+                        });
+                        const header = Jig.dom.createElement("div", {
+                            className: "in-page-sidebar__item-header",
+                            children: [
+                                Jig.dom.createElement("a", {
+                                    className: "in-page-sidebar__link",
+                                    attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
+                                    textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
+                                }),
+                                Jig.dom.sidebar.createToggle(methodList)
+                            ]
+                        });
                         return Jig.dom.createElement("li", {
                             className: "in-page-sidebar__item",
-                            children
+                            children: [header, methodList]
                         });
                     })
                 })

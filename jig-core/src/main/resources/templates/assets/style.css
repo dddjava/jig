@@ -1457,8 +1457,15 @@ table td.number {
     margin-right: -3px;
 }
 
-.in-page-sidebar__section:hover .in-page-sidebar__toggle {
+.in-page-sidebar__section:hover .in-page-sidebar__toggle,
+.in-page-sidebar__item-header:hover .in-page-sidebar__toggle {
     opacity: 1;
+}
+
+.in-page-sidebar__item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .in-page-sidebar__links {

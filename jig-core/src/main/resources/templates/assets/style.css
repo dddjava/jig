@@ -571,7 +571,7 @@ body.hide-usecase-declarations .declaration {
 
 body.hide-domain-diagrams .mermaid-diagram,
 body.hide-domain-diagrams .diagram-heading,
-body.hide-domain-diagrams .domain-diagrams-section {
+body.hide-domain-diagrams .tab-diagram-section {
     display: none;
 }
 

@@ -573,16 +573,26 @@ const DomainApp = (() => {
 
         const tbody = Jig.dom.createElement("tbody", {
             children: allChildren.map(child => {
-                const prefix = child.isPackage ? "▶︎ " : "";
-                // 型の場合は createTypeLink を使用して deprecated 処理を統一
-                const link = child.isPackage
-                    ? Jig.dom.createElement("a", {
-                        attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
+                let link;
+                if (child.isPackage) {
+                    const kind = "パッケージ";
+                    link = Jig.dom.createElement("a", {
+                        className: "in-page-sidebar__link",
+                        attributes: {
+                            href: "#" + Jig.util.fqnToId("domain", child.fqn),
+                            "data-kind-char": Jig.dom.kind.badgeChar(kind),
+                            "data-kind": kind
+                        },
                         textContent: child.title
-                    })
-                    : Jig.dom.type.refElement({fqn: child.fqn});
+                    });
+                } else {
+                    const kind = "クラス";
+                    link = Jig.dom.type.refElement({fqn: child.fqn}, "in-page-sidebar__link");
+                    link.setAttribute("data-kind-char", Jig.dom.kind.badgeChar(kind));
+                    link.setAttribute("data-kind", kind);
+                }
                 const cell = Jig.dom.createElement("td", {
-                    children: [prefix, link]
+                    children: [link]
                 });
                 return Jig.dom.createElement("tr", {children: [cell]});
             })

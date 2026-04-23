@@ -242,7 +242,10 @@ globalThis.Jig.dom = (() => {
 
     function createTypeCard({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) {
         const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
-        const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleEl] : [titleEl];
+        const titleContent = id
+            ? createElement("a", {className: "card-title-anchor", attributes: {href: `#${id}`}, children: [titleEl]})
+            : titleEl;
+        const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleContent] : [titleContent];
 
         const card = createElement(tagName, {
             id,

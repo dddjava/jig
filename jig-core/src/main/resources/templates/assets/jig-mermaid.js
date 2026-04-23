@@ -1346,6 +1346,33 @@ globalThis.Jig.mermaid = (() => {
             return rect.top < window.innerHeight && rect.bottom > 0;
         }
 
+        function fixHashScrollAfterRender(renderedContainer) {
+            if (typeof window === 'undefined' || !window.location.hash) return;
+            const target = document.querySelector(window.location.hash);
+            if (!target) return;
+
+            // ターゲットより上のコンテナのみ補正対象（compareDocumentPosition で文書順を判定）
+            if (!(renderedContainer.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING)) return;
+
+            // renderFn() 後に同期生成済みの .mermaid 要素を直接監視し、SVG挿入（mermaid非同期完了）を待つ
+            const mermaidEl = renderedContainer.querySelector('.mermaid');
+            if (!mermaidEl) return;
+
+            const obs = new MutationObserver(() => {
+                obs.disconnect();
+                requestAnimationFrame(() => {
+                    const scrollMarginTop = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+                    const rect = target.getBoundingClientRect();
+                    // scroll-margin-top 分だけ上に余白が生じる想定位置より大幅に下なら補正
+                    if (rect.top > scrollMarginTop + 60) {
+                        target.scrollIntoView({block: 'start'});
+                    }
+                });
+            });
+            obs.observe(mermaidEl, {childList: true});
+            setTimeout(() => obs.disconnect(), 3000); // mermaid が完了しなかった場合の安全タイムアウト
+        }
+
         /**
          * ダイアグラムを登録（遅延レンダリング対応）
          * @param {HTMLElement} container
@@ -1365,6 +1392,7 @@ globalThis.Jig.mermaid = (() => {
                             const d = diagramRegistry.find(d => d.container === entry.target);
                             if (d) {
                                 d.renderFn();
+                                fixHashScrollAfterRender(entry.target);
                             }
                             observer.unobserve(entry.target); // 一度だけレンダリング
                         }

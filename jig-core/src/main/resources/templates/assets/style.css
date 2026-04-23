@@ -459,6 +459,29 @@ main table.fields thead {
     margin-bottom: 0.5em;
 }
 
+.jig-card--type h3 .card-title-anchor {
+    color: inherit;
+    text-decoration: none;
+}
+
+.jig-card--type h3 .card-title-anchor::after {
+    content: " #";
+    opacity: 0;
+    font-size: 0.75em;
+    font-weight: normal;
+    transition: opacity 0.15s;
+    color: #5577aa;
+}
+
+.jig-card--type h3 .card-title-anchor:hover::after {
+    opacity: 0.6;
+}
+
+.jig-card--type h3 .card-title-anchor:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .jig-card.jig-card--item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;

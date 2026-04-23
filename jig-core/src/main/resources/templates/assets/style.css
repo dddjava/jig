@@ -1355,6 +1355,7 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow: auto;
+    scrollbar-gutter: stable;
     align-content: start;
 }
 

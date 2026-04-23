@@ -307,47 +307,6 @@ main table thead {
     overflow: auto;
 }
 
-/* ナビのツリー */
-.split-view > nav.tree a, .split-view > nav.tree summary {
-    white-space: nowrap;
-}
-
-.split-view > nav.tree summary,
-.split-view > nav.tree details > div > a {
-    display: block;
-    padding: 6px 8px;
-    border-radius: 6px;
-    color: #1b3a66;
-    text-decoration: none;
-}
-
-.split-view > nav.tree summary {
-    cursor: pointer;
-}
-
-.split-view > nav.tree summary:hover,
-.split-view > nav.tree summary:focus-visible,
-.split-view > nav.tree details > div > a:hover,
-.split-view > nav.tree details > div > a:focus-visible {
-    background-color: #e8f0fb;
-    color: #10253f;
-    text-decoration: none;
-}
-
-.split-view > nav.tree summary > a,
-.split-view > nav.tree details > div > a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.split-view > nav.tree details > div,
-.split-view > nav.tree details > details {
-    margin-left: 12px;
-}
-
-.split-view > nav.tree details {
-    margin-bottom: 4px;
-}
 
 @media (max-width: 900px) {
     body:has(> .split-view) {

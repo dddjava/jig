@@ -237,14 +237,14 @@ test.describe('jig-dom.js', () => {
         });
     });
 
-    test.describe('sidebar.createSection', () => {
+    test.describe('sidebar.section', () => {
         test('空の items 配列は null を返す', () => {
-            const section = Jig.dom.sidebar.createSection('Title', []);
+            const section = Jig.dom.sidebar.section('Title', []);
             assert.equal(section, null);
         });
 
         test('null items は null を返す', () => {
-            const section = Jig.dom.sidebar.createSection('Title', null);
+            const section = Jig.dom.sidebar.section('Title', null);
             assert.equal(section, null);
         });
 
@@ -253,7 +253,7 @@ test.describe('jig-dom.js', () => {
                 {id: 'sec1', label: 'Section 1'},
                 {id: 'sec2', label: 'Section 2'}
             ];
-            const section = Jig.dom.sidebar.createSection('Sections', items);
+            const section = Jig.dom.sidebar.section('Sections', items);
 
             assert.equal(section.tagName, 'SECTION');
             assert.equal(section.className, 'in-page-sidebar__section');
@@ -324,10 +324,10 @@ test.describe('jig-dom.js', () => {
         });
     });
 
-    test.describe('type.elementForRef', () => {
+    test.describe('type.refElement', () => {
         test('resolver なし、型引数なし → <span> を生成', () => {
             const typeRef = {fqn: 'java.lang.String'};
-            const el = Jig.dom.type.elementForRef(typeRef);
+            const el = Jig.dom.type.refElement(typeRef);
             assert.equal(el.tagName, 'SPAN');
             assert.equal(el.textContent, 'String');
         });
@@ -339,7 +339,7 @@ test.describe('jig-dom.js', () => {
                 className: 'type-link'
             }));
             const typeRef = {fqn: 'java.util.List'};
-            const el = Jig.dom.type.elementForRef(typeRef);
+            const el = Jig.dom.type.refElement(typeRef);
 
             assert.equal(el.tagName, 'A');
             assert.equal(el.getAttribute('href'), '/types/java.util.List');
@@ -351,13 +351,13 @@ test.describe('jig-dom.js', () => {
 
         test('配列型（[] サフィックス）を処理', () => {
             const typeRef = {fqn: 'java.lang.String[]'};
-            const el = Jig.dom.type.elementForRef(typeRef);
+            const el = Jig.dom.type.refElement(typeRef);
             assert.equal(el.textContent, 'String[]');
         });
 
         test('多次元配列型', () => {
             const typeRef = {fqn: 'int[][]'};
-            const el = Jig.dom.type.elementForRef(typeRef);
+            const el = Jig.dom.type.refElement(typeRef);
             assert.equal(el.textContent, 'int[][]');
         });
 
@@ -368,7 +368,7 @@ test.describe('jig-dom.js', () => {
                     {fqn: 'java.lang.String'}
                 ]
             };
-            const el = Jig.dom.type.elementForRef(typeRef);
+            const el = Jig.dom.type.refElement(typeRef);
             assert.equal(el.tagName, 'SPAN');
             assert.ok(el.textContent.includes('List'));
             assert.ok(el.textContent.includes('String'));
@@ -384,7 +384,7 @@ test.describe('jig-dom.js', () => {
                     {fqn: 'java.lang.Integer'}
                 ]
             };
-            const el = Jig.dom.type.elementForRef(typeRef);
+            const el = Jig.dom.type.refElement(typeRef);
             assert.ok(el.textContent.includes('String'));
             assert.ok(el.textContent.includes('Integer'));
             assert.ok(el.textContent.includes(','));
@@ -392,7 +392,7 @@ test.describe('jig-dom.js', () => {
 
         test('className オプションを適用', () => {
             const typeRef = {fqn: 'java.lang.String'};
-            const el = Jig.dom.type.elementForRef(typeRef, 'my-class');
+            const el = Jig.dom.type.refElement(typeRef, 'my-class');
             assert.equal(el.className, 'my-class');
         });
     });

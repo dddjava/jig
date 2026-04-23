@@ -212,7 +212,7 @@ const DomainApp = (() => {
             detailsContent.push(Jig.dom.createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
             detailsContent.push(Jig.dom.createElement("ul", {
                 children: outgoingFqns.map(fqn =>
-                    Jig.dom.createElement("li", {children: [Jig.dom.type.elementForRef({fqn})]})
+                    Jig.dom.createElement("li", {children: [Jig.dom.type.refElement({fqn})]})
                 )
             }));
         }
@@ -221,7 +221,7 @@ const DomainApp = (() => {
             detailsContent.push(Jig.dom.createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
             detailsContent.push(Jig.dom.createElement("ul", {
                 children: incomingFqns.map(fqn =>
-                    Jig.dom.createElement("li", {children: [Jig.dom.type.elementForRef({fqn})]})
+                    Jig.dom.createElement("li", {children: [Jig.dom.type.refElement({fqn})]})
                 )
             }));
         }
@@ -558,7 +558,7 @@ const DomainApp = (() => {
                         attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                         textContent: child.title
                     })
-                    : Jig.dom.type.elementForRef({fqn: child.fqn});
+                    : Jig.dom.type.refElement({fqn: child.fqn});
                 const cell = Jig.dom.createElement("td", {
                     children: [prefix, link]
                 });
@@ -577,11 +577,11 @@ const DomainApp = (() => {
     }
 
     function createFieldsList(fields) {
-        return Jig.dom.type.fieldsList(fields, Jig.dom.type.elementForRef);
+        return Jig.dom.type.fieldsList(fields, Jig.dom.type.refElement);
     }
 
     function createMethodsList(kind, methods) {
-        return Jig.dom.type.methodsList(kind, methods, Jig.dom.type.elementForRef);
+        return Jig.dom.type.methodsList(kind, methods, Jig.dom.type.refElement);
     }
 
     /**

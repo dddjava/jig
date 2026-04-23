@@ -653,11 +653,11 @@ const UsecaseApp = (() => {
                 });
             }
 
-            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, Jig.dom.type.elementForRef);
+            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, Jig.dom.type.refElement);
             if (fieldsList) section.appendChild(fieldsList);
 
             if (usecase.staticMethods.length > 0) {
-                const staticList = Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, Jig.dom.type.elementForRef);
+                const staticList = Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, Jig.dom.type.refElement);
                 if (staticList) {
                     staticList.classList.add("static-methods");
                     section.appendChild(staticList);
@@ -667,7 +667,7 @@ const UsecaseApp = (() => {
             // usecaseとするのはPUBLICのみ
             const internalMethods = usecase.methods.filter(method => !isUsecase(method))
             if (internalMethods.length > 0) {
-                const staticList = Jig.dom.type.methodsList("メソッド", internalMethods, Jig.dom.type.elementForRef);
+                const staticList = Jig.dom.type.methodsList("メソッド", internalMethods, Jig.dom.type.refElement);
                 if (staticList) {
                     staticList.classList.add("methods");
                     section.appendChild(staticList);
@@ -797,7 +797,7 @@ const UsecaseApp = (() => {
                 if (method.returnTypeRef.fqn !== 'void') {
                     const returnSection = Jig.dom.createElement("section", {className: "depends-section"});
                     returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "出力"}));
-                    returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
+                    returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.refElement(method.returnTypeRef)]}));
                     depends.appendChild(returnSection);
                 }
                 methodSection.appendChild(depends);

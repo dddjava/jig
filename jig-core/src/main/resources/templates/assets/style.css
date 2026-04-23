@@ -407,6 +407,14 @@ main table.fields thead {
     background-color: #009900;
 }
 
+td.fqn {
+    white-space: nowrap;
+    overflow: scroll;
+    max-width: 20em;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
 /* index */
 .index > header {
     border-bottom: solid 2px #000;
@@ -606,10 +614,6 @@ body.hide-usecase-details .depends {
 
 .diagram-tab:hover:not(.active) {
     background-color: #eaeaea;
-}
-
-.diagram-panel.hidden {
-    display: none;
 }
 
 .diagram-panel-options {
@@ -1139,14 +1143,6 @@ label {
     white-space: normal;
 }
 
-.package-relation td.fqn {
-    white-space: nowrap;
-    overflow: scroll;
-    max-width: 20em;
-    overflow-wrap: normal;
-    word-break: normal;
-}
-
 .package-relation tr:nth-child(even) {
     background-color: #f9f9f9;
 }
@@ -1271,12 +1267,6 @@ label {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
-}
-
-.insight table tr td {
-    white-space: nowrap;
-    overflow: scroll;
-    max-width: 20em;
 }
 
 /* 拡大アイコンをクリックしたときに非表示にする行のスタイル */

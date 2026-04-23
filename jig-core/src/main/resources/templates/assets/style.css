@@ -1435,6 +1435,8 @@ table td.number {
     height: 16px;
     flex-shrink: 0;
     color: #5a7a9a;
+    position: sticky;
+    right: 0;
 }
 
 .in-page-sidebar__toggle::before {

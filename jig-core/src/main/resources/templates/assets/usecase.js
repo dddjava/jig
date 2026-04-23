@@ -702,7 +702,7 @@ const UsecaseApp = (() => {
                         const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
                         const {panels, section} = Jig.mermaid.diagram.buildTabSection(
                             [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
-                            {className: "diagram-container", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
+                            {className: "tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
                         );
                         methodSection.appendChild(section);
                         usecaseTarget = panels['usecase'];

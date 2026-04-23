@@ -167,7 +167,7 @@ test.describe('usecase.js', () => {
             assert.equal(methodSection.querySelector('h4').textContent, 'method1');
             assert.equal(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
 
-            const diagramContainer = methodSection.querySelector('.diagram-container');
+            const diagramContainer = methodSection.querySelector('.tab-diagram-section');
             assert.ok(diagramContainer);
             const tabs = diagramContainer.querySelector('.diagram-tabs');
             assert.ok(tabs);

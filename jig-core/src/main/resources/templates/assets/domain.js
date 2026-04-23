@@ -698,7 +698,7 @@ const DomainApp = (() => {
             ].filter(Boolean);
 
             if (tabDefs.length > 0) {
-                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "domain-diagrams-section"});
+                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "tab-diagram-section domain-diagrams-section"});
                 section.appendChild(diagramSection);
 
                 if (panels['direct']) {
@@ -811,7 +811,7 @@ const DomainApp = (() => {
                     {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
                     {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
                 ];
-                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "domain-diagrams-section"});
+                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "tab-diagram-section domain-diagrams-section"});
                 section.appendChild(diagramSection);
                 tabDefs.forEach(tab => {
                     Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {

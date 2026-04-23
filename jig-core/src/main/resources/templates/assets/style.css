@@ -575,14 +575,14 @@ body.hide-domain-diagrams .domain-diagrams-section {
     display: none;
 }
 
-.domain-diagrams-section {
+.tab-diagram-section {
     border: 1px solid #ccc;
     border-radius: 6px;
     margin-top: 12px;
     overflow: hidden;
 }
 
-.domain-diagrams-section .diagram-panel {
+.tab-diagram-section .diagram-panel {
     padding: 12px;
     background-color: #fff;
 }

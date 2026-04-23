@@ -272,38 +272,56 @@ globalThis.Jig.dom = (() => {
 
     // --- Sidebar ---
 
-    function createSection(title, items) {
+    function buildCollapsibleTitle(title, links) {
+        const toggle = createElement("button", {
+            className: "in-page-sidebar__toggle",
+            textContent: "▼",
+            attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
+        });
+        const titleEl = createElement("p", {
+            className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+            children: [createElement("span", {textContent: title}), toggle]
+        });
+        titleEl.addEventListener("click", () => {
+            const collapsing = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!collapsing));
+            toggle.textContent = collapsing ? "▶" : "▼";
+            toggle.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
+            links.classList.toggle("in-page-sidebar__links--hidden", collapsing);
+        });
+        return titleEl;
+    }
+
+    function createSection(title, items, {collapsible = false} = {}) {
         if (!items || items.length === 0) return null;
 
-        const titleEl = title ? createElement("p", {
-            className: "in-page-sidebar__title",
-            textContent: title
-        }) : null;
+        const links = createElement("ul", {
+            className: "in-page-sidebar__links",
+            children: items.map(({id, label}) => createElement("li", {
+                className: "in-page-sidebar__item",
+                children: [
+                    createElement("a", {
+                        className: "in-page-sidebar__link",
+                        attributes: {href: "#" + id},
+                        textContent: label
+                    })
+                ]
+            }))
+        });
+
+        const titleEl = !title ? null
+            : collapsible ? buildCollapsibleTitle(title, links)
+            : createElement("p", {className: "in-page-sidebar__title", textContent: title});
 
         return createElement("section", {
             className: "in-page-sidebar__section",
-            children: [
-                titleEl,
-                createElement("ul", {
-                    className: "in-page-sidebar__links",
-                    children: items.map(({id, label}) => createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [
-                            createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + id},
-                                textContent: label
-                            })
-                        ]
-                    }))
-                })
-            ]
+            children: [titleEl, links]
         });
     }
 
-    function renderSection(container, title, items) {
+    function renderSection(container, title, items, options) {
         if (!container) return;
-        const section = createSection(title, items);
+        const section = createSection(title, items, options);
         if (section) {
             container.appendChild(section);
         }

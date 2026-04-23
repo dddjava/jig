@@ -214,7 +214,7 @@ const InboundApp = (() => {
                     return [{id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,c.fqn), label: title}];
                 });
             if (items.length === 0) continue;
-            Jig.dom.sidebar.renderSection(sidebar, label, items);
+            Jig.dom.sidebar.renderSection(sidebar, label, items, {collapsible: true});
         }
     }
 

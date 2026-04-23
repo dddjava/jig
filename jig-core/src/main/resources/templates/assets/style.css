@@ -1414,12 +1414,40 @@ table td.number {
     letter-spacing: 0.04em;
 }
 
+.in-page-sidebar__title--collapsible {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.in-page-sidebar__toggle {
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: none;
+    border: none;
+    color: #5a7a9a;
+    font-size: 0.8em;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.in-page-sidebar__title--collapsible:hover .in-page-sidebar__toggle {
+    opacity: 1;
+}
+
 .in-page-sidebar__links {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: 4px;
+}
+
+.in-page-sidebar__links--hidden {
+    display: none;
 }
 
 .in-page-sidebar__item {

@@ -1476,6 +1476,10 @@ table td.number {
     gap: 4px;
 }
 
+.in-page-sidebar__item > .in-page-sidebar__links {
+    padding-left: 12px;
+}
+
 .in-page-sidebar__links--hidden {
     display: none;
 }

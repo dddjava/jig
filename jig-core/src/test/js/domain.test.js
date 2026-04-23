@@ -42,8 +42,8 @@ test.describe('domain.js', () => {
 
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
-            assert.equal(result.tagName, 'details');
-            const summaryLink = result.children[0].children[0];
+            assert.equal(result.tagName, 'li');
+            const summaryLink = result.children[0].children[0]; // div.in-page-sidebar__item-header > a
             assert.equal(summaryLink.tagName, 'a');
             assert.equal(summaryLink.textContent, 'com/example');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
@@ -64,8 +64,8 @@ test.describe('domain.js', () => {
 
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
-            assert.equal(result.tagName, 'details');
-            const summaryLink = result.children[0].children[0];
+            assert.equal(result.tagName, 'li');
+            const summaryLink = result.children[0].children[0]; // div.in-page-sidebar__item-header > a
             assert.equal(summaryLink.tagName, 'a');
             // com -> example -> deep で、deep がタイプを持つので統合が止まる
             assert.equal(summaryLink.textContent, 'com/example/deep');
@@ -89,7 +89,7 @@ test.describe('domain.js', () => {
 
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
-            const summaryLink = result.children[0].children[0];
+            const summaryLink = result.children[0].children[0]; // div.in-page-sidebar__item-header > a
             assert.equal(summaryLink.textContent, 'com/example/sub/deep');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.sub.deep'));
         });
@@ -112,13 +112,14 @@ test.describe('domain.js', () => {
 
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
-            const summaryLink = result.children[0].children[0];
+            const summaryLink = result.children[0].children[0]; // div.in-page-sidebar__item-header > a
             // com -> example は統合（example は2つの子を持つので統合されない）
             assert.equal(summaryLink.textContent, 'com/example');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
 
-            const childPackageNames = Array.from(result.children)
-                .filter(child => child.tagName === 'details')
+            const childList = result.children[1]; // ul.in-page-sidebar__links
+            const childPackageNames = Array.from(childList.children)
+                .filter(child => child.attributes.has('data-has-enum-children'))
                 .map(child => child.children[0].children[0].textContent);
             assert.ok(childPackageNames.includes('sub1'), 'example should have sub1 as child');
             assert.ok(childPackageNames.includes('sub2'), 'example should have sub2 as child');

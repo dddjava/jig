@@ -82,9 +82,10 @@ const DomainApp = (() => {
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
+     * @param {boolean} isTopLevel
      * @returns {HTMLElement}
      */
-    function renderPackageNavItem(pkg, childPackagesMap, typesMap) {
+    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
         const mergedNames = [Jig.glossary.getTypeTerm(pkg.fqn).title];
@@ -99,27 +100,12 @@ const DomainApp = (() => {
             currentPkg = childPkg;
         }
 
-        const summaryLink = Jig.dom.createElement("a", {
-            attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
-            textContent: mergedNames.join("/")
-        });
-        const details = Jig.dom.createElement("details", {
-            attributes: {
-                open: "",
-                "data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"
-            },
-            children: [
-                Jig.dom.createElement("summary", {
-                    className: "package",
-                    children: [summaryLink, "/"]
-                })
-            ]
-        });
+        const childList = Jig.dom.createElement("ul", {className: "in-page-sidebar__links"});
 
         // 子パッケージを表示（統合後の currentPkg の直下のみ）
         const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
         childPackages.forEach(childPkg => {
-            details.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap));
+            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap));
         });
 
         // 子タイプを表示
@@ -130,13 +116,49 @@ const DomainApp = (() => {
                 className: domainType?.isDeprecated ? "deprecated" : "",
                 textContent: Jig.glossary.getTypeTerm(child.fqn).title
             });
-            details.appendChild(Jig.dom.createElement("div", {
-                attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
-                children: [link]
+            childList.appendChild(Jig.dom.createElement("li", {
+                className: "in-page-sidebar__item",
+                children: [
+                    Jig.dom.createElement("div", {
+                        attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
+                        children: [link]
+                    })
+                ]
             }));
         });
 
-        return details;
+        const summaryLink = Jig.dom.createElement("a", {
+            attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
+            textContent: mergedNames.join("/")
+        });
+        const headerChildren = [summaryLink, "/", Jig.dom.sidebar.createToggle(childList)];
+        const wrapperAttrs = {"data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"};
+
+        if (isTopLevel) {
+            return Jig.dom.createElement("section", {
+                className: "in-page-sidebar__section",
+                attributes: wrapperAttrs,
+                children: [
+                    Jig.dom.createElement("p", {
+                        className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                        children: headerChildren
+                    }),
+                    childList
+                ]
+            });
+        } else {
+            return Jig.dom.createElement("li", {
+                className: "in-page-sidebar__item",
+                attributes: wrapperAttrs,
+                children: [
+                    Jig.dom.createElement("div", {
+                        className: "in-page-sidebar__item-header",
+                        children: headerChildren
+                    }),
+                    childList
+                ]
+            });
+        }
     }
 
     /**
@@ -510,8 +532,7 @@ const DomainApp = (() => {
         // 直接の子パッケージ fqn の集合
         const childPackageFqns = new Set();
         packages.forEach(pkg => {
-            const children = getDirectChildPackages(pkg, childPackagesMap);
-            children.forEach(child => {
+            getDirectChildPackages(pkg, childPackagesMap).forEach(child => {
                 childPackageFqns.add(child.fqn);
             });
         });
@@ -519,7 +540,7 @@ const DomainApp = (() => {
         // トップレベルのパッケージのみを表示（直接の親を持たないもの）
         packages.forEach(pkg => {
             if (!childPackageFqns.has(pkg.fqn)) {
-                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap));
+                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true));
             }
         });
     }
@@ -920,9 +941,9 @@ const DomainApp = (() => {
             // サイドバーのパッケージのフィルター（enum を含まないパッケージは非表示）
             const sidebar = document.getElementById('domain-sidebar');
             if (sidebar) {
-                const packageDetails = sidebar.querySelectorAll('details[data-has-enum-children]');
-                packageDetails.forEach(details => {
-                    details.style.display = details.dataset.hasEnumChildren === 'true' ? '' : 'none';
+                const packageItems = sidebar.querySelectorAll('[data-has-enum-children]');
+                packageItems.forEach(item => {
+                    item.style.display = item.dataset.hasEnumChildren === 'true' ? '' : 'none';
                 });
 
                 // サイドバーの型リンクのフィルター（enum でない型は非表示）
@@ -940,9 +961,9 @@ const DomainApp = (() => {
 
             const sidebar = document.getElementById('domain-sidebar');
             if (sidebar) {
-                const packageDetails = sidebar.querySelectorAll('details[data-has-enum-children]');
-                packageDetails.forEach(details => {
-                    details.style.display = '';
+                const packageItems = sidebar.querySelectorAll('[data-has-enum-children]');
+                packageItems.forEach(item => {
+                    item.style.display = '';
                 });
 
                 const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
@@ -967,13 +988,14 @@ const DomainApp = (() => {
             div.style.display = text.includes(filterText) ? '' : 'none';
         });
 
-        Array.from(sidebar.querySelectorAll('details[data-has-enum-children]'))
+        Array.from(sidebar.querySelectorAll('[data-has-enum-children]'))
             .reverse()
-            .forEach(details => {
-                const hasVisible = Array.from(details.children).some(child =>
-                    child.tagName !== 'SUMMARY' && child.style.display !== 'none'
+            .forEach(item => {
+                const childList = Array.from(item.children).find(child => child.tagName === 'ul');
+                const hasVisible = childList && Array.from(childList.children).some(child =>
+                    child.style.display !== 'none'
                 );
-                details.style.display = hasVisible ? '' : 'none';
+                item.style.display = hasVisible ? '' : 'none';
             });
     }
 

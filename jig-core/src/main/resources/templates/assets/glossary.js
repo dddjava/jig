@@ -68,13 +68,6 @@ const GlossaryApp = (() => {
         });
     }
 
-    function escapeCsvValue(value) {
-        const text = String(value ?? "")
-            .replace(/\r\n/g, "\n")
-            .replace(/\r/g, "\n");
-        return `"${text.replace(/"/g, "\"\"")}"`;
-    }
-
     function buildGlossaryCsv(terms) {
         const header = ["用語（英名）", "用語", "説明", "種類", "識別子"];
         const rows = terms.map(term => [
@@ -85,7 +78,7 @@ const GlossaryApp = (() => {
             term.fqn ?? "",
         ]);
 
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -356,7 +349,6 @@ const GlossaryApp = (() => {
         getDomainPackageRoots,
         normalizeGlossaryData,
         buildTermAnchorId,
-        escapeCsvValue,
         buildGlossaryCsv,
         renderTermSidebar,
         renderGlossaryTerms,

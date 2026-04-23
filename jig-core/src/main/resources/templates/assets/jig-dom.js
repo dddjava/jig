@@ -69,6 +69,13 @@ globalThis.Jig.dom = (() => {
 
     // --- CSV utility ---
 
+    function escapeCsvValue(value) {
+        const text = String(value ?? "")
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n");
+        return `"${text.replace(/"/g, "\"\"")}"`;
+    }
+
     function downloadCsv(text, filename) {
         const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
         const url = URL.createObjectURL(blob);
@@ -462,6 +469,7 @@ globalThis.Jig.dom = (() => {
         createCell,
         parseMarkdown,
         createMarkdownElement,
+        escapeCsvValue,
         downloadCsv,
         setupSortableTables,
         initCommonUi,

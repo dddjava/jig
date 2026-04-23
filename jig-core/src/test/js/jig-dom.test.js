@@ -795,4 +795,11 @@ test.describe('jig-dom.js', () => {
             assert.equal(nav, null);
         });
     });
+
+    test.describe('escapeCsvValue', () => {
+        test('CSV値はクォートし、改行とダブルクォートを処理する', () => {
+            assert.equal(Jig.dom.escapeCsvValue('"a"\r\nline'), '"""a""\nline"');
+            assert.equal(Jig.dom.escapeCsvValue(null), '""');
+        });
+    });
 });

@@ -212,11 +212,6 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('CSV', () => {
-        test('CSV値はクォートし、改行とダブルクォートを処理する', () => {
-            assert.equal(glossary.escapeCsvValue('"a"\r\nline'), '"""a""\nline"');
-            assert.equal(glossary.escapeCsvValue(null), '""');
-        });
-
         test('CSVにヘッダーと行を出力する', () => {
             const terms = [
                 {simpleText: 'Account', title: '口座', description: 'desc', kind: 'クラス', fqn: 'app.Account'},

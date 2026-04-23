@@ -6,6 +6,12 @@ require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 const ListOutputApp = require('../../main/resources/templates/assets/list-output.js');
 
+globalThis.Jig.dom ??= {};
+globalThis.Jig.dom.escapeCsvValue ??= (value) => {
+    const text = String(value ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+    return `"${text.replace(/"/g, "\"\"")}"`;
+};
+
 class Element {
     constructor(tagName) {
         this.tagName = tagName;
@@ -113,20 +119,15 @@ function setupJig() {
         });
         return cell;
     };
+
+    global.Jig.dom.escapeCsvValue = function escapeCsvValue(value) {
+        const text = String(value ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+        return `"${text.replace(/"/g, "\"\"")}"`;
+    };
 }
 
 test.describe('list-output.js', () => {
     test.describe('CSV', () => {
-        test.describe('escapeCsvValue', () => {
-            test('CSV値はクォートし、改行とダブルクォートを処理する', () => {
-                const value = '"a"\r\nline';
-
-                const escaped = ListOutputApp.escapeCsvValue(value);
-
-                assert.equal(escaped, '"""a""\nline"');
-            });
-        });
-
         test.describe('buildControllerCsv', () => {
             test('CSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.ExampleController": {title: "例"}}};

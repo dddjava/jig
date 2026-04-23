@@ -1418,7 +1418,6 @@ table td.number {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
     user-select: none;
 }
 
@@ -1427,14 +1426,36 @@ table td.number {
     transition: opacity 0.15s;
     background: none;
     border: none;
-    color: #5a7a9a;
-    font-size: 0.8em;
     cursor: pointer;
-    padding: 0 2px;
-    line-height: 1;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #5a7a9a;
 }
 
-.in-page-sidebar__title--collapsible:hover .in-page-sidebar__toggle {
+.in-page-sidebar__toggle::before {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+    margin-top: -3px;
+}
+
+.in-page-sidebar__toggle[aria-expanded="false"]::before {
+    transform: rotate(-45deg);
+    margin-top: 0;
+    margin-right: -3px;
+}
+
+.in-page-sidebar__section:hover .in-page-sidebar__toggle {
     opacity: 1;
 }
 

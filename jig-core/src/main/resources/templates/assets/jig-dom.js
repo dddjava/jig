@@ -275,21 +275,18 @@ globalThis.Jig.dom = (() => {
     function buildCollapsibleTitle(title, links) {
         const toggle = createElement("button", {
             className: "in-page-sidebar__toggle",
-            textContent: "▼",
             attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
         });
-        const titleEl = createElement("p", {
-            className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-            children: [createElement("span", {textContent: title}), toggle]
-        });
-        titleEl.addEventListener("click", () => {
+        toggle.addEventListener("click", () => {
             const collapsing = toggle.getAttribute("aria-expanded") === "true";
             toggle.setAttribute("aria-expanded", String(!collapsing));
-            toggle.textContent = collapsing ? "▶" : "▼";
             toggle.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
             links.classList.toggle("in-page-sidebar__links--hidden", collapsing);
         });
-        return titleEl;
+        return createElement("p", {
+            className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+            children: [createElement("span", {textContent: title}), toggle]
+        });
     }
 
     function createSection(title, items, {collapsible = false} = {}) {

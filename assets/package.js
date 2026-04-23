@@ -337,60 +337,56 @@ const PackageApp = (() => {
         }
 
         container.style.display = '';
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.textContent = '相互依存と原因';
-        const list = document.createElement('ul');
-
-        const applyFilterAndRender = (fqns) => {
-            context.packageFilterFqn = fqns;
-            renderHierarchyDiagramAndTable(context);
-        };
+        const heading = Jig.dom.createElement('h3', {textContent: '相互依存と原因'});
+        const list = Jig.dom.createElement('ul');
 
         items.forEach(item => {
-            const itemNode = document.createElement('li');
-            const pairDiv = document.createElement('div');
-            pairDiv.className = 'pair';
+            const diagramButton = Jig.dom.createElement('button', {
+                className: 'diagram-button',
+                textContent: 'ダイアグラムを表示',
+                attributes: {type: 'button'}
+            });
+            const textButton = Jig.dom.createElement('button', {
+                className: 'text-button',
+                textContent: 'テキストを表示',
+                attributes: {type: 'button'}
+            });
+            const causesEl = Jig.dom.createElement('pre', {
+                className: 'causes',
+                textContent: item.causes?.length ? item.causes.join('\n') : '',
+                style: {display: 'none'}
+            });
+            const diagramContainer = Jig.dom.createElement('div', {className: 'mutual-dependency-diagram'});
+            const itemNode = Jig.dom.createElement('li', {
+                children: [
+                    Jig.dom.createElement('div', {
+                        className: 'pair',
+                        children: [
+                            Jig.dom.createElement('span', {textContent: item.pairLabel}),
+                            diagramButton,
+                            textButton
+                        ]
+                    }),
+                    causesEl,
+                    diagramContainer
+                ]
+            });
 
-            const pairLabelSpan = document.createElement('span');
-            pairLabelSpan.textContent = item.pairLabel;
-            pairDiv.appendChild(pairLabelSpan);
+            diagramButton.addEventListener('click', () => {
+                renderMutualDependencyDiagram(item, itemNode, context);
+                diagramButton.remove();
+            });
 
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = 'フィルタにセット';
-            button.className = 'filter-button';
-            const [package1, package2] = item.pairLabel.split(' <-> ');
-            button.addEventListener('click', () => applyFilterAndRender([package1, package2]));
-            pairDiv.appendChild(button);
-
-            itemNode.appendChild(pairDiv);
-
-            if (item.causes?.length) {
-                const detailBody = document.createElement('pre');
-                detailBody.className = 'causes';
-                detailBody.textContent = item.causes.join('\n');
-                itemNode.appendChild(detailBody);
-            }
-
-            const diagramButton = document.createElement('button');
-            diagramButton.type = 'button';
-            diagramButton.textContent = '関連図を描画';
-            diagramButton.className = 'diagram-button';
-            diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, itemNode, context));
-            itemNode.appendChild(diagramButton);
-
-            const diagramContainer = document.createElement('pre');
-            diagramContainer.className = 'mermaid mutual-dependency-diagram';
-            diagramContainer.style.display = 'none';
-            itemNode.appendChild(diagramContainer);
+            textButton.addEventListener('click', () => {
+                causesEl.style.display = '';
+                textButton.remove();
+            });
 
             list.appendChild(itemNode);
         });
         container.innerHTML = '';
-        details.appendChild(summary);
-        details.appendChild(list);
-        container.appendChild(details);
+        container.appendChild(heading);
+        container.appendChild(list);
     }
 
     function renderMutualDependencyDiagram(item, itemNode, context) {
@@ -402,11 +398,6 @@ const PackageApp = (() => {
             diagram.innerHTML = '';
             diagram.style.display = 'none';
             return;
-        }
-
-        const button = itemNode.querySelector('.diagram-button');
-        if (button) {
-            button.style.display = 'none';
         }
 
         diagram.style.display = 'block';

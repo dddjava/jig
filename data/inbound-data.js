@@ -1,1 +1,1 @@
-globalThis.inboundData = {"controllers":[]}
+globalThis.inboundData = {"inboundAdapters":[]}

@@ -1,9 +1,12 @@
 const InboundApp = (() => {
     const Jig = globalThis.Jig;
 
+    const ADAPTER_ID_PREFIX = "adapter";
+
     const state = {
         data: null,
         sidebarFilterText: '',
+        displayType: 'all',
     };
 
     const Diagram = {
@@ -94,9 +97,11 @@ const InboundApp = (() => {
             });
 
             // パスノードとdotted edge
+            const pathNodeShapes = {HTTP_API: 'request', QUEUE_LISTENER: 'queue', SCHEDULER: 'scheduler'};
             data.controller.entrypoints.forEach(ep => {
                 const pathNodeId = Jig.util.fqnToId("path", ep.fqn);
-                builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
+                const pathShape = pathNodeShapes[ep.entrypointType];
+                builder.addNode(pathNodeId, ep.path, pathShape);
                 builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
             });
 
@@ -142,6 +147,7 @@ const InboundApp = (() => {
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
         state.data = null;
         state.sidebarFilterText = '';
+        state.displayType = 'all';
 
         state.data = parseInboundData();
         if (!state.data) {
@@ -150,33 +156,212 @@ const InboundApp = (() => {
 
         Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
             state.sidebarFilterText = text;
-            renderSidebar(state.data.controllers || []);
+            renderSidebar(filteredAdapters());
         });
+
+        initDisplayTypeSettings();
 
         render();
     }
 
-    function render() {
-        const controllers = state.data.controllers || [];
-        renderSidebar(controllers);
-        renderMain(controllers);
+    function filteredAdapters() {
+        const all = state.data.inboundAdapters || [];
+        if (state.displayType === 'all') return all;
+        return all.filter(c => c.entrypoints?.some(ep => ep.entrypointType === state.displayType));
     }
 
-    function renderSidebar(controllers) {
+    function initDisplayTypeSettings() {
+        const settingsEl = document.getElementById('sidebar-settings');
+        const fieldset = document.getElementById('display-type-fieldset');
+        if (!settingsEl || !fieldset) return;
+
+        const types = new Set(
+            (state.data.inboundAdapters || []).flatMap(c => (c.entrypoints || []).map(ep => ep.entrypointType)).filter(Boolean)
+        );
+
+        if (types.size <= 1) {
+            settingsEl.style.display = 'none';
+            return;
+        }
+
+        const options = [
+            {value: 'all', label: 'すべて'},
+            {value: 'HTTP_API', label: 'リクエストハンドラ'},
+            {value: 'QUEUE_LISTENER', label: 'メッセージリスナー'},
+            {value: 'SCHEDULER', label: 'スケジューラー'},
+        ].filter(opt => opt.value === 'all' || types.has(opt.value));
+
+        options.forEach(({value, label}, idx) => {
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'display-type';
+            radio.value = value;
+            if (idx === 0) radio.checked = true;
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    state.displayType = value;
+                    render();
+                }
+            });
+            const labelEl = document.createElement('label');
+            labelEl.append(radio, ' ' + label);
+            fieldset.appendChild(labelEl);
+        });
+    }
+
+    function render() {
+        const adapters = filteredAdapters();
+        renderSidebar(adapters);
+        renderMain(adapters);
+    }
+
+    function renderSidebar(adapters) {
         const sidebar = document.getElementById("inbound-sidebar-list");
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        const filterText = state.sidebarFilterText.toLowerCase();
-        const filteredControllers = filterText
-            ? controllers.filter(c => Jig.glossary.getTypeTerm(c.fqn).title.toLowerCase().includes(filterText))
-            : controllers;
+        Jig.dom.sidebar.renderSection(sidebar, null, [{id: "entrypoint-summary", label: "エントリーポイント一覧"}]);
 
-        const items = filteredControllers.map(c => ({
-            id: Jig.util.fqnToId("adapter", c.fqn),
-            label: Jig.glossary.getTypeTerm(c.fqn).title
+        const filterText = state.sidebarFilterText.toLowerCase();
+        const typeLabels = {
+            HTTP_API: "リクエストハンドラ",
+            QUEUE_LISTENER: "メッセージリスナー",
+            SCHEDULER: "スケジューラー",
+            OTHER: "その他",
+        };
+
+        for (const [type, label] of Object.entries(typeLabels)) {
+            const items = adapters
+                .filter(c => c.entrypoints?.some(ep => ep.entrypointType === type))
+                .flatMap(c => {
+                    const title = Jig.glossary.getTypeTerm(c.fqn).title;
+                    if (filterText && !title.toLowerCase().includes(filterText)) return [];
+                    return [{id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,c.fqn), label: title}];
+                });
+            if (items.length === 0) continue;
+            Jig.dom.sidebar.renderSection(sidebar, label, items);
+        }
+    }
+
+    function splitHttpPath(path) {
+        const spaceIdx = (path || '').indexOf(' ');
+        return spaceIdx !== -1
+            ? [path.slice(0, spaceIdx), path.slice(spaceIdx + 1)]
+            : ['', path || ''];
+    }
+
+    function entrypointLabel(fqn) {
+        const typeFqn = fqn.split('#')[0];
+        return Jig.glossary.getTypeTerm(typeFqn).title + ' ' + Jig.glossary.getMethodTerm(fqn, true).title;
+    }
+
+    function linkCell(fqn, cardId) {
+        return Jig.dom.createElement("td", {
+            children: [Jig.dom.createElement("a", {
+                textContent: entrypointLabel(fqn),
+                attributes: {href: '#' + cardId}
+            })]
+        });
+    }
+
+    function buildTypeSubSection(title, headers, rows, withFilter = false) {
+        const tbody = Jig.dom.createElement("tbody", {
+            children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
+        });
+
+        const sectionChildren = [Jig.dom.createElement("h4", {textContent: title})];
+
+        if (withFilter) {
+            const filterInput = Jig.dom.createElement("input", {
+                className: "entrypoint-filter",
+                attributes: {type: "search", placeholder: "パスで絞り込み", autocomplete: "off"}
+            });
+            filterInput.addEventListener('input', () => {
+                const text = filterInput.value.toLowerCase();
+                for (const tr of tbody.children) {
+                    const path = (tr.children[0]?.textContent || '').toLowerCase();
+                    tr.style.display = text && !path.includes(text) ? 'none' : '';
+                }
+            });
+            sectionChildren.push(filterInput);
+        }
+
+        sectionChildren.push(Jig.dom.createElement("table", {
+            className: "entrypoint-summary" + (withFilter ? " entrypoint-summary--http" : ""),
+            children: [
+                Jig.dom.createElement("thead", {
+                    children: [Jig.dom.createElement("tr", {
+                        children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
+                    })]
+                }),
+                tbody
+            ]
         }));
-        Jig.dom.sidebar.renderSection(sidebar, "コントローラー", items);
+
+        return Jig.dom.createElement("section", {
+            className: "jig-card jig-card--item",
+            children: sectionChildren
+        });
+    }
+
+    function renderSummaryTable(inboundTypes) {
+        const typeRows = {HTTP_API: [], QUEUE_LISTENER: [], SCHEDULER: []};
+        inboundTypes.forEach(inboundType => {
+            const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, inboundType.fqn);
+            const classPath = inboundType.classPath || '';
+            (inboundType.entrypoints || []).forEach(ep => {
+                if (typeRows[ep.entrypointType]) typeRows[ep.entrypointType].push({ep, cardId, classPath});
+            });
+        });
+
+        const subSections = [];
+
+        if (typeRows.HTTP_API.length > 0) {
+            const sorted = [...typeRows.HTTP_API].sort((a, b) => {
+                const [, pathA] = splitHttpPath(a.ep.path);
+                const [, pathB] = splitHttpPath(b.ep.path);
+                return (a.classPath + pathA).localeCompare(b.classPath + pathB);
+            });
+            subSections.push(buildTypeSubSection('リクエストハンドラ',
+                ['パス', 'メソッド', 'エントリーポイント'],
+                sorted.map(({ep, cardId, classPath}) => {
+                    const [method, path] = splitHttpPath(ep.path);
+                    return [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)];
+                }),
+                true
+            ));
+        }
+
+        if (typeRows.QUEUE_LISTENER.length > 0) {
+            subSections.push(buildTypeSubSection('メッセージリスナー',
+                ['パス', 'エントリーポイント'],
+                typeRows.QUEUE_LISTENER.map(({ep, cardId}) => [
+                    Jig.dom.createCell(ep.path || ''),
+                    linkCell(ep.fqn, cardId)
+                ])
+            ));
+        }
+
+        if (typeRows.SCHEDULER.length > 0) {
+            subSections.push(buildTypeSubSection('スケジューラー',
+                ['パス', 'エントリーポイント'],
+                typeRows.SCHEDULER.map(({ep, cardId}) => [
+                    Jig.dom.createCell(ep.path || ''),
+                    linkCell(ep.fqn, cardId)
+                ])
+            ));
+        }
+
+        if (subSections.length === 0) return null;
+
+        return Jig.dom.createElement("section", {
+            className: "jig-card jig-card--type entrypoint-summary-section",
+            id: "entrypoint-summary",
+            children: [
+                Jig.dom.createElement("h3", {textContent: "エントリーポイント一覧"}),
+                ...subSections
+            ]
+        });
     }
 
     function renderMain(inboundTypes) {
@@ -189,12 +374,15 @@ const InboundApp = (() => {
             return;
         }
 
+        const summaryCard = renderSummaryTable(inboundTypes);
+        if (summaryCard) container.appendChild(summaryCard);
+
         inboundTypes.forEach(inboundType => {
             const typeTerm = Jig.glossary.getTypeTerm(inboundType.fqn);
 
             const jigCard = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: Jig.util.fqnToId("adapter", inboundType.fqn),
+                id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,inboundType.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
                         children: [Jig.dom.createElement("a", {textContent: typeTerm.title})]
@@ -244,6 +432,7 @@ const InboundApp = (() => {
         parseInboundData,
         render,
         renderSidebar,
+        renderSummaryTable,
         renderMain,
         Diagram
     };

@@ -123,7 +123,7 @@ const OutboundApp = (() => {
                     const externalAccessors = Array.from(executionAccessorMethods.entries()).flatMap(([fqn, methodNames]) => {
                         const accessor = externalAccessorByFqn.get(fqn);
                         if (!accessor) return [];
-                        return [{...accessor, methods: accessor.methods.filter(m => methodNames.has(m.name))}];
+                        return [{...accessor, operations: accessor.operations.filter(m => methodNames.has(m.fqn.split('#')[1]?.split('(')[0]))}];
                     });
                     return [{
                         outboundPortOperation: op,
@@ -180,7 +180,7 @@ const OutboundApp = (() => {
             const map = new Map();
             operations.forEach(operation => {
                 operation.externalAccessors.forEach(accessor => {
-                    accessor.methods.forEach(accMethod => {
+                    accessor.operations.forEach(accMethod => {
                         accMethod.externals.forEach(ext => {
                             if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn}, operations: []});
                             const group = map.get(ext.fqn);
@@ -196,7 +196,7 @@ const OutboundApp = (() => {
         groupDirectExternalAccessors(data) {
             const map = new Map();
             data.otherExternalAccessors.forEach(accessor => {
-                accessor.methods.forEach(method => {
+                accessor.operations.forEach(method => {
                     method.externals.forEach(ext => {
                         if (!map.has(ext.fqn)) {
                             map.set(ext.fqn, {externalType: {fqn: ext.fqn}, directAccessors: []});
@@ -204,12 +204,12 @@ const OutboundApp = (() => {
                         const group = map.get(ext.fqn);
                         let existing = group.directAccessors.find(a => a.fqn === accessor.fqn);
                         if (!existing) {
-                            existing = {fqn: accessor.fqn, methods: []};
+                            existing = {fqn: accessor.fqn, operations: []};
                             group.directAccessors.push(existing);
                         }
-                        if (!existing.methods.find(m => m.name === method.name)) {
-                            existing.methods.push({
-                                name: method.name,
+                        if (!existing.operations.find(m => m.fqn === method.fqn)) {
+                            existing.operations.push({
+                                ...method,
                                 externals: method.externals.filter(e => e.fqn === ext.fqn)
                             });
                         }
@@ -361,7 +361,7 @@ const OutboundApp = (() => {
                     itemList.appendChild(Jig.dom.createElement("article", {
                         className: "outbound-operation-item jig-card jig-card--item",
                         children: [
-                            Jig.dom.createElement("h4", {textContent: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title}),
+                            Jig.dom.type.methodItem(operation.outboundPortOperation),
                             mermaidContainer,
                             Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}),
                             Jig.dom.createElement("ul", {
@@ -676,14 +676,14 @@ const OutboundApp = (() => {
 
             const filterToExternalType = accessor => ({
                 ...accessor,
-                methods: accessor.methods
+                operations: accessor.operations
                     .map(m => ({...m, externals: m.externals.filter(ext => ext.fqn === externalType.fqn)}))
                     .filter(m => m.externals.length > 0)
             });
 
             group.operations.forEach(operation => {
                 const relevantAccessors = operation.externalAccessors.filter(accessor =>
-                    accessor.methods.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
+                    accessor.operations.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
 
                 const props = this.extractOperationProps(operation);
 
@@ -793,7 +793,7 @@ const OutboundApp = (() => {
             if (!visibility.externalAccessor) {
                 if (visibility.externalType) {
                     const uniqueExternals = new Map();
-                    accessor.methods.forEach(accMethod => accMethod.externals.forEach(ext => uniqueExternals.set(ext.fqn, ext)));
+                    accessor.operations.forEach(accMethod => accMethod.externals.forEach(ext => uniqueExternals.set(ext.fqn, ext)));
                     uniqueExternals.forEach(ext => addExternal(sourceNodeId, ext));
                 }
                 return sourceNodeId;
@@ -802,9 +802,9 @@ const OutboundApp = (() => {
             const accessorLabel = Jig.glossary.getTypeTerm(accessor.fqn).title;
             if (visibility.externalAccessorMethod) {
                 const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
-                accessor.methods.forEach(accMethod => {
-                    const accMethodNodeId = Jig.util.fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
-                    builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, 'method');
+                accessor.operations.forEach(accMethod => {
+                    const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
+                    builder.addNodeToSubgraph(sg, accMethodNodeId, Jig.glossary.getMethodTerm(accMethod.fqn).title, 'method');
                     if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
                     accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
                 });
@@ -819,7 +819,7 @@ const OutboundApp = (() => {
 
                 if (visibility.externalType) {
                     const uniqueExternals = new Map();
-                    accessor.methods.forEach(accMethod => {
+                    accessor.operations.forEach(accMethod => {
                         if (visibility.externalTypeMethod) {
                             accMethod.externals.forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
                         } else {

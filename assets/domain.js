@@ -239,14 +239,13 @@ const DomainApp = (() => {
     }
 
     /**
-     * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
+     * 型の直接関連エッジと関与 FQN セットを収集する（deprecated フィルタ適用済み）
      * @param {DomainType} type
      * @param {Array} typeRelations
      * @param {Map} typesMap
-     * @param {string} direction
-     * @returns {string | null}
+     * @returns {{edges: Array, involvedFqns: Set<string>} | null}
      */
-    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+    function collectTypeRelationEdges(type, typeRelations, typesMap) {
         const allRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -255,7 +254,6 @@ const DomainApp = (() => {
 
         if (outgoing.length === 0 && incoming.length === 0) return null;
 
-        // Deprecated ノード非表示の場合、deprecated 型を除外
         const filteredOut = domainSettings.showDeprecatedNodes
             ? outgoing
             : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated);
@@ -265,16 +263,28 @@ const DomainApp = (() => {
 
         if (filteredOut.length === 0 && filteredIn.length === 0) return null;
 
-        // エッジの重複排除（A→B と B→A が両方ある場合も含む）
         const edgeMap = new Map();
         [...filteredOut, ...filteredIn].forEach(r => edgeMap.set(`${r.from}::${r.to}`, r));
         const edges = Array.from(edgeMap.values());
 
         const involvedFqns = new Set([type.fqn]);
-        edges.forEach(r => {
-            involvedFqns.add(r.from);
-            involvedFqns.add(r.to);
-        });
+        edges.forEach(r => { involvedFqns.add(r.from); involvedFqns.add(r.to); });
+
+        return {edges, involvedFqns};
+    }
+
+    /**
+     * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
+     * @param {DomainType} type
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
+     * @param {string} direction
+     * @returns {string | null}
+     */
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+        if (!result) return null;
+        const {edges, involvedFqns} = result;
 
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
@@ -321,6 +331,73 @@ const DomainApp = (() => {
         builder.addStyle(selfId, "font-weight:bold");
 
         return builder.build(direction);
+    }
+
+    /**
+     * クラスカードに表示するクラス図（classDiagram形式、物理名ラベル）
+     * @param {DomainType} type
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
+     * @param {string} direction
+     * @returns {string | null}
+     */
+    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+        if (!result) return null;
+        const {edges, involvedFqns} = result;
+
+        const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
+        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+
+        function edgeTypeFromKinds(kinds) {
+            if (!kinds) return 'dependency';
+            if (kinds.includes('継承クラス')) return 'realization';
+            if (kinds.includes('実装インタフェース')) return 'inheritance';
+            if (kinds.includes('フィールド型') || kinds.includes('フィールド型引数')) return 'association';
+            return 'dependency';
+        }
+
+        const builder = new Jig.mermaid.ClassDiagramBuilder();
+
+        involvedFqns.forEach(fqn => {
+            const nodeId = fqnToNodeId(fqn);
+            builder.addClass(nodeId, Jig.glossary.typeSimpleName(fqn));
+
+            const domainType = typesMap?.get(fqn);
+            (domainType?.fields || []).forEach(f => {
+                builder.addField(nodeId, typeNameWithGenerics(f.typeRef), f.name);
+            });
+            (domainType?.methods || []).forEach(m => {
+                const {name, params, returnType} = parseMethodInfo(m);
+                builder.addMethod(nodeId, m.visibility, name, params, returnType, false);
+            });
+            (domainType?.staticMethods || []).forEach(m => {
+                const {name, params, returnType} = parseMethodInfo(m);
+                builder.addMethod(nodeId, m.visibility, name, params, returnType, true);
+            });
+
+            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
+        });
+        edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
+
+        return builder.build(direction);
+    }
+
+    function typeNameWithGenerics(typeRef) {
+        const baseName = Jig.glossary.typeSimpleName(typeRef.fqn);
+        if (!typeRef.typeArgumentRefs?.length) return baseName;
+        return `${baseName}~${typeRef.typeArgumentRefs.map(typeNameWithGenerics).join(', ')}~`;
+    }
+
+    function parseMethodInfo(method) {
+        const hashIdx = method.fqn.lastIndexOf('#');
+        const parenIdx = method.fqn.indexOf('(', hashIdx);
+        const name = parenIdx > 0
+            ? method.fqn.substring(hashIdx + 1, parenIdx)
+            : method.fqn.substring(hashIdx + 1);
+        const params = (method.parameters || []).map(p => typeNameWithGenerics(p.typeRef));
+        const returnType = method.returnTypeRef ? typeNameWithGenerics(method.returnTypeRef) : '';
+        return {name, params, returnType};
     }
 
     /**
@@ -681,9 +758,10 @@ const DomainApp = (() => {
                         attributes: {type: "checkbox", class: "class-relation-external-incoming"}
                     });
                     incomingCheckbox.checked = true;
-                    panels['inner-class'].appendChild(Jig.dom.createElement("div", {
+                    panels['inner-class'].appendChild(Jig.dom.createElement("fieldset", {
                         className: "diagram-panel-options",
                         children: [
+                            Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
                             Jig.dom.createElement("label", {
                                 className: "diagram-panel-option",
                                 children: [outgoingCheckbox, document.createTextNode("関連先")]
@@ -766,17 +844,41 @@ const DomainApp = (() => {
             const staticList = createMethodsList("staticメソッド", type.staticMethods);
             if (staticList) section.appendChild(staticList);
 
-            Jig.mermaid.diagram.createAndRegister(section, (container) => {
-                const diagramDef = {container, pkg: undefined, type, diagramType: 'classDirect', typeRelations, typesMap};
-                renderDiagram(container, diagramDef);
-                // 見出しはまだ追加されていない場合のみ追加
-                if (!section.querySelector('h4.diagram-heading')) {
-                    section.insertBefore(Jig.dom.createElement("h4", {
-                        textContent: "クラス関連図",
-                        className: "diagram-heading"
-                    }), container);
-                }
-            });
+            if (createTypeRelationDiagram(type, typeRelations, typesMap) !== null) {
+                const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
+                const tabDefs = [
+                    {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
+                    {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
+                ];
+                const panels = {};
+                tabDefs.forEach((tab, i) => {
+                    panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
+                });
+                tabDefs.forEach((tab, i) => {
+                    const btn = Jig.dom.createElement("button", {
+                        className: "diagram-tab" + (i === 0 ? " active" : ""),
+                        textContent: tab.label,
+                    });
+                    btn.addEventListener('click', () => {
+                        tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
+                        Object.values(panels).forEach(p => p.classList.add('hidden'));
+                        btn.classList.add('active');
+                        panels[tab.id].classList.remove('hidden');
+                    });
+                    tabsBar.appendChild(btn);
+                });
+
+                section.appendChild(Jig.dom.createElement("section", {
+                    className: "jig-card--item domain-diagrams-section",
+                    children: [tabsBar, ...Object.values(panels)],
+                }));
+
+                tabDefs.forEach(tab => {
+                    Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
+                        renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
+                    });
+                });
+            }
 
             const relatedList = createRelatedClassesList(type, typeRelations, typesMap);
             if (relatedList) section.appendChild(relatedList);
@@ -823,6 +925,11 @@ const DomainApp = (() => {
             }
         } else if (diagramType === 'classDirect') {
             const generator = (dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir);
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        } else if (diagramType === 'classDefinition') {
+            const generator = (dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir);
             if (generator(domainSettings.diagramDirection)) {
                 Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
             }
@@ -1096,6 +1203,7 @@ const DomainApp = (() => {
         getDirectChildPackages,
         createRelationDiagram,
         createTypeRelationDiagram,
+        createTypeClassDiagramSource,
         createPackageRelationDiagram,
         createPackageDirectRelationDiagram,
         buildPackages,

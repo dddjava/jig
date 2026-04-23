@@ -590,8 +590,18 @@ body.hide-usecase-details .depends {
 
 .diagram-panel-options {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: 12px;
     padding: 4px 0;
+    border: none;
+    margin: 0;
+}
+
+.diagram-panel-options > legend {
+    width: 100%;
+    font-size: 0.8em;
+    color: var(--color-text-secondary, #666);
 }
 
 .diagram-panel-option {
@@ -605,6 +615,10 @@ body.hide-usecase-details .depends {
 /* Mermaidで画像が表示される前のテキストを表示しない */
 pre.mermaid {
     font-size: 0;
+}
+
+.mermaid svg a:hover {
+    text-decoration: none;
 }
 
 .mermaid-diagram {
@@ -1727,9 +1741,17 @@ table td.number {
     cursor: pointer;
     font-size: 16px;
     line-height: 1;
-    opacity: 0.6;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity 0.15s;
     z-index: 1;
+}
+
+.mermaid-diagram:hover > .mermaid-copy-button,
+.mermaid-diagram:hover > .mermaid-download-button,
+.mermaid-diagram:hover > .mermaid-direction-button {
+    opacity: 0.6;
+    pointer-events: auto;
 }
 
 .mermaid-copy-button::after,
@@ -2006,4 +2028,38 @@ p.jig-data-warning {
     border-left: 4px solid #f57f17;
     margin: 1rem;
     border-radius: 2px;
+}
+
+
+/* 入力インタフェース サマリーテーブル */
+.entrypoint-summary-section {
+    margin-bottom: 0;
+}
+
+.entrypoint-summary {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    table-layout: fixed;
+}
+
+.entrypoint-summary td, .entrypoint-summary th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entrypoint-filter {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+    border: 1px solid #d4d9e5;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.entrypoint-summary--http th:nth-child(2),
+.entrypoint-summary--http td:nth-child(2) {
+    width: 5em;
 }

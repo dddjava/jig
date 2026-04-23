@@ -575,6 +575,15 @@ body.hide-domain-diagrams .domain-diagrams-section {
     display: none;
 }
 
+.domain-diagrams-section {
+    padding: 0;
+    overflow: hidden;
+}
+
+.domain-diagrams-section .diagram-panel {
+    padding: 12px;
+}
+
 body.hide-usecase-diagrams .mermaid-diagram {
     display: none;
 }
@@ -594,22 +603,27 @@ body.hide-usecase-details .depends {
 .diagram-tabs {
     display: flex;
     gap: 4px;
-    margin-bottom: 4px;
+    padding: 8px 12px 0;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ccc;
 }
 
 .diagram-tab {
     padding: 4px 10px;
     border: 1px solid #ccc;
     border-radius: 4px 4px 0 0;
-    background-color: #f5f5f5;
+    background-color: #f0f0f0;
     cursor: pointer;
     font-size: 0.85em;
+    margin-bottom: -1px;
 }
 
 .diagram-tab.active {
     background-color: #fff;
     border-bottom-color: #fff;
     font-weight: bold;
+    position: relative;
+    z-index: 1;
 }
 
 .diagram-tab:hover:not(.active) {

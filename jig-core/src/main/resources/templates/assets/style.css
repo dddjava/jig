@@ -1421,6 +1421,11 @@ table td.number {
     user-select: none;
 }
 
+.in-page-sidebar__title .in-page-sidebar__link {
+    font-size: inherit;
+    padding: 0;
+}
+
 .in-page-sidebar__toggle {
     opacity: 0;
     transition: opacity 0.15s;

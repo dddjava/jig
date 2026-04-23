@@ -113,7 +113,7 @@ const DomainApp = (() => {
             const domainType = typesMap?.get(child.fqn);
             const link = Jig.dom.createElement("a", {
                 attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
-                className: domainType?.isDeprecated ? "deprecated" : "",
+                className: "in-page-sidebar__link" + (domainType?.isDeprecated ? " deprecated" : ""),
                 textContent: Jig.glossary.getTypeTerm(child.fqn).title
             });
             childList.appendChild(Jig.dom.createElement("li", {
@@ -128,6 +128,7 @@ const DomainApp = (() => {
         });
 
         const summaryLink = Jig.dom.createElement("a", {
+            className: "in-page-sidebar__link",
             attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
             textContent: mergedNames.join("/")
         });

@@ -310,9 +310,10 @@ globalThis.Jig.dom = (() => {
     function setupSortableTables() {
         function sortTable(event) {
             const headerColumn = event.target;
+            const table = headerColumn.closest("table");
             const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
 
-            const rows = Array.from(headerColumn.closest("table").querySelectorAll("tbody tr"));
+            const rows = Array.from(table.querySelectorAll("tbody tr"));
 
             const orderFlag = headerColumn.dataset.orderFlag === "true";
 
@@ -338,14 +339,14 @@ globalThis.Jig.dom = (() => {
                 return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
             });
 
-            rows.forEach(row => headerColumn.closest("table").getElementsByTagName("tbody")[0].appendChild(row));
+            rows.forEach(row => table.getElementsByTagName("tbody")[0].appendChild(row));
 
             headerColumn.dataset.orderFlag = (!orderFlag).toString();
         }
 
         document.querySelectorAll("table.sortable").forEach(table => {
             const headers = table.querySelectorAll("thead th");
-            headers.forEach((header, index) => {
+            headers.forEach(header => {
                 if (header.hasAttribute("onclick")) {
                     return;
                 }

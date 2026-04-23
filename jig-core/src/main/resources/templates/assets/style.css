@@ -575,7 +575,8 @@ body.hide-domain-diagrams .tab-diagram-section {
     display: none;
 }
 
-.tab-diagram-section {
+.tab-diagram-section,
+.diagram-container {
     border: 1px solid #ccc;
     border-radius: 6px;
     margin-top: 12px;
@@ -600,7 +601,8 @@ body.hide-usecase-details .depends {
 }
 
 .diagram-container {
-    margin-top: 10px;
+    padding: 12px;
+    background-color: #fff;
 }
 
 .diagram-tabs {

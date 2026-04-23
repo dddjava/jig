@@ -2,11 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
-// jig-glossary.js と jig-dom.js をロード（window・document のスタブが必要）
-global.window = global.window || {
-    addEventListener: () => {
-    }
-};
+global.window = {addEventListener: () => {}};
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-data.js');
@@ -18,7 +14,6 @@ const Jig = globalThis.Jig;
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
 const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createTypeClassDiagramSource, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
 
-// ヘルパー関数：domainData を設定し、Jig.data.domain の派生キャッシュを再構築する
 function setupDomainData(domainPackageRoots, types) {
     globalThis.domainData = {domainPackageRoots, types};
     Jig.data.resetCache();
@@ -33,7 +28,6 @@ function setupDomainData(domainPackageRoots, types) {
 }
 
 test.describe('domain.js', () => {
-    // パッケージナビゲーション要素のレンダリングをテスト（パッケージツリーの表示形式）
     test.describe('renderPackageNavItem', () => {
         test('子が1つだけでタイプを持たないパッケージの場合、統合して表示する', () => {
             const comPkg = {fqn: 'com', types: []};
@@ -64,9 +58,8 @@ test.describe('domain.js', () => {
                 ['com.example', [deepPkg]],
                 ['com.example.deep', []]
             ]);
-            const myClassType = {fqn: 'com.example.deep.MyClass', methods: [], isDeprecated: false};
             const typesMap = new Map([
-                ['com.example.deep.MyClass', myClassType]
+                ['com.example.deep.MyClass', {fqn: 'com.example.deep.MyClass', methods: [], isDeprecated: false}]
             ]);
 
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
@@ -97,7 +90,6 @@ test.describe('domain.js', () => {
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             const summaryLink = result.children[0].children[0];
-            // com -> example -> sub -> deep と続くので、sub がタイプを持つまで統合
             assert.equal(summaryLink.textContent, 'com/example/sub/deep');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.sub.deep'));
         });
@@ -125,17 +117,14 @@ test.describe('domain.js', () => {
             assert.equal(summaryLink.textContent, 'com/example');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
 
-            // example の直下には sub1 と sub2 があるはず
             const childPackageNames = Array.from(result.children)
                 .filter(child => child.tagName === 'details')
                 .map(child => child.children[0].children[0].textContent);
             assert.ok(childPackageNames.includes('sub1'), 'example should have sub1 as child');
             assert.ok(childPackageNames.includes('sub2'), 'example should have sub2 as child');
         });
-
     });
 
-    // パッケージツリー操作をテスト（親パッケージから直下の子パッケージのフィルタリング）
     test.describe('getDirectChildPackages', () => {
         test('直下の子パッケージのみを返す', () => {
             const comPkg = {fqn: 'com', types: []};
@@ -184,15 +173,11 @@ test.describe('domain.js', () => {
         });
     });
 
-    // パッケージ関連図の Mermaid ソース生成をテスト
     test.describe('createRelationDiagram', () => {
-        test('関係図のMermaidソースを生成する（fqnToMermaidIdが正常に動作すること）', () => {
-            const typeA = {fqn: 'org.example.A', isDeprecated: false};
-            const typeB = {fqn: 'org.example.B', isDeprecated: false};
-
+        test('関係図のMermaidソースを生成する', () => {
             const typesMap = new Map([
-                ['org.example.A', typeA],
-                ['org.example.B', typeB],
+                ['org.example.A', {fqn: 'org.example.A', isDeprecated: false}],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false}],
             ]);
             const typeRelations = [
                 {from: 'org.example.A', to: 'org.example.B'}
@@ -208,6 +193,35 @@ test.describe('domain.js', () => {
 
             const sgId = Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
+        });
+
+        test('タイプを持たない空パッケージはnullを返す', () => {
+            const pkg = {fqn: 'app', types: []};
+            const result = createRelationDiagram(pkg, [], new Map());
+            assert.equal(result, null);
+        });
+
+        test('外部向きエッジ長を深さに応じて調整する', () => {
+            const typesMap = new Map([
+                ['org.example.A', {fqn: 'org.example.A', isDeprecated: false}],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false}],
+                ['org.other.X', {fqn: 'org.other.X', isDeprecated: false}],
+                ['org.third.Y', {fqn: 'org.third.Y', isDeprecated: false}],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.A', to: 'org.other.X'},
+                {from: 'org.example.B', to: 'org.third.Y'},
+            ];
+
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
+            const result = createRelationDiagram(pkg, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idOther = Jig.util.fqnToId("n", 'org.other');
+            const idThird = Jig.util.fqnToId("n", 'org.third');
+            assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
+            assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
         });
     });
 
@@ -280,10 +294,6 @@ test.describe('domain.js', () => {
 
     test.describe('createPackageRelationDiagram', () => {
         test('子パッケージ間に関連がある場合、ダイアグラムが生成される', () => {
-            const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
-            const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
-
-            // パッケージ構造を直接構築
             const packages = [
                 {fqn: 'org.example', types: []},
                 {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]},
@@ -299,32 +309,25 @@ test.describe('domain.js', () => {
         });
 
         test('子パッケージが存在しない場合はnullを返す', () => {
-            const typeA = {fqn: 'org.example.TypeA', isDeprecated: false};
-
             const packages = [
                 {fqn: 'org.example', types: [{fqn: 'org.example.TypeA'}]},
             ];
             const parentPkg = packages[0];
-            const allPackageRelations = [];
 
-            const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
+            const result = createPackageRelationDiagram(parentPkg, packages, []);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
         });
 
         test('子パッケージ間に関連がない場合はnullを返す', () => {
-            const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
-            const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
-
             const packages = [
                 {fqn: 'org.example', types: []},
                 {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]},
                 {fqn: 'org.example.service', types: [{fqn: 'org.example.service.TypeB'}]},
             ];
             const parentPkg = packages[0];
-            const allPackageRelations = [];  // 型関連なし
 
-            const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
+            const result = createPackageRelationDiagram(parentPkg, packages, []);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
         });
@@ -343,9 +346,8 @@ test.describe('domain.js', () => {
 
         test('対象パッケージに関連がない場合はnullを返す', () => {
             const parentPkg = {fqn: 'org.example', types: [{fqn: 'org.example.TypeA'}]};
-            const allPackageRelations = [];
 
-            const result = createPackageDirectRelationDiagram(parentPkg, allPackageRelations);
+            const result = createPackageDirectRelationDiagram(parentPkg, []);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
         });
@@ -363,7 +365,6 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            // エラー要素が追加されているか確認
             assert.equal(main.children.length, 1, "main に 1 つの子要素があること");
             assert.equal(main.children[0].tagName, 'p', "子要素が <p> タグであること");
             assert.ok(main.children[0].className.includes('jig-data-error'), "class に jig-data-error が含まれること");
@@ -372,7 +373,7 @@ test.describe('domain.js', () => {
 
         test('glossaryData が undefined の場合、警告を表示してレンダリング続行する', () => {
             delete globalThis.glossaryData;
-            globalThis.typeRelationsData = {relations: []}; // 他の optional データは設定
+            globalThis.typeRelationsData = {relations: []};
             const doc = new DocumentStub();
             doc.body.classList.add("domain-model");
             global.document = doc;
@@ -381,12 +382,10 @@ test.describe('domain.js', () => {
             doc.elementsById.set("domain-main", main);
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
 
-            // setupDomainData で domainData を初期化
             setupDomainData([], []);
 
             DomainApp.init();
 
-            // 警告要素が追加されているか確認
             const warning = main.children.find(el => el.className && el.className.includes('jig-data-warning'));
             assert.ok(warning, "warning 要素が存在すること");
             assert.ok(warning.textContent.includes('glossary-data.js'), "警告メッセージに glossary-data.js が含まれること");
@@ -397,7 +396,7 @@ test.describe('domain.js', () => {
 
         test('typeRelationsData が undefined の場合、警告を表示してレンダリング続行する', () => {
             delete globalThis.typeRelationsData;
-            setGlossaryData({}); // 他の optional データは設定
+            setGlossaryData({});
             const doc = new DocumentStub();
             doc.body.classList.add("domain-model");
             global.document = doc;
@@ -419,7 +418,7 @@ test.describe('domain.js', () => {
         });
     });
 
-    test.describe('パッケージ処理（renderPackages）', () => {
+    test.describe('renderPackages', () => {
         test('複数のパッケージを持つdomainDataでレンダリングされること', () => {
             const types = [
                 {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []},
@@ -444,7 +443,6 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            // パッケージがレンダリングされていることを確認
             const packageSections = main.children.filter(el => el.className && el.className.includes('jig-card--type'));
             assert.ok(packageSections.length > 0, "パッケージセクションが存在すること");
 
@@ -473,7 +471,6 @@ test.describe('domain.js', () => {
             const main = doc.createElement("div");
             doc.elementsById.set("domain-main", main);
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
-            // パッケージ間に型関連がある場合
             globalThis.typeRelationsData = {
                 relations: [
                     {from: 'org.example.User', to: 'org.other.Service'},
@@ -482,51 +479,11 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            // エラーが出ず正常に処理されることを確認
             assert.ok(main.children.length > 0, "main に要素が追加されること");
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-        });
-    });
-
-    test.describe('パッケージ関連図の処理', () => {
-        test('createRelationDiagramは空パッケージでnullを返す', () => {
-            const pkg = {fqn: 'app', types: []};  // type を持たないパッケージ
-            const typesMap = new Map();
-            const typeRelations = [];
-
-            const result = createRelationDiagram(pkg, typeRelations, typesMap);
-            assert.equal(result, null);
-        });
-
-        test('createRelationDiagram: 外部向きエッジ長を調整する', () => {
-            const typeA = {fqn: 'org.example.A', isDeprecated: false};
-            const typeB = {fqn: 'org.example.B', isDeprecated: false};
-            const typeX = {fqn: 'org.other.X', isDeprecated: false};
-            const typeY = {fqn: 'org.third.Y', isDeprecated: false};
-
-            const typesMap = new Map([
-                ['org.example.A', typeA],
-                ['org.example.B', typeB],
-                ['org.other.X', typeX],
-                ['org.third.Y', typeY],
-            ]);
-            const typeRelations = [
-                {from: 'org.example.A', to: 'org.example.B'},
-                {from: 'org.example.A', to: 'org.other.X'},
-                {from: 'org.example.B', to: 'org.third.Y'},
-            ];
-
-            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
-            const result = createRelationDiagram(pkg, typeRelations, typesMap);
-            const idA = Jig.util.fqnToId("n", 'org.example.A');
-            const idB = Jig.util.fqnToId("n", 'org.example.B');
-            const idOther = Jig.util.fqnToId("n", 'org.other');
-            const idThird = Jig.util.fqnToId("n", 'org.third');
-            assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
-            assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
         });
     });
 

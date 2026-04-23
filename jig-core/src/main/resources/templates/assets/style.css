@@ -518,6 +518,7 @@ td.fqn {
 .usecase .depends {
     background-color: #ffffff;
     padding: 12px;
+    margin-top: 12px;
     border-radius: 6px;
     border: 1px solid #e2e4ea;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);

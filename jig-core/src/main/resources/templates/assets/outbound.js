@@ -247,6 +247,17 @@ const OutboundApp = (() => {
         }
     }
 
+    function collectCrudChars(accessors, persistenceTarget) {
+        const cruds = new Set();
+        accessors.forEach(op => {
+            if (persistenceTarget in op.targetOperationTypes) {
+                const crud = toCrudChar(op.targetOperationTypes[persistenceTarget]);
+                if (crud) cruds.add(crud);
+            }
+        });
+        return Array.from(cruds).sort().join("");
+    }
+
     function collectAllTargets(grouped) {
         const targetsSet = new Set();
         grouped.forEach(group => {
@@ -489,16 +500,8 @@ const OutboundApp = (() => {
                     }),
                     ...allPersistenceTargets.map(persistenceTarget => {
                         const cell = Jig.dom.createElement("td", {className: "crud-cell port-crud-cell"});
-                        const cruds = new Set();
-                        group.operations.forEach(operation => {
-                            operation.persistenceAccessors.forEach(op => {
-                                if (persistenceTarget in op.targetOperationTypes) {
-                                    const crud = toCrudChar(op.targetOperationTypes[persistenceTarget]);
-                                    if (crud) cruds.add(crud);
-                                }
-                            });
-                        });
-                        if (cruds.size > 0) cell.textContent = Array.from(cruds).sort().join("");
+                        const text = collectCrudChars(group.operations.flatMap(op => op.persistenceAccessors), persistenceTarget);
+                        if (text) cell.textContent = text;
                         return cell;
                     })
                 ]
@@ -516,14 +519,8 @@ const OutboundApp = (() => {
                         }),
                         ...allPersistenceTargets.map(persistenceTarget => {
                             const cell = Jig.dom.createElement("td", {className: "crud-cell"});
-                            const cruds = new Set();
-                            operation.persistenceAccessors.forEach(op => {
-                                if (persistenceTarget in op.targetOperationTypes) {
-                                    const crud = toCrudChar(op.targetOperationTypes[persistenceTarget]);
-                                    if (crud) cruds.add(crud);
-                                }
-                            });
-                            if (cruds.size > 0) cell.textContent = Array.from(cruds).sort().join("");
+                            const text = collectCrudChars(operation.persistenceAccessors, persistenceTarget);
+                            if (text) cell.textContent = text;
                             return cell;
                         })
                     ]

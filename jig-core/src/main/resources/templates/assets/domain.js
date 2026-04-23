@@ -131,7 +131,7 @@ const DomainApp = (() => {
             attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
             textContent: mergedNames.join("/")
         });
-        const headerChildren = [summaryLink, "/", Jig.dom.sidebar.createToggle(childList)];
+        const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
         const wrapperAttrs = {"data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"};
 
         if (isTopLevel) {

@@ -119,6 +119,7 @@ const DomainApp = (() => {
             });
             childList.appendChild(Jig.dom.createElement("li", {
                 className: "in-page-sidebar__item",
+                attributes: {"data-kind": "クラス"},
                 children: [
                     Jig.dom.createElement("div", {
                         attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
@@ -134,7 +135,10 @@ const DomainApp = (() => {
             textContent: mergedNames.join("/")
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
-        const wrapperAttrs = {"data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"};
+        const wrapperAttrs = {
+            "data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false",
+            "data-kind": "パッケージ"
+        };
 
         if (isTopLevel) {
             return Jig.dom.createElement("section", {

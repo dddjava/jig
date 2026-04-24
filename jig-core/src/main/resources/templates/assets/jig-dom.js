@@ -342,20 +342,22 @@ globalThis.Jig.dom = (() => {
         const {className, initialActiveId, onTabChange} = options;
         const tabsBar = createElement("div", {className: "diagram-tabs"});
         const panels = {};
+        const buttons = [];
 
-        const activeId = initialActiveId || tabDefs[0]?.id;
+        const activeId = initialActiveId ?? tabDefs[0]?.id;
 
         tabDefs.forEach(tab => {
             panels[tab.id] = createElement("div", {
-                className: "diagram-panel" + (tab.id !== activeId ? " hidden" : "")
+                className: ["diagram-panel", tab.id !== activeId ? "hidden" : null].filter(Boolean).join(" ")
             });
             const btn = createElement("button", {
-                className: "diagram-tab" + (tab.id === activeId ? " active" : ""),
+                className: ["diagram-tab", tab.id === activeId ? "active" : null].filter(Boolean).join(" "),
                 textContent: tab.label,
             });
+            buttons.push(btn);
             btn.addEventListener('click', () => {
-                tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
-                Object.values(panels).forEach(p => p.classList.add('hidden'));
+                buttons.forEach(b => b.classList.remove('active'));
+                panelEls.forEach(p => p.classList.add('hidden'));
                 btn.classList.add('active');
                 panels[tab.id].classList.remove('hidden');
                 if (onTabChange) onTabChange(tab.id);
@@ -363,9 +365,10 @@ globalThis.Jig.dom = (() => {
             tabsBar.appendChild(btn);
         });
 
+        const panelEls = Object.values(panels);
         const section = createElement("div", {
             className,
-            children: [tabsBar, ...Object.values(panels)],
+            children: [tabsBar, ...panelEls],
         });
         return {panels, section};
     }

@@ -956,7 +956,7 @@ const DomainApp = (() => {
                 // サイドバーの型リンクのフィルター（enum でない型は非表示）
                 const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
                 typeItems.forEach(div => {
-                    div.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
+                    div.parentElement.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
                 });
             }
         } else {
@@ -992,7 +992,7 @@ const DomainApp = (() => {
         sidebar.querySelectorAll('div[data-has-enum]').forEach(div => {
             const link = div.querySelector('a');
             const text = link ? link.textContent.toLowerCase() : '';
-            div.style.display = text.includes(filterText) ? '' : 'none';
+            div.parentElement.style.display = text.includes(filterText) ? '' : 'none';
         });
 
         Array.from(sidebar.querySelectorAll('[data-has-enum-children]'))

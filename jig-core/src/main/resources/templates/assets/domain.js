@@ -647,11 +647,11 @@ const DomainApp = (() => {
     }
 
     function createFieldsList(fields, options = {}) {
-        return Jig.dom.type.fieldsList(fields, Jig.dom.type.refElement, options);
+        return Jig.dom.type.fieldsList(fields, options);
     }
 
     function createMethodsList(kind, methods, options = {}) {
-        return Jig.dom.type.methodsList(kind, methods, Jig.dom.type.refElement, options);
+        return Jig.dom.type.methodsList(kind, methods, options);
     }
 
     /**

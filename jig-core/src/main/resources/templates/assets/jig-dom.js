@@ -169,8 +169,8 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createMethodItem(method, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
+    function createMethodItem(method) {
+        const fn = createElementForTypeRef;
         const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
 
         const paramElements = method.parameters
@@ -203,8 +203,8 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createFieldsList(fields, createTypeRefFn, options = {}) {
-        const fn = createTypeRefFn || createElementForTypeRef;
+    function createFieldsList(fields, options = {}) {
+        const fn = createElementForTypeRef;
         if (fields.length === 0) return null;
 
         const items = fields.map(field => createElement("div", {
@@ -230,12 +230,12 @@ globalThis.Jig.dom = (() => {
         return card;
     }
 
-    function createMethodsList(kind, methods, createTypeRefFn, options = {}) {
+    function createMethodsList(kind, methods, options = {}) {
         if (methods.length === 0) return null;
 
         const title = options.showTitle !== false ? kind : undefined;
         const card = createItemCard({title, extraClass: "methods-section"});
-        methods.forEach(method => card.appendChild(createMethodItem(method, createTypeRefFn)));
+        methods.forEach(method => card.appendChild(createMethodItem(method)));
         return card;
     }
 

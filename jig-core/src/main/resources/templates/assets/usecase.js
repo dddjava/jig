@@ -676,17 +676,17 @@ const UsecaseApp = (() => {
                 });
             }
 
-            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, Jig.dom.type.refElement, {showTitle: false});
+            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, {showTitle: false});
             if (fieldsList) fieldsList.classList.add("fields");
 
             const staticList = usecase.staticMethods.length > 0
-                ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, Jig.dom.type.refElement, {showTitle: false})
+                ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, {showTitle: false})
                 : null;
             if (staticList) staticList.classList.add("static-methods");
 
             const internalMethods = usecase.methods.filter(method => !isUsecase(method));
             const methodList = internalMethods.length > 0
-                ? Jig.dom.type.methodsList("メソッド", internalMethods, Jig.dom.type.refElement, {showTitle: false})
+                ? Jig.dom.type.methodsList("メソッド", internalMethods, {showTitle: false})
                 : null;
             if (methodList) methodList.classList.add("methods");
 

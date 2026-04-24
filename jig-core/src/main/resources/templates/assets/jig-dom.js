@@ -160,21 +160,19 @@ globalThis.Jig.dom = (() => {
 
     // --- Type detail builders ---
 
-    function createParameterElement(param, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
+    function createParameterElement(param) {
         return createElement("span", {
             children: param.nameSource === 'METHOD_PARAMETERS'
-                ? [param.name + ': ', fn(param.typeRef)]
-                : [fn(param.typeRef)]
+                ? [param.name + ': ', createElementForTypeRef(param.typeRef)]
+                : [createElementForTypeRef(param.typeRef)]
         });
     }
 
     function createMethodItem(method) {
-        const fn = createElementForTypeRef;
         const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
 
         const paramElements = method.parameters
-            .map(param => createParameterElement(param, fn))
+            .map(param => createParameterElement(param))
             .flatMap((el, i) => i ? [', ', el] : [el]);
 
         const signatureEl = createElement("div", {
@@ -188,7 +186,7 @@ globalThis.Jig.dom = (() => {
                 ...paramElements,
                 ')',
                 createElement("span", {className: "method-return-sep", textContent: ":"}),
-                fn(method.returnTypeRef)
+                createElementForTypeRef(method.returnTypeRef)
             ]
         });
 
@@ -204,7 +202,6 @@ globalThis.Jig.dom = (() => {
     }
 
     function createFieldsList(fields, options = {}) {
-        const fn = createElementForTypeRef;
         if (fields.length === 0) return null;
 
         const items = fields.map(field => createElement("div", {
@@ -218,7 +215,7 @@ globalThis.Jig.dom = (() => {
                             textContent: field.name
                         }),
                         createElement("span", {className: "method-return-sep", textContent: ":"}),
-                        fn(field.typeRef)
+                        createElementForTypeRef(field.typeRef)
                     ]
                 })
             ]

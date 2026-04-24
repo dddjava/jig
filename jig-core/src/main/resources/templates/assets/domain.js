@@ -175,7 +175,7 @@ const DomainApp = (() => {
      * @returns {string|null}
      */
     function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection) {
-        const directRelations = allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+        const directRelations = collectPackageDirectRelations(pkg, allPackageRelations);
         if (directRelations.length === 0) return null;
 
         const packageFqns = new Set([pkg.fqn]);
@@ -195,6 +195,14 @@ const DomainApp = (() => {
         return source;
     }
 
+    function collectPackageDirectRelations(pkg, allPackageRelations) {
+        return allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+    }
+
+    function hasPackageDirectRelationDiagram(pkg, allPackageRelations) {
+        return collectPackageDirectRelations(pkg, allPackageRelations).length > 0;
+    }
+
     /**
      * パッケージカードに表示するパッケージ内パッケージ関連図
      * @param pkg
@@ -204,14 +212,37 @@ const DomainApp = (() => {
      * @return {string|null}
      */
     function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection) {
-        return Jig.mermaid.createPackageLevelDiagram(
-            pkg, allPackages, allPackageRelations,
+        const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
+        if (!elements) return null;
+        const {uniqueRelations, packageFqns} = elements;
+        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
+            packageFqns,
+            uniqueRelations,
             {
-                transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
                 diagramDirection: direction,
                 nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
             }
         );
+        return source;
+    }
+
+    function collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations) {
+        const {uniqueRelations, packageFqns} = Jig.mermaid.builder.buildVisibleDiagramRelations(
+            allPackages,
+            allPackageRelations,
+            [],
+            {
+                packageFilterFqn: [pkg.fqn],
+                aggregationDepth: pkg.fqn.split('.').length + 1,
+                transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
+            }
+        );
+        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
+        return {uniqueRelations, packageFqns};
+    }
+
+    function hasPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
+        return collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations) !== null;
     }
 
     /**
@@ -406,6 +437,19 @@ const DomainApp = (() => {
         edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
 
         return builder.build(direction);
+    }
+
+    function hasTypeRelationDiagram(type, typeRelations, typesMap) {
+        return collectTypeRelationEdges(type, typeRelations, typesMap) !== null;
+    }
+
+    function hasPackageTypeRelationDiagram(pkg, typesMap) {
+        let pkgTypeFqns = new Set(pkg.types.map(t => t.fqn));
+        if (pkgTypeFqns.size === 0) return false;
+        if (!domainSettings.showDeprecatedNodes) {
+            pkgTypeFqns = new Set([...pkgTypeFqns].filter(fqn => !typesMap?.get(fqn)?.isDeprecated));
+        }
+        return pkgTypeFqns.size > 0;
     }
 
     function typeNameWithGenerics(typeRef) {
@@ -774,7 +818,7 @@ const DomainApp = (() => {
                 {
                     id: 'direct',
                     label: 'パッケージ関連図',
-                    enabled: createPackageDirectRelationDiagram(pkg, allPackageRelations) !== null,
+                    enabled: hasPackageDirectRelationDiagram(pkg, allPackageRelations),
                     setup: panel => registerDiagramPanel(panel, {
                         pkg,
                         type: undefined,
@@ -785,7 +829,7 @@ const DomainApp = (() => {
                 {
                     id: 'inner-pkg',
                     label: 'パッケージ内パッケージ関連図',
-                    enabled: createPackageRelationDiagram(pkg, allPackages, allPackageRelations) !== null,
+                    enabled: hasPackageRelationDiagram(pkg, allPackages, allPackageRelations),
                     setup: panel => registerDiagramPanel(panel, {
                         pkg,
                         type: undefined,
@@ -799,7 +843,7 @@ const DomainApp = (() => {
                 {
                     id: 'inner-class',
                     label: 'パッケージ内クラス関連図',
-                    enabled: pkg.types.length > 0 && createRelationDiagram(pkg, typeRelations, typesMap) !== null,
+                    enabled: hasPackageTypeRelationDiagram(pkg, typesMap),
                     setup: panel => setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap)
                 },
             ], {className: "tab-diagram-section"});
@@ -860,7 +904,7 @@ const DomainApp = (() => {
             const fieldsList = createFieldsList(type.fields, {showTitle: false});
             const methodList = createMethodsList("メソッド", type.methods, {showTitle: false});
             const staticList = createMethodsList("staticメソッド", type.staticMethods, {showTitle: false});
-            const hasTypeRelationDiagram = createTypeRelationDiagram(type, typeRelations, typesMap) !== null;
+            const hasTypeRelation = hasTypeRelationDiagram(type, typeRelations, typesMap);
 
             appendConfiguredTabs(section, [
                 {
@@ -887,7 +931,7 @@ const DomainApp = (() => {
                 {
                     id: 'relation',
                     label: 'クラス関連図',
-                    enabled: hasTypeRelationDiagram,
+                    enabled: hasTypeRelation,
                     setup: panel => registerDiagramPanel(panel, {
                         pkg: undefined,
                         type,
@@ -899,7 +943,7 @@ const DomainApp = (() => {
                 {
                     id: 'classdiag',
                     label: 'クラス図',
-                    enabled: hasTypeRelationDiagram,
+                    enabled: hasTypeRelation,
                     setup: panel => registerDiagramPanel(panel, {
                         pkg: undefined,
                         type,

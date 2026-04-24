@@ -768,7 +768,7 @@ const DomainApp = (() => {
         const {className, initialActiveId, onTabChange} = options;
         const fullClassName = ["jig-card-section", "tab-content-section", className].filter(Boolean).join(" ");
         const tabDefs = enabledTabs.map(({id, label}) => ({id, label}));
-        const tabSection = Jig.mermaid.diagram.buildTabSection(tabDefs, {
+        const tabSection = Jig.dom.tab.buildSection(tabDefs, {
             className: fullClassName,
             initialActiveId,
             onTabChange

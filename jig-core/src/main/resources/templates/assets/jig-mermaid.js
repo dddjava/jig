@@ -1469,35 +1469,7 @@ globalThis.Jig.mermaid = (() => {
         }
 
         function buildTabSection(tabDefs, options = {}) {
-            const {className, initialActiveId, onTabChange} = options;
-            const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
-            const panels = {};
-
-            const activeId = initialActiveId || tabDefs[0]?.id;
-
-            tabDefs.forEach(tab => {
-                panels[tab.id] = Jig.dom.createElement("div", {
-                    className: "diagram-panel" + (tab.id !== activeId ? " hidden" : "")
-                });
-                const btn = Jig.dom.createElement("button", {
-                    className: "diagram-tab" + (tab.id === activeId ? " active" : ""),
-                    textContent: tab.label,
-                });
-                btn.addEventListener('click', () => {
-                    tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
-                    Object.values(panels).forEach(p => p.classList.add('hidden'));
-                    btn.classList.add('active');
-                    panels[tab.id].classList.remove('hidden');
-                    if (onTabChange) onTabChange(tab.id);
-                });
-                tabsBar.appendChild(btn);
-            });
-
-            const section = Jig.dom.createElement("div", {
-                className,
-                children: [tabsBar, ...Object.values(panels)],
-            });
-            return {panels, section};
+            return Jig.dom.tab.buildSection(tabDefs, options);
         }
 
         return {

@@ -680,23 +680,57 @@ const DomainApp = (() => {
         return Array.from(relMap.values());
     }
 
-    /**
-     * タブセクションをカードに追加する
-     * @param {HTMLElement} cardSection
-     * @param {Array<{id: string, label: string}>} tabDefs
-     * @param {{className?: string, initialActiveId?: string, onTabChange?: (tabId: string) => void}} options
-     * @returns {{panels: Object<string, HTMLElement>, section: HTMLElement} | null}
-     */
-    function appendTabSection(cardSection, tabDefs, options = {}) {
-        if (tabDefs.length === 0) return null;
+    function registerDiagramPanel(panel, diagramDef) {
+        return Jig.mermaid.diagram.createAndRegister(panel, (container) => {
+            renderDiagram(container, diagramDef);
+        });
+    }
+
+    function setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap) {
+        const outgoingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
+        });
+        outgoingCheckbox.checked = true;
+        const incomingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "class-relation-external-incoming"}
+        });
+        incomingCheckbox.checked = true;
+        panel.appendChild(Jig.dom.createElement("fieldset", {
+            className: "diagram-panel-options",
+            children: [
+                Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [outgoingCheckbox, "関連先"]
+                }),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [incomingCheckbox, "関連元"]
+                }),
+            ]
+        }));
+
+        const render = (container) => {
+            renderDiagram(container, {pkg, type: undefined, diagramType: 'type', typeRelations, typesMap});
+        };
+        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
+        outgoingCheckbox.addEventListener('change', () => render(container));
+        incomingCheckbox.addEventListener('change', () => render(container));
+    }
+
+    function appendConfiguredTabs(cardSection, tabConfigs, options = {}) {
+        const enabledTabs = tabConfigs.filter(tab => tab.enabled);
+        if (enabledTabs.length === 0) return null;
         const {className, initialActiveId, onTabChange} = options;
         const fullClassName = ["jig-card-section", "tab-content-section", className].filter(Boolean).join(" ");
+        const tabDefs = enabledTabs.map(({id, label}) => ({id, label}));
         const tabSection = Jig.mermaid.diagram.buildTabSection(tabDefs, {
             className: fullClassName,
             initialActiveId,
             onTabChange
         });
         cardSection.appendChild(tabSection.section);
+        enabledTabs.forEach(tab => tab.setup(tabSection.panels[tab.id]));
         return tabSection;
     }
 
@@ -736,65 +770,39 @@ const DomainApp = (() => {
                 section.appendChild(childrenTable);
             }
 
-            // データのあるダイアグラムのみタブとして表示
-            const tabDefs = [
-                createPackageDirectRelationDiagram(pkg, allPackageRelations) !== null
-                && {id: 'direct', label: 'パッケージ関連図', diagramType: 'packageDirect'},
-                createPackageRelationDiagram(pkg, allPackages, allPackageRelations) !== null
-                && {id: 'inner-pkg', label: 'パッケージ内パッケージ関連図', diagramType: 'package'},
-                pkg.types.length > 0 && createRelationDiagram(pkg, typeRelations, typesMap) !== null
-                && {id: 'inner-class', label: 'パッケージ内クラス関連図', diagramType: 'type'},
-            ].filter(Boolean);
-
-            const packageDiagramTabs = appendTabSection(section, tabDefs, {className: "tab-diagram-section"});
-            if (packageDiagramTabs) {
-                const {panels} = packageDiagramTabs;
-
-                if (panels['direct']) {
-                    Jig.mermaid.diagram.createAndRegister(panels['direct'], (container) => {
-                        const diagramDef = {pkg, type: undefined, diagramType: 'packageDirect', allPackageRelations};
-                        renderDiagram(container, diagramDef);
-                    });
-                }
-                if (panels['inner-pkg']) {
-                    Jig.mermaid.diagram.createAndRegister(panels['inner-pkg'], (container) => {
-                        const diagramDef = {pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations, typeRelations, typesMap};
-                        renderDiagram(container, diagramDef);
-                    });
-                }
-                if (panels['inner-class']) {
-                    const outgoingCheckbox = Jig.dom.createElement("input", {
-                        attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
-                    });
-                    outgoingCheckbox.checked = true;
-                    const incomingCheckbox = Jig.dom.createElement("input", {
-                        attributes: {type: "checkbox", class: "class-relation-external-incoming"}
-                    });
-                    incomingCheckbox.checked = true;
-                    panels['inner-class'].appendChild(Jig.dom.createElement("fieldset", {
-                        className: "diagram-panel-options",
-                        children: [
-                            Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
-                            Jig.dom.createElement("label", {
-                                className: "diagram-panel-option",
-                                children: [outgoingCheckbox, "関連先"]
-                            }),
-                            Jig.dom.createElement("label", {
-                                className: "diagram-panel-option",
-                                children: [incomingCheckbox, "関連元"]
-                            }),
-                        ]
-                    }));
-
-                    const render = (container) => {
-                        const diagramDef = {container, pkg, type: undefined, diagramType: 'type', typeRelations, typesMap};
-                        renderDiagram(container, diagramDef);
-                    };
-                    const c = Jig.mermaid.diagram.createAndRegister(panels['inner-class'], render);
-                    outgoingCheckbox.addEventListener('change', () => render(c));
-                    incomingCheckbox.addEventListener('change', () => render(c));
-                }
-            }
+            appendConfiguredTabs(section, [
+                {
+                    id: 'direct',
+                    label: 'パッケージ関連図',
+                    enabled: createPackageDirectRelationDiagram(pkg, allPackageRelations) !== null,
+                    setup: panel => registerDiagramPanel(panel, {
+                        pkg,
+                        type: undefined,
+                        diagramType: 'packageDirect',
+                        allPackageRelations
+                    })
+                },
+                {
+                    id: 'inner-pkg',
+                    label: 'パッケージ内パッケージ関連図',
+                    enabled: createPackageRelationDiagram(pkg, allPackages, allPackageRelations) !== null,
+                    setup: panel => registerDiagramPanel(panel, {
+                        pkg,
+                        type: undefined,
+                        diagramType: 'package',
+                        allPackages,
+                        allPackageRelations,
+                        typeRelations,
+                        typesMap
+                    })
+                },
+                {
+                    id: 'inner-class',
+                    label: 'パッケージ内クラス関連図',
+                    enabled: pkg.types.length > 0 && createRelationDiagram(pkg, typeRelations, typesMap) !== null,
+                    setup: panel => setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap)
+                },
+            ], {className: "tab-diagram-section"});
 
             container.appendChild(section);
         });
@@ -852,34 +860,55 @@ const DomainApp = (() => {
             const fieldsList = createFieldsList(type.fields, {showTitle: false});
             const methodList = createMethodsList("メソッド", type.methods, {showTitle: false});
             const staticList = createMethodsList("staticメソッド", type.staticMethods, {showTitle: false});
+            const hasTypeRelationDiagram = createTypeRelationDiagram(type, typeRelations, typesMap) !== null;
 
-            const memberTabDefs = [
-                fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
-                methodList && {id: 'methods', label: 'メソッド', el: methodList},
-                staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
-            ].filter(Boolean);
+            appendConfiguredTabs(section, [
+                {
+                    id: 'fields',
+                    label: 'フィールド',
+                    enabled: Boolean(fieldsList),
+                    setup: panel => panel.appendChild(fieldsList)
+                },
+                {
+                    id: 'methods',
+                    label: 'メソッド',
+                    enabled: Boolean(methodList),
+                    setup: panel => panel.appendChild(methodList)
+                },
+                {
+                    id: 'static-methods',
+                    label: 'staticメソッド',
+                    enabled: Boolean(staticList),
+                    setup: panel => panel.appendChild(staticList)
+                },
+            ], {className: "tab-member-section"});
 
-            const typeMemberTabs = appendTabSection(section, memberTabDefs, {className: "tab-member-section"});
-            if (typeMemberTabs) {
-                const {panels} = typeMemberTabs;
-                memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
-            }
-
-            if (createTypeRelationDiagram(type, typeRelations, typesMap) !== null) {
-                const tabDefs = [
-                    {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
-                    {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
-                ];
-                const typeDiagramTabs = appendTabSection(section, tabDefs, {className: "tab-diagram-section"});
-                if (typeDiagramTabs) {
-                    const {panels} = typeDiagramTabs;
-                    tabDefs.forEach(tab => {
-                        Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
-                            renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
-                        });
-                    });
-                }
-            }
+            appendConfiguredTabs(section, [
+                {
+                    id: 'relation',
+                    label: 'クラス関連図',
+                    enabled: hasTypeRelationDiagram,
+                    setup: panel => registerDiagramPanel(panel, {
+                        pkg: undefined,
+                        type,
+                        diagramType: 'classDirect',
+                        typeRelations,
+                        typesMap
+                    })
+                },
+                {
+                    id: 'classdiag',
+                    label: 'クラス図',
+                    enabled: hasTypeRelationDiagram,
+                    setup: panel => registerDiagramPanel(panel, {
+                        pkg: undefined,
+                        type,
+                        diagramType: 'classDefinition',
+                        typeRelations,
+                        typesMap
+                    })
+                },
+            ], {className: "tab-diagram-section"});
 
             const relatedList = createRelatedClassesList(type, typeRelations, typesMap);
             if (relatedList) section.appendChild(relatedList);

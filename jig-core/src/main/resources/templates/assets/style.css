@@ -450,6 +450,10 @@ td.fqn {
     text-underline-offset: 3px;
 }
 
+.jig-card--type > table {
+    margin-top: 12px;
+}
+
 .jig-card.jig-card--item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;

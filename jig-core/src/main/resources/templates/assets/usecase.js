@@ -626,7 +626,10 @@ const UsecaseApp = (() => {
             });
 
             if (term.description) {
-                section.appendChild(Jig.dom.createMarkdownElement(term.description));
+                section.appendChild(Jig.dom.createElement("section", {
+                    className: "description",
+                    children: [Jig.dom.createMarkdownElement(term.description)]
+                }));
             }
 
             const classGraph = buildClassGraph(usecase, handlerFqns);

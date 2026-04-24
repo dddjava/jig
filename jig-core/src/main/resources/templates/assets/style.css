@@ -1454,15 +1454,6 @@ table td.number {
     margin: 0;
 }
 
-.in-page-sidebar__section[data-kind="パッケージ"],
-.in-page-sidebar__item[data-kind="パッケージ"] {
-    border-left: 3px solid #5a7a3a;
-}
-
-.in-page-sidebar__item[data-kind="クラス"] {
-    border-left: 3px solid #1b3a66;
-}
-
 .in-page-sidebar__link {
     display: flex;
     align-items: center;

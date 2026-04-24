@@ -115,11 +115,13 @@ const DomainApp = (() => {
             const link = Jig.dom.createElement("a", {
                 attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                 className: "in-page-sidebar__link" + (domainType?.isDeprecated ? " deprecated" : ""),
-                textContent: Jig.glossary.getTypeTerm(child.fqn).title
+                children: [
+                    Jig.dom.kind.badgeElement("クラス"),
+                    Jig.dom.createElement("span", {textContent: Jig.glossary.getTypeTerm(child.fqn).title})
+                ]
             });
             childList.appendChild(Jig.dom.createElement("li", {
                 className: "in-page-sidebar__item",
-                attributes: {"data-kind": "クラス"},
                 children: [
                     Jig.dom.createElement("div", {
                         attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
@@ -132,13 +134,13 @@ const DomainApp = (() => {
         const summaryLink = Jig.dom.createElement("a", {
             className: "in-page-sidebar__link",
             attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
-            textContent: mergedNames.join("/")
+            children: [
+                Jig.dom.kind.badgeElement("パッケージ"),
+                Jig.dom.createElement("span", {textContent: mergedNames.join("/")})
+            ]
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
-        const wrapperAttrs = {
-            "data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false",
-            "data-kind": "パッケージ"
-        };
+        const wrapperAttrs = {"data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"};
 
         if (isTopLevel) {
             return Jig.dom.createElement("section", {
@@ -995,7 +997,7 @@ const DomainApp = (() => {
 
         sidebar.querySelectorAll('div[data-has-enum]').forEach(div => {
             const link = div.querySelector('a');
-            const text = link ? link.textContent.toLowerCase() : '';
+            const text = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
             div.parentElement.style.display = text.includes(filterText) ? '' : 'none';
         });
 

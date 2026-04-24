@@ -1540,7 +1540,14 @@ globalThis.Jig.mermaid = (() => {
         return source;
     }
 
-    const CLASS_DIAGRAM_ARROW_MAP = {association: '-->', inheritance: '--|>', realization: '..|>', dependency: '..>'};
+    const CLASS_DIAGRAM_ARROW_MAP = {association: '-->', realization: '..|>', dependency: '..>'};
+    function edgeWithArrow (edge) {
+        // 継承は矢印を逆転する
+        if (edge.edgeType === 'inheritance') {
+            return `${edge.to} <|-- ${edge.from}`;
+        }
+        return `${edge.from} ${CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>'} ${edge.to}`;
+    }
 
     // classDiagram ビルダー
     class ClassDiagramBuilder {
@@ -1601,7 +1608,7 @@ globalThis.Jig.mermaid = (() => {
                     lines.push(`  class ${id}["${cls.label}"]`);
                 }
             });
-            this._edges.forEach(e => lines.push(`  ${e.from} ${CLASS_DIAGRAM_ARROW_MAP[e.edgeType] ?? '..>'} ${e.to}`));
+            this._edges.forEach(e => lines.push(`  ${edgeWithArrow(e)}`));
             this._clicks.forEach(c => lines.push(c));
             return lines.join('\n');
         }

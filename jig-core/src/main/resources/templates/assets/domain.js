@@ -930,7 +930,7 @@ const DomainApp = (() => {
         const main = document.getElementById('domain-main');
         if (!main) return;
 
-        const memberSections = main.querySelectorAll('section.tab-member-section');
+        const memberSections = main.querySelectorAll('.tab-member-section');
         memberSections.forEach(section => {
             section.style.display = domainSettings.showMembers ? '' : 'none';
         });

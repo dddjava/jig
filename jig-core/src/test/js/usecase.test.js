@@ -168,7 +168,7 @@ test.describe('usecase.js', () => {
 
             const diagramContainer = methodSection.querySelector('.tab-diagram-section');
             assert.ok(diagramContainer);
-            const tabs = diagramContainer.querySelector('.diagram-tabs');
+            const tabs = diagramContainer.querySelector('.jig-tabs');
             assert.ok(tabs);
             assert.equal(tabs.children.length, 2);
             assert.equal(tabs.children[0].textContent, 'ユースケース図');
@@ -602,7 +602,7 @@ test.describe('usecase.js', () => {
 
             const methodFqn = "com.example.ServiceA#method1()";
             const methodElement = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn));
-            const sequenceBtn = methodElement.querySelectorAll('.diagram-tabs button')[1];
+            const sequenceBtn = methodElement.querySelectorAll('.jig-tabs button')[1];
 
             // シーケンス図タブをクリック
             sequenceBtn.dispatchEvent(new window.Event('click'));
@@ -617,8 +617,8 @@ test.describe('usecase.js', () => {
 
             // 再レンダリング後の要素を取得
             const newMethodElement = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn));
-            const newSequenceBtn = newMethodElement.querySelectorAll('.diagram-tabs button')[1];
-            const newSequencePanel = newMethodElement.querySelectorAll('.diagram-panel')[1];
+            const newSequenceBtn = newMethodElement.querySelectorAll('.jig-tabs button')[1];
+            const newSequencePanel = newMethodElement.querySelectorAll('.jig-tab-panel')[1];
 
             // シーケンス図タブが active で、パネルが hidden でないことを確認
             assert.ok(newSequenceBtn.classList.contains('active'));

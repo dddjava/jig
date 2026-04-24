@@ -340,7 +340,7 @@ globalThis.Jig.dom = (() => {
 
     function buildTabSection(tabDefs, options = {}) {
         const {className, initialActiveId, onTabChange} = options;
-        const tabsBar = createElement("div", {className: "diagram-tabs"});
+        const tabsBar = createElement("div", {className: "jig-tabs"});
         const panels = {};
         const buttons = [];
 
@@ -348,10 +348,10 @@ globalThis.Jig.dom = (() => {
 
         tabDefs.forEach(tab => {
             panels[tab.id] = createElement("div", {
-                className: ["diagram-panel", tab.id !== activeId ? "hidden" : null].filter(Boolean).join(" ")
+                className: ["jig-tab-panel", tab.id !== activeId ? "hidden" : null].filter(Boolean).join(" ")
             });
             const btn = createElement("button", {
-                className: ["diagram-tab", tab.id === activeId ? "active" : null].filter(Boolean).join(" "),
+                className: ["jig-tab", tab.id === activeId ? "active" : null].filter(Boolean).join(" "),
                 textContent: tab.label,
             });
             buttons.push(btn);

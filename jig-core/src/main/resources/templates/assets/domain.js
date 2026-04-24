@@ -1004,7 +1004,7 @@ const DomainApp = (() => {
             renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir));
         } else {
             // テスト環境など closest が使えない場合に対応
-            const panel = typeof container.closest === 'function' ? container.closest('.diagram-panel') : null;
+            const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
             const outgoing = panel?.querySelector('.class-relation-external-outgoing');
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;

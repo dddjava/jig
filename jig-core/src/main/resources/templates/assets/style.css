@@ -539,30 +539,30 @@ body.hide-usecase-members .tab-member-section {
     border-color: #d4d9e5;
 }
 
-.tab-content-section .diagram-tabs {
+.tab-content-section .jig-tabs {
     background-color: #f3f6ff;
     border-bottom-color: #d4d9e5;
 }
 
-.tab-content-section .diagram-tab {
+.tab-content-section .jig-tab {
     border-color: #d4d9e5;
     background-color: #e8eefc;
 }
 
-.tab-content-section .diagram-tab.active {
+.tab-content-section .jig-tab.active {
     background-color: #fff;
     border-bottom-color: #fff;
 }
 
-.tab-content-section .diagram-panel {
+.tab-content-section .jig-tab-panel {
     background-color: #fff;
 }
 
-.tab-content-section.tab-diagram-section .diagram-panel {
+.tab-content-section.tab-diagram-section .jig-tab-panel {
     padding: 12px;
 }
 
-.tab-content-section.tab-member-section .diagram-panel .jig-card.jig-card--item {
+.tab-content-section.tab-member-section .jig-tab-panel .jig-card.jig-card--item {
     border: none;
     box-shadow: none;
     margin-top: 0;
@@ -597,7 +597,7 @@ body.hide-usecase-details .depends {
     display: none;
 }
 
-.diagram-tabs {
+.jig-tabs {
     display: flex;
     gap: 4px;
     padding: 8px 12px 0;
@@ -605,7 +605,7 @@ body.hide-usecase-details .depends {
     border-bottom: 1px solid #ccc;
 }
 
-.diagram-tab {
+.jig-tab {
     padding: 4px 10px;
     border: 1px solid #ccc;
     border-radius: 4px 4px 0 0;
@@ -615,7 +615,7 @@ body.hide-usecase-details .depends {
     margin-bottom: -1px;
 }
 
-.diagram-tab.active {
+.jig-tab.active {
     background-color: #fff;
     border-bottom-color: #fff;
     font-weight: bold;
@@ -623,7 +623,7 @@ body.hide-usecase-details .depends {
     z-index: 1;
 }
 
-.diagram-tab:hover:not(.active) {
+.jig-tab:hover:not(.active) {
     background-color: #eaeaea;
 }
 

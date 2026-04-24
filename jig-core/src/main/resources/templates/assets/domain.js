@@ -602,12 +602,12 @@ const DomainApp = (() => {
         });
     }
 
-    function createFieldsList(fields) {
-        return Jig.dom.type.fieldsList(fields, Jig.dom.type.refElement);
+    function createFieldsList(fields, options = {}) {
+        return Jig.dom.type.fieldsList(fields, Jig.dom.type.refElement, options);
     }
 
-    function createMethodsList(kind, methods) {
-        return Jig.dom.type.methodsList(kind, methods, Jig.dom.type.refElement);
+    function createMethodsList(kind, methods, options = {}) {
+        return Jig.dom.type.methodsList(kind, methods, Jig.dom.type.refElement, options);
     }
 
     /**
@@ -829,9 +829,9 @@ const DomainApp = (() => {
                 section.appendChild(createEnumSection(type));
             }
 
-            const fieldsList = createFieldsList(type.fields);
-            const methodList = createMethodsList("メソッド", type.methods);
-            const staticList = createMethodsList("staticメソッド", type.staticMethods);
+            const fieldsList = createFieldsList(type.fields, {showTitle: false});
+            const methodList = createMethodsList("メソッド", type.methods, {showTitle: false});
+            const staticList = createMethodsList("staticメソッド", type.staticMethods, {showTitle: false});
 
             const memberTabDefs = [
                 fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},

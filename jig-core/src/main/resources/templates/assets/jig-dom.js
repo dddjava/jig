@@ -203,7 +203,7 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createFieldsList(fields, createTypeRefFn) {
+    function createFieldsList(fields, createTypeRefFn, options = {}) {
         const fn = createTypeRefFn || createElementForTypeRef;
         if (fields.length === 0) return null;
 
@@ -224,15 +224,17 @@ globalThis.Jig.dom = (() => {
             ]
         }));
 
-        const card = createItemCard({title: "フィールド", extraClass: "methods-section fields"});
+        const title = options.showTitle !== false ? "フィールド" : undefined;
+        const card = createItemCard({title, extraClass: "methods-section fields"});
         items.forEach(item => card.appendChild(item));
         return card;
     }
 
-    function createMethodsList(kind, methods, createTypeRefFn) {
+    function createMethodsList(kind, methods, createTypeRefFn, options = {}) {
         if (methods.length === 0) return null;
 
-        const card = createItemCard({title: kind, extraClass: "methods-section"});
+        const title = options.showTitle !== false ? kind : undefined;
+        const card = createItemCard({title, extraClass: "methods-section"});
         methods.forEach(method => card.appendChild(createMethodItem(method, createTypeRefFn)));
         return card;
     }

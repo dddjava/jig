@@ -574,10 +574,6 @@ body.hide-usecase-static-methods .static-methods {
     padding: 12px;
 }
 
-.tab-member-section .diagram-panel .jig-card.jig-card--item > h4 {
-    display: none;
-}
-
 body.hide-usecase-descriptions .description,
 body.hide-domain-descriptions .description {
     display: none;

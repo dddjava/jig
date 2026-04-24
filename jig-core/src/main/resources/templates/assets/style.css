@@ -521,6 +521,14 @@ body.hide-usecase-static-methods .static-methods {
     display: none;
 }
 
+.description {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+    background-color: #fff;
+}
+
 body.hide-usecase-descriptions .description,
 body.hide-domain-descriptions .description {
     display: none;

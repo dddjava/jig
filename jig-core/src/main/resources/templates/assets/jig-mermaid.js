@@ -1468,15 +1468,10 @@ globalThis.Jig.mermaid = (() => {
             return container;
         }
 
-        function buildTabSection(tabDefs, options = {}) {
-            return Jig.dom.tab.buildSection(tabDefs, options);
-        }
-
         return {
             register,
             rerenderVisible,
             createAndRegister,
-            buildTabSection
         };
     })();
 

@@ -979,7 +979,7 @@ const DomainApp = (() => {
 
                 const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
                 typeItems.forEach(div => {
-                    div.style.display = '';
+                    div.closest('li').style.display = '';
                 });
             }
         }
@@ -996,14 +996,14 @@ const DomainApp = (() => {
         sidebar.querySelectorAll('div[data-has-enum]').forEach(div => {
             const link = div.querySelector('a');
             const text = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
-            div.parentElement.style.display = text.includes(filterText) ? '' : 'none';
+            div.closest('li').style.display = text.includes(filterText) ? '' : 'none';
         });
 
-        Array.from(sidebar.querySelectorAll('[data-has-enum-children]'))
+        [...sidebar.querySelectorAll('[data-has-enum-children]')]
             .reverse()
             .forEach(item => {
-                const childList = Array.from(item.children).find(child => child.tagName === 'ul');
-                const hasVisible = childList && Array.from(childList.children).some(child =>
+                const childList = item.querySelector('ul');
+                const hasVisible = childList && [...childList.children].some(child =>
                     child.style.display !== 'none'
                 );
                 item.style.display = hasVisible ? '' : 'none';

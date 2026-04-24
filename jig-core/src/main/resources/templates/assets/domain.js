@@ -573,26 +573,15 @@ const DomainApp = (() => {
 
         const tbody = Jig.dom.createElement("tbody", {
             children: allChildren.map(child => {
-                let link;
-                if (child.isPackage) {
-                    const kind = "パッケージ";
-                    link = Jig.dom.createElement("a", {
-                        className: "in-page-sidebar__link",
-                        attributes: {
-                            href: "#" + Jig.util.fqnToId("domain", child.fqn),
-                            "data-kind-char": Jig.dom.kind.badgeChar(kind),
-                            "data-kind": kind
-                        },
+                const kind = child.isPackage ? "パッケージ" : "クラス";
+                const link = child.isPackage
+                    ? Jig.dom.createElement("a", {
+                        attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                         textContent: child.title
-                    });
-                } else {
-                    const kind = "クラス";
-                    link = Jig.dom.type.refElement({fqn: child.fqn}, "in-page-sidebar__link");
-                    link.setAttribute("data-kind-char", Jig.dom.kind.badgeChar(kind));
-                    link.setAttribute("data-kind", kind);
-                }
+                    })
+                    : Jig.dom.type.refElement({fqn: child.fqn});
                 const cell = Jig.dom.createElement("td", {
-                    children: [link]
+                    children: [Jig.dom.kind.badgeElement(kind), link]
                 });
                 return Jig.dom.createElement("tr", {children: [cell]});
             })

@@ -520,7 +520,7 @@ test.describe('domain.js', () => {
             const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
             const idA = Jig.util.fqnToId("n", 'org.example.A');
             const idB = Jig.util.fqnToId("n", 'org.example.B');
-            assert.ok(result.includes(`${idA} --|> ${idB}`), `inheritance エッジが含まれること: ${result}`);
+            assert.ok(result.includes(`${idB} <|-- ${idA}`), `inheritance エッジが含まれること: ${result}`);
         });
 
         test('kinds がそれ以外の場合 ..> を使用する', () => {

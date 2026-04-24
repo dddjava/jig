@@ -538,35 +538,35 @@ body.hide-usecase-static-methods .static-methods {
     background-color: #fff;
 }
 
-/* メンバタブセクション */
-.tab-member-section, .tab-diagram-section {
+/* タブセクション */
+.tab-content-section {
     border-color: #d4d9e5;
 }
 
-.tab-member-section .diagram-tabs, .tab-diagram-section .diagram-tabs {
+.tab-content-section .diagram-tabs {
     background-color: #f3f6ff;
     border-bottom-color: #d4d9e5;
 }
 
-.tab-member-section .diagram-tab, .tab-diagram-section .diagram-tab {
+.tab-content-section .diagram-tab {
     border-color: #d4d9e5;
     background-color: #e8eefc;
 }
 
-.tab-member-section .diagram-tab.active, .tab-diagram-section .diagram-tab.active {
+.tab-content-section .diagram-tab.active {
     background-color: #fff;
     border-bottom-color: #fff;
 }
 
-.tab-member-section .diagram-panel, .tab-diagram-section .diagram-panel {
+.tab-content-section .diagram-panel {
     background-color: #fff;
 }
 
-.tab-diagram-section .diagram-panel {
+.tab-content-section.tab-diagram-section .diagram-panel {
     padding: 12px;
 }
 
-.tab-member-section .diagram-panel .jig-card.jig-card--item {
+.tab-content-section.tab-member-section .diagram-panel .jig-card.jig-card--item {
     border: none;
     box-shadow: none;
     margin-top: 0;

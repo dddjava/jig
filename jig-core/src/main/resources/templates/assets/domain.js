@@ -681,6 +681,26 @@ const DomainApp = (() => {
     }
 
     /**
+     * タブセクションをカードに追加する
+     * @param {HTMLElement} cardSection
+     * @param {Array<{id: string, label: string}>} tabDefs
+     * @param {{className?: string, initialActiveId?: string, onTabChange?: (tabId: string) => void}} options
+     * @returns {{panels: Object<string, HTMLElement>, section: HTMLElement} | null}
+     */
+    function appendTabSection(cardSection, tabDefs, options = {}) {
+        if (tabDefs.length === 0) return null;
+        const {className, initialActiveId, onTabChange} = options;
+        const fullClassName = ["jig-card-section", "tab-content-section", className].filter(Boolean).join(" ");
+        const tabSection = Jig.mermaid.diagram.buildTabSection(tabDefs, {
+            className: fullClassName,
+            initialActiveId,
+            onTabChange
+        });
+        cardSection.appendChild(tabSection.section);
+        return tabSection;
+    }
+
+    /**
      * @param {PackageType[]} packages
      * @param {Array} typeRelations
      * @param {Map} typesMap
@@ -726,9 +746,9 @@ const DomainApp = (() => {
                 && {id: 'inner-class', label: 'パッケージ内クラス関連図', diagramType: 'type'},
             ].filter(Boolean);
 
-            if (tabDefs.length > 0) {
-                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "jig-card-section tab-diagram-section"});
-                section.appendChild(diagramSection);
+            const packageDiagramTabs = appendTabSection(section, tabDefs, {className: "tab-diagram-section"});
+            if (packageDiagramTabs) {
+                const {panels} = packageDiagramTabs;
 
                 if (panels['direct']) {
                     Jig.mermaid.diagram.createAndRegister(panels['direct'], (container) => {
@@ -839,9 +859,9 @@ const DomainApp = (() => {
                 staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
             ].filter(Boolean);
 
-            if (memberTabDefs.length > 0) {
-                const {panels, section: memberSection} = Jig.mermaid.diagram.buildTabSection(memberTabDefs, {className: "jig-card-section tab-member-section"});
-                section.appendChild(memberSection);
+            const typeMemberTabs = appendTabSection(section, memberTabDefs, {className: "tab-member-section"});
+            if (typeMemberTabs) {
+                const {panels} = typeMemberTabs;
                 memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
             }
 
@@ -850,13 +870,15 @@ const DomainApp = (() => {
                     {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
                     {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
                 ];
-                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "jig-card-section tab-diagram-section"});
-                section.appendChild(diagramSection);
-                tabDefs.forEach(tab => {
-                    Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
-                        renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
+                const typeDiagramTabs = appendTabSection(section, tabDefs, {className: "tab-diagram-section"});
+                if (typeDiagramTabs) {
+                    const {panels} = typeDiagramTabs;
+                    tabDefs.forEach(tab => {
+                        Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
+                            renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
+                        });
                     });
-                });
+                }
             }
 
             const relatedList = createRelatedClassesList(type, typeRelations, typesMap);

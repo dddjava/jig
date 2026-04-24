@@ -715,5 +715,21 @@ test.describe('domain.js', () => {
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
         });
+
+        test('パッケージ名がマッチすればクラスが一致しなくてもパッケージは表示される', () => {
+            const {sidebar, filterInput} = setupFilterTest();
+
+            filterInput.value = 'example';
+            filterInput.dispatchEvent({type: 'input'});
+
+            const packageItems = [...sidebar.querySelectorAll('[data-has-enum-children]')];
+            assert.ok(packageItems.length > 0, 'パッケージアイテムが存在すること');
+            const visiblePackage = packageItems.find(item => item.style.display !== 'none');
+            assert.ok(visiblePackage, 'パッケージ名にマッチするパッケージが表示されること');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
     });
 });

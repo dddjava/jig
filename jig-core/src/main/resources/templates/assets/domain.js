@@ -1002,11 +1002,14 @@ const DomainApp = (() => {
         [...sidebar.querySelectorAll('[data-has-enum-children]')]
             .reverse()
             .forEach(item => {
+                const link = item.querySelector('a');
+                const packageText = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
+                const packageMatches = packageText.includes(filterText);
                 const childList = item.querySelector('ul');
                 const hasVisible = childList && [...childList.children].some(child =>
                     child.style.display !== 'none'
                 );
-                item.style.display = hasVisible ? '' : 'none';
+                item.style.display = (packageMatches || hasVisible) ? '' : 'none';
             });
     }
 

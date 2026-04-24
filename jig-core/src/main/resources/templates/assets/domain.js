@@ -6,9 +6,7 @@ const DomainApp = (() => {
         showDiagrams: true,
         showDescriptions: true,
         showDeprecatedNodes: true,
-        showFields: true,
-        showMethods: true,
-        showStaticMethods: true,
+        showMembers: true,
         showEnumOnly: false,
         transitiveReductionEnabled: true,
         sidebarFilterText: '',
@@ -832,13 +830,20 @@ const DomainApp = (() => {
             }
 
             const fieldsList = createFieldsList(type.fields);
-            if (fieldsList) section.appendChild(fieldsList);
-
             const methodList = createMethodsList("メソッド", type.methods);
-            if (methodList) section.appendChild(methodList);
-
             const staticList = createMethodsList("staticメソッド", type.staticMethods);
-            if (staticList) section.appendChild(staticList);
+
+            const memberTabDefs = [
+                fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
+                methodList && {id: 'methods', label: 'メソッド', el: methodList},
+                staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
+            ].filter(Boolean);
+
+            if (memberTabDefs.length > 0) {
+                const {panels, section: memberSection} = Jig.mermaid.diagram.buildTabSection(memberTabDefs, {className: "jig-card-section tab-member-section"});
+                section.appendChild(memberSection);
+                memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
+            }
 
             if (createTypeRelationDiagram(type, typeRelations, typesMap) !== null) {
                 const tabDefs = [
@@ -925,16 +930,9 @@ const DomainApp = (() => {
         const main = document.getElementById('domain-main');
         if (!main) return;
 
-        const fieldsSections = main.querySelectorAll('section.methods-section');
-        fieldsSections.forEach(section => {
-            const h4 = section.querySelector('h4');
-            if (h4 && h4.textContent === 'フィールド') {
-                section.style.display = domainSettings.showFields ? '' : 'none';
-            } else if (h4 && h4.textContent === 'メソッド') {
-                section.style.display = domainSettings.showMethods ? '' : 'none';
-            } else if (h4 && h4.textContent === 'staticメソッド') {
-                section.style.display = domainSettings.showStaticMethods ? '' : 'none';
-            }
+        const memberSections = main.querySelectorAll('section.tab-member-section');
+        memberSections.forEach(section => {
+            section.style.display = domainSettings.showMembers ? '' : 'none';
         });
 
         // 「列挙のみ表示」フィルター
@@ -1033,9 +1031,7 @@ const DomainApp = (() => {
             {id: 'transitive-reduction-toggle', key: 'transitiveReductionEnabled', after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'show-diagrams',               key: 'showDiagrams',               after: v => document.body.classList.toggle('hide-domain-diagrams', !v)},
             {id: 'show-descriptions',           key: 'showDescriptions',           after: v => document.body.classList.toggle('hide-domain-descriptions', !v)},
-            {id: 'show-fields',                 key: 'showFields',                 after: applyVisibilitySettings},
-            {id: 'show-methods',                key: 'showMethods',                after: applyVisibilitySettings},
-            {id: 'show-static-methods',         key: 'showStaticMethods',          after: applyVisibilitySettings},
+            {id: 'show-members',                key: 'showMembers',                after: applyVisibilitySettings},
             {id: 'show-enum-only',              key: 'showEnumOnly',               after: applyVisibilitySettings},
         ].forEach(({id, key, after}) => {
             const el = document.getElementById(id);

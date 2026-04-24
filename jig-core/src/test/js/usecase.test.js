@@ -87,7 +87,7 @@ test.describe('usecase.js', () => {
             // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
             // チェックボックス要素を事前登録
-            ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-internal-methods', 'show-diagram-outbound-ports'].forEach(id => {
+            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-internal-methods', 'show-diagram-outbound-ports'].forEach(id => {
                 const el = doc.createElement('input');
                 el.id = id;
                 el.checked = true;
@@ -158,7 +158,6 @@ test.describe('usecase.js', () => {
 
             const staticMethodsSection = serviceSection.querySelector('section.static-methods');
             assert.ok(staticMethodsSection);
-            assert.equal(staticMethodsSection.querySelector('h4').textContent, 'staticメソッド');
             assert.equal(staticMethodsSection.querySelector('.method-name').textContent, 'staticMethod1');
 
             const methodSection = serviceSection.querySelector('article.jig-card--item');
@@ -468,26 +467,20 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = mockUsecaseAppData;
             UsecaseApp.init();
 
-            const showFields = document.getElementById('show-fields');
-            const showStaticMethods = document.getElementById('show-static-methods');
+            const showMembers = document.getElementById('show-members');
             const showDiagrams = document.getElementById('show-diagrams');
             const showDetails = document.getElementById('show-details');
             const showDescriptions = document.getElementById('show-descriptions');
             const showDeclarations = document.getElementById('show-declarations');
 
             // Initial state
-            assert.equal(showFields.checked, true);
-            assert.equal(document.body.classList.contains('hide-usecase-fields'), false);
+            assert.equal(showMembers.checked, true);
+            assert.equal(document.body.classList.contains('hide-usecase-members'), false);
 
-            // Toggle fields
-            showFields.checked = false;
-            showFields.dispatchEvent(new window.Event('change'));
-            assert.equal(document.body.classList.contains('hide-usecase-fields'), true);
-
-            // Toggle static methods
-            showStaticMethods.checked = false;
-            showStaticMethods.dispatchEvent(new window.Event('change'));
-            assert.equal(document.body.classList.contains('hide-usecase-static-methods'), true);
+            // Toggle members
+            showMembers.checked = false;
+            showMembers.dispatchEvent(new window.Event('change'));
+            assert.equal(document.body.classList.contains('hide-usecase-members'), true);
 
             // Toggle diagrams
             showDiagrams.checked = false;
@@ -608,8 +601,8 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const methodFqn = "com.example.ServiceA#method1()";
-            const methodSection = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn)).parentElement;
-            const sequenceBtn = methodSection.querySelectorAll('.diagram-tabs button')[1];
+            const methodElement = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn));
+            const sequenceBtn = methodElement.querySelectorAll('.diagram-tabs button')[1];
 
             // シーケンス図タブをクリック
             sequenceBtn.dispatchEvent(new window.Event('click'));
@@ -623,9 +616,9 @@ test.describe('usecase.js', () => {
             showDiagramInternalMethods.dispatchEvent(new window.Event('change'));
 
             // 再レンダリング後の要素を取得
-            const newMethodSection = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn)).parentElement;
-            const newSequenceBtn = newMethodSection.querySelectorAll('.diagram-tabs button')[1];
-            const newSequencePanel = newMethodSection.querySelectorAll('.diagram-panel')[1];
+            const newMethodElement = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn));
+            const newSequenceBtn = newMethodElement.querySelectorAll('.diagram-tabs button')[1];
+            const newSequencePanel = newMethodElement.querySelectorAll('.diagram-panel')[1];
 
             // シーケンス図タブが active で、パネルが hidden でないことを確認
             assert.ok(newSequenceBtn.classList.contains('active'));

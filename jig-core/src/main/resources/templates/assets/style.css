@@ -517,11 +517,7 @@ td.fqn {
     text-overflow: ellipsis;
 }
 
-body.hide-usecase-fields .fields {
-    display: none;
-}
-
-body.hide-usecase-static-methods .static-methods {
+body.hide-usecase-members .tab-member-section {
     display: none;
 }
 

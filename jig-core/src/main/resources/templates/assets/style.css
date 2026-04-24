@@ -521,11 +521,21 @@ body.hide-usecase-static-methods .static-methods {
     display: none;
 }
 
-.description {
+.jig-card-section {
     border: 1px solid #ccc;
     border-radius: 6px;
-    padding: 12px;
     margin-top: 12px;
+    overflow: hidden;
+}
+
+.description,
+.diagram-container {
+    padding: 12px;
+    background-color: #fff;
+}
+
+.tab-diagram-section .diagram-panel {
+    padding: 12px;
     background-color: #fff;
 }
 
@@ -544,19 +554,6 @@ body.hide-domain-diagrams .tab-diagram-section {
     display: none;
 }
 
-.tab-diagram-section,
-.diagram-container {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-top: 12px;
-    overflow: hidden;
-}
-
-.tab-diagram-section .diagram-panel {
-    padding: 12px;
-    background-color: #fff;
-}
-
 body.hide-usecase-diagrams .mermaid-diagram {
     display: none;
 }
@@ -567,11 +564,6 @@ body.hide-usecase-diagrams .diagram-container {
 
 body.hide-usecase-details .depends {
     display: none;
-}
-
-.diagram-container {
-    padding: 12px;
-    background-color: #fff;
 }
 
 .diagram-tabs {

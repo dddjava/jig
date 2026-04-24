@@ -626,12 +626,15 @@ const UsecaseApp = (() => {
             });
 
             if (term.description) {
-                section.appendChild(Jig.dom.createMarkdownElement(term.description));
+                section.appendChild(Jig.dom.createElement("section", {
+                    className: "jig-card-section description",
+                    children: [Jig.dom.createMarkdownElement(term.description)]
+                }));
             }
 
             const classGraph = buildClassGraph(usecase, handlerFqns);
             if (classGraph.edges.length > 0) {
-                const classDiagramContainer = Jig.dom.createElement("div", {className: "diagram-container class-diagram"});
+                const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
                 section.appendChild(classDiagramContainer);
 
                 Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
@@ -722,13 +725,13 @@ const UsecaseApp = (() => {
                         const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
                         const {panels, section} = Jig.mermaid.diagram.buildTabSection(
                             [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
-                            {className: "tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
+                            {className: "jig-card-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
                         );
                         methodSection.appendChild(section);
                         usecaseTarget = panels['usecase'];
                         sequenceTarget = panels['sequence'];
                     } else {
-                        const container = Jig.dom.createElement("div", {className: "diagram-container"});
+                        const container = Jig.dom.createElement("div", {className: "jig-card-section diagram-container"});
                         methodSection.appendChild(container);
                         if (hasUsecaseDiagram) usecaseTarget = container;
                         else sequenceTarget = container;

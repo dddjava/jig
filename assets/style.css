@@ -307,47 +307,6 @@ main table thead {
     overflow: auto;
 }
 
-/* ナビのツリー */
-.split-view > nav.tree a, .split-view > nav.tree summary {
-    white-space: nowrap;
-}
-
-.split-view > nav.tree summary,
-.split-view > nav.tree details > div > a {
-    display: block;
-    padding: 6px 8px;
-    border-radius: 6px;
-    color: #1b3a66;
-    text-decoration: none;
-}
-
-.split-view > nav.tree summary {
-    cursor: pointer;
-}
-
-.split-view > nav.tree summary:hover,
-.split-view > nav.tree summary:focus-visible,
-.split-view > nav.tree details > div > a:hover,
-.split-view > nav.tree details > div > a:focus-visible {
-    background-color: #e8f0fb;
-    color: #10253f;
-    text-decoration: none;
-}
-
-.split-view > nav.tree summary > a,
-.split-view > nav.tree details > div > a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.split-view > nav.tree details > div,
-.split-view > nav.tree details > details {
-    margin-left: 12px;
-}
-
-.split-view > nav.tree details {
-    margin-bottom: 4px;
-}
 
 @media (max-width: 900px) {
     body:has(> .split-view) {
@@ -491,6 +450,10 @@ td.fqn {
     text-underline-offset: 3px;
 }
 
+.jig-card--type > table {
+    margin-top: 12px;
+}
+
 .jig-card.jig-card--item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;
@@ -562,7 +525,26 @@ body.hide-usecase-static-methods .static-methods {
     display: none;
 }
 
-body.hide-usecase-descriptions .description {
+.jig-card-section {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.description,
+.diagram-container {
+    padding: 12px;
+    background-color: #fff;
+}
+
+.tab-diagram-section .diagram-panel {
+    padding: 12px;
+    background-color: #fff;
+}
+
+body.hide-usecase-descriptions .description,
+body.hide-domain-descriptions .description {
     display: none;
 }
 
@@ -576,19 +558,6 @@ body.hide-domain-diagrams .tab-diagram-section {
     display: none;
 }
 
-.tab-diagram-section,
-.diagram-container {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    margin-top: 12px;
-    overflow: hidden;
-}
-
-.tab-diagram-section .diagram-panel {
-    padding: 12px;
-    background-color: #fff;
-}
-
 body.hide-usecase-diagrams .mermaid-diagram {
     display: none;
 }
@@ -599,11 +568,6 @@ body.hide-usecase-diagrams .diagram-container {
 
 body.hide-usecase-details .depends {
     display: none;
-}
-
-.diagram-container {
-    padding: 12px;
-    background-color: #fff;
 }
 
 .diagram-tabs {
@@ -1396,6 +1360,7 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow: auto;
+    scrollbar-gutter: stable;
     align-content: start;
 }
 
@@ -1419,6 +1384,11 @@ table td.number {
     align-items: center;
     justify-content: space-between;
     user-select: none;
+}
+
+.in-page-sidebar__title .in-page-sidebar__link {
+    font-size: inherit;
+    padding: 0;
 }
 
 .in-page-sidebar__toggle {
@@ -1474,6 +1444,10 @@ table td.number {
     margin: 0;
     display: grid;
     gap: 4px;
+}
+
+.in-page-sidebar__item > .in-page-sidebar__links {
+    padding-left: 12px;
 }
 
 .in-page-sidebar__links--hidden {

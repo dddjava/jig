@@ -620,4 +620,100 @@ test.describe('domain.js', () => {
             assert.ok(result.includes('List~B~'), `メソッドパラメータにジェネリクスが含まれること: ${result}`);
         });
     });
+
+    test.describe('サイドバーテキストフィルター', () => {
+        function setupFilterTest() {
+            const types = [
+                {fqn: 'org.example.FooClass', isDeprecated: false, enumInfo: undefined, fields: [], methods: [], staticMethods: []},
+                {fqn: 'org.example.BarClass', isDeprecated: false, enumInfo: undefined, fields: [], methods: [], staticMethods: []},
+            ];
+            setupDomainData(['org.example'], types);
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.FooClass': {title: 'FooClass'},
+                'org.example.BarClass': {title: 'BarClass'},
+            });
+            globalThis.typeRelationsData = {relations: []};
+
+            const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+
+            const sidebarList = doc.createElement("div");
+            doc.elementsById.set("domain-sidebar-list", sidebarList);
+
+            const sidebar = doc.createElement("div");
+            sidebar.setAttribute("id", "domain-sidebar");
+            sidebar.appendChild(sidebarList);
+            doc.elementsById.set("domain-sidebar", sidebar);
+
+            const filterInput = doc.createElement("input");
+            filterInput.setAttribute("id", "domain-sidebar-filter");
+            doc.elementsById.set("domain-sidebar-filter", filterInput);
+
+            DomainApp.init();
+
+            return {sidebar, filterInput};
+        }
+
+        test('フィルターテキストに一致する型アイテムは表示、一致しない型アイテムは非表示になる', () => {
+            const {sidebar, filterInput} = setupFilterTest();
+
+            filterInput.value = 'FooClass';
+            filterInput.dispatchEvent({type: 'input'});
+
+            const typeItems = [...sidebar.querySelectorAll('div[data-has-enum]')];
+            const fooLi = typeItems.find(div => div.querySelector('a')?.textContent.includes('FooClass'))?.closest('li');
+            const barLi = typeItems.find(div => div.querySelector('a')?.textContent.includes('BarClass'))?.closest('li');
+
+            assert.ok(fooLi, 'FooClass の li が存在すること');
+            assert.ok(barLi, 'BarClass の li が存在すること');
+            assert.equal(fooLi.style.display, '', 'FooClass は表示されること');
+            assert.equal(barLi.style.display, 'none', 'BarClass は非表示になること');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
+
+        test('フィルターをクリアすると全アイテムが再表示される', () => {
+            const {sidebar, filterInput} = setupFilterTest();
+
+            filterInput.value = 'FooClass';
+            filterInput.dispatchEvent({type: 'input'});
+            filterInput.value = '';
+            filterInput.dispatchEvent({type: 'input'});
+
+            const typeItems = [...sidebar.querySelectorAll('div[data-has-enum]')];
+            typeItems.forEach(div => {
+                assert.notEqual(div.closest('li').style.display, 'none', `クリア後に ${div.querySelector('a')?.textContent} が表示されること`);
+            });
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
+
+        test('何にもマッチしないテキスト後にクリアすると全アイテムが再表示される', () => {
+            const {sidebar, filterInput} = setupFilterTest();
+
+            filterInput.value = 'ZZZNOMATCH';
+            filterInput.dispatchEvent({type: 'input'});
+            filterInput.value = '';
+            filterInput.dispatchEvent({type: 'input'});
+
+            const typeItems = [...sidebar.querySelectorAll('div[data-has-enum]')];
+            assert.ok(typeItems.length > 0, 'アイテムが存在すること');
+            typeItems.forEach(div => {
+                assert.notEqual(div.closest('li').style.display, 'none', `クリア後に ${div.querySelector('a')?.textContent} が表示されること`);
+            });
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
+    });
 });

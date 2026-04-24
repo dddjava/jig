@@ -253,6 +253,9 @@ class Element {
 
     setAttribute(name, value) {
         this.attributes.set(name, String(value));
+        if (name.startsWith('data-')) {
+            this.dataset[dataToCamel(name.slice(5))] = String(value);
+        }
         if (name === "id" && this.ownerDocument) {
             this.ownerDocument.elementsById.set(value, this);
         }
@@ -297,6 +300,16 @@ class Element {
         const results = [];
         collectAllByParts(this, parts, results);
         return results;
+    }
+
+    closest(selector) {
+        const part = selector.trim();
+        let node = this;
+        while (node && node.tagName) {
+            if (matchesPart(node, part)) return node;
+            node = node.parentNode;
+        }
+        return null;
     }
 }
 

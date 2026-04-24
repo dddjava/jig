@@ -676,25 +676,30 @@ const UsecaseApp = (() => {
                 });
             }
 
-            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, Jig.dom.type.refElement);
-            if (fieldsList) section.appendChild(fieldsList);
+            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, Jig.dom.type.refElement, {showTitle: false});
+            if (fieldsList) fieldsList.classList.add("fields");
 
-            if (usecase.staticMethods.length > 0) {
-                const staticList = Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, Jig.dom.type.refElement);
-                if (staticList) {
-                    staticList.classList.add("static-methods");
-                    section.appendChild(staticList);
-                }
-            }
+            const staticList = usecase.staticMethods.length > 0
+                ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, Jig.dom.type.refElement, {showTitle: false})
+                : null;
+            if (staticList) staticList.classList.add("static-methods");
 
-            // usecaseとするのはPUBLICのみ
-            const internalMethods = usecase.methods.filter(method => !isUsecase(method))
-            if (internalMethods.length > 0) {
-                const staticList = Jig.dom.type.methodsList("メソッド", internalMethods, Jig.dom.type.refElement);
-                if (staticList) {
-                    staticList.classList.add("methods");
-                    section.appendChild(staticList);
-                }
+            const internalMethods = usecase.methods.filter(method => !isUsecase(method));
+            const methodList = internalMethods.length > 0
+                ? Jig.dom.type.methodsList("メソッド", internalMethods, Jig.dom.type.refElement, {showTitle: false})
+                : null;
+            if (methodList) methodList.classList.add("methods");
+
+            const memberTabDefs = [
+                fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
+                staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
+                methodList && {id: 'methods', label: 'メソッド', el: methodList},
+            ].filter(Boolean);
+
+            if (memberTabDefs.length > 0) {
+                const {panels, section: memberSection} = Jig.mermaid.diagram.buildTabSection(memberTabDefs, {className: "jig-card-section tab-member-section"});
+                section.appendChild(memberSection);
+                memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
             }
 
             visibleUsecaseMethods.forEach(method => {
@@ -837,8 +842,7 @@ const UsecaseApp = (() => {
      */
     function initControls() {
         const controls = [
-            {id: 'show-fields', class: 'hide-usecase-fields'},
-            {id: 'show-static-methods', class: 'hide-usecase-static-methods'},
+            {id: 'show-members', class: 'hide-usecase-members'},
             {id: 'show-diagrams', class: 'hide-usecase-diagrams'},
             {id: 'show-details', class: 'hide-usecase-details'},
             {id: 'show-descriptions', class: 'hide-usecase-descriptions'},

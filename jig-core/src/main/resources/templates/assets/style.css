@@ -521,7 +521,8 @@ body.hide-usecase-static-methods .static-methods {
     display: none;
 }
 
-body.hide-usecase-descriptions .description {
+body.hide-usecase-descriptions .description,
+body.hide-domain-descriptions .description {
     display: none;
 }
 

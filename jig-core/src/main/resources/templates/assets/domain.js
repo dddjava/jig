@@ -4,6 +4,7 @@ const DomainApp = (() => {
     const domainSettings = {
         diagramDirection: 'TB',
         showDiagrams: true,
+        showDescriptions: true,
         showDeprecatedNodes: true,
         showFields: true,
         showMethods: true,
@@ -700,7 +701,10 @@ const DomainApp = (() => {
 
             const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
             if (pkgDescription) {
-                section.appendChild(Jig.dom.createMarkdownElement(pkgDescription));
+                section.appendChild(Jig.dom.createElement("section", {
+                    className: "description",
+                    children: [Jig.dom.createMarkdownElement(pkgDescription)]
+                }));
             }
 
             const childrenTable = createChildrenTable(pkg, childPackagesMap);
@@ -811,7 +815,10 @@ const DomainApp = (() => {
 
             const typeDescription = Jig.glossary.getTypeTerm(type.fqn).description;
             if (typeDescription) {
-                section.appendChild(Jig.dom.createMarkdownElement(typeDescription));
+                section.appendChild(Jig.dom.createElement("section", {
+                    className: "description",
+                    children: [Jig.dom.createMarkdownElement(typeDescription)]
+                }));
             }
 
             if (type.enumInfo) {
@@ -1019,6 +1026,7 @@ const DomainApp = (() => {
             {id: 'show-deprecated-nodes',       key: 'showDeprecatedNodes',        after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'transitive-reduction-toggle', key: 'transitiveReductionEnabled', after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'show-diagrams',               key: 'showDiagrams',               after: v => document.body.classList.toggle('hide-domain-diagrams', !v)},
+            {id: 'show-descriptions',           key: 'showDescriptions',           after: v => document.body.classList.toggle('hide-domain-descriptions', !v)},
             {id: 'show-fields',                 key: 'showFields',                 after: applyVisibilitySettings},
             {id: 'show-methods',                key: 'showMethods',                after: applyVisibilitySettings},
             {id: 'show-static-methods',         key: 'showStaticMethods',          after: applyVisibilitySettings},

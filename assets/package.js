@@ -48,7 +48,6 @@ const PackageApp = (() => {
         getDocumentBody: () => document.body,
     };
 
-    // データ取得/整形
     function getPackageRelationData(context) {
         if (context.packageRelationCache) return context.packageRelationCache;
         const data = Jig.data.package.get() ?? {};
@@ -113,7 +112,6 @@ const PackageApp = (() => {
         };
     }
 
-    // フィルタ/正規化
     function normalizePackageFilterValue(value) {
         const trimmed = (value ?? '').trim();
         if (!trimmed) return [];
@@ -160,26 +158,16 @@ const PackageApp = (() => {
         return visited;
     }
 
-    function buildReverseAdjacency(relations, aggregationDepth) {
-        const reverseAdjacency = new Map();
+    function buildAdjacency(relations, aggregationDepth, reversed) {
+        const adjacency = new Map();
         relations.forEach(relation => {
             const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
             const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-            if (!reverseAdjacency.has(to)) reverseAdjacency.set(to, new Set());
-            reverseAdjacency.get(to).add(from);
+            const key = reversed ? to : from;
+            const value = reversed ? from : to;
+            Jig.util.addToSetMap(adjacency, key, value);
         });
-        return reverseAdjacency;
-    }
-
-    function buildForwardAdjacency(relations, aggregationDepth) {
-        const forwardAdjacency = new Map();
-        relations.forEach(relation => {
-            const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-            const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-            if (!forwardAdjacency.has(from)) forwardAdjacency.set(from, new Set());
-            forwardAdjacency.get(from).add(to);
-        });
-        return forwardAdjacency;
+        return adjacency;
     }
 
     function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, focusCalleeMode) {
@@ -195,7 +183,7 @@ const PackageApp = (() => {
                     if (to === root) focusSet.add(from);
                 });
             } else {
-                const reverseAdjacency = buildReverseAdjacency(relations, aggregationDepth);
+                const reverseAdjacency = buildAdjacency(relations, aggregationDepth, true);
                 const callers = traverseGraph(root, reverseAdjacency);
                 callers.forEach(caller => focusSet.add(caller));
             }
@@ -209,7 +197,7 @@ const PackageApp = (() => {
                     if (from === root) focusSet.add(to);
                 });
             } else {
-                const forwardAdjacency = buildForwardAdjacency(relations, aggregationDepth);
+                const forwardAdjacency = buildAdjacency(relations, aggregationDepth, false);
                 const callees = traverseGraph(root, forwardAdjacency);
                 callees.forEach(callee => focusSet.add(callee));
             }
@@ -218,7 +206,6 @@ const PackageApp = (() => {
         return focusSet;
     }
 
-    // 関連探索: 複数の起点からcaller/calleeセットを収集する
     function collectExploreNodeSets(targetPackages, relations, callerMode, calleeMode) {
         const targetSet = new Set(targetPackages);
         const callerSet = new Set();
@@ -232,7 +219,7 @@ const PackageApp = (() => {
                     if (targetSet.has(relation.to)) callerSet.add(relation.from);
                 });
             } else {
-                const reverseAdjacency = buildReverseAdjacency(relations, 0);
+                const reverseAdjacency = buildAdjacency(relations, 0, true);
                 targetSet.forEach(target => {
                     const callers = traverseGraph(target, reverseAdjacency);
                     callers.forEach(caller => {
@@ -248,7 +235,7 @@ const PackageApp = (() => {
                     if (targetSet.has(relation.from)) calleeSet.add(relation.to);
                 });
             } else {
-                const forwardAdjacency = buildForwardAdjacency(relations, 0);
+                const forwardAdjacency = buildAdjacency(relations, 0, false);
                 targetSet.forEach(target => {
                     const callees = traverseGraph(target, forwardAdjacency);
                     callees.forEach(callee => {
@@ -258,7 +245,6 @@ const PackageApp = (() => {
             }
         }
 
-        // callerSet/calleeSet からターゲットを除外
         targetSet.forEach(t => {
             callerSet.delete(t);
             calleeSet.delete(t);
@@ -276,7 +262,6 @@ const PackageApp = (() => {
         );
     }
 
-    // テーブル描画
     function buildPackageTableRowData(packages, relations) {
         const incomingCounts = new Map();
         const outgoingCounts = new Map();
@@ -292,14 +277,11 @@ const PackageApp = (() => {
     }
 
     function createNumberTd(value, countName) {
-        const td = document.createElement('td');
-        td.textContent = String(value ?? 0);
-        td.className = 'number';
+        const td = Jig.dom.createElement('td', {textContent: String(value ?? 0), className: 'number'});
         if (countName) td.dataset.count = countName;
         return td;
     }
 
-    // 相互依存/依存関係の簡略表示
     function buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth) {
         if (!mutualPairs || mutualPairs.size === 0) return [];
         const relationMap = new Map();
@@ -308,10 +290,7 @@ const PackageApp = (() => {
             const toPackage = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
             if (fromPackage === toPackage) return;
             const key = fromPackage < toPackage ? `${fromPackage}::${toPackage}` : `${toPackage}::${fromPackage}`;
-            if (!relationMap.has(key)) {
-                relationMap.set(key, new Set());
-            }
-            relationMap.get(key).add(`${relation.from} -> ${relation.to}`);
+            Jig.util.addToSetMap(relationMap, key, `${relation.from} -> ${relation.to}`);
         });
         return Array.from(mutualPairs).sort().map(key => {
             const parts = key.split('::');
@@ -324,8 +303,6 @@ const PackageApp = (() => {
         });
     }
 
-    // ダイアグラム生成
-    // 描画/更新
     function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context) {
         const container = dom.getMutualDependencyList();
         if (!container) return;
@@ -453,14 +430,10 @@ const PackageApp = (() => {
             to: Jig.util.getPackageFqnFromTypeFqn(to),
         }));
         const packageAdjacency = new Map();
-        const ensureAdjacent = packageFqn => {
-            if (!packageAdjacency.has(packageFqn)) packageAdjacency.set(packageFqn, new Set());
-            return packageAdjacency.get(packageFqn);
-        };
         packageRelations.forEach(({from, to}) => {
             if (!from || !to || from === to) return;
-            ensureAdjacent(from).add(to);
-            ensureAdjacent(to).add(from);
+            Jig.util.addToSetMap(packageAdjacency, from, to);
+            Jig.util.addToSetMap(packageAdjacency, to, from);
         });
         const shortestDistance = (start, goal) => {
             if (!start || !goal) return Number.POSITIVE_INFINITY;
@@ -647,8 +620,6 @@ const PackageApp = (() => {
         syncStateToURL();
     }
 
-    // 関連探索ダイアグラム
-
     function buildCollapsedSubpackageMap(selectedPackages) {
         const tbody = dom.getExplorePackageList()?.querySelector('tbody');
         if (!tbody) return new Map();
@@ -744,7 +715,6 @@ const PackageApp = (() => {
         const container = config.getContainer();
         if (!container) return;
 
-        // TBODYが既に存在する場合はクラスのみ更新する
         const existingTbody = container.querySelector('tbody');
         if (existingTbody) {
             existingTbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
@@ -753,7 +723,6 @@ const PackageApp = (() => {
             return;
         }
 
-        // 初回のみテーブルを構築する
         const {packages, relations, domainPackageRoots} = getPackageRelationData(hierarchyState);
         // domainPackageRoots に含まれるが packages にないものを追加する
         const packageFqnSet = new Set(packages.map(p => p.fqn));
@@ -975,7 +944,6 @@ const PackageApp = (() => {
         renderPackageList(buildExploreListConfig(context));
     }
 
-    // UI配線
     function setupPackageFilterControl(context) {
         const clearPackageButton = dom.getClearPackageFilterButton();
         const resetButton = dom.getResetPackageFilterButton();
@@ -1076,10 +1044,10 @@ const PackageApp = (() => {
     function renderAggregationDepthOptionsIntoSelect(select, options, aggregationDepth, maxDepth) {
         select.innerHTML = '';
         options.forEach(option => {
-            const node = document.createElement('option');
-            node.value = option.value;
-            node.textContent = option.text;
-            select.appendChild(node);
+            select.appendChild(Jig.dom.createElement('option', {
+                textContent: option.text,
+                attributes: {value: option.value},
+            }));
         });
         const value = Math.min(aggregationDepth, maxDepth);
         select.value = String(value);
@@ -1192,7 +1160,6 @@ const PackageApp = (() => {
             if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
             if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
         } else {
-            // デフォルトの hierarchy タブ
             if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
             hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
             hierarchyState.hierarchyCollapsedPackages.forEach(p => params.append('hcollapsed', p));
@@ -1252,7 +1219,6 @@ const PackageApp = (() => {
             }
         });
 
-        // 階層探索の初期化
         setupPackageFilterControl(hierarchyState);
         const {domainPackageRoots} = getPackageRelationData(hierarchyState);
         hierarchyState.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);

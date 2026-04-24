@@ -141,6 +141,16 @@ globalThis.Jig.util = (() => {
         return fqns;
     }
 
+    function pushToMap(map, key, value) {
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(value);
+    }
+
+    function addToSetMap(map, key, value) {
+        if (!map.has(key)) map.set(key, new Set());
+        map.get(key).add(value);
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -150,6 +160,8 @@ globalThis.Jig.util = (() => {
         isWithinPackageFilters,
         getAggregatedFqn,
         collectTypeRefFqns,
+        pushToMap,
+        addToSetMap,
     }
 })();
 
@@ -513,7 +525,8 @@ if (typeof window !== 'undefined') {
 }
 
 globalThis.Jig.dom = (() => {
-    let typeLinkResolver = null;
+
+    // --- Base DOM utility ---
 
     function createElement(tagName, options = {}) {
         const element = document.createElement(tagName);
@@ -538,6 +551,15 @@ globalThis.Jig.dom = (() => {
         return element;
     }
 
+    function createCell(text, className) {
+        return createElement("td", {
+            className: className || undefined,
+            textContent: text
+        });
+    }
+
+    // --- Markdown ---
+
     function parseMarkdown(markdown) {
         const source = markdown != null ? String(markdown) : "";
         if (globalThis.marked && typeof globalThis.marked.parse === "function") {
@@ -552,6 +574,330 @@ globalThis.Jig.dom = (() => {
             innerHTML: parseMarkdown(markdown)
         });
     }
+
+    // --- CSV utility ---
+
+    function escapeCsvValue(value) {
+        const text = String(value ?? "")
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n");
+        return `"${text.replace(/"/g, "\"\"")}"`;
+    }
+
+    function downloadCsv(text, filename) {
+        const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+    }
+
+    // --- Kind badge ---
+
+    const KIND_BADGE = {"パッケージ": "P", "クラス": "C", "メソッド": "M", "フィールド": "F"};
+
+    function kindBadgeChar(kind) {
+        return KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?");
+    }
+
+    function kindBadgeElement(kind) {
+        return createElement("span", {
+            className: "kind-badge",
+            attributes: {"data-kind": kind},
+            textContent: kindBadgeChar(kind),
+        });
+    }
+
+    // --- Type link ---
+
+    let typeLinkResolver = null;
+
+    function setTypeLinkResolver(resolver) {
+        typeLinkResolver = (typeof resolver === "function") ? resolver : null;
+    }
+
+    function clearTypeLinkResolver() {
+        typeLinkResolver = null;
+    }
+
+    function getTypeLinkResolver() {
+        return typeLinkResolver;
+    }
+
+    function createTypeLink(fqn, className = undefined) {
+        // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
+        const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';
+        const baseFqn = arraySuffix ? fqn.slice(0, -arraySuffix.length) : fqn;
+
+        const resolved = typeLinkResolver?.(baseFqn);
+        const title = (resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(baseFqn).title) + arraySuffix;
+        const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
+        if (resolved?.href) {
+            return createElement('a', {
+                className: classes,
+                attributes: {href: resolved.href},
+                textContent: title
+            });
+        }
+        return createElement('span', {
+            className: classes,
+            textContent: title
+        });
+    }
+
+    function createElementForTypeRef(typeRef, className = undefined) {
+        if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
+            const typeElements = createTypeLink(typeRef.fqn);
+            const argumentElements = typeRef.typeArgumentRefs
+                .map(argumentTypeRef => createElementForTypeRef(argumentTypeRef))
+                // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
+                .flatMap((v, i) => i ? [', ', v] : [v]);
+
+            return createElement("span", {
+                className: className,
+                children: [typeElements, '<', ...argumentElements, '>']
+            });
+        }
+
+        return createTypeLink(typeRef.fqn, className);
+    }
+
+    // --- Type detail builders ---
+
+    function createParameterElement(param, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        return createElement("span", {
+            children: param.nameSource === 'METHOD_PARAMETERS'
+                ? [param.name + ': ', fn(param.typeRef)]
+                : [fn(param.typeRef)]
+        });
+    }
+
+    function createMethodItem(method, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
+
+        const paramElements = method.parameters
+            .map(param => createParameterElement(param, fn))
+            .flatMap((el, i) => i ? [', ', el] : [el]);
+
+        const signatureEl = createElement("div", {
+            className: "method-signature",
+            children: [
+                createElement("span", {
+                    className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
+                    textContent: methodTerm.title
+                }),
+                '(',
+                ...paramElements,
+                ')',
+                createElement("span", {className: "method-return-sep", textContent: ":"}),
+                fn(method.returnTypeRef)
+            ]
+        });
+
+        const children = [signatureEl];
+        if (methodTerm.description) {
+            children.push(createMarkdownElement(methodTerm.description));
+        }
+
+        return createElement("div", {
+            className: "method-item",
+            children
+        });
+    }
+
+    function createFieldsList(fields, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        if (fields.length === 0) return null;
+
+        const items = fields.map(field => createElement("div", {
+            className: "method-item",
+            children: [
+                createElement("div", {
+                    className: "method-signature",
+                    children: [
+                        createElement("span", {
+                            className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                            textContent: field.name
+                        }),
+                        createElement("span", {className: "method-return-sep", textContent: ":"}),
+                        fn(field.typeRef)
+                    ]
+                })
+            ]
+        }));
+
+        const card = createItemCard({title: "フィールド", extraClass: "methods-section fields"});
+        items.forEach(item => card.appendChild(item));
+        return card;
+    }
+
+    function createMethodsList(kind, methods, createTypeRefFn) {
+        if (methods.length === 0) return null;
+
+        const card = createItemCard({title: kind, extraClass: "methods-section"});
+        methods.forEach(method => card.appendChild(createMethodItem(method, createTypeRefFn)));
+        return card;
+    }
+
+    // --- Card builders ---
+
+    function createItemCard({id, title, tagName = "section", extraClass} = {}) {
+        return createElement(tagName, {
+            id,
+            className: ["jig-card", "jig-card--item", extraClass].filter(Boolean).join(" "),
+            children: title !== undefined ? [createElement("h4", {textContent: title})] : []
+        });
+    }
+
+    function createTypeCard({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) {
+        const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
+        const titleContent = id
+            ? createElement("a", {className: "card-title-anchor", attributes: {href: `#${id}`}, children: [titleEl]})
+            : titleEl;
+        const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleContent] : [titleContent];
+
+        const card = createElement(tagName, {
+            id,
+            className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
+            attributes,
+            children: [createElement("h3", {children: h3Children})]
+        });
+
+        if (fqn != null) {
+            card.appendChild(typeof fqn === 'string'
+                ? createElement("div", {className: "fully-qualified-name", textContent: fqn})
+                : fqn);
+        }
+
+        return card;
+    }
+
+    // --- Sidebar ---
+
+    function createSidebarToggle(targetEl) {
+        const toggle = createElement("button", {
+            className: "in-page-sidebar__toggle",
+            attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
+        });
+        toggle.addEventListener("click", () => {
+            const collapsing = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!collapsing));
+            toggle.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
+            targetEl.classList.toggle("in-page-sidebar__links--hidden", collapsing);
+        });
+        return toggle;
+    }
+
+    function buildCollapsibleTitle(title, links) {
+        return createElement("p", {
+            className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+            children: [createElement("span", {textContent: title}), createSidebarToggle(links)]
+        });
+    }
+
+    function createSection(title, items, {collapsible = false} = {}) {
+        if (!items || items.length === 0) return null;
+
+        const links = createElement("ul", {
+            className: "in-page-sidebar__links",
+            children: items.map(({id, label}) => createElement("li", {
+                className: "in-page-sidebar__item",
+                children: [
+                    createElement("a", {
+                        className: "in-page-sidebar__link",
+                        attributes: {href: "#" + id},
+                        textContent: label
+                    })
+                ]
+            }))
+        });
+
+        const titleEl = !title ? null
+            : collapsible ? buildCollapsibleTitle(title, links)
+            : createElement("p", {className: "in-page-sidebar__title", textContent: title});
+
+        return createElement("section", {
+            className: "in-page-sidebar__section",
+            children: [titleEl, links]
+        });
+    }
+
+    function renderSection(container, title, items, options) {
+        if (!container) return;
+        const section = createSection(title, items, options);
+        if (section) {
+            container.appendChild(section);
+        }
+    }
+
+    function initSidebarTextFilter(inputId, onChange) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('input', () => onChange(input.value.trim()));
+    }
+
+    // --- Table ---
+
+    function setupSortableTables() {
+        function sortTable(event) {
+            const headerColumn = event.target;
+            const table = headerColumn.closest("table");
+            const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
+
+            const rows = Array.from(table.querySelectorAll("tbody tr"));
+
+            const orderFlag = headerColumn.dataset.orderFlag === "true";
+
+            let type = "string";
+            const firstRow = rows[0];
+            if (firstRow) {
+                const cell = firstRow.cells[columnIndex];
+                if (cell && cell.classList.contains("number")) {
+                    type = "number";
+                }
+            }
+
+            rows.sort(function (a, b) {
+                const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
+                const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
+
+                // 数値は降順、文字は昇順
+                if (type === "number") {
+                    const aNumber = parseFloat(aValue) || 0;
+                    const bNumber = parseFloat(bValue) || 0;
+                    return (aNumber - bNumber) * (orderFlag ? 1 : -1);
+                }
+                return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
+            });
+
+            rows.forEach(row => table.getElementsByTagName("tbody")[0].appendChild(row));
+
+            headerColumn.dataset.orderFlag = (!orderFlag).toString();
+        }
+
+        document.querySelectorAll("table.sortable").forEach(table => {
+            const headers = table.querySelectorAll("thead th");
+            headers.forEach(header => {
+                if (header.hasAttribute("onclick")) {
+                    return;
+                }
+                if (header.classList.contains("no-sort")) {
+                    return;
+                }
+
+                header.addEventListener("click", sortTable);
+                header.style.cursor = "pointer";
+            });
+        });
+    }
+
+    // --- Common UI setup ---
 
     function normalizeNavigationHref(href) {
         return String(href || "").replace(/^\.\//, "");
@@ -573,16 +919,15 @@ globalThis.Jig.dom = (() => {
         const currentFileName = (location.pathname.split("/").pop() || "");
         const normalizedCurrent = normalizeNavigationHref(currentFileName);
 
-        const container = document.createElement("div");
-        container.className = "jig-header-nav";
+        const trigger = createElement("span", {
+            className: "jig-header-nav__trigger",
+            textContent: pageTitleEl.textContent
+        });
 
-        const trigger = document.createElement("span");
-        trigger.className = "jig-header-nav__trigger";
-        trigger.textContent = pageTitleEl.textContent;
-
-        const dropdown = document.createElement("ul");
-        dropdown.className = "jig-header-nav__dropdown";
-        dropdown.setAttribute("role", "list");
+        const dropdown = createElement("ul", {
+            className: "jig-header-nav__dropdown",
+            attributes: {role: "list"}
+        });
 
         navigationData.links.forEach(link => {
             if (!link) return;
@@ -591,25 +936,19 @@ globalThis.Jig.dom = (() => {
             if (!href) return;
 
             const isCurrent = (href === normalizedCurrent);
-            const li = document.createElement("li");
-            li.className = "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : "");
-
-            if (isCurrent) {
-                const span = document.createElement("span");
-                span.textContent = label;
-                li.appendChild(span);
-            } else {
-                const a = document.createElement("a");
-                a.href = href;
-                a.textContent = label;
-                li.appendChild(a);
-            }
-            dropdown.appendChild(li);
+            const child = isCurrent
+                ? createElement("span", {textContent: label})
+                : createElement("a", {textContent: label, attributes: {href}});
+            dropdown.appendChild(createElement("li", {
+                className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
+                children: [child]
+            }));
         });
 
-        container.appendChild(trigger);
-        container.appendChild(dropdown);
-        pageTitleEl.replaceWith(container);
+        pageTitleEl.replaceWith(createElement("div", {
+            className: "jig-header-nav",
+            children: [trigger, dropdown]
+        }));
     }
 
     function setupDocumentHelp() {
@@ -652,345 +991,39 @@ globalThis.Jig.dom = (() => {
         }
     }
 
-    /**
-     * テキストとクラス名を指定してtd要素を作成する
-     * @param {string} text
-     * @param {string} [className]
-     * @returns {HTMLElement}
-     */
-    function createCell(text, className) {
-        return createElement("td", {
-            className: className || undefined,
-            textContent: text
-        });
-    }
-
-    /**
-     * @param {string} fqn
-     * @param {string | undefined} className
-     * @returns {HTMLElement}
-     */
-    function createTypeLink(fqn, className = undefined) {
-        // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
-        const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';
-        const baseFqn = arraySuffix ? fqn.slice(0, -arraySuffix.length) : fqn;
-
-        const resolved = typeLinkResolver?.(baseFqn);
-        const title = (resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(baseFqn).title) + arraySuffix;
-        const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
-        if (resolved?.href) {
-            return createElement('a', {
-                className: classes,
-                attributes: {href: resolved.href},
-                textContent: title
-            });
-        }
-        return createElement('span', {
-            className: classes,
-            textContent: title
-        });
-    }
-
-    /**
-     * TypeRefを表現する要素を返す。
-     * typeLinkResolver が設定されている場合はリンク付きの要素を返す。
-     *
-     * @param {TypeRef} typeRef
-     * @param {string | undefined} className
-     * @returns {HTMLElement}
-     */
-    function createElementForTypeRef(typeRef, className = undefined) {
-        if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
-            const typeElements = createTypeLink(typeRef.fqn);
-            const argumentElements = typeRef.typeArgumentRefs
-                .map(argumentTypeRef => createElementForTypeRef(argumentTypeRef))
-                // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
-                .flatMap((v, i) => i ? [', ', v] : [v]);
-
-            return createElement("span", {
-                className: className,
-                children: [typeElements, '<', ...argumentElements, '>']
-            });
-        }
-
-        // 型引数なし
-        return createTypeLink(typeRef.fqn, className);
-    }
-
-    function downloadCsv(text, filename) {
-        const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = filename;
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-    }
-
-    const KIND_BADGE = {"パッケージ": "P", "クラス": "C", "メソッド": "M", "フィールド": "F"};
-
-    function kindBadgeChar(kind) {
-        return KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?");
-    }
-
-    function kindBadgeElement(kind) {
-        return createElement("span", {
-            className: "kind-badge",
-            attributes: {"data-kind": kind},
-            textContent: kindBadgeChar(kind),
-        });
-    }
-
-    /**
-     * @param {Array} fields
-     * @param {Function} [createTypeRefFn]
-     * @returns {HTMLElement | null}
-     */
-    function createFieldsList(fields, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
-        if (fields.length === 0) return null;
-
-        const items = fields.map(field => createElement("div", {
-            className: "method-item",
-            children: [
-                createElement("div", {
-                    className: "method-signature",
-                    children: [
-                        createElement("span", {
-                            className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
-                            textContent: field.name
-                        }),
-                        createElement("span", {className: "method-return-sep", textContent: ":"}),
-                        fn(field.typeRef)
-                    ]
-                })
-            ]
-        }));
-
-        return createElement("section", {
-            className: "methods-section jig-card jig-card--item fields",
-            children: [
-                createElement("h4", {textContent: "フィールド"}),
-                ...items
-            ]
-        });
-    }
-
-    /**
-     * @param {MethodParameter} param
-     * @param {Function} [createTypeRefFn]
-     * @returns {HTMLElement}
-     */
-    function createParameterElement(param, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
-        return createElement("span", {
-            children: param.nameSource === 'METHOD_PARAMETERS'
-                ? [param.name + ': ', fn(param.typeRef)]
-                : [fn(param.typeRef)]
-        });
-    }
-
-    /**
-     * @param {Object} method
-     * @param {Function} [createTypeRefFn]
-     * @returns {HTMLElement}
-     */
-    function createMethodItem(method, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
-        const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
-
-        const paramElements = method.parameters
-            .map(param => createParameterElement(param, fn))
-            .flatMap((el, i) => i ? [', ', el] : [el]);
-
-        const signatureEl = createElement("div", {
-            className: "method-signature",
-            children: [
-                createElement("span", {
-                    className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
-                    textContent: methodTerm.title
-                }),
-                '(',
-                ...paramElements,
-                ')',
-                createElement("span", {className: "method-return-sep", textContent: ":"}),
-                fn(method.returnTypeRef)
-            ]
-        });
-
-        const children = [signatureEl];
-        if (methodTerm.description) {
-            children.push(createMarkdownElement(methodTerm.description));
-        }
-
-        return createElement("div", {
-            className: "method-item",
-            children
-        });
-    }
-
-    /**
-     * @param {string} kind
-     * @param {Array} methods
-     * @param {Function} [createTypeRefFn]
-     * @returns {HTMLElement | null}
-     */
-    function createMethodsList(kind, methods, createTypeRefFn) {
-        if (methods.length === 0) return null;
-
-        return createElement("section", {
-            className: "methods-section jig-card jig-card--item",
-            children: [
-                createElement("h4", {textContent: kind}),
-                ...methods.map(method => createMethodItem(method, createTypeRefFn))
-            ]
-        });
-    }
-
-    function setTypeLinkResolver(resolver) {
-        typeLinkResolver = (typeof resolver === "function") ? resolver : null;
-    }
-
-    function clearTypeLinkResolver() {
-        typeLinkResolver = null;
-    }
-
-    function getTypeLinkResolver() {
-        return typeLinkResolver;
-    }
-
-    function setupSortableTables() {
-        function sortTable(event) {
-            const headerColumn = event.target;
-            const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
-
-            const rows = Array.from(headerColumn.closest("table").querySelectorAll("tbody tr"));
-
-            const orderFlag = headerColumn.dataset.orderFlag === "true";
-
-            // デフォルトでは辞書順でソート
-            let type = "string";
-
-            // 1行目を見てclass=numberがあれば数値としてソート
-            const firstRow = rows[0];
-            if (firstRow) {
-                const cell = firstRow.cells[columnIndex];
-                if (cell && cell.classList.contains("number")) {
-                    type = "number";
-                }
-            }
-
-            rows.sort(function (a, b) {
-                const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
-                const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
-
-                // 数値は降順、文字は昇順
-                if (type === "number") {
-                    const aNumber = parseFloat(aValue) || 0;
-                    const bNumber = parseFloat(bValue) || 0;
-                    return (aNumber - bNumber) * (orderFlag ? 1 : -1);
-                }
-                return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
-            });
-
-            rows.forEach(row => headerColumn.closest("table").getElementsByTagName("tbody")[0].appendChild(row));
-
-            headerColumn.dataset.orderFlag = (!orderFlag).toString();
-        }
-
-        document.querySelectorAll("table.sortable").forEach(table => {
-            const headers = table.querySelectorAll("thead th");
-            headers.forEach((header, index) => {
-                if (header.hasAttribute("onclick")) {
-                    return;
-                }
-                if (header.classList.contains("no-sort")) {
-                    return;
-                }
-
-                header.addEventListener("click", sortTable);
-                header.style.cursor = "pointer";
-            });
-        });
-    }
-
-    function createSection(title, items) {
-        if (!items || items.length === 0) return null;
-
-        const titleEl = title ? createElement("p", {
-            className: "in-page-sidebar__title",
-            textContent: title
-        }) : null;
-
-        return createElement("section", {
-            className: "in-page-sidebar__section",
-            children: [
-                titleEl,
-                createElement("ul", {
-                    className: "in-page-sidebar__links",
-                    children: items.map(({id, label}) => createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [
-                            createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + id},
-                                textContent: label
-                            })
-                        ]
-                    }))
-                })
-            ]
-        });
-    }
-
-    function renderSection(container, title, items) {
-        if (!container) return;
-        const section = createSection(title, items);
-        if (section) {
-            container.appendChild(section);
-        }
-    }
-
-    /**
-     * サイドバーのテキストフィルタ入力を初期化する
-     * @param {string} inputId - input要素のID
-     * @param {(filterText: string) => void} onChange
-     */
-    function initSidebarTextFilter(inputId, onChange) {
-        const input = document.getElementById(inputId);
-        if (!input) return;
-        input.addEventListener('input', () => onChange(input.value.trim()));
-    }
-
     return {
         createElement,
+        createCell,
         parseMarkdown,
         createMarkdownElement,
-        initCommonUi,
-        createCell,
+        escapeCsvValue,
         downloadCsv,
         setupSortableTables,
+        initCommonUi,
 
-        type: {
-            setResolver: setTypeLinkResolver,
-            clearResolver: clearTypeLinkResolver,
-            getResolver: getTypeLinkResolver,
-            elementForRef: createElementForTypeRef,
-            parameterElement: createParameterElement,
-            fieldsList: createFieldsList,
-            methodItem: createMethodItem,
-            methodsList: createMethodsList,
+        card: {
+            type: createTypeCard,
+            item: createItemCard,
         },
         kind: {
             badgeChar: kindBadgeChar,
             badgeElement: kindBadgeElement,
         },
+        type: {
+            setResolver: setTypeLinkResolver,
+            clearResolver: clearTypeLinkResolver,
+            getResolver: getTypeLinkResolver,
+            refElement: createElementForTypeRef,
+            parameterElement: createParameterElement,
+            fieldsList: createFieldsList,
+            methodItem: createMethodItem,
+            methodsList: createMethodsList,
+        },
         sidebar: {
-            createSection,
+            section: createSection,
             renderSection,
             initTextFilter: initSidebarTextFilter,
+            createToggle: createSidebarToggle,
         },
     };
 })();
@@ -1678,8 +1711,7 @@ globalThis.Jig.mermaid = (() => {
         function transitiveReduction(relations) {
             const graph = new Map();
             relations.forEach(relation => {
-                if (!graph.has(relation.from)) graph.set(relation.from, []);
-                graph.get(relation.from).push(relation.to);
+                Jig.util.pushToMap(graph, relation.from, relation.to);
             });
 
             const sccs = detectStronglyConnectedComponents(graph);
@@ -1693,8 +1725,7 @@ globalThis.Jig.mermaid = (() => {
             const acyclicGraph = new Map();
             relations.forEach(edge => {
                 if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
-                if (!acyclicGraph.has(edge.from)) acyclicGraph.set(edge.from, []);
-                acyclicGraph.get(edge.from).push(edge.to);
+                Jig.util.pushToMap(acyclicGraph, edge.from, edge.to);
             });
 
             function isReachableWithoutDirect(start, end) {
@@ -2352,6 +2383,33 @@ globalThis.Jig.mermaid = (() => {
             return rect.top < window.innerHeight && rect.bottom > 0;
         }
 
+        function fixHashScrollAfterRender(renderedContainer) {
+            if (typeof window === 'undefined' || !window.location.hash) return;
+            const target = document.querySelector(window.location.hash);
+            if (!target) return;
+
+            // ターゲットより上のコンテナのみ補正対象（compareDocumentPosition で文書順を判定）
+            if (!(renderedContainer.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING)) return;
+
+            // renderFn() 後に同期生成済みの .mermaid 要素を直接監視し、SVG挿入（mermaid非同期完了）を待つ
+            const mermaidEl = renderedContainer.querySelector('.mermaid');
+            if (!mermaidEl) return;
+
+            const obs = new MutationObserver(() => {
+                obs.disconnect();
+                requestAnimationFrame(() => {
+                    const scrollMarginTop = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+                    const rect = target.getBoundingClientRect();
+                    // scroll-margin-top 分だけ上に余白が生じる想定位置より大幅に下なら補正
+                    if (rect.top > scrollMarginTop + 60) {
+                        target.scrollIntoView({block: 'start'});
+                    }
+                });
+            });
+            obs.observe(mermaidEl, {childList: true});
+            setTimeout(() => obs.disconnect(), 3000); // mermaid が完了しなかった場合の安全タイムアウト
+        }
+
         /**
          * ダイアグラムを登録（遅延レンダリング対応）
          * @param {HTMLElement} container
@@ -2371,6 +2429,7 @@ globalThis.Jig.mermaid = (() => {
                             const d = diagramRegistry.find(d => d.container === entry.target);
                             if (d) {
                                 d.renderFn();
+                                fixHashScrollAfterRender(entry.target);
                             }
                             observer.unobserve(entry.target); // 一度だけレンダリング
                         }
@@ -2446,10 +2505,43 @@ globalThis.Jig.mermaid = (() => {
             return container;
         }
 
+        function buildTabSection(tabDefs, options = {}) {
+            const {className, initialActiveId, onTabChange} = options;
+            const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
+            const panels = {};
+
+            const activeId = initialActiveId || tabDefs[0]?.id;
+
+            tabDefs.forEach(tab => {
+                panels[tab.id] = Jig.dom.createElement("div", {
+                    className: "diagram-panel" + (tab.id !== activeId ? " hidden" : "")
+                });
+                const btn = Jig.dom.createElement("button", {
+                    className: "diagram-tab" + (tab.id === activeId ? " active" : ""),
+                    textContent: tab.label,
+                });
+                btn.addEventListener('click', () => {
+                    tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
+                    Object.values(panels).forEach(p => p.classList.add('hidden'));
+                    btn.classList.add('active');
+                    panels[tab.id].classList.remove('hidden');
+                    if (onTabChange) onTabChange(tab.id);
+                });
+                tabsBar.appendChild(btn);
+            });
+
+            const section = Jig.dom.createElement("div", {
+                className,
+                children: [tabsBar, ...Object.values(panels)],
+            });
+            return {panels, section};
+        }
+
         return {
             register,
             rerenderVisible,
-            createAndRegister
+            createAndRegister,
+            buildTabSection
         };
     })();
 

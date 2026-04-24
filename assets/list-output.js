@@ -177,13 +177,6 @@ const ListOutputApp = (() => {
         };
     }
 
-    function escapeCsvValue(value) {
-        const text = String(value ?? "")
-            .replace(/\r\n/g, "\n")
-            .replace(/\r/g, "\n");
-        return `"${text.replace(/"/g, "\"\"")}"`;
-    }
-
     function formatFieldTypes(fieldTypes) {
         if (!fieldTypes) return "";
         if (Array.isArray(fieldTypes)) {
@@ -208,7 +201,7 @@ const ListOutputApp = (() => {
             item.cyclomaticComplexity ?? "",
             item.path ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -231,7 +224,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.useNull),
             markIfTrue(item.useStream),
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -253,7 +246,7 @@ const ListOutputApp = (() => {
             item.callerTypeCount ?? "",
             item.callerMethodCount ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -264,7 +257,7 @@ const ListOutputApp = (() => {
             getPackageLabel(item),
             item.classCount ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -282,7 +275,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.samePackageOnly),
             item.incomingClassList ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -300,7 +293,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.hasBehavior),
             markIfTrue(item.isPolymorphic),
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -316,7 +309,7 @@ const ListOutputApp = (() => {
             item.methodCount ?? "",
             item.methods ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -331,7 +324,7 @@ const ListOutputApp = (() => {
             item.annotationType ?? "",
             item.annotationDescription ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -350,7 +343,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.returnsBoolean),
             markIfTrue(item.returnsVoid),
         ]);
-        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
         return lines.join("\r\n");
     }
 
@@ -703,7 +696,6 @@ const ListOutputApp = (() => {
     return {
         init,
         getListData,
-        escapeCsvValue,
         formatFieldTypes,
         getTypeLabel,
         getPackageLabel,

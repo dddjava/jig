@@ -1,5 +1,6 @@
 :root {
     --sidebar-width: 260px;
+    --color-text-secondary: #666;
 }
 
 body {
@@ -406,6 +407,14 @@ main table.fields thead {
     background-color: #009900;
 }
 
+td.fqn {
+    white-space: nowrap;
+    overflow: scroll;
+    max-width: 20em;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
 /* index */
 .index > header {
     border-bottom: solid 2px #000;
@@ -459,6 +468,29 @@ main table.fields thead {
     margin-bottom: 0.5em;
 }
 
+.jig-card--type h3 .card-title-anchor {
+    color: inherit;
+    text-decoration: none;
+}
+
+.jig-card--type h3 .card-title-anchor::after {
+    content: " #";
+    opacity: 0;
+    font-size: 0.75em;
+    font-weight: normal;
+    transition: opacity 0.15s;
+    color: #5577aa;
+}
+
+.jig-card--type h3 .card-title-anchor:hover::after {
+    opacity: 0.6;
+}
+
+.jig-card--type h3 .card-title-anchor:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .jig-card.jig-card--item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;
@@ -486,6 +518,7 @@ main table.fields thead {
 .usecase .depends {
     background-color: #ffffff;
     padding: 12px;
+    margin-top: 12px;
     border-radius: 6px;
     border: 1px solid #e2e4ea;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
@@ -539,8 +572,21 @@ body.hide-usecase-declarations .declaration {
 
 body.hide-domain-diagrams .mermaid-diagram,
 body.hide-domain-diagrams .diagram-heading,
-body.hide-domain-diagrams .domain-diagrams-section {
+body.hide-domain-diagrams .tab-diagram-section {
     display: none;
+}
+
+.tab-diagram-section,
+.diagram-container {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.tab-diagram-section .diagram-panel {
+    padding: 12px;
+    background-color: #fff;
 }
 
 body.hide-usecase-diagrams .mermaid-diagram {
@@ -556,36 +602,38 @@ body.hide-usecase-details .depends {
 }
 
 .diagram-container {
-    margin-top: 10px;
+    padding: 12px;
+    background-color: #fff;
 }
 
 .diagram-tabs {
     display: flex;
     gap: 4px;
-    margin-bottom: 4px;
+    padding: 8px 12px 0;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ccc;
 }
 
 .diagram-tab {
     padding: 4px 10px;
     border: 1px solid #ccc;
     border-radius: 4px 4px 0 0;
-    background-color: #f5f5f5;
+    background-color: #f0f0f0;
     cursor: pointer;
     font-size: 0.85em;
+    margin-bottom: -1px;
 }
 
 .diagram-tab.active {
     background-color: #fff;
     border-bottom-color: #fff;
     font-weight: bold;
+    position: relative;
+    z-index: 1;
 }
 
 .diagram-tab:hover:not(.active) {
     background-color: #eaeaea;
-}
-
-.diagram-panel.hidden {
-    display: none;
 }
 
 .diagram-panel-options {
@@ -783,18 +831,6 @@ label {
     white-space: nowrap;
 }
 
-.glossary .display-option {
-    margin-top: 0;
-    box-shadow: none;
-}
-
-.glossary .display-controls-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
 .glossary #export-csv {
     padding: 8px 16px;
     border: 1px solid #2980b9;
@@ -892,10 +928,6 @@ label {
     font-size: 0.65em;
 }
 
-.jig-card--compact h3 .kind-badge {
-    font-size: 0.65em;
-}
-
 .glossary-group-header {
     position: sticky;
     top: 3.5em; /* jump-bar の下に来るように調整 */
@@ -907,17 +939,6 @@ label {
     z-index: 15;
     font-size: 1.1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 概要表示用のコンパクトカード */
-.jig-card.jig-card--compact {
-    padding: 8px 12px;
-    border-left: 4px solid #1b3a66;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
 }
 
 .jig-card.jig-card--type {
@@ -952,11 +973,6 @@ label {
 
 .jig-card.jig-card--item:target {
     animation: jig-card-item-highlight 2s ease-out;
-}
-
-.jig-card.jig-card--compact h3 {
-    margin: 0;
-    font-size: 1rem;
 }
 
 /* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */
@@ -1028,19 +1044,26 @@ label {
     color: #555;
 }
 
-.package-relation button.package-filter-icon {
+.package-relation button.package-filter-icon,
+.package-relation button.focus-icon,
+.package-relation a.glossary-link-icon {
     width: 1.8em;
     height: 1.8em;
     border-radius: 999px;
     border: 1px solid #999;
     background: #fff no-repeat center;
-    cursor: pointer;
     padding: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>");
 }
 
-.package-relation button.package-filter-icon:hover {
+.package-relation button.package-filter-icon:hover,
+.package-relation button.focus-icon:hover,
+.package-relation a.glossary-link-icon:hover {
     background-color: #f5f5f5;
+}
+
+.package-relation button.package-filter-icon,
+.package-relation button.focus-icon {
+    cursor: pointer;
 }
 
 .package-relation button.icon-only {
@@ -1049,36 +1072,20 @@ label {
     background-color: transparent;
 }
 
-.package-relation button.focus-icon {
-    width: 1.8em;
-    height: 1.8em;
-    border-radius: 999px;
-    border: 1px solid #999;
-    background: #fff no-repeat center;
-    cursor: pointer;
-    padding: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='6'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg>");
+.package-relation button.package-filter-icon {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>");
 }
 
-.package-relation button.focus-icon:hover {
-    background-color: #f5f5f5;
+.package-relation button.focus-icon {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='6'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg>");
 }
 
 .package-relation a.glossary-link-icon {
     display: inline-block;
-    width: 1.8em;
-    height: 1.8em;
     box-sizing: border-box;
-    border-radius: 999px;
-    border: 1px solid #999;
-    background: #fff no-repeat center;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4A2.5 2.5 0 0 1 6.5 2z'/></svg>");
     text-decoration: none;
     vertical-align: middle;
-}
-
-.package-relation a.glossary-link-icon:hover {
-    background-color: #f5f5f5;
 }
 
 .package-relation .mutual-dependencies {
@@ -1088,14 +1095,16 @@ label {
     background-color: #f9f9f9;
 }
 
-.package-relation #package-relation-diagram {
+.package-relation #package-relation-diagram,
+.package-relation #package-explore-diagram {
     display: flex;
     justify-content: center;
     overflow: auto;
     max-height: 50vh;
 }
 
-.package-relation #package-relation-diagram svg {
+.package-relation #package-relation-diagram svg,
+.package-relation #package-explore-diagram svg {
     margin: 0 auto;
 }
 
@@ -1152,14 +1161,6 @@ label {
     overflow-wrap: anywhere;
     word-break: break-word;
     white-space: normal;
-}
-
-.package-relation td.fqn {
-    white-space: nowrap;
-    overflow: scroll;
-    max-width: 20em;
-    overflow-wrap: normal;
-    word-break: normal;
 }
 
 .package-relation tr:nth-child(even) {
@@ -1273,17 +1274,6 @@ label {
     color: #000;
 }
 
-.package-relation #package-explore-diagram {
-    display: flex;
-    justify-content: center;
-    overflow: auto;
-    max-height: 50vh;
-}
-
-.package-relation #package-explore-diagram svg {
-    margin: 0 auto;
-}
-
 .package-relation .placeholder-text {
     color: #888;
     font-style: italic;
@@ -1297,12 +1287,6 @@ label {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
-}
-
-.insight table tr td {
-    white-space: nowrap;
-    overflow: scroll;
-    max-width: 20em;
 }
 
 /* 拡大アイコンをクリックしたときに非表示にする行のスタイル */
@@ -1430,12 +1414,70 @@ table td.number {
     letter-spacing: 0.04em;
 }
 
+.in-page-sidebar__title--collapsible {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+}
+
+.in-page-sidebar__toggle {
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #5a7a9a;
+    position: sticky;
+    right: 0;
+}
+
+.in-page-sidebar__toggle::before {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+    margin-top: -3px;
+}
+
+.in-page-sidebar__toggle[aria-expanded="false"]::before {
+    transform: rotate(-45deg);
+    margin-top: 0;
+    margin-right: -3px;
+}
+
+.in-page-sidebar__title--collapsible:hover .in-page-sidebar__toggle,
+.in-page-sidebar__item-header:hover .in-page-sidebar__toggle {
+    opacity: 1;
+}
+
+.in-page-sidebar__item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .in-page-sidebar__links {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: 4px;
+}
+
+.in-page-sidebar__links--hidden {
+    display: none;
 }
 
 .in-page-sidebar__item {
@@ -1658,19 +1700,16 @@ table td.number {
     align-content: start;
 }
 
-.outbound-interface .outbound-group-card {
-}
-
-.outbound-interface .outbound-group-card > h3 {
+.outbound-interface .jig-card--type > h3 {
     margin: 0;
 }
 
-.outbound-interface .outbound-group-card > .fully-qualified-name {
+.outbound-interface .jig-card--type > .fully-qualified-name {
     margin-top: 4px;
     margin-bottom: 0;
 }
 
-.outbound-interface .outbound-group-card > .weak {
+.outbound-interface .jig-card--type > .weak {
     margin-top: 4px;
     margin-bottom: 10px;
 }

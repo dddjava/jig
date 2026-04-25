@@ -1,70 +1,67 @@
-const { test, expect } = require('@playwright/test');
+const {test, expect} = require('@playwright/test');
 
-test('JIG Scenario Test', async ({ page }) => {
-  // 1秒以内の応答を期待する（Mermaidの描画などは除く）
-  const fastExpect = expect.configure({ timeout: 1000 });
+test('JIG Scenario Test', async ({page}) => {
+    // 1秒以内の応答を期待する（Mermaidの描画などは除く）
+    const fastExpect = expect.configure({timeout: 1000});
 
-  // 1. index.htmlを表示
-  await page.goto('/');
-  await fastExpect(page).toHaveTitle(/JIG/);
+    await page.goto('/');
+    await fastExpect(page).toHaveTitle(/JIG/);
 
-  // 2. ドキュメントのリンクが並んでいること
-  const docLinks = page.locator('#document-links');
-  await fastExpect(docLinks.getByRole('link', { name: '用語集' })).toBeVisible();
-  await fastExpect(docLinks.getByRole('link', { name: 'パッケージ関連' })).toBeVisible();
-  await fastExpect(docLinks.getByRole('link', { name: 'ドメインモデル' })).toBeVisible();
+    // ドキュメントのリンクが並んでいること
+    const docLinks = page.locator('#document-links');
+    await fastExpect(docLinks.getByRole('link', {name: '用語集'})).toBeVisible();
+    await fastExpect(docLinks.getByRole('link', {name: 'パッケージ関連'})).toBeVisible();
+    await fastExpect(docLinks.getByRole('link', {name: 'ドメインモデル'})).toBeVisible();
+    await expect(docLinks).toHaveScreenshot('index-docLinks.png');
 
-  // 3. 「用語集」をクリックして画面遷移
-  await page.getByRole('link', { name: '用語集' }).click();
-  await fastExpect(page).toHaveURL(/glossary.html/);
+    // 「用語集」をクリックして画面遷移
+    await page.getByRole('link', {name: '用語集'}).click();
+    // ------------------------------------------------------------
+    // 用語集
+    // ------------------------------------------------------------
+    await fastExpect(page).toHaveURL(/glossary.html/);
 
-  // 4. 「classファイル一式」のカードが表示されていること
-  const classCard = page.locator('.jig-card', { hasText: 'classファイル一式' }).first();
-  await fastExpect(classCard).toBeVisible();
+    // 「classファイル一式」のカードが表示されていること
+    const classCard = page.locator('.jig-card', {hasText: 'classファイル一式'}).first();
+    await fastExpect(classCard).toBeVisible();
+    await expect(classCard).toHaveScreenshot('glossary-classCard.png');
 
-  // 5. サイドバーに「JIGの情報源」のパッケージがあり、それをクリックしたらその場所に移動すること
-  const sidebarItem = page.locator('#term-sidebar-list').getByText('JIGの情報源').first();
-  await sidebarItem.click();
+    // サイドバーに「JIGの情報源」のパッケージがあり、それをクリックしたらその場所に移動すること
+    const sidebarItem = page.locator('#term-sidebar-list').getByText('JIGの情報源').first();
+    await sidebarItem.click();
+    const sourcesCard = page.locator('.jig-card', {hasText: 'JIGの情報源'}).first();
+    await fastExpect(sourcesCard).toBeVisible();
 
-  // 移動先のセクションが存在することを確認
-  const sourceSection = page.locator('.glossary-group', { hasText: 'JIGの情報源' }).first();
-  await fastExpect(sourceSection).toBeVisible();
+    // カード内の属性情報をクリックしたら属性情報が表示される
+    const attributesToggle = sourcesCard.locator('.term-attributes-toggle');
+    await attributesToggle.click();
+    const domainModelLink = sourcesCard.getByRole('link', {name: 'ドメインモデル'});
+    await fastExpect(domainModelLink).toBeVisible();
+    await expect(sourcesCard).toHaveScreenshot('glossary-sourcesCard.png');
 
-  // 6. カード内の属性情報をクリックしたら属性情報が表示される
-  const attributesToggle = classCard.locator('.term-attributes-toggle');
-  await attributesToggle.click();
-  await fastExpect(classCard.getByRole('link', { name: 'ドメインモデル' })).toBeVisible();
+    // 属性情報からドメインモデルページに移動
+    await domainModelLink.click();
+    // ------------------------------------------------------------
+    // ドメインモデル
+    // ------------------------------------------------------------
+    await fastExpect(page).toHaveURL(/domain.html/);
 
-  // 7. 属性情報の中の「関連ドキュメント」に「ドメインモデル」があり、
-  // それをクリックしたらドメインモデルのページに遷移し、該当カードが表示されていること
-  const domainLink = classCard.getByRole('link', { name: 'ドメインモデル' });
-  await domainLink.click();
+    // ドメインモデルページで「JIGの情報源」のカードが表示されていること
+    // 用語からの遷移ではURLにハッシュが含まれる
+    const domainSourcesCardHash = new URL(page.url()).hash;
+    const domainSourcesCard = page.locator(domainSourcesCardHash);
+    await fastExpect(domainSourcesCard).toBeInViewport();
+    await expect(domainSourcesCard).toHaveScreenshot('domain-sourcesCard.png');
 
-  await fastExpect(page).toHaveURL(/domain.html/);
-  // ドメインモデルページで「classファイル一式」のカードが表示されていること
-  const domainClassCard = page.locator('.jig-card', { hasText: 'classファイル一式' }).first();
-  await fastExpect(domainClassCard).toBeVisible();
-
-  // 8. パッケージ関連図が表示されていること
-  // ※ 「classファイル一式」から所属パッケージ「JIGの情報源」のカードを特定
-  const domainPackageCard = page.locator('.jig-card', { hasText: 'JIGの情報源' }).first();
-  await domainPackageCard.scrollIntoViewIfNeeded();
-  
-  // MermaidのSVG生成待ち
-  const diagram = domainPackageCard.locator('.mermaid-diagram').first();
-  await expect(diagram.locator('svg')).toBeVisible({ timeout: 5000 });
-
-  // 9. パッケージ内パッケージ関連図タブをクリックしたらパッケージ内パッケージ関連図が表示されること
-  const pkgPkgTab = domainPackageCard.locator('.jig-tab', { hasText: 'パッケージ内パッケージ関連図' });
-  if (await pkgPkgTab.isVisible()) {
+    // パッケージ関連図が表示されていること
+    const diagramTabSection = domainSourcesCard.locator(".tab-content-section", {hasText: 'パッケージ関連図'})
+    await expect(diagramTabSection).toHaveScreenshot('domain-sourcesCard-1.png');
+    // パッケージ内パッケージ関連図タブをクリックしたらパッケージ内パッケージ関連図が表示されること
+    const pkgPkgTab = domainSourcesCard.locator('.jig-tab', {hasText: 'パッケージ内パッケージ関連図'});
     await pkgPkgTab.click();
-    await expect(domainPackageCard.locator('.jig-tab-panel:not(.hidden)').locator('.mermaid-diagram svg')).toBeVisible({ timeout: 5000 });
-  }
-
-  // 10. パッケージ内クラス関連図タブをクリックしたらパッケージ内クラス関連図が表示されること
-  const pkgClassTab = domainPackageCard.locator('.jig-tab', { hasText: 'パッケージ内クラス関連図' });
-  if (await pkgClassTab.isVisible()) {
+    await expect(diagramTabSection).toHaveScreenshot('domain-sourcesCard-2.png');
+    // パッケージ内クラス関連図タブをクリックしたらパッケージ内クラス関連図が表示されること
+    const pkgClassTab = domainSourcesCard.locator('.jig-tab', {hasText: 'パッケージ内クラス関連図'});
     await pkgClassTab.click();
-    await expect(domainPackageCard.locator('.jig-tab-panel:not(.hidden)').locator('.mermaid-diagram svg')).toBeVisible({ timeout: 5000 });
-  }
+    await expect(diagramTabSection).toHaveScreenshot('domain-sourcesCard-3.png');
 });

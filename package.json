@@ -4,9 +4,13 @@
   "scripts": {
     "test": "node --test jig-core/src/test/js/*.test.js",
     "test:coverage": "node --test --experimental-test-coverage jig-core/src/test/js/*.test.js",
-    "test:full": "npm run test && ./gradlew clean test"
+    "test:full": "npm run test && ./gradlew clean test",
+    "pw": "playwright test",
+    "pw:ui": "playwright test --ui",
+    "pw:report": "playwright show-report"
   },
   "devDependencies": {
+    "@playwright/test": "1.59.1",
     "jsdom": "^29.0.0"
   }
 }

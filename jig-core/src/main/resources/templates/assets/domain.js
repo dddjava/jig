@@ -405,10 +405,11 @@ const DomainApp = (() => {
      * @param {Array} typeRelations
      * @param {Map} typesMap
      * @param {string} direction
+     * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
-        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true} = {}) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
@@ -772,6 +773,38 @@ const DomainApp = (() => {
         incomingCheckbox.addEventListener('change', () => render(container));
     }
 
+    function setupTypeClassDiagramPanel(panel, type, typeRelations, typesMap) {
+        const outgoingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "type-relation-outgoing"}
+        });
+        outgoingCheckbox.checked = true;
+        const incomingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "type-relation-incoming"}
+        });
+        incomingCheckbox.checked = true;
+        panel.appendChild(Jig.dom.createElement("fieldset", {
+            className: "diagram-panel-options",
+            children: [
+                Jig.dom.createElement("legend", {textContent: "表示"}),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [outgoingCheckbox, "関連先"]
+                }),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [incomingCheckbox, "関連元"]
+                }),
+            ]
+        }));
+
+        const render = (container) => {
+            renderDiagram(container, {pkg: undefined, type, diagramType: 'classDefinition', typeRelations, typesMap});
+        };
+        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
+        outgoingCheckbox.addEventListener('change', () => render(container));
+        incomingCheckbox.addEventListener('change', () => render(container));
+    }
+
     function setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap) {
         const outgoingCheckbox = Jig.dom.createElement("input", {
             attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
@@ -980,13 +1013,7 @@ const DomainApp = (() => {
                     id: 'classdiag',
                     label: 'クラス図',
                     enabled: hasTypeRelation,
-                    setup: panel => registerDiagramPanel(panel, {
-                        pkg: undefined,
-                        type,
-                        diagramType: 'classDefinition',
-                        typeRelations,
-                        typesMap
-                    })
+                    setup: panel => setupTypeClassDiagramPanel(panel, type, typeRelations, typesMap)
                 },
             ], {className: "tab-diagram-section"});
 
@@ -1025,7 +1052,12 @@ const DomainApp = (() => {
             const showIncoming = incoming ? incoming.checked : true;
             renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else if (diagramType === 'classDefinition') {
-            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir));
+            const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
+            const outgoing = panel?.querySelector('.type-relation-outgoing');
+            const incoming = panel?.querySelector('.type-relation-incoming');
+            const showOutgoing = outgoing ? outgoing.checked : true;
+            const showIncoming = incoming ? incoming.checked : true;
+            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else {
             // テスト環境など closest が使えない場合に対応
             const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;

@@ -119,7 +119,7 @@ test.describe('domain.js', () => {
 
             const childList = result.children[1]; // ul.in-page-sidebar__links
             const childPackageNames = Array.from(childList.children)
-                .filter(child => child.attributes.has('data-has-enum-children'))
+                .filter(child => child.attributes.has('data-kind-children'))
                 .map(child => child.children[0].children[0].children[1].textContent);
             assert.ok(childPackageNames.includes('sub1'), 'example should have sub1 as child');
             assert.ok(childPackageNames.includes('sub2'), 'example should have sub2 as child');
@@ -624,8 +624,8 @@ test.describe('domain.js', () => {
     test.describe('サイドバーテキストフィルター', () => {
         function setupFilterTest() {
             const types = [
-                {fqn: 'org.example.FooClass', isDeprecated: false, enumInfo: undefined, fields: [], methods: [], staticMethods: []},
-                {fqn: 'org.example.BarClass', isDeprecated: false, enumInfo: undefined, fields: [], methods: [], staticMethods: []},
+                {fqn: 'org.example.FooClass', isDeprecated: false, kind: '不明', fields: [], methods: [], staticMethods: []},
+                {fqn: 'org.example.BarClass', isDeprecated: false, kind: '不明', fields: [], methods: [], staticMethods: []},
             ];
             setupDomainData(['org.example'], types);
             setGlossaryData({
@@ -665,7 +665,7 @@ test.describe('domain.js', () => {
             filterInput.value = 'FooClass';
             filterInput.dispatchEvent({type: 'input'});
 
-            const typeItems = [...sidebar.querySelectorAll('div[data-has-enum]')];
+            const typeItems = [...sidebar.querySelectorAll('div[data-kind]')];
             const fooLi = typeItems.find(div => div.querySelector('a')?.textContent.includes('FooClass'))?.closest('li');
             const barLi = typeItems.find(div => div.querySelector('a')?.textContent.includes('BarClass'))?.closest('li');
 
@@ -687,7 +687,7 @@ test.describe('domain.js', () => {
             filterInput.value = '';
             filterInput.dispatchEvent({type: 'input'});
 
-            const typeItems = [...sidebar.querySelectorAll('div[data-has-enum]')];
+            const typeItems = [...sidebar.querySelectorAll('div[data-kind]')];
             typeItems.forEach(div => {
                 assert.notEqual(div.closest('li').style.display, 'none', `クリア後に ${div.querySelector('a')?.textContent} が表示されること`);
             });
@@ -705,7 +705,7 @@ test.describe('domain.js', () => {
             filterInput.value = '';
             filterInput.dispatchEvent({type: 'input'});
 
-            const typeItems = [...sidebar.querySelectorAll('div[data-has-enum]')];
+            const typeItems = [...sidebar.querySelectorAll('div[data-kind]')];
             assert.ok(typeItems.length > 0, 'アイテムが存在すること');
             typeItems.forEach(div => {
                 assert.notEqual(div.closest('li').style.display, 'none', `クリア後に ${div.querySelector('a')?.textContent} が表示されること`);
@@ -722,7 +722,7 @@ test.describe('domain.js', () => {
             filterInput.value = 'example';
             filterInput.dispatchEvent({type: 'input'});
 
-            const packageItems = [...sidebar.querySelectorAll('[data-has-enum-children]')];
+            const packageItems = [...sidebar.querySelectorAll('[data-kind-children]')];
             assert.ok(packageItems.length > 0, 'パッケージアイテムが存在すること');
             const visiblePackage = packageItems.find(item => item.style.display !== 'none');
             assert.ok(visiblePackage, 'パッケージ名にマッチするパッケージが表示されること');

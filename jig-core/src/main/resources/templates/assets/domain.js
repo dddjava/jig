@@ -7,7 +7,7 @@ const DomainApp = (() => {
         showDescriptions: true,
         showDeprecatedNodes: true,
         showMembers: true,
-        showEnumOnly: false,
+        kindFilter: 'all',
         transitiveReductionEnabled: true,
         sidebarFilterText: '',
     };
@@ -61,20 +61,22 @@ const DomainApp = (() => {
     }
 
     /**
-     * パッケージが enum 型を含むかを判定する（再帰的）
+     * パッケージに含まれる kind の集合を返す（再帰的）
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
-     * @returns {boolean}
+     * @returns {Set<string>}
      */
-    function pkgHasEnum(pkg, childPackagesMap, typesMap) {
-        // このパッケージのタイプに enum があるか
-        if (pkg.types.some(type => typesMap?.get(type.fqn)?.enumInfo)) {
-            return true;
-        }
-        // 子パッケージに enum があるか
-        const childPackages = getDirectChildPackages(pkg, childPackagesMap);
-        return childPackages.some(childPkg => pkgHasEnum(childPkg, childPackagesMap, typesMap));
+    function pkgKinds(pkg, childPackagesMap, typesMap) {
+        const kinds = new Set();
+        pkg.types.forEach(type => {
+            const kind = typesMap?.get(type.fqn)?.kind;
+            if (kind) kinds.add(kind);
+        });
+        getDirectChildPackages(pkg, childPackagesMap).forEach(childPkg => {
+            pkgKinds(childPkg, childPackagesMap, typesMap).forEach(k => kinds.add(k));
+        });
+        return kinds;
     }
 
     /**
@@ -122,7 +124,7 @@ const DomainApp = (() => {
                 className: "in-page-sidebar__item",
                 children: [
                     Jig.dom.createElement("div", {
-                        attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
+                        attributes: {"data-kind": domainType?.kind || ''},
                         children: [link]
                     })
                 ]
@@ -138,7 +140,7 @@ const DomainApp = (() => {
             ]
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
-        const wrapperAttrs = {"data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"};
+        const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap)].join(' ')};
 
         if (isTopLevel) {
             return Jig.dom.createElement("section", {
@@ -798,7 +800,7 @@ const DomainApp = (() => {
                 title: Jig.glossary.getTypeTerm(pkg.fqn).title,
                 fqn: pkg.fqn,
                 kind: "パッケージ",
-                attributes: {"data-has-enum-children": pkgHasEnum(pkg, childPackagesMap, typesMap) ? "true" : "false"}
+                attributes: {"data-kind-children": [...pkgKinds(pkg, childPackagesMap, typesMap)].join(' ')}
             });
 
             const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
@@ -886,7 +888,7 @@ const DomainApp = (() => {
                 title: titleSpan,
                 fqn: fqnDiv,
                 kind: "クラス",
-                attributes: {"data-has-enum": type.enumInfo ? "true" : "false"}
+                attributes: {"data-kind": type.kind || ''}
             });
 
             const typeDescription = Jig.glossary.getTypeTerm(type.fqn).description;
@@ -1025,55 +1027,39 @@ const DomainApp = (() => {
         const main = document.getElementById('domain-main');
         if (!main) return;
 
-        const memberSections = main.querySelectorAll('.tab-member-section');
-        memberSections.forEach(section => {
+        main.querySelectorAll('.tab-member-section').forEach(section => {
             section.style.display = domainSettings.showMembers ? '' : 'none';
         });
 
-        // 「列挙のみ表示」フィルター
-        if (domainSettings.showEnumOnly) {
-            // メインのパッケージセクションは全て非表示
-            const packageSections = main.querySelectorAll('section.jig-card--type[data-has-enum-children]');
-            packageSections.forEach(section => {
-                section.style.display = 'none';
+        const selectedKind = domainSettings.kindFilter;
+        const sidebar = document.getElementById('domain-sidebar');
+
+        if (selectedKind !== 'all') {
+            main.querySelectorAll('section.jig-card--type[data-kind-children]').forEach(section => {
+                section.style.display = section.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
+            });
+            main.querySelectorAll('section.jig-card--type[data-kind]').forEach(section => {
+                section.style.display = section.dataset.kind === selectedKind ? '' : 'none';
             });
 
-            // メインのタイプセクションのフィルター（enum でないタイプは非表示）
-            const typeSections = main.querySelectorAll('section.jig-card--type[data-has-enum]');
-            typeSections.forEach(section => {
-                section.style.display = section.dataset.hasEnum === 'true' ? '' : 'none';
-            });
-
-            // サイドバーのパッケージのフィルター（enum を含まないパッケージは非表示）
-            const sidebar = document.getElementById('domain-sidebar');
             if (sidebar) {
-                const packageItems = sidebar.querySelectorAll('[data-has-enum-children]');
-                packageItems.forEach(item => {
-                    item.style.display = item.dataset.hasEnumChildren === 'true' ? '' : 'none';
+                sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
+                    item.style.display = item.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
                 });
-
-                // サイドバーの型リンクのフィルター（enum でない型は非表示）
-                const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
-                typeItems.forEach(div => {
-                    div.parentElement.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
+                sidebar.querySelectorAll('div[data-kind]').forEach(div => {
+                    div.closest('li').style.display = div.dataset.kind === selectedKind ? '' : 'none';
                 });
             }
         } else {
-            // 全て表示
-            const allSections = main.querySelectorAll('section.jig-card--type');
-            allSections.forEach(section => {
+            main.querySelectorAll('section.jig-card--type').forEach(section => {
                 section.style.display = '';
             });
 
-            const sidebar = document.getElementById('domain-sidebar');
             if (sidebar) {
-                const packageItems = sidebar.querySelectorAll('[data-has-enum-children]');
-                packageItems.forEach(item => {
+                sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
                     item.style.display = '';
                 });
-
-                const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
-                typeItems.forEach(div => {
+                sidebar.querySelectorAll('div[data-kind]').forEach(div => {
                     div.closest('li').style.display = '';
                 });
             }
@@ -1088,13 +1074,13 @@ const DomainApp = (() => {
         const sidebar = document.getElementById('domain-sidebar');
         if (!sidebar) return;
 
-        sidebar.querySelectorAll('div[data-has-enum]').forEach(div => {
+        sidebar.querySelectorAll('div[data-kind]').forEach(div => {
             const link = div.querySelector('a');
             const text = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
             div.closest('li').style.display = text.includes(filterText) ? '' : 'none';
         });
 
-        [...sidebar.querySelectorAll('[data-has-enum-children]')]
+        [...sidebar.querySelectorAll('[data-kind-children]')]
             .reverse()
             .forEach(item => {
                 const link = item.querySelector('a');
@@ -1124,13 +1110,21 @@ const DomainApp = (() => {
         const reductionCheckbox = document.getElementById('transitive-reduction-toggle');
         if (reductionCheckbox) reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
 
+        document.querySelectorAll('input[name="kind-filter"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    domainSettings.kindFilter = radio.value;
+                    applyVisibilitySettings();
+                }
+            });
+        });
+
         [
             {id: 'show-deprecated-nodes',       key: 'showDeprecatedNodes',        after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'transitive-reduction-toggle', key: 'transitiveReductionEnabled', after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'show-diagrams',               key: 'showDiagrams',               after: v => document.body.classList.toggle('hide-domain-diagrams', !v)},
             {id: 'show-descriptions',           key: 'showDescriptions',           after: v => document.body.classList.toggle('hide-domain-descriptions', !v)},
             {id: 'show-members',                key: 'showMembers',                after: applyVisibilitySettings},
-            {id: 'show-enum-only',              key: 'showEnumOnly',               after: applyVisibilitySettings},
         ].forEach(({id, key, after}) => {
             const el = document.getElementById(id);
             if (!el) return;

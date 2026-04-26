@@ -19,10 +19,16 @@
                 表示設定
             </summary>
             <div class="sidebar-settings-panel">
-                <label>
-                    <input type="checkbox" id="show-enum-only">
-                    列挙のみ表示
-                </label>
+                <fieldset>
+                    <legend>種類</legend>
+                    <label><input type="radio" name="kind-filter" value="all" checked> すべて</label>
+                    <label><input type="radio" name="kind-filter" value="文字列"> 文字列</label>
+                    <label><input type="radio" name="kind-filter" value="数値"> 数値</label>
+                    <label><input type="radio" name="kind-filter" value="日付"> 日付</label>
+                    <label><input type="radio" name="kind-filter" value="期間"> 期間</label>
+                    <label><input type="radio" name="kind-filter" value="区分"> 区分</label>
+                    <label><input type="radio" name="kind-filter" value="コレクション"> コレクション</label>
+                </fieldset>
                 <fieldset>
                     <legend>表示内容</legend>
                     <label>

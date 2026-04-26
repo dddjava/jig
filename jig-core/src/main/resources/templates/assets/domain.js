@@ -321,7 +321,13 @@ const DomainApp = (() => {
             ? (domainSettings.showDeprecatedNodes ? incoming : incoming.filter(r => !typesMap?.get(r.from)?.isDeprecated))
             : [];
 
-        if (filteredOut.length === 0 && filteredIn.length === 0) return null;
+        if (filteredOut.length === 0 && filteredIn.length === 0) {
+            // showOutgoing/showIncoming フィルターで空になった場合は対象クラス単体を返す
+            if (!showOutgoing || !showIncoming) {
+                return {edges: [], involvedFqns: new Set([type.fqn])};
+            }
+            return null;
+        }
 
         const edgeMap = new Map();
         [...filteredOut, ...filteredIn].forEach(r => edgeMap.set(`${r.from}::${r.to}`, r));

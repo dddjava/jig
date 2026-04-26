@@ -317,7 +317,7 @@ test.describe('domain.js', () => {
             assert.ok(!result.includes(idC), 'C（関連元）は含まれないこと');
         });
 
-        test('showOutgoing=false かつ showIncoming=false の場合は null を返す', () => {
+        test('showOutgoing=false かつ showIncoming=false の場合は対象クラス単体の図を返す', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
             const typesMap = new Map([
@@ -328,7 +328,11 @@ test.describe('domain.js', () => {
 
             const result = createTypeRelationDiagram(typeA, typeRelations, typesMap, 'TB', {showOutgoing: false, showIncoming: false});
 
-            assert.equal(result, null);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(result, '図が生成されること');
+            assert.ok(result.includes(idA), '対象クラス（A）は含まれること');
+            assert.ok(!result.includes(idB), '関連クラス（B）は含まれないこと');
         });
 
         test('subgraph外向きエッジは深さに応じて長さが変わる', () => {

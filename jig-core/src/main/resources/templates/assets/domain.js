@@ -765,11 +765,11 @@ const DomainApp = (() => {
                 Jig.dom.createElement("legend", {textContent: "表示"}),
                 Jig.dom.createElement("label", {
                     className: "diagram-panel-option",
-                    children: [outgoingCheckbox, "関連先"]
+                    children: [incomingCheckbox, "関連元"]
                 }),
                 Jig.dom.createElement("label", {
                     className: "diagram-panel-option",
-                    children: [incomingCheckbox, "関連元"]
+                    children: [outgoingCheckbox, "関連先"]
                 }),
             ]
         }));
@@ -853,11 +853,11 @@ const DomainApp = (() => {
                 Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
                 Jig.dom.createElement("label", {
                     className: "diagram-panel-option",
-                    children: [outgoingCheckbox, "関連先"]
+                    children: [incomingCheckbox, "関連元"]
                 }),
                 Jig.dom.createElement("label", {
                     className: "diagram-panel-option",
-                    children: [incomingCheckbox, "関連元"]
+                    children: [outgoingCheckbox, "関連先"]
                 }),
             ]
         }));

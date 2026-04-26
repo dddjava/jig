@@ -797,9 +797,10 @@ const DomainApp = (() => {
                 ]
             }));
 
+            const visibilityRadioGroupName = `visibility-filter-${Math.random().toString(36).slice(2)}`;
             const visibilityRadios = VISIBILITY_ORDER.map((v, i) => {
                 const radio = Jig.dom.createElement("input", {
-                    attributes: {type: "radio", name: `visibility-filter-${Math.random().toString(36).slice(2)}`, value: v}
+                    attributes: {type: "radio", name: visibilityRadioGroupName, value: v}
                 });
                 radio.checked = i === VISIBILITY_ORDER.length - 1;
                 return radio;

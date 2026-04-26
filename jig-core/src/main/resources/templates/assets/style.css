@@ -399,11 +399,13 @@ main table thead {
 }
 
 .entrypoint-item__io dt {
+    grid-column: 1;
     color: #888;
     padding-top: 1px;
 }
 
 .entrypoint-item__io dd {
+    grid-column: 2;
     margin: 0;
 }
 

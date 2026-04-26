@@ -697,7 +697,7 @@ const UsecaseApp = (() => {
             ].filter(Boolean);
 
             if (memberTabDefs.length > 0) {
-                const {panels, section: memberSection} = Jig.dom.tab.buildSection(memberTabDefs, {className: "jig-card-section tab-member-section"});
+                const {panels, section: memberSection} = Jig.dom.tab.buildSection(memberTabDefs, {className: "jig-card-section tab-content-section tab-member-section"});
                 section.appendChild(memberSection);
                 memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
             }
@@ -730,7 +730,7 @@ const UsecaseApp = (() => {
                         const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
                         const {panels, section} = Jig.dom.tab.buildSection(
                             [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
-                            {className: "jig-card-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
+                            {className: "jig-card-section tab-content-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
                         );
                         methodSection.appendChild(section);
                         usecaseTarget = panels['usecase'];

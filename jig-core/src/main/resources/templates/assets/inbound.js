@@ -249,14 +249,18 @@ const InboundApp = (() => {
     function buildEntrypointItem(ep) {
         const methodTerm = Jig.glossary.getMethodTerm(ep.fqn, true);
 
-        const inputDds = (ep.parameters && ep.parameters.length > 0)
-            ? ep.parameters.map(param => {
-                const content = param.nameSource === 'METHOD_PARAMETERS'
-                    ? [param.name + ': ', Jig.dom.type.refElement(param.typeRef)]
-                    : [Jig.dom.type.refElement(param.typeRef)];
-                return Jig.dom.createElement("dd", {children: content});
+        const inputDd = (ep.parameters && ep.parameters.length > 0)
+            ? Jig.dom.createElement("dd", {
+                className: "entrypoint-item__params",
+                children: ep.parameters.flatMap(param => [
+                    Jig.dom.type.refElement(param.typeRef),
+                    Jig.dom.createElement("span", {
+                        className: "entrypoint-item__param-name",
+                        textContent: param.nameSource === 'METHOD_PARAMETERS' ? param.name : ''
+                    })
+                ])
             })
-            : [Jig.dom.createElement("dd", {className: "entrypoint-item__empty", textContent: "-"})];
+            : Jig.dom.createElement("dd", {className: "entrypoint-item__empty", textContent: "-"});
 
         return Jig.dom.createElement("div", {
             className: "entrypoint-item",
@@ -278,7 +282,7 @@ const InboundApp = (() => {
                     className: "entrypoint-item__io",
                     children: [
                         Jig.dom.createElement("dt", {textContent: "入力"}),
-                        ...inputDds,
+                        inputDd,
                         Jig.dom.createElement("dt", {textContent: "出力"}),
                         Jig.dom.createElement("dd", {children: [Jig.dom.type.refElement(ep.returnTypeRef)]})
                     ]

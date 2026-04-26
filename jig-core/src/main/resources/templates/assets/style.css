@@ -409,6 +409,17 @@ main table thead {
     margin: 0;
 }
 
+.entrypoint-item__params {
+    display: grid;
+    grid-template-columns: max-content auto;
+    column-gap: 8px;
+    row-gap: 2px;
+}
+
+.entrypoint-item__param-name {
+    color: #555;
+}
+
 .entrypoint-item__empty {
     color: #bbb;
 }

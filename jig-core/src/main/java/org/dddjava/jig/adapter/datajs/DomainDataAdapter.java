@@ -81,6 +81,7 @@ public class DomainDataAdapter implements DataAdapter {
                 .and("fields", Json.arrayObjects(fields))
                 .and("methods", Json.arrayObjects(methods))
                 .and("staticMethods", Json.arrayObjects(staticMethods))
+                .and("kind", jigType.toValueKind())
                 .and("isDeprecated", jigType.isDeprecated());
 
         if (isEnum(jigType)) {

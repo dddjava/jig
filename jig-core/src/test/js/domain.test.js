@@ -685,6 +685,93 @@ test.describe('domain.js', () => {
             const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
             assert.ok(result.includes('List~B~'), `メソッドパラメータにジェネリクスが含まれること: ${result}`);
         });
+
+        test('showFields=false の場合、フィールドは含まれない', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [{name: 'value', typeRef: {fqn: 'java.lang.String'}}],
+                    methods: [], staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['フィールド型']}];
+
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap, 'TB', {showFields: false});
+
+            assert.ok(result, '図が生成されること');
+            assert.ok(!result.includes('value'), 'フィールドが含まれないこと');
+        });
+
+        test('showMethods=false の場合、メソッドは含まれない', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [],
+                    methods: [{fqn: 'org.example.A#doSomething()', visibility: 'PUBLIC', parameters: [], returnTypeRef: {fqn: 'void'}}],
+                    staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B'}];
+
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap, 'TB', {showMethods: false});
+
+            assert.ok(result, '図が生成されること');
+            assert.ok(!result.includes('doSomething'), 'メソッドが含まれないこと');
+        });
+
+        test('maxVisibility=PUBLIC の場合、PUBLIC メソッドのみ表示される', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [],
+                    methods: [
+                        {fqn: 'org.example.A#pub()', visibility: 'PUBLIC', parameters: [], returnTypeRef: {fqn: 'void'}},
+                        {fqn: 'org.example.A#prot()', visibility: 'PROTECTED', parameters: [], returnTypeRef: {fqn: 'void'}},
+                        {fqn: 'org.example.A#pkg()', visibility: 'PACKAGE', parameters: [], returnTypeRef: {fqn: 'void'}},
+                        {fqn: 'org.example.A#priv()', visibility: 'PRIVATE', parameters: [], returnTypeRef: {fqn: 'void'}},
+                    ],
+                    staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B'}];
+
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap, 'TB', {maxVisibility: 'PUBLIC'});
+
+            assert.ok(result.includes('pub'), 'PUBLIC メソッドは含まれること');
+            assert.ok(!result.includes('prot'), 'PROTECTED メソッドは含まれないこと');
+            assert.ok(!result.includes('pkg'), 'PACKAGE メソッドは含まれないこと');
+            assert.ok(!result.includes('priv'), 'PRIVATE メソッドは含まれないこと');
+        });
+
+        test('maxVisibility=PROTECTED の場合、PUBLIC と PROTECTED メソッドが表示される', () => {
+            const typesMap = new Map([
+                ['org.example.A', {
+                    fqn: 'org.example.A', isDeprecated: false,
+                    fields: [],
+                    methods: [
+                        {fqn: 'org.example.A#pub()', visibility: 'PUBLIC', parameters: [], returnTypeRef: {fqn: 'void'}},
+                        {fqn: 'org.example.A#prot()', visibility: 'PROTECTED', parameters: [], returnTypeRef: {fqn: 'void'}},
+                        {fqn: 'org.example.A#priv()', visibility: 'PRIVATE', parameters: [], returnTypeRef: {fqn: 'void'}},
+                    ],
+                    staticMethods: []
+                }],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B'}];
+
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap, 'TB', {maxVisibility: 'PROTECTED'});
+
+            assert.ok(result.includes('pub'), 'PUBLIC メソッドは含まれること');
+            assert.ok(result.includes('prot'), 'PROTECTED メソッドは含まれること');
+            assert.ok(!result.includes('priv'), 'PRIVATE メソッドは含まれないこと');
+        });
     });
 
     test.describe('サイドバーテキストフィルター', () => {

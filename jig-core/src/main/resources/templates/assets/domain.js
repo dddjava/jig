@@ -404,7 +404,13 @@ const DomainApp = (() => {
      * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true} = {}) {
+    const VISIBILITY_ORDER = ['PUBLIC', 'PROTECTED', 'PACKAGE', 'PRIVATE'];
+
+    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {
+        showOutgoing = true, showIncoming = true,
+        showFields = true, showMethods = true,
+        maxVisibility = 'PRIVATE'
+    } = {}) {
         const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
         const {edges, involvedFqns} = result;
@@ -420,6 +426,9 @@ const DomainApp = (() => {
             return 'dependency';
         }
 
+        const maxVisibilityIndex = VISIBILITY_ORDER.indexOf(maxVisibility);
+        const visibilityAllowed = (v) => VISIBILITY_ORDER.indexOf(v) <= maxVisibilityIndex;
+
         const builder = new Jig.mermaid.ClassDiagramBuilder();
 
         involvedFqns.forEach(fqn => {
@@ -427,17 +436,21 @@ const DomainApp = (() => {
             builder.addClass(nodeId, Jig.glossary.typeSimpleName(fqn));
 
             const domainType = typesMap?.get(fqn);
-            (domainType?.fields || []).forEach(f => {
-                builder.addField(nodeId, typeNameWithGenerics(f.typeRef), f.name);
-            });
-            (domainType?.methods || []).forEach(m => {
-                const {name, params, returnType} = parseMethodInfo(m);
-                builder.addMethod(nodeId, m.visibility, name, params, returnType, false);
-            });
-            (domainType?.staticMethods || []).forEach(m => {
-                const {name, params, returnType} = parseMethodInfo(m);
-                builder.addMethod(nodeId, m.visibility, name, params, returnType, true);
-            });
+            if (showFields) {
+                (domainType?.fields || []).forEach(f => {
+                    builder.addField(nodeId, typeNameWithGenerics(f.typeRef), f.name);
+                });
+            }
+            if (showMethods) {
+                (domainType?.methods || []).filter(m => visibilityAllowed(m.visibility)).forEach(m => {
+                    const {name, params, returnType} = parseMethodInfo(m);
+                    builder.addMethod(nodeId, m.visibility, name, params, returnType, false);
+                });
+                (domainType?.staticMethods || []).filter(m => visibilityAllowed(m.visibility)).forEach(m => {
+                    const {name, params, returnType} = parseMethodInfo(m);
+                    builder.addMethod(nodeId, m.visibility, name, params, returnType, true);
+                });
+            }
 
             builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
         });
@@ -761,16 +774,68 @@ const DomainApp = (() => {
             ]
         }));
 
+        const extraControls = [];
+        let getClassDefOptions = () => ({});
+
+        if (diagramType === 'classDefinition') {
+            const showFieldsCheckbox = Jig.dom.createElement("input", {attributes: {type: "checkbox"}});
+            showFieldsCheckbox.checked = true;
+            const showMethodsCheckbox = Jig.dom.createElement("input", {attributes: {type: "checkbox"}});
+            showMethodsCheckbox.checked = true;
+            panel.appendChild(Jig.dom.createElement("fieldset", {
+                className: "diagram-panel-options",
+                children: [
+                    Jig.dom.createElement("legend", {textContent: "メンバ"}),
+                    Jig.dom.createElement("label", {
+                        className: "diagram-panel-option",
+                        children: [showFieldsCheckbox, "フィールド"]
+                    }),
+                    Jig.dom.createElement("label", {
+                        className: "diagram-panel-option",
+                        children: [showMethodsCheckbox, "メソッド"]
+                    }),
+                ]
+            }));
+
+            const visibilityRadios = VISIBILITY_ORDER.map((v, i) => {
+                const radio = Jig.dom.createElement("input", {
+                    attributes: {type: "radio", name: `visibility-filter-${Math.random().toString(36).slice(2)}`, value: v}
+                });
+                radio.checked = i === VISIBILITY_ORDER.length - 1;
+                return radio;
+            });
+            const visibilityLabels = ['PUBLIC のみ', 'PROTECTED 以上', 'PACKAGE 以上', 'すべて'];
+            panel.appendChild(Jig.dom.createElement("fieldset", {
+                className: "diagram-panel-options",
+                children: [
+                    Jig.dom.createElement("legend", {textContent: "可視性"}),
+                    ...visibilityRadios.map((radio, i) => Jig.dom.createElement("label", {
+                        className: "diagram-panel-option",
+                        children: [radio, visibilityLabels[i]]
+                    }))
+                ]
+            }));
+
+            extraControls.push(showFieldsCheckbox, showMethodsCheckbox, ...visibilityRadios);
+            getClassDefOptions = () => ({
+                showFields: showFieldsCheckbox.checked,
+                showMethods: showMethodsCheckbox.checked,
+                maxVisibility: visibilityRadios.find(r => r.checked)?.value ?? 'PRIVATE'
+            });
+        }
+
         const render = (container) => {
             renderDiagram(container, {
                 pkg: undefined, type, diagramType, typeRelations, typesMap,
                 showOutgoing: outgoingCheckbox.checked,
-                showIncoming: incomingCheckbox.checked
+                showIncoming: incomingCheckbox.checked,
+                ...getClassDefOptions()
             });
         };
         const container = Jig.mermaid.diagram.createAndRegister(panel, render);
-        outgoingCheckbox.addEventListener('change', () => render(container));
-        incomingCheckbox.addEventListener('change', () => render(container));
+        [outgoingCheckbox, incomingCheckbox, ...extraControls].forEach(el => {
+            el.addEventListener('change', () => render(container));
+        });
     }
 
     function setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap) {
@@ -998,7 +1063,7 @@ const DomainApp = (() => {
      * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true} = diagram;
+        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true, showFields = true, showMethods = true, maxVisibility = 'PRIVATE'} = diagram;
 
         container.innerHTML = "";
 
@@ -1015,7 +1080,7 @@ const DomainApp = (() => {
         } else if (diagramType === 'classDirect') {
             renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else if (diagramType === 'classDefinition') {
-            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
+            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility}));
         } else {
             // テスト環境など closest が使えない場合に対応
             const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;

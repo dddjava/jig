@@ -322,11 +322,7 @@ const DomainApp = (() => {
             : [];
 
         if (filteredOut.length === 0 && filteredIn.length === 0) {
-            // showOutgoing/showIncoming フィルターで空になった場合は対象クラス単体を返す
-            if (!showOutgoing || !showIncoming) {
-                return {edges: [], involvedFqns: new Set([type.fqn])};
-            }
-            return null;
+            return (!showOutgoing || !showIncoming) ? {edges: [], involvedFqns: new Set([type.fqn])} : null;
         }
 
         const edgeMap = new Map();
@@ -741,7 +737,7 @@ const DomainApp = (() => {
         });
     }
 
-    function setupTypeRelationDiagramPanel(panel, type, typeRelations, typesMap) {
+    function setupTypeDiagramPanel(panel, type, typeRelations, typesMap, diagramType) {
         const outgoingCheckbox = Jig.dom.createElement("input", {
             attributes: {type: "checkbox", class: "type-relation-outgoing"}
         });
@@ -766,39 +762,11 @@ const DomainApp = (() => {
         }));
 
         const render = (container) => {
-            renderDiagram(container, {pkg: undefined, type, diagramType: 'classDirect', typeRelations, typesMap});
-        };
-        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
-        outgoingCheckbox.addEventListener('change', () => render(container));
-        incomingCheckbox.addEventListener('change', () => render(container));
-    }
-
-    function setupTypeClassDiagramPanel(panel, type, typeRelations, typesMap) {
-        const outgoingCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "type-relation-outgoing"}
-        });
-        outgoingCheckbox.checked = true;
-        const incomingCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "type-relation-incoming"}
-        });
-        incomingCheckbox.checked = true;
-        panel.appendChild(Jig.dom.createElement("fieldset", {
-            className: "diagram-panel-options",
-            children: [
-                Jig.dom.createElement("legend", {textContent: "表示"}),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [outgoingCheckbox, "関連先"]
-                }),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [incomingCheckbox, "関連元"]
-                }),
-            ]
-        }));
-
-        const render = (container) => {
-            renderDiagram(container, {pkg: undefined, type, diagramType: 'classDefinition', typeRelations, typesMap});
+            renderDiagram(container, {
+                pkg: undefined, type, diagramType, typeRelations, typesMap,
+                showOutgoing: outgoingCheckbox.checked,
+                showIncoming: incomingCheckbox.checked
+            });
         };
         const container = Jig.mermaid.diagram.createAndRegister(panel, render);
         outgoingCheckbox.addEventListener('change', () => render(container));
@@ -1007,13 +975,13 @@ const DomainApp = (() => {
                     id: 'relation',
                     label: 'クラス関連図',
                     enabled: hasTypeRelation,
-                    setup: panel => setupTypeRelationDiagramPanel(panel, type, typeRelations, typesMap)
+                    setup: panel => setupTypeDiagramPanel(panel, type, typeRelations, typesMap, 'classDirect')
                 },
                 {
                     id: 'classdiag',
                     label: 'クラス図',
                     enabled: hasTypeRelation,
-                    setup: panel => setupTypeClassDiagramPanel(panel, type, typeRelations, typesMap)
+                    setup: panel => setupTypeDiagramPanel(panel, type, typeRelations, typesMap, 'classDefinition')
                 },
             ], {className: "tab-diagram-section"});
 
@@ -1030,7 +998,7 @@ const DomainApp = (() => {
      * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap} = diagram;
+        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true} = diagram;
 
         container.innerHTML = "";
 
@@ -1045,18 +1013,8 @@ const DomainApp = (() => {
         } else if (diagramType === 'package') {
             renderIfNonNull((dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir));
         } else if (diagramType === 'classDirect') {
-            const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
-            const outgoing = panel?.querySelector('.type-relation-outgoing');
-            const incoming = panel?.querySelector('.type-relation-incoming');
-            const showOutgoing = outgoing ? outgoing.checked : true;
-            const showIncoming = incoming ? incoming.checked : true;
             renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else if (diagramType === 'classDefinition') {
-            const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
-            const outgoing = panel?.querySelector('.type-relation-outgoing');
-            const incoming = panel?.querySelector('.type-relation-incoming');
-            const showOutgoing = outgoing ? outgoing.checked : true;
-            const showIncoming = incoming ? incoming.checked : true;
             renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else {
             // テスト環境など closest が使えない場合に対応

@@ -361,6 +361,56 @@ main table thead {
     color: #999;
 }
 
+.entrypoint-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #eef0f5;
+}
+
+.entrypoint-item:last-child {
+    border-bottom: none;
+}
+
+.entrypoint-item__header {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.entrypoint-item__name {
+    font-weight: bold;
+    color: #1b3a66;
+}
+
+.entrypoint-item__path {
+    color: #666;
+    font-family: monospace;
+    font-size: 0.95em;
+}
+
+.entrypoint-item__io {
+    display: grid;
+    grid-template-columns: 3em 1fr;
+    gap: 2px 8px;
+    font-size: 0.85em;
+    margin: 0;
+    padding-left: 1em;
+}
+
+.entrypoint-item__io dt {
+    color: #888;
+    padding-top: 1px;
+}
+
+.entrypoint-item__io dd {
+    margin: 0;
+}
+
+.entrypoint-item__empty {
+    color: #bbb;
+}
+
 main table.fields thead {
     color: #FFF;
     background-color: #009900;

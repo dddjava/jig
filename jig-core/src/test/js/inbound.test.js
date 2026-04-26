@@ -216,7 +216,12 @@ test.describe('InboundApp', () => {
                 createToggle: () => createElement('button', {className: 'in-page-sidebar__toggle'})
             },
             type: {
-                methodsList: createMethodsList
+                methodsList: createMethodsList,
+                refElement: (typeRef) => {
+                    if (!typeRef) return createElement('span', {});
+                    const text = typeRef.fqn.split('.').pop();
+                    return createElement('span', {textContent: text});
+                }
             }
         };
         globalThis.Jig.mermaid.render.renderWithControls = (targetEl, source, {direction} = {}) => {
@@ -270,14 +275,16 @@ test.describe('InboundApp', () => {
         assert.equal(controllerSection.querySelector('.class-path').textContent, '/api');
         assert.equal(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
 
-        // エントリーポイント一覧（createMethodsList）
-        const methodsSection = controllerSection.querySelector('.methods-section');
-        assert.ok(methodsSection);
-        const methodItems = methodsSection.querySelectorAll('.method-item');
-        assert.equal(methodItems.length, 1);
-        assert.ok(methodItems[0].querySelector('.method-name').textContent.includes('method1'));
-
-        assert.equal(controllerSection.querySelector('article.jig-card--item'), null);
+        // エントリーポイント一覧（buildEntrypointItem）
+        const epSection = controllerSection.querySelector('section.jig-card--item');
+        assert.ok(epSection);
+        const epItems = epSection.querySelectorAll('.entrypoint-item');
+        assert.equal(epItems.length, 1);
+        assert.ok(epItems[0].querySelector('.entrypoint-item__name').textContent.includes('method1'));
+        assert.equal(epItems[0].querySelector('.entrypoint-item__path').textContent, 'GET /method1');
+        assert.equal(epItems[0].querySelector('.entrypoint-item__empty').textContent, '-'); // 引数なし
+        const ioDds = epItems[0].querySelectorAll('.entrypoint-item__io dd');
+        assert.ok(ioDds[ioDds.length - 1]?.querySelector('span')?.textContent); // 出力あり
 
         // コントローラー単位の統合ダイアグラム
         const mermaidPre = controllerSection.querySelector('.mermaid');

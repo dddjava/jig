@@ -246,6 +246,47 @@ const InboundApp = (() => {
         });
     }
 
+    function buildEntrypointItem(ep) {
+        const methodTerm = Jig.glossary.getMethodTerm(ep.fqn, true);
+
+        const inputDds = (ep.parameters && ep.parameters.length > 0)
+            ? ep.parameters.map(param => {
+                const content = param.nameSource === 'METHOD_PARAMETERS'
+                    ? [param.name + ': ', Jig.dom.type.refElement(param.typeRef)]
+                    : [Jig.dom.type.refElement(param.typeRef)];
+                return Jig.dom.createElement("dd", {children: content});
+            })
+            : [Jig.dom.createElement("dd", {className: "entrypoint-item__empty", textContent: "-"})];
+
+        return Jig.dom.createElement("div", {
+            className: "entrypoint-item",
+            children: [
+                Jig.dom.createElement("div", {
+                    className: "entrypoint-item__header",
+                    children: [
+                        Jig.dom.createElement("span", {
+                            className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
+                            textContent: methodTerm.title
+                        }),
+                        Jig.dom.createElement("span", {
+                            className: "entrypoint-item__path",
+                            textContent: ep.path || ''
+                        })
+                    ]
+                }),
+                Jig.dom.createElement("dl", {
+                    className: "entrypoint-item__io",
+                    children: [
+                        Jig.dom.createElement("dt", {textContent: "入力"}),
+                        ...inputDds,
+                        Jig.dom.createElement("dt", {textContent: "出力"}),
+                        Jig.dom.createElement("dd", {children: [Jig.dom.type.refElement(ep.returnTypeRef)]})
+                    ]
+                })
+            ]
+        });
+    }
+
     function splitHttpPath(path) {
         const spaceIdx = (path || '').indexOf(' ');
         return spaceIdx !== -1
@@ -396,8 +437,11 @@ const InboundApp = (() => {
                 }));
             }
 
-            const methodsList = Jig.dom.type.methodsList("エントリーポイント", adapter.entrypoints);
-            if (methodsList) jigCard.appendChild(methodsList);
+            if (adapter.entrypoints && adapter.entrypoints.length > 0) {
+                const epSection = Jig.dom.card.item({title: "エントリーポイント"});
+                adapter.entrypoints.forEach(ep => epSection.appendChild(buildEntrypointItem(ep)));
+                jigCard.appendChild(epSection);
+            }
 
             const diagramGenerator = (dir) => {
                 const data = prepareDiagramData(adapter, Jig.data.usecase.get());

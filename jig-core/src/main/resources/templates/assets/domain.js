@@ -964,23 +964,6 @@ const DomainApp = (() => {
     }
 
     /**
-     * @returns {void}
-     */
-    function updateDirectionIcon() {
-        const verticalArrows = document.querySelector('.vertical-arrows');
-        const horizontalArrows = document.querySelector('.horizontal-arrows');
-        if (verticalArrows && horizontalArrows) {
-            if (domainSettings.diagramDirection === 'TB') {
-                verticalArrows.style.display = '';
-                horizontalArrows.style.display = 'none';
-            } else {
-                verticalArrows.style.display = 'none';
-                horizontalArrows.style.display = '';
-            }
-        }
-    }
-
-    /**
      * 指定されたダイアグラムを再生成
      * @param {HTMLElement} container
      * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
@@ -1098,15 +1081,6 @@ const DomainApp = (() => {
      * @returns {void}
      */
     function initSettings() {
-        const directionToggle = document.getElementById('direction-toggle');
-        if (directionToggle) {
-            directionToggle.addEventListener('click', () => {
-                domainSettings.diagramDirection = domainSettings.diagramDirection === 'TB' ? 'LR' : 'TB';
-                updateDirectionIcon();
-                Jig.mermaid.diagram.rerenderVisible();
-            });
-        }
-
         const reductionCheckbox = document.getElementById('transitive-reduction-toggle');
         if (reductionCheckbox) reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
 

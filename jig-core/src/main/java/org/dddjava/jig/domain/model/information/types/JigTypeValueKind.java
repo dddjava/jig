@@ -66,6 +66,6 @@ public enum JigTypeValueKind {
     private static boolean isDateRange(JigFields jigFields) {
         Collection<JigField> fields = jigFields.fields();
         if (fields.size() != 2) return false;
-        return fields.stream().anyMatch(field -> field.typeId().equals(TypeId.LOCAL_DATE));
+        return fields.stream().allMatch(field -> field.typeId().equals(TypeId.LOCAL_DATE));
     }
 }

@@ -205,17 +205,45 @@ const InboundApp = (() => {
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
-        for (const {type, label} of TYPE_CONFIG) {
-            const items = adapters
-                .filter(c => c.entrypoints?.some(ep => ep.entrypointType === type))
-                .flatMap(c => {
-                    const title = Jig.glossary.getTypeTerm(c.fqn).title;
-                    if (filterText && !title.toLowerCase().includes(filterText)) return [];
-                    return [{id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,c.fqn), label: title}];
-                });
-            if (items.length === 0) continue;
-            Jig.dom.sidebar.renderSection(sidebar, label, items, {collapsible: true});
-        }
+        const byPackage = new Map();
+        adapters.forEach(adapter => {
+            const title = Jig.glossary.getTypeTerm(adapter.fqn).title;
+            if (filterText && !title.toLowerCase().includes(filterText)) return;
+            const dotIdx = adapter.fqn.lastIndexOf('.');
+            const pkg = dotIdx === -1 ? '' : adapter.fqn.slice(0, dotIdx);
+            Jig.util.pushToMap(byPackage, pkg, adapter);
+        });
+
+        byPackage.forEach((pkgAdapters, packageFqn) => {
+            const typeList = Jig.dom.createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: pkgAdapters.map(adapter =>
+                    Jig.dom.createElement("li", {
+                        className: "in-page-sidebar__item",
+                        children: [
+                            Jig.dom.createElement("a", {
+                                className: "in-page-sidebar__link",
+                                attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
+                                textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
+                            })
+                        ]
+                    })
+                )
+            });
+
+            const packageTitle = Jig.dom.createElement("p", {
+                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                children: [
+                    Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
+                    Jig.dom.sidebar.createToggle(typeList)
+                ]
+            });
+
+            sidebar.appendChild(Jig.dom.createElement("section", {
+                className: "in-page-sidebar__section",
+                children: [packageTitle, typeList]
+            }));
+        });
     }
 
     function splitHttpPath(path) {

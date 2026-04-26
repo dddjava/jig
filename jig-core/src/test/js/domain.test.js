@@ -269,6 +269,68 @@ test.describe('domain.js', () => {
             assert.equal(result, null);
         });
 
+        test('showOutgoing=false の場合、出力方向の関連は含まれない', () => {
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
+            const typeC = {fqn: 'org.example.C', isDeprecated: false};
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+                ['org.example.C', typeC],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.C', to: 'org.example.A'},
+            ];
+
+            const result = createTypeRelationDiagram(typeA, typeRelations, typesMap, 'TB', {showOutgoing: false, showIncoming: true});
+
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idC = Jig.util.fqnToId("n", 'org.example.C');
+            assert.ok(result, '図が生成されること');
+            assert.ok(!result.includes(idB), 'B（関連先）は含まれないこと');
+            assert.ok(result.includes(`${idC} --> ${idA}`), 'C→A の関連（関連元）は含まれること');
+        });
+
+        test('showIncoming=false の場合、入力方向の関連は含まれない', () => {
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
+            const typeC = {fqn: 'org.example.C', isDeprecated: false};
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+                ['org.example.C', typeC],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.C', to: 'org.example.A'},
+            ];
+
+            const result = createTypeRelationDiagram(typeA, typeRelations, typesMap, 'TB', {showOutgoing: true, showIncoming: false});
+
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idC = Jig.util.fqnToId("n", 'org.example.C');
+            assert.ok(result, '図が生成されること');
+            assert.ok(result.includes(`${idA} --> ${idB}`), 'A→B の関連（関連先）は含まれること');
+            assert.ok(!result.includes(idC), 'C（関連元）は含まれないこと');
+        });
+
+        test('showOutgoing=false かつ showIncoming=false の場合は null を返す', () => {
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+            ]);
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B'}];
+
+            const result = createTypeRelationDiagram(typeA, typeRelations, typesMap, 'TB', {showOutgoing: false, showIncoming: false});
+
+            assert.equal(result, null);
+        });
+
         test('subgraph外向きエッジは深さに応じて長さが変わる', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};

@@ -19,6 +19,9 @@ public record JigTypeHeader(TypeId id,
                             JigTypeAttributes jigTypeAttributes,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
+    // クラス名末尾に `$1` などがつくコンパイラ生成クラスを判別するパターン（厳密ではないが慣習上問題ない）
+    private static final Pattern COMPILER_GENERATED_CLASS_PATTERN = Pattern.compile(".+\\$\\d+");
+
     public String simpleName() {
         return id.asSimpleText();
     }
@@ -42,9 +45,6 @@ public record JigTypeHeader(TypeId id,
     }
 
     public boolean isCompilerGenerated() {
-        // クラス名の末尾に `$1` などがつくものはコンパイラが生成したものと見做す
-        // 厳密な判定ではないが、慣習的にこの条件に当てはまるクラスは作らないだろうと言う思い。
-        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
-        return compilerGeneratedClassPattern.matcher(id().fqn()).matches();
+        return COMPILER_GENERATED_CLASS_PATTERN.matcher(id().fqn()).matches();
     }
 }

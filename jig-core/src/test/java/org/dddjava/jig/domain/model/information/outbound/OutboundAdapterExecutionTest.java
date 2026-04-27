@@ -5,7 +5,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceTargetOperationTypes;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import stub.infrastructure.datasource.trace.TraceHelper;
 import stub.infrastructure.datasource.trace.TraceMapper;
 import stub.infrastructure.datasource.trace.TraceOutboundAdapter;
 import testing.JigTest;
+import testing.PersistenceTestSupport;
 
 import java.util.List;
 
@@ -39,11 +39,17 @@ class OutboundAdapterExecutionTest {
                 .orElseThrow();
     }
 
+    private static OutboundAdapters buildOutboundAdapters(JigService jigService, JigRepository jigRepository) {
+        var jigTypes = jigService.jigTypes(jigRepository);
+        var accessorRepositories = new ExternalAccessorRepositories(
+                jigRepository.externalAccessorRepositories().persistenceAccessorRepository(),
+                OtherExternalAccessorRepository.empty());
+        return OutboundAdapters.from(jigTypes, accessorRepositories);
+    }
+
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
-        var jigTypes = jigService.jigTypes(jigRepository);
-        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), OtherExternalAccessorRepository.empty());
-        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        var outboundAdapters = buildOutboundAdapters(jigService, jigRepository);
 
         var traceOutboundAdapter = findOutboundAdapter(outboundAdapters, TraceOutboundAdapter.class);
         var execution = findExecution(traceOutboundAdapter, "save");
@@ -67,9 +73,7 @@ class OutboundAdapterExecutionTest {
 
     @Test
     void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
-        var jigTypes = jigService.jigTypes(jigRepository);
-        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), OtherExternalAccessorRepository.empty());
-        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        var outboundAdapters = buildOutboundAdapters(jigService, jigRepository);
 
         var targetOutboundAdapter = findOutboundAdapter(outboundAdapters, SpringDataJdbcNameOutboundAdapter.class);
         var execution = findExecution(targetOutboundAdapter, "save");
@@ -81,14 +85,12 @@ class OutboundAdapterExecutionTest {
                 .orElseThrow();
 
         assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
-        assertEquals(List.of("spring_data_table_name"), tableNames(persistenceAccessorOperation.targetOperationTypes()));
+        assertEquals(List.of("spring_data_table_name"), PersistenceTestSupport.tableNames(persistenceAccessorOperation.targetOperationTypes()));
     }
 
     @Test
     void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
-        var jigTypes = jigService.jigTypes(jigRepository);
-        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), OtherExternalAccessorRepository.empty());
-        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        var outboundAdapters = buildOutboundAdapters(jigService, jigRepository);
 
         var targetOutboundAdapter = findOutboundAdapter(outboundAdapters, SpringDataJdbcCrudDelegatingOutbohndAdapter.class);
         var execution = findExecution(targetOutboundAdapter, "save");
@@ -100,13 +102,6 @@ class OutboundAdapterExecutionTest {
                 .orElseThrow();
 
         assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
-        assertEquals(List.of("spring_data_table_name"), tableNames(persistenceAccessorOperation.targetOperationTypes()));
-    }
-
-    private static List<String> tableNames(PersistenceTargetOperationTypes types) {
-        return types.persistenceTargets().stream()
-                .map(t -> t.persistenceTarget().name())
-                .sorted()
-                .toList();
+        assertEquals(List.of("spring_data_table_name"), PersistenceTestSupport.tableNames(persistenceAccessorOperation.targetOperationTypes()));
     }
 }

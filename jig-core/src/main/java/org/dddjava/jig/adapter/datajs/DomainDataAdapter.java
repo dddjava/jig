@@ -64,14 +64,14 @@ public class DomainDataAdapter implements DataAdapter {
 
         List<JsonObjectBuilder> methods = jigType.instanceJigMethods()
                 .filterProgrammerDefined()
-                .excludeNotNoteworthyObjectMethod()
+                .excludeObjectMethods()
                 .stream()
                 .map(JsonSupport::buildMethodJson)
                 .toList();
 
         List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods()
                 .filterProgrammerDefined()
-                .excludeNotNoteworthyObjectMethod()
+                .excludeObjectMethods()
                 .stream()
                 .map(JsonSupport::buildMethodJson)
                 .toList();

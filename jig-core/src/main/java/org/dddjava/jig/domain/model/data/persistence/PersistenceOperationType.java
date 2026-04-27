@@ -83,34 +83,24 @@ public enum PersistenceOperationType {
         return new PersistenceTargetOperationTypes(new PersistenceTargetOperationType(unexpectedTable(), this));
     }
 
-    /**
-     * サブクエリを除去する
-     *
-     * (SELECT ...) を () に置換して繰り返すことでネストを除去
-     */
-    private static String removeSubqueries(String sql) {
+    private static String replaceRepeatedly(String sql, Pattern pattern) {
         String result = sql;
         String prev;
         do {
             prev = result;
-            result = INNER_SUBQUERY_PATTERN.matcher(result).replaceAll("()");
+            result = pattern.matcher(result).replaceAll("()");
         } while (!result.equals(prev));
         return result;
     }
 
-    /**
-     * 括弧をサブクエリのみにする
-     *
-     * word(...) 形式の関数呼び出しを繰り返し除去し、括弧をサブクエリのみにする
-     */
+    /** (SELECT ...) を () に置換して繰り返すことでネストを除去 */
+    private static String removeSubqueries(String sql) {
+        return replaceRepeatedly(sql, INNER_SUBQUERY_PATTERN);
+    }
+
+    /** word(...) 形式の関数呼び出しを繰り返し除去し、括弧をサブクエリのみにする */
     private static String removeFunctionCalls(String sql) {
-        String result = sql;
-        String prev;
-        do {
-            prev = result;
-            result = FUNCTION_CALL_PATTERN.matcher(result).replaceAll("()");
-        } while (!result.equals(prev));
-        return result;
+        return replaceRepeatedly(sql, FUNCTION_CALL_PATTERN);
     }
 
     /**

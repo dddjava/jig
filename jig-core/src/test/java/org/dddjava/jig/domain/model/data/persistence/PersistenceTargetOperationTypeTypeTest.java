@@ -14,8 +14,7 @@ class PersistenceTargetOperationTypeTypeTest {
             PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf("example.Repo"), "method");
 
     private Map<String, PersistenceOperationType> extractTypeMap(String sql, PersistenceOperationType operationType) {
-        Query query = Query.from(sql);
-        PersistenceTargetOperationTypes targets = operationType.extractTable(query, DUMMY_ID);
+        PersistenceTargetOperationTypes targets = operationType.extractTable(Query.from(sql), DUMMY_ID);
         return targets.persistenceTargets().stream()
                 .collect(Collectors.toMap(
                         persistenceOperation -> persistenceOperation.persistenceTarget().name(),

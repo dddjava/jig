@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperatio
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceTargetOperationTypes;
+import org.dddjava.jig.domain.model.data.persistence.Query;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigTest
 class MyBatisStatementReaderTest {
@@ -56,8 +57,8 @@ class MyBatisStatementReaderTest {
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl"));
         assertEquals(List.of("（解析失敗）"), tableNames(myBatisStatement.targetOperationTypes()));
-        // OGNLを使ったSQLは現時点では空になりunsupportedになる
-        assertFalse(myBatisStatement.query().supported());
+        // OGNLを使ったSQLは現時点では空になりクエリなしになる
+        assertTrue(myBatisStatement.query().isEmpty());
     }
 
     private static PersistenceAccessorOperationId persistenceAccessorIdOf(Class<?> clz, String name) {
@@ -73,7 +74,7 @@ class MyBatisStatementReaderTest {
         assertEquals(List.of("（解析失敗）"), tableNames(myBatisStatement.targetOperationTypes()));
         // OGNLを使ったSQLは現時点では空になる
         // ・・・のだが、 <where>タグなどで分割されているとOGNLを使用していない部分だけクエリが出てくる
-        assertEquals("order by 1", myBatisStatement.query().rawText());
+        assertEquals("order by 1", myBatisStatement.query().map(Query::rawText).orElse(""));
     }
 
     @ParameterizedTest

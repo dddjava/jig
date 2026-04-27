@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -110,13 +111,13 @@ public class MyBatisStatementsReader {
 
                 PersistenceAccessorOperationId persistenceAccessorOperationId = resolveStatementId(mappedStatement);
 
-                Query query;
+                Optional<Query> query;
                 try {
                     query = getQuery(mappedStatement);
                 } catch (Exception e) {
                     logger.warn("クエリの取得に失敗しました", e);
                     sqlReadStatus = SqlReadStatus.読み取り失敗あり;
-                    query = Query.unsupported();
+                    query = Optional.empty();
                 }
 
                 // MyBatis上でのSQLの種類
@@ -187,7 +188,7 @@ public class MyBatisStatementsReader {
         }
     }
 
-    private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {
+    private Optional<Query> getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {
         SqlSource sqlSource = mappedStatement.getSqlSource();
 
         if (!(sqlSource instanceof DynamicSqlSource dynamicSqlSource)) {

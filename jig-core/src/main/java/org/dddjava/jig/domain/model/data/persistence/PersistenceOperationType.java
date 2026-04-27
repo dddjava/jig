@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+
 /**
  * SQLの種類
  */
@@ -47,9 +48,9 @@ public enum PersistenceOperationType {
      *
      * JOINを含む複数テーブルの参照に対応。サブクエリ内FROMも対応。WITHなどは未対応。
      */
-    public PersistenceTargetOperationTypes extractTable(Query query, PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        if (query.supported()) {
-            String sql = query.normalizedQuery().replaceAll("\n", " ");
+    public PersistenceTargetOperationTypes extractTable(Optional<Query> optQuery, PersistenceAccessorOperationId persistenceAccessorOperationId) {
+        if (optQuery.isPresent()) {
+            String sql = optQuery.get().normalizedQuery().replaceAll("\n", " ");
             List<PersistenceTargetOperationType> targets = new ArrayList<>();
 
             // サブクエリを除去したSQLに対してメインパターンとJOINを適用

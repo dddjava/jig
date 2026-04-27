@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * 永続化アクセサ操作
@@ -12,10 +13,10 @@ import java.util.Collection;
 public record PersistenceAccessorOperation(PersistenceAccessorOperationId id,
                                            PersistenceOperationType statementOperationType,
                                            PersistenceTargetOperationTypes targetOperationTypes,
-                                           Query query
+                                           Optional<Query> query
 ) {
 
-    public static PersistenceAccessorOperation from(PersistenceAccessorOperationId id, PersistenceOperationType statementOperationType, Query query) {
+    public static PersistenceAccessorOperation from(PersistenceAccessorOperationId id, PersistenceOperationType statementOperationType, Optional<Query> query) {
         return new PersistenceAccessorOperation(id, statementOperationType,
                 statementOperationType.extractTable(query, id),
                 query);
@@ -26,8 +27,7 @@ public record PersistenceAccessorOperation(PersistenceAccessorOperationId id,
                 new PersistenceTargetOperationTypes(persistenceTargets.stream()
                         .map(persistenceTarget -> PersistenceTargetOperationType.from(persistenceTarget, statementOperationType))
                         .toList()),
-                // TODO: Queryはunsupportedではなくauto-generateとかそんな感じかと思う
-                Query.unsupported()
+                Optional.empty()
         );
     }
 }

@@ -155,7 +155,7 @@ public class SpringDataJdbcStatementsReader {
         return resolveQueryFromAnnotation(jigMethodDeclaration)
                 .flatMap(annotationQueryString -> {
                     // @Queryがあればそのクエリから推測する
-                    Optional<Query> optQuery = Query.fromSafety(annotationQueryString);
+                    Optional<Query> optQuery = Query.from(annotationQueryString);
                     if (optQuery.isEmpty()) {
                         logger.warn("{} の@Queryがうまく処理できませんでした。出力対象から除外されます。value=[{}]",
                                 jigMethodDeclaration.fqn(), annotationQueryString);
@@ -166,7 +166,7 @@ public class SpringDataJdbcStatementsReader {
                             logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
                                     jigMethodDeclaration.fqn(), annotationQueryString);
                         }
-                        return optOperationType.map(persistenceOperationType -> PersistenceAccessorOperation.from(statementId, persistenceOperationType, query));
+                        return optOperationType.map(persistenceOperationType -> PersistenceAccessorOperation.from(statementId, persistenceOperationType, Optional.of(query)));
                     });
                 }).orElseGet(() -> {
                     // @Queryがないものはメソッド名でエンティティに対する操作が決まる

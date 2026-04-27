@@ -35,7 +35,7 @@ class MethodRelationsTest {
     }
 
     @Test
-    void name() {
+    void ネストしたlambdaが展開される() {
         var source = new MethodRelations(List.of(
                 relationOf("A", "lambda$1"),
                 relationOf("A", "lambda$2"),

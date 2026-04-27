@@ -52,7 +52,7 @@ class AsmAnnotationVisitorTest {
     }
 
     @Test
-    void name() {
+    void アノテーションの要素が取得できる() {
         var sut = TestSupport.buildJigType(AnnotatedSut.class)
                 .jigTypeHeader().jigTypeAttributes().declarationAnnotationList();
 

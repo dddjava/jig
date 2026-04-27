@@ -16,7 +16,7 @@ class ValidationsTest {
     record TypeAndDescription(String type, String description) {
     }
 
-    public static Stream<Arguments> name() {
+    public static Stream<Arguments> バリデーションアノテーションの内容が取得できる() {
         return Stream.of(
                 Arguments.arguments("nonNullField", List.of(
                         new TypeAndDescription("NotNull", "[]"))),
@@ -29,7 +29,7 @@ class ValidationsTest {
 
     @MethodSource
     @ParameterizedTest
-    void name(String memberName, List<TypeAndDescription> expected) {
+    void バリデーションアノテーションの内容が取得できる(String memberName, List<TypeAndDescription> expected) {
         var jigType = TestSupport.buildJigType(MySut.class);
 
         var sut = Validations.validationAnnotatedMembers(jigType);

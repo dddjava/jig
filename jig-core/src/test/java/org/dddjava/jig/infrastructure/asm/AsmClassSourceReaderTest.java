@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-public class AsmClassSourceReaderTest {
+class AsmClassSourceReaderTest {
 
     @Test
     void クラス定義に使用している型が取得できる() {

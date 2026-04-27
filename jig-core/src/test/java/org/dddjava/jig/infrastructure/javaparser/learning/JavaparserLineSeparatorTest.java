@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * システム改行コードの置き換えは内部でキャッシュされるため、このテストクラスはIDEで単独実行する。
  * テストメソッドを複数作成する場合、クラス単位での実行は改行コード置き換えが期待通りにならない可能性があるので注意すること。
  */
-public class JavaparserLineSeparatorTest {
+class JavaparserLineSeparatorTest {
 
     @Test
     void StaticJavaParserでparseするとJavadocの改行はシステム改行コードになる() {

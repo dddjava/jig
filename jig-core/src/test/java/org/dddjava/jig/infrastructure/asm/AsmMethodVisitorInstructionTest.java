@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AsmMethodVisitorInstructionTest {
+class AsmMethodVisitorInstructionTest {
 
     private static class SutClass {
         public void 自クラスメソッド参照メソッド() {

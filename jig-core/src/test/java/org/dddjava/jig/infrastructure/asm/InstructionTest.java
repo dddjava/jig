@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * メソッド内の呼び出しと順番が保持されていることを検証する
  */
-public class InstructionTest {
+class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() {

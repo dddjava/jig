@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class JavaparserLearningTest {
+class JavaparserLearningTest {
 
     @Test
     void name() {

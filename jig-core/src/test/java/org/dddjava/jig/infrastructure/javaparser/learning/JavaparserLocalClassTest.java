@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JavaparserLocalClassTest {
+class JavaparserLocalClassTest {
 
     @BeforeAll
     static void setup() {

@@ -15,13 +15,14 @@ public record SwitchInstruction(JumpTarget defaultTarget,
                                 List<JumpTarget> caseTargets) implements Instruction {
 
     public static SwitchInstruction lookup(String defaultTarget, List<String> caseTargets) {
-        return new SwitchInstruction(
-                new JumpTarget(defaultTarget),
-                caseTargets.stream().map(JumpTarget::new).toList()
-        );
+        return of(defaultTarget, caseTargets);
     }
 
     public static SwitchInstruction table(String defaultTarget, List<String> caseTargets) {
+        return of(defaultTarget, caseTargets);
+    }
+
+    private static SwitchInstruction of(String defaultTarget, List<String> caseTargets) {
         return new SwitchInstruction(
                 new JumpTarget(defaultTarget),
                 caseTargets.stream().map(JumpTarget::new).toList()

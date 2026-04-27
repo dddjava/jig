@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import testing.JigTest;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -21,8 +20,8 @@ class JigDocumentGeneratorAssetsTest {
 
     @Test
     void templatesAssets配下の全ファイルをコピーする(JigDocumentGenerator sut, JigDocumentContext jigDocumentContext)
-            throws Exception {
-        invokeGenerateSharedAssets(sut);
+            throws IOException, URISyntaxException {
+        sut.generateSharedAssets();
 
         Path copiedAssetsDirectory = jigDocumentContext.outputDirectory().resolve("assets");
         Set<String> copied = collectRelativeFilePaths(copiedAssetsDirectory);
@@ -47,13 +46,6 @@ class JigDocumentGeneratorAssetsTest {
         expected.remove("usecase.js");
 
         assertEquals(expected, copied);
-    }
-
-    private void invokeGenerateSharedAssets(JigDocumentGenerator sut)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        var method = JigDocumentGenerator.class.getDeclaredMethod("generateSharedAssets");
-        method.setAccessible(true);
-        method.invoke(sut);
     }
 
     private Set<String> collectTemplateAssetsRelativePaths() throws IOException, URISyntaxException {

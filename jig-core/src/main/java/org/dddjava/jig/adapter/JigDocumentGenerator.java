@@ -65,7 +65,7 @@ public class JigDocumentGenerator {
         JigDocumentWriter.copyResourceTo("templates/", "debug.html", outputDirectory);
     }
 
-    private void generateSharedAssets() {
+    void generateSharedAssets() {
         for (String fileName : List.of(
                 "favicon.ico",
                 "index.js",

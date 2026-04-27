@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import testing.TestSupport;
 
 import java.util.*;
@@ -281,19 +282,10 @@ public class AsmMethodVisitorInstructionTest {
         );
     }
 
-    @Test
-    void switchが取得できる1() {
-        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "switchメソッド1");
-
-        assertTrue(
-                jigMethod.instructions().instructions().stream()
-                        .anyMatch(instruction -> instruction instanceof SwitchInstruction)
-        );
-    }
-
-    @Test
-    void switchが取得できる2() {
-        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "switchメソッド2");
+    @ParameterizedTest
+    @ValueSource(strings = {"switchメソッド1", "switchメソッド2"})
+    void switchが取得できる(String methodName) {
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, methodName);
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()

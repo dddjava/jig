@@ -64,4 +64,24 @@ test('JIG Scenario Test', async ({page}) => {
     const pkgClassTab = domainSourcesCard.locator('.jig-tab', {hasText: 'パッケージ内クラス関連図'});
     await pkgClassTab.click();
     await expect(diagramTabSection).toHaveScreenshot('domain-sourcesCard-3.png');
+
+    // ナビゲーションをホバーして「ユースケース」リンクをクリック
+    await page.locator('.jig-header-nav').hover();
+    await page.locator('.jig-header-nav__dropdown').getByRole('link', {name: 'ユースケース'}).click();
+    // ------------------------------------------------------------
+    // ユースケース
+    // ------------------------------------------------------------
+    await fastExpect(page).toHaveURL(/usecase.html/);
+
+    // 1番目のカードを比較しておく
+    const firstTypeCard = page.locator('.jig-card--type').first();
+    await fastExpect(firstTypeCard).toBeVisible();
+    await expect(firstTypeCard).toHaveScreenshot('usecase-firstTypeCard.png');
+
+    // ユースケース図とシーケンス図の比較
+    const tabDiagramSection = page.locator('.tab-diagram-section').first();
+    await fastExpect(tabDiagramSection).toBeVisible();
+    await expect(tabDiagramSection).toHaveScreenshot('usecase-tabDiagramSection-1.png');
+    await tabDiagramSection.locator('.jig-tab', {hasText: 'シーケンス図'}).click();
+    await expect(tabDiagramSection).toHaveScreenshot('usecase-tabDiagramSection-2.png');
 });

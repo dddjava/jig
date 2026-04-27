@@ -30,9 +30,8 @@ public class CoreDomainCondition {
     }
 
     boolean isCoreDomainPackage(PackageId packageId) {
-        String fqn = packageId.asText();
-        // dummyがダサいが今の指定はクラス名に対する正規表現なのでパッケージにマッチさせようとしたら何かつける必要がある
-        return businessRulePattern.matcher(fqn + ".Dummy").matches();
+        // パターンはクラスFQN向けの正規表現のため、パッケージFQNの末尾に仮クラス名を付加してマッチさせる
+        return businessRulePattern.matcher(packageId.asText() + ".X").matches();
     }
 
     public CoreDomainJigTypes coreDomainJigTypes(JigTypes jigTypes) {

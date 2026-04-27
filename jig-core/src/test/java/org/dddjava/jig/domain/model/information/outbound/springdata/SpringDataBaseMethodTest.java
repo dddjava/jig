@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SpringDataBaseMethodTest {
 
     @Test
-    void testEnumValues() {
+    void enum値が正しく定義されている() {
         assertEquals("save", SpringDataBaseMethod.SAVE.methodName());
         assertEquals(PersistenceOperationType.INSERT, SpringDataBaseMethod.SAVE.persistenceOperationType());
 
@@ -24,7 +24,7 @@ class SpringDataBaseMethodTest {
     }
 
     @Test
-    void testStream() {
+    void streamで全メソッドが取得できる() {
         List<String> methodNames = SpringDataBaseMethod.stream()
                 .map(SpringDataBaseMethod::methodName)
                 .collect(Collectors.toList());

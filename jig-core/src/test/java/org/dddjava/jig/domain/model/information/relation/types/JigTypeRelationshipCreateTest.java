@@ -35,7 +35,7 @@ class JigTypeRelationshipCreateTest {
     }
 
     @Test
-    void genericFieldTest() {
+    void ジェネリクスのフィールド型と型引数が取得できる() {
         JigType jigType = TestSupport.buildJigType(ClassWithGenericField.class);
         TypeRelationships sut = TypeRelationships.from(jigType);
 
@@ -49,7 +49,7 @@ class JigTypeRelationshipCreateTest {
     }
 
     @Test
-    void genericMethodTest() {
+    void ジェネリクスのメソッド戻り値と引数の型が取得できる() {
         JigType jigType = TestSupport.buildJigType(ClassWithGenericMethod.class);
         TypeRelationships sut = TypeRelationships.from(jigType);
 
@@ -70,7 +70,7 @@ class JigTypeRelationshipCreateTest {
     }
 
     @Test
-    void simpleClassTest() {
+    void 単純なクラスで継承関係が取得できる() {
         JigType jigType = TestSupport.buildJigType(SimpleClass.class);
         TypeRelationships sut = TypeRelationships.from(jigType);
 
@@ -80,7 +80,7 @@ class JigTypeRelationshipCreateTest {
     }
 
     @Test
-    void complexClassTest() {
+    void 複数の型パラメータや継承を持つクラスで全関係が取得できる() {
         JigType jigType = TestSupport.buildJigType(ComplexClass.class);
         TypeRelationships sut = TypeRelationships.from(jigType);
 

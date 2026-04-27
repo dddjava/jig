@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,27 +50,7 @@ public enum PersistenceOperationType {
     public PersistenceTargetOperationTypes extractTable(Optional<Query> optQuery, PersistenceAccessorOperationId persistenceAccessorOperationId) {
         if (optQuery.isPresent()) {
             String sql = optQuery.get().normalizedQuery().replaceAll("\n", " ");
-            List<PersistenceTargetOperationType> targets = new ArrayList<>();
-
-            // サブクエリを除去したSQLに対してメインパターンとJOINを適用
-            String sqlWithoutSubqueries = removeSubqueries(sql);
-            for (Pattern pattern : patterns) {
-                Matcher matcher = pattern.matcher(sqlWithoutSubqueries);
-                while (matcher.find()) {
-                    targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(matcher.group(1)), this));
-                }
-            }
-
-            Matcher joinMatcher = JOIN_PATTERN.matcher(sqlWithoutSubqueries);
-            while (joinMatcher.find()) {
-                targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(joinMatcher.group(1)), SELECT));
-            }
-
-            // サブクエリ内FROMをSELECTとして追加
-            for (String table : extractSubqueryFromTargets(sql)) {
-                targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(table), SELECT));
-            }
-
+            List<PersistenceTargetOperationType> targets = findTargetsFrom(sql);
             if (!targets.isEmpty()) {
                 return new PersistenceTargetOperationTypes(targets);
             }
@@ -81,6 +60,41 @@ public enum PersistenceOperationType {
         }
 
         return new PersistenceTargetOperationTypes(new PersistenceTargetOperationType(unexpectedTable(), this));
+    }
+
+    private List<PersistenceTargetOperationType> findTargetsFrom(String sql) {
+        List<PersistenceTargetOperationType> targets = new ArrayList<>();
+        // サブクエリを除去したSQLに対してメインパターンとJOINを適用
+        String sqlWithoutSubqueries = removeSubqueries(sql);
+        for (Pattern pattern : patterns) {
+            Matcher matcher = pattern.matcher(sqlWithoutSubqueries);
+            while (matcher.find()) {
+                targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(matcher.group(1)), this));
+            }
+        }
+        Matcher joinMatcher = JOIN_PATTERN.matcher(sqlWithoutSubqueries);
+        while (joinMatcher.find()) {
+            targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(joinMatcher.group(1)), SELECT));
+        }
+        // サブクエリ内FROMをSELECTとして追加
+        for (String table : extractSubqueryFromTargets(sql)) {
+            targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(table), SELECT));
+        }
+        return targets;
+    }
+
+    /**
+     * SQLの内容からPersistenceOperationTypeを判定する。
+     * SELECTのFROMパターンは汎用的でDELETE/UPDATEにもマッチするため、SELECT は最後に試みる。
+     */
+    public static Optional<PersistenceOperationType> detectFromQuery(Query query) {
+        String sql = query.normalizedQuery().replaceAll("\n", " ");
+        for (PersistenceOperationType type : List.of(INSERT, DELETE, UPDATE, SELECT)) {
+            if (!type.findTargetsFrom(sql).isEmpty()) {
+                return Optional.of(type);
+            }
+        }
+        return Optional.empty();
     }
 
     private static String replaceRepeatedly(String sql, Pattern pattern) {
@@ -127,13 +141,4 @@ public enum PersistenceOperationType {
         return new PersistenceTarget("（解析失敗）");
     }
 
-    // FIXME: 半端な判定。これ自体なくせるはず。
-    public static Optional<PersistenceOperationType> inferOperationTypeFromQuery(Query query) {
-        String normalizedQuery = query.normalizedQuery().toLowerCase(Locale.ROOT);
-        if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
-        if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);
-        if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
-        if (normalizedQuery.startsWith("delete")) return Optional.of(DELETE);
-        return Optional.empty();
-    }
 }

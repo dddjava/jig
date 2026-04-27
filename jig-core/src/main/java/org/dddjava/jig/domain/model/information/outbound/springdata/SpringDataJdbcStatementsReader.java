@@ -161,7 +161,7 @@ public class SpringDataJdbcStatementsReader {
                                 jigMethodDeclaration.fqn(), annotationQueryString);
                     }
                     return optQuery.map(query -> {
-                        Optional<PersistenceOperationType> optOperationType = PersistenceOperationType.inferOperationTypeFromQuery(query);
+                        Optional<PersistenceOperationType> optOperationType = PersistenceOperationType.detectFromQuery(query);
                         if (optOperationType.isEmpty()) {
                             logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
                                     jigMethodDeclaration.fqn(), annotationQueryString);

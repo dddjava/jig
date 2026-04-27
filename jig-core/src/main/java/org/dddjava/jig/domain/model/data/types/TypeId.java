@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.types;
 
-import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 
 import java.util.Arrays;
@@ -29,14 +28,7 @@ public record TypeId(String value) implements Comparable<TypeId> {
      * 与えられた文字列のままのTypeIdを生成するファクトリ。
      */
     public static TypeId valueOf(String value) {
-        if (cache.containsKey(value)) {
-            Metrics.counter("cache.gets", "cache", "typeId", "result", "hit").increment();
-            return cache.get(value);
-        }
-        Metrics.counter("cache.gets", "cache", "typeId", "result", "miss").increment();
-        var instance = new TypeId(value);
-        cache.put(value, instance);
-        return instance;
+        return cache.computeIfAbsent(value, TypeId::new);
     }
 
     /**

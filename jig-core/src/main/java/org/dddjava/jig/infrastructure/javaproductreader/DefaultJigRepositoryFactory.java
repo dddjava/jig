@@ -137,7 +137,7 @@ public class DefaultJigRepositoryFactory {
             );
 
             Collection<PersistenceAccessor> springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
-            persistenceAccessorRepository.register(springDataJdbcStatements);
+            persistenceAccessorRepository = persistenceAccessorRepository.merging(springDataJdbcStatements);
 
             OtherExternalAccessorRepository otherExternalAccessorRepository = OtherExternalAccessorRepository.from(jigTypes);
             ExternalAccessorRepositories externalAccessorRepositories = new ExternalAccessorRepositories(persistenceAccessorRepository, otherExternalAccessorRepository);

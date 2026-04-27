@@ -51,7 +51,7 @@ public class TypesQueryService {
         return coreDomainJigTypesCache.get("coreDomainJigTypes", key -> {
             var jigTypes = jigTypes(jigRepository);
             var coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
-            if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
+            if (coreDomainJigTypes.isEmpty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes;
         });
     }

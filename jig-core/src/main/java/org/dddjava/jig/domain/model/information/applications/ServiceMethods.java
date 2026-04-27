@@ -36,7 +36,7 @@ public record ServiceMethods(List<Entry> entries) {
         return new ServiceMethods(list);
     }
 
-    public boolean empty() {
+    public boolean isEmpty() {
         return list().isEmpty();
     }
 

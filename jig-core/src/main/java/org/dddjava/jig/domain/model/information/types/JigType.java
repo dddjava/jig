@@ -73,7 +73,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     }
 
     public boolean hasInstanceField() {
-        return instanceJigFields().empty() == false;
+        return !instanceJigFields().isEmpty();
     }
 
     public JigMethods instanceJigMethods() {
@@ -85,7 +85,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     }
 
     public boolean hasInstanceMethod() {
-        return !instanceJigMethods().empty();
+        return !instanceJigMethods().isEmpty();
     }
 
     public JigMethods staticJigMethods() {

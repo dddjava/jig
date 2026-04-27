@@ -31,7 +31,7 @@ public class UsecaseQueryService {
     public ServiceMethods serviceMethods(JigRepository jigRepository) {
         JigTypes serviceJigTypes = typesQueryService.serviceTypes(jigRepository);
         ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(typesQueryService.jigTypes(jigRepository)));
-        if (serviceMethods.empty()) jigEventRepository.registerサービスが見つからない();
+        if (serviceMethods.isEmpty()) jigEventRepository.registerサービスが見つからない();
         return serviceMethods;
     }
 

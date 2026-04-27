@@ -37,7 +37,7 @@ public class DomainDataAdapter implements DataAdapter {
     @Override
     public String buildJson(JigRepository jigRepository) {
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
-        if (coreDomainJigTypes.empty()) {
+        if (coreDomainJigTypes.isEmpty()) {
             return "{}";
         }
         var jigTypes = coreDomainJigTypes.jigTypes();

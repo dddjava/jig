@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
  * CoreDomainにフィルタリングされたJigTypes
  */
 public record CoreDomainJigTypes(JigTypes jigTypes, CoreDomainCondition coreDomainCondition) {
-    public boolean empty() {
-        return jigTypes().empty();
+    public boolean isEmpty() {
+        return jigTypes().isEmpty();
     }
 
     /**

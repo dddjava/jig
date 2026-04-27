@@ -117,7 +117,7 @@ class SampleDataWriterTest {
         // domain-data.js and type-relations-data.js
         {
             var coreDomainJigTypes = jigService.coreDomainJigTypes(repository);
-            if (!coreDomainJigTypes.empty()) {
+            if (!coreDomainJigTypes.isEmpty()) {
                 var domainJigTypes = coreDomainJigTypes.jigTypes();
                 var enumModels = repository.jigDataProvider().fetchEnumModels();
 

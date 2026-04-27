@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public record JigFields(Collection<JigField> fields) {
 
-    public boolean empty() {
+    public boolean isEmpty() {
         return fields.isEmpty();
     }
 }

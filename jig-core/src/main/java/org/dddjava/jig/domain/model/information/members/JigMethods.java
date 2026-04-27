@@ -18,7 +18,7 @@ public record JigMethods(Collection<JigMethod> methods) {
                 .toList();
     }
 
-    public boolean empty() {
+    public boolean isEmpty() {
         return methods.isEmpty();
     }
 

@@ -82,7 +82,7 @@ public class JigTypes {
                 .isPresent();
     }
 
-    public boolean empty() {
+    public boolean isEmpty() {
         return list.isEmpty();
     }
 

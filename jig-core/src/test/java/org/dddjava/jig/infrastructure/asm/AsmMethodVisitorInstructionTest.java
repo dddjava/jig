@@ -143,7 +143,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void 自身のメソッド参照のInstructionが検出できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "自クラスメソッド参照メソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "自クラスメソッド参照メソッド");
 
         MethodCall actual = getDynamicMethodCallStream(jigMethod)
                 .findAny().orElseThrow();
@@ -159,7 +159,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void 違うクラスのメソッド参照のInstructionが検出できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "他クラスメソッド参照メソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "他クラスメソッド参照メソッド");
 
         MethodCall actual = getDynamicMethodCallStream(jigMethod)
                 .findAny().orElseThrow();
@@ -169,7 +169,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void Lambda式のInstructionが検出できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "lambda式メソッド");
 
         MethodCall actual = getDynamicMethodCallStream(jigMethod)
                 .findAny().orElseThrow();
@@ -179,7 +179,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "lambda式メソッド");
 
         List<String> actual = jigMethod.instructions().lambdaInlinedMethodCallStream()
                 .map(MethodCall::methodName)
@@ -195,7 +195,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる_インスタンスメソッド呼び出し() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド_インスタンスメソッド呼び出し");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "lambda式メソッド_インスタンスメソッド呼び出し");
 
         List<String> actual = jigMethod.instructions().lambdaInlinedMethodCallStream()
                 .map(MethodCall::methodName)
@@ -211,7 +211,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる_多段() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式の多段メソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "lambda式の多段メソッド");
 
         List<String> actual = jigMethod.instructions().lambdaInlinedMethodCallStream()
                 .map(MethodCall::methodName)
@@ -242,7 +242,7 @@ public class AsmMethodVisitorInstructionTest {
     })
     @ParameterizedTest
     void メソッド参照やLambda式で使用している型が検出できる(String methodName, String expected) {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, methodName);
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, methodName);
 
         Set<TypeId> actual = jigMethod.jigMethodDeclaration().associatedTypes();
         assertTrue(actual.contains(TypeId.valueOf(expected)), actual.toString());
@@ -250,7 +250,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void 分岐メソッドからLabelが取得できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "分岐メソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "分岐メソッド");
 
         var instructionList = jigMethod.instructions().instructions();
 
@@ -273,7 +273,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void tryCatchブロックが取得できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "tryCatchメソッド");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "tryCatchメソッド");
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()
@@ -283,7 +283,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void switchが取得できる1() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "switchメソッド1");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "switchメソッド1");
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()
@@ -293,7 +293,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void switchが取得できる2() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "switchメソッド2");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "switchメソッド2");
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()
@@ -303,7 +303,7 @@ public class AsmMethodVisitorInstructionTest {
 
     @Test
     void フィールドアクセスが取得できる() {
-        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "フィールドアクセス");
+        JigMethod jigMethod = TestSupport.buildJigMethod(SutClass.class, "フィールドアクセス");
 
         List<Instruction> actual = jigMethod.instructions().instructions();
         assertTrue(

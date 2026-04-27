@@ -81,13 +81,15 @@ public class TestSupport {
         }
     }
 
-    public static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
+    public static JigMethod buildJigMethod(Class<?> sutClass, String methodName) {
         JigTypeMembers members = buildJigType(sutClass).jigTypeMembers();
-        return members.allJigMethodStream()
+        var matches = members.allJigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
-                // TODO 同名を複数検出したら1件目を返している。エラーにすべきでしょう。
-                .findFirst()
-                .orElseThrow();
+                .toList();
+        if (matches.size() != 1) {
+            throw new AssertionError("メソッド '" + methodName + "' が " + matches.size() + " 件見つかりました。一意に特定できません");
+        }
+        return matches.getFirst();
     }
 
     public static JigTypeHeader getJigTypeHeader(Class<?> clz) {

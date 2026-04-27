@@ -18,7 +18,7 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() {
-        var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "method");
+        var jigMethod = TestSupport.buildJigMethod(MethodInstructionTestStub.class, "method");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
         assertEquals(List.of("invokeMethod", "chainedInvokeMethod"),
@@ -27,7 +27,7 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_メソッド参照() {
-        var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "methodRef");
+        var jigMethod = TestSupport.buildJigMethod(MethodInstructionTestStub.class, "methodRef");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
         assertEquals(List.of("referenceMethod"),
@@ -36,7 +36,7 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_lambda式() {
-        var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "lambda");
+        var jigMethod = TestSupport.buildJigMethod(MethodInstructionTestStub.class, "lambda");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
         assertEquals(List.of("empty", "lambda$lambda$0", "forEach"),

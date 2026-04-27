@@ -162,14 +162,14 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用している型にvoidは含まれない() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "引数なしで戻り値がvoidのメソッド");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "引数なしで戻り値がvoidのメソッド");
 
         assertEquals(0, method.usingTypes().size(), () -> "using types: " + method.usingTypes());
     }
 
     @Test
     void メソッドで使用している型にvoidは含まれない_void呼び出し() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのメソッドを呼び出しているメソッド");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "戻り値がvoidのメソッドを呼び出しているメソッド");
 
         var actual = method.jigMethodDeclaration().associatedTypes();
         assertEquals(Set.of(TypeId.valueOf("java.lang.Object")), actual,
@@ -178,7 +178,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用している型にvoidは含まれない_戻り値なしのlambda() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのlambda");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "戻り値がvoidのlambda");
 
         var actual = method.jigMethodDeclaration().associatedTypes();
         assertEquals(Set.of(
@@ -191,7 +191,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用している型にvoidは含まれない_戻り値がvoidのメソッド参照() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのメソッド参照");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "戻り値がvoidのメソッド参照");
 
         var actual = method.jigMethodDeclaration().associatedTypes();
         assertEquals(Set.of(
@@ -203,7 +203,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用している型が取得できる() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用している基本的な型が取得できる");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "メソッドで使用している基本的な型が取得できる");
 
         Set<String> actual = method.jigMethodDeclaration().associatedTypes()
                 // アサーションのための名前でsetで収集する
@@ -225,7 +225,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用している型が取得できる_フィールド() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているフィールドの型が取得できる");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "メソッドで使用しているフィールドの型が取得できる");
 
         Set<String> actual = method.jigMethodDeclaration().associatedTypes()
                 // アサーションのための名前でsetで収集する
@@ -243,7 +243,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用しているジェネリクスが取得できる() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているジェネリクスが取得できる");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "メソッドで使用しているジェネリクスが取得できる");
 
         var actual = method.jigMethodDeclaration().associatedTypes()
                 // アサーションのための名前でsetで収集する
@@ -258,7 +258,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() {
-        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
+        JigMethod method = TestSupport.buildJigMethod(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
         JigAnnotationReference sut = method.declarationAnnotationStream().findFirst().orElseThrow();
 
         assertEquals(VariableAnnotation.class.getTypeName(), sut.id().fqn());
@@ -273,14 +273,14 @@ class AsmMethodVisitorTest {
 
     @Test
     void 戻り値のジェネリクスが取得できる() {
-        JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
+        JigMethod actual = TestSupport.buildJigMethod(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
 
         assertEquals("List<String>", actual.returnType().simpleNameWithGenerics());
     }
 
     @Test
     void 引数型のジェネリクスが取得できる() {
-        JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "引数型のジェネリクスが取得できる");
+        JigMethod actual = TestSupport.buildJigMethod(MethodVisitorSut.class, "引数型のジェネリクスが取得できる");
 
         assertEquals("引数型のジェネリクスが取得できる(List<String>)", actual.simpleMethodSignatureText());
     }
@@ -295,7 +295,7 @@ class AsmMethodVisitorTest {
     })
     @ParameterizedTest
     void メソッドでifやswitchを使用していると検出できる(String name, int number) {
-        JigMethod actual = TestSupport.JigMethod準備(DecisionClass.class, name);
+        JigMethod actual = TestSupport.buildJigMethod(DecisionClass.class, name);
         assertEquals(number, actual.instructions().cyclomaticComplexity());
     }
 
@@ -312,20 +312,20 @@ class AsmMethodVisitorTest {
     })
     @ParameterizedTest
     void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
-        JigMethod actual = TestSupport.JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
+        JigMethod actual = TestSupport.buildJigMethod(MethodReturnAndArgumentsSut.class, methodName);
         assertEquals(expectedText, actual.simpleMethodDeclarationText());
     }
 
     @Test
     void lambdaで生成されるメソッドが判定できる() {
         // MEMO: lambdaを書くたびにインクリメントされるのに追随するのが手間
-        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambda合成メソッドを判定できる$1");
+        var sut = TestSupport.buildJigMethod(MethodVisitorSut.class, "lambda$lambda合成メソッドを判定できる$1");
         assertTrue(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 
     @Test
     void lambdaで生成されていないメソッドが判定できる() {
-        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambda合成メソッドに誤認しそうなメソッド$0");
+        var sut = TestSupport.buildJigMethod(MethodVisitorSut.class, "lambda$lambda合成メソッドに誤認しそうなメソッド$0");
         assertFalse(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 }

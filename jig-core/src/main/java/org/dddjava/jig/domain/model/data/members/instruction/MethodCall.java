@@ -60,8 +60,7 @@ public record MethodCall(TypeId methodOwner, String methodName,
         return jigMethodId().isLambda();
     }
 
-    // FIXME いい名前・・・
-    public boolean isXxx() {
+    public boolean isUserDefinedMethodCall() {
         return !isLambda() && !isConstructor() && isNotJSL();
     }
 }

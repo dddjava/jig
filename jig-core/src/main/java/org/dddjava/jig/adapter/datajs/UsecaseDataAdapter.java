@@ -74,7 +74,7 @@ public class UsecaseDataAdapter implements DataAdapter {
     private static JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return JsonSupport.buildMethodJson(jigMethod)
                 .and("callMethods", Json.array(jigMethod.lambdaInlinedMethodCallStream()
-                        .filter(methodCall -> methodCall.isXxx())
+                        .filter(methodCall -> methodCall.isUserDefinedMethodCall())
                         .map(MethodCall::fqn)
                         .toList()));
     }

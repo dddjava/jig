@@ -15,7 +15,6 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngle;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
@@ -223,7 +222,7 @@ public class ListOutputDataAdapter implements DataAdapter {
                 .and("usagePlaces", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText())
                 .and("hasParameters", jigType.hasInstanceField())
                 .and("hasBehavior", jigType.hasInstanceMethod())
-                .and("isPolymorphic", jigType.typeKind() == TypeKind.抽象列挙型)
+                .and("isPolymorphic", jigType.isPolymorphicEnumDeclaration())
                 .build();
     }
 

@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,8 +25,7 @@ import testing.TestSupport;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class AsmClassSourceReaderTest {
@@ -76,20 +74,19 @@ public class AsmClassSourceReaderTest {
 
     @MethodSource
     @ParameterizedTest
-    void TypeKind判定(Class<?> targetType, TypeKind typeKind) {
+    void isEnumDeclaration判定(Class<?> targetType, boolean isEnum, boolean isPolymorphic) {
         JigType actual = TestSupport.buildJigType(targetType);
-        assertEquals(typeKind, actual.typeKind());
+        assertEquals(isEnum, actual.isEnumDeclaration());
+        assertEquals(isPolymorphic, actual.isPolymorphicEnumDeclaration());
     }
 
-    static Stream<Arguments> TypeKind判定() {
+    static Stream<Arguments> isEnumDeclaration判定() {
         return Stream.of(
-                arguments(SimpleNumber.class, TypeKind.通常型),
-                arguments(SimpleEnum.class, TypeKind.列挙型),
-                arguments(RichEnum.class, TypeKind.抽象列挙型),
-                // インタフェースと判定させたい
-                arguments(HogeRepository.class, TypeKind.通常型),
-                // アノテーションと判定させたい
-                arguments(RuntimeRetainedAnnotation.class, TypeKind.通常型)
+                arguments(SimpleNumber.class, false, false),
+                arguments(SimpleEnum.class, true, false),
+                arguments(RichEnum.class, true, true),
+                arguments(HogeRepository.class, false, false),
+                arguments(RuntimeRetainedAnnotation.class, false, false)
         );
     }
 }

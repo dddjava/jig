@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 
+
 import java.util.Collection;
 
 /**
@@ -29,8 +30,7 @@ public enum JigTypeValueKind {
     private static final TypeId SET = TypeId.valueOf("java.util.Set");
 
     public static JigTypeValueKind from(JigType jigType) {
-        TypeKind typeKind = jigType.typeKind();
-        if (typeKind.isCategory()) {
+        if (jigType.isEnumDeclaration()) {
             return 区分;
         }
 

@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethods;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+
 /**
  * JIGが識別する型
  */
@@ -47,14 +48,13 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
                 .findAny();
     }
 
-    public TypeKind typeKind() {
-        // 互換のためにTypeKindを返す形を維持するための実装。TypeKindはあまり活用できていないので、別の何かで再定義したい
-        return switch (jigTypeHeader.javaTypeDeclarationKind()) {
-            case RECORD -> TypeKind.レコード型;
-            case ENUM -> jigTypeHeader.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
-                    ? TypeKind.抽象列挙型 : TypeKind.列挙型;
-            default -> TypeKind.通常型;
-        };
+    public boolean isEnumDeclaration() {
+        return jigTypeHeader.javaTypeDeclarationKind() == JavaTypeDeclarationKind.ENUM;
+    }
+
+    public boolean isPolymorphicEnumDeclaration() {
+        return isEnumDeclaration()
+                && jigTypeHeader.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT);
     }
 
     public JigTypeValueKind toValueKind() {

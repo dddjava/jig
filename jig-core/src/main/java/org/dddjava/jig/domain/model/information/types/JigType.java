@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.information.members.JigMethods;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-
 /**
  * JIGが識別する型
  */

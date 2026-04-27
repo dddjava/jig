@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.List;
@@ -84,15 +83,11 @@ public class DomainDataAdapter implements DataAdapter {
                 .and("kind", jigType.toValueKind())
                 .and("isDeprecated", jigType.isDeprecated());
 
-        if (isEnum(jigType)) {
+        if (jigType.isEnumDeclaration()) {
             builder.and("enumInfo", buildEnumInfoJson(jigType, enumModels));
         }
 
         return builder;
-    }
-
-    private static boolean isEnum(JigType jigType) {
-        return jigType.toValueKind() == JigTypeValueKind.区分;
     }
 
     private static JsonObjectBuilder buildEnumInfoJson(JigType jigType, EnumModels enumModels) {

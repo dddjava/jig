@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 
-
 import java.util.Collection;
 
 /**

@@ -33,7 +33,6 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
     }
 
     public boolean isDeprecated() {
-        return declarationAnnotations.stream()
-                .anyMatch(annotation -> annotation.id().equals(TypeId.DEPRECATED_ANNOTATION));
+        return declarationAnnotations.stream().anyMatch(JigAnnotationReference::isDeprecated);
     }
 }

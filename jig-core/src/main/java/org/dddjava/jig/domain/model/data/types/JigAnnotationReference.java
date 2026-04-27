@@ -19,6 +19,10 @@ import static java.util.stream.Collectors.joining;
 public record JigAnnotationReference(TypeId id,
                                      Collection<JigAnnotationElementValuePair> elements) {
 
+    public boolean isDeprecated() {
+        return id.equals(TypeId.DEPRECATED_ANNOTATION);
+    }
+
     public String simpleTypeName() {
         return id.asSimpleText();
     }

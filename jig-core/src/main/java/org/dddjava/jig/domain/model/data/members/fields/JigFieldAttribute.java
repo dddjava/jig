@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.data.members.fields;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -14,7 +13,6 @@ record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                          Collection<JigAnnotationReference> declarationAnnotations,
                          EnumSet<JigFieldFlag> flags) {
     public boolean isDeprecated() {
-        return declarationAnnotations.stream()
-                .anyMatch(annotation -> annotation.id().equals(TypeId.DEPRECATED_ANNOTATION));
+        return declarationAnnotations.stream().anyMatch(JigAnnotationReference::isDeprecated);
     }
 }

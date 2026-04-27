@@ -9,7 +9,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,24 +20,21 @@ class JigPropertyLoaderTest {
     @TempDir
     Path tempDir;
 
-    Path userHomeBackup;
-    Path userDirBackup;
+    String userHomeBackup;
+    String userDirBackup;
 
     @BeforeEach
     void setUp() {
-        // テストが終わったら戻す用
-        userHomeBackup = Paths.get(System.getProperty("user.home"));
-        userDirBackup = Paths.get(System.getProperty("user.dir"));
-        // テストのために上書き
+        userHomeBackup = System.getProperty("user.home");
+        userDirBackup = System.getProperty("user.dir");
         System.setProperty("user.home", tempDir.toAbsolutePath().toString());
         System.setProperty("user.dir", tempDir.toAbsolutePath().toString());
     }
 
     @AfterEach
     void tearDown() {
-        // 終わったので戻す
-        System.setProperty("user.home", userHomeBackup.toAbsolutePath().toString());
-        System.setProperty("user.dir", userDirBackup.toAbsolutePath().toString());
+        System.setProperty("user.home", userHomeBackup);
+        System.setProperty("user.dir", userDirBackup);
     }
 
     @Test

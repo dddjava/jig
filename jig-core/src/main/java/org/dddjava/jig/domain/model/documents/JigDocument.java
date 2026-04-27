@@ -74,7 +74,6 @@ public enum JigDocument {
     }
 
     public String label() {
-        Locale locale = Locale.getDefault();
-        return locale.getLanguage().equals("en") ? label.english : label.japanese;
+        return label.labelFor(Locale.getDefault());
     }
 }

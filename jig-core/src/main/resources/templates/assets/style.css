@@ -1882,7 +1882,7 @@ table td.number {
 }
 
 .outbound-interface .outbound-visibility-panel {
-    padding: 8px;
+    padding: 6px;
     background-color: #eef4ff;
     border-radius: 6px;
     margin-top: 8px;
@@ -1896,9 +1896,9 @@ table td.number {
 
 .outbound-interface .outbound-visibility-panel__group {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .outbound-interface .outbound-visibility-panel__group-label {
@@ -1924,6 +1924,13 @@ table td.number {
     padding-left: 8px;
     font-size: 0.95em;
     color: #374151;
+}
+
+.outbound-interface .outbound-visibility-panel__group--grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 4px 12px;
+    align-items: center;
 }
 
 .outbound-interface .crud-table {

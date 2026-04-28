@@ -716,7 +716,7 @@ test.describe('package.js', () => {
                 assert.equal(tabsBar.children[0].className, 'mutual-dependency-title');
                 assert.equal(tabsBar.children[0].textContent, 'alpha <-> beta');
                 assert.equal(tabsBar.children[1].textContent, '概要');
-                assert.equal(tabsBar.children[2].textContent, 'ダイアグラム');
+                assert.equal(tabsBar.children[2].textContent, 'クラス関連図');
                 assert.equal(tabsBar.children[3].textContent, 'テキスト');
                 // 概要パネルにペアラベルが表示される
                 const overviewPanel = tabSection.children[1];

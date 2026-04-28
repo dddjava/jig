@@ -323,7 +323,7 @@ const PackageApp = (() => {
             const tabSection = Jig.dom.tab.buildSection(
                 [
                     {id: 'overview', label: '概要'},
-                    {id: 'diagram', label: 'ダイアグラム'},
+                    {id: 'diagram', label: 'クラス関連図'},
                     {id: 'text', label: 'テキスト'},
                 ],
                 {

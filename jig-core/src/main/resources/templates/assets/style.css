@@ -15,10 +15,6 @@ body:has(> .split-view) {
     overflow: hidden;
 }
 
-/* outbound は従来通り（split-view は main の中にある） */
-body.outbound-interface {
-    overflow: hidden;
-}
 
 main, nav {
     padding: 0 1em;
@@ -1791,26 +1787,6 @@ table td.number {
     margin-top: 0;
     margin-bottom: 10px;
     color: #1b3a66;
-}
-
-.outbound-interface .outbound-operation-item-meta {
-    margin: 0;
-    display: grid;
-    gap: 6px;
-}
-
-.outbound-interface .outbound-operation-item-field {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    gap: 8px;
-}
-
-.outbound-interface .outbound-operation-item-field > dt {
-    font-weight: bold;
-}
-
-.outbound-interface .outbound-operation-item-field > dd {
-    margin: 0;
 }
 
 .outbound-interface .outbound-persistence-detail-title {

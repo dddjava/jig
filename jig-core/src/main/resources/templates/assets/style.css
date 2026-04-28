@@ -1741,21 +1741,6 @@ table td.number {
 }
 
 /* 出力インタフェース概要 */
-.outbound-interface main {
-    height: calc(100vh - 2em);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.outbound-interface .outbound-view-container {
-    padding-top: 16px;
-}
-
-.outbound-interface .outbound-sidebar {
-    padding-bottom: 20px;
-}
-
 .outbound-interface .outbound-group-list {
     display: grid;
     gap: 16px;
@@ -1907,39 +1892,15 @@ table td.number {
 }
 
 .outbound-interface .outbound-crud-panel {
-    flex: 1;
     overflow: auto;
     width: 100%;
-    height: 100%;
     box-sizing: border-box;
-}
-
-.outbound-interface .outbound-sticky-header {
-    flex-shrink: 0;
-    background-color: #fff;
-}
-
-.outbound-interface .outbound-settings-panel {
-    margin: 16px 0 0 0;
-}
-
-.outbound-interface .outbound-settings-panel__title {
-    margin: 0;
-    color: #31455f;
-    font-size: 0.85rem;
-    font-weight: bold;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    align-items: center;
 }
 
 .outbound-interface .outbound-visibility-panel {
     padding: 8px;
     background-color: #eef4ff;
     border-radius: 6px;
-    font-size: 0.9em;
     margin-top: 8px;
 }
 
@@ -1979,51 +1940,6 @@ table td.number {
     padding-left: 8px;
     font-size: 0.95em;
     color: #374151;
-}
-
-.outbound-interface .outbound-tab-list {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #dee2e6;
-    padding-top: 10px;
-}
-
-.outbound-interface .tab-button {
-    padding: 10px 20px;
-    border: 1px solid #dee2e6;
-    border-bottom: none;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    background-color: #e9ecef;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    color: #495057;
-    margin-bottom: -2px;
-}
-
-.outbound-interface .tab-button:hover {
-    background-color: #dee2e6;
-}
-
-.outbound-interface .tab-button.is-active {
-    background-color: #fff;
-    border-color: #dee2e6;
-    border-bottom: 2px solid #fff;
-    color: #1b3a66;
-}
-
-.outbound-interface .outbound-tab-panel {
-    display: none;
-}
-
-.outbound-interface .outbound-tab-panel.is-active {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
 }
 
 .outbound-interface .crud-table {

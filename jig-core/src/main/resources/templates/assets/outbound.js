@@ -14,7 +14,6 @@ const OutboundApp = (() => {
 
     const state = {
         visibility: null,
-        activeTab: 'outbound',
         data: null,
         grouped: null,
         persistenceGrouped: null,
@@ -268,20 +267,6 @@ const OutboundApp = (() => {
             });
         });
         return Array.from(targetsSet).sort();
-    }
-
-    function render() {
-        updateTabs(state.activeTab);
-        renderAllPanels();
-    }
-
-    function updateTabs(activeTab) {
-        document.querySelectorAll('.outbound-tab-list .tab-button').forEach(btn => {
-            btn.classList.toggle('is-active', btn.getAttribute('data-tab') === activeTab);
-        });
-        document.querySelectorAll('.outbound-tab-panel').forEach(panel => {
-            panel.classList.toggle('is-active', panel.id === `${activeTab}-tab-panel`);
-        });
     }
 
     function renderAllPanels() {
@@ -816,7 +801,7 @@ const OutboundApp = (() => {
         state.externalGrouped = model.externalGrouped;
 
         bindEvents();
-        render();
+        renderAllPanels();
     }
 
     function setState(newState) {
@@ -824,9 +809,6 @@ const OutboundApp = (() => {
         if ('visibility' in newState) {
             renderAllPanels();
             Jig.mermaid.diagram.rerenderVisible();
-        }
-        if ('activeTab' in newState) {
-            updateTabs(state.activeTab);
         }
     }
 
@@ -858,12 +840,6 @@ const OutboundApp = (() => {
         document.querySelectorAll('input[name="diagram-direction"]').forEach(input => {
             input.addEventListener('change', () => {
                 setState({visibility: readVisibility()});
-            });
-        });
-
-        document.querySelectorAll('.outbound-tab-list .tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                setState({activeTab: button.getAttribute('data-tab')});
             });
         });
     }

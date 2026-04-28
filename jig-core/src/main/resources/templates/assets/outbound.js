@@ -507,7 +507,19 @@ const OutboundApp = (() => {
             return;
         }
 
-        Jig.dom.sidebar.renderSection(sidebar, null, [{id: "outbound-crud-panel", label: "永続化(CRUD)"}]);
+        if (sidebar) {
+            sidebar.appendChild(Jig.dom.createElement("section", {
+                className: "in-page-sidebar__section",
+                children: [Jig.dom.createElement("p", {
+                    className: "in-page-sidebar__title",
+                    children: [Jig.dom.createElement("a", {
+                        className: "in-page-sidebar__link",
+                        attributes: {href: "#outbound-crud-panel"},
+                        textContent: "永続化(CRUD)"
+                    })]
+                })]
+            }));
+        }
 
         const headerRow = Jig.dom.createElement("tr", {
             children: [

@@ -295,12 +295,24 @@ const PackageApp = (() => {
         return Array.from(mutualPairs).sort().map(key => {
             const parts = key.split('::');
             const pairLabel = `${parts[0]} <-> ${parts[1]}`;
-            const titleLabel = `${getGlossaryTitle(parts[0])} <-> ${getGlossaryTitle(parts[1])}`;
-            const causes = relationMap.get(key);
+            const titles = [getGlossaryTitle(parts[0]), getGlossaryTitle(parts[1])];
+            const titleLabel = `${titles[0]} <-> ${titles[1]}`;
+            const allCauses = Array.from(relationMap.get(key) ?? []).sort();
+            const causesForward = allCauses.filter(c => {
+                const fromPkg = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(c.split(' -> ')[0]), aggregationDepth);
+                return fromPkg === parts[0];
+            });
+            const causesBackward = allCauses.filter(c => {
+                const fromPkg = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(c.split(' -> ')[0]), aggregationDepth);
+                return fromPkg === parts[1];
+            });
             return {
                 pairLabel,
                 titleLabel,
-                causes: causes ? Array.from(causes).sort() : [],
+                titles,
+                causes: allCauses,
+                causesForward,
+                causesBackward,
             };
         });
     }
@@ -332,12 +344,34 @@ const PackageApp = (() => {
                     onTabChange: (id) => {
                         if (id === 'diagram' && !diagramRendered) {
                             diagramRendered = true;
+                            const forwardCheckbox = Jig.dom.createElement('input', {attributes: {type: 'checkbox'}});
+                            forwardCheckbox.checked = true;
+                            const backwardCheckbox = Jig.dom.createElement('input', {attributes: {type: 'checkbox'}});
+                            backwardCheckbox.checked = true;
+                            tabSection.panels['diagram'].appendChild(Jig.dom.createElement('fieldset', {
+                                className: 'diagram-panel-options',
+                                children: [
+                                    Jig.dom.createElement('legend', {textContent: '表示する関連'}),
+                                    Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardCheckbox, `${item.titles[0]} → ${item.titles[1]} (${item.causesForward.length}件)`]}),
+                                    Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardCheckbox, `${item.titles[0]} ← ${item.titles[1]} (${item.causesBackward.length}件)`]}),
+                                ],
+                            }));
                             const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
                             tabSection.panels['diagram'].appendChild(diagramContainer);
-                            const generator = (dir) => buildMutualDependencyDiagramSource(item.causes, dir, item.pairLabel).source;
-                            if (generator(context.mutualDependencyDiagramDirection)) {
-                                Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.mutualDependencyDiagramDirection});
-                            }
+                            const render = (container) => {
+                                container.innerHTML = '';
+                                const filteredCauses = [
+                                    ...(forwardCheckbox.checked ? item.causesForward : []),
+                                    ...(backwardCheckbox.checked ? item.causesBackward : []),
+                                ];
+                                const generator = (dir) => buildMutualDependencyDiagramSource(filteredCauses, dir, item.pairLabel).source;
+                                if (generator(context.mutualDependencyDiagramDirection)) {
+                                    Jig.mermaid.render.renderWithControls(container, generator, {direction: context.mutualDependencyDiagramDirection});
+                                }
+                            };
+                            render(diagramContainer);
+                            forwardCheckbox.addEventListener('change', () => render(diagramContainer));
+                            backwardCheckbox.addEventListener('change', () => render(diagramContainer));
                         }
                     }
                 }

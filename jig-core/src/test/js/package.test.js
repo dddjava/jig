@@ -614,6 +614,8 @@ test.describe('package.js', () => {
                 assert.equal(items.length, 1);
                 assert.equal(items[0].pairLabel, 'app.alpha <-> app.beta');
                 assert.equal(items[0].causes.length, 2);
+                assert.equal(items[0].causesForward.length, 1);  // app.alpha -> app.beta
+                assert.equal(items[0].causesBackward.length, 1); // app.beta -> app.alpha
             });
 
             test('buildMutualDependencyDiagramSource: 相互依存のMermaidソースを生成する', () => {

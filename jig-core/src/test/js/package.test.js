@@ -714,7 +714,7 @@ test.describe('package.js', () => {
                 // title + 3 tabs: 概要, ダイアグラム, テキスト
                 assert.equal(tabsBar.children.length, 4);
                 assert.equal(tabsBar.children[0].className, 'mutual-dependency-title');
-                assert.equal(tabsBar.children[0].textContent, 'app.alpha <-> app.beta');
+                assert.equal(tabsBar.children[0].textContent, 'alpha <-> beta');
                 assert.equal(tabsBar.children[1].textContent, '概要');
                 assert.equal(tabsBar.children[2].textContent, 'ダイアグラム');
                 assert.equal(tabsBar.children[3].textContent, 'テキスト');

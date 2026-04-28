@@ -295,9 +295,11 @@ const PackageApp = (() => {
         return Array.from(mutualPairs).sort().map(key => {
             const parts = key.split('::');
             const pairLabel = `${parts[0]} <-> ${parts[1]}`;
+            const titleLabel = `${getGlossaryTitle(parts[0])} <-> ${getGlossaryTitle(parts[1])}`;
             const causes = relationMap.get(key);
             return {
                 pairLabel,
+                titleLabel,
                 causes: causes ? Array.from(causes).sort() : [],
             };
         });
@@ -343,7 +345,7 @@ const PackageApp = (() => {
 
             const tabsBar = tabSection.section.children[0];
             tabsBar.insertBefore(
-                Jig.dom.createElement('span', {className: 'mutual-dependency-title', textContent: item.pairLabel}),
+                Jig.dom.createElement('span', {className: 'mutual-dependency-title', textContent: item.titleLabel}),
                 tabsBar.children[0]
             );
 

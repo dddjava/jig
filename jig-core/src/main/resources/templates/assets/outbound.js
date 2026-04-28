@@ -366,7 +366,7 @@ const OutboundApp = (() => {
         Jig.dom.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => ({
             id: Jig.util.fqnToId("port", group.outboundPort.fqn),
             label: Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
-        })));
+        })), {collapsible: true});
 
         if (grouped.length === 0) renderNoData(container);
     }
@@ -403,7 +403,7 @@ const OutboundApp = (() => {
         Jig.dom.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
             id: Jig.util.fqnToId("persistence", group.persistenceTarget),
             label: group.persistenceTarget
-        })));
+        })), {collapsible: true});
 
         if (grouped.length === 0) renderNoData(container);
     }
@@ -443,7 +443,7 @@ const OutboundApp = (() => {
         Jig.dom.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
             id: Jig.util.fqnToId("external", group.externalType.fqn),
             label: Jig.glossary.getTypeTerm(group.externalType.fqn).title
-        })));
+        })), {collapsible: true});
 
         if (grouped.length === 0) renderNoData(container);
     }

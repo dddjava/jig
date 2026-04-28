@@ -315,9 +315,7 @@ const PackageApp = (() => {
 
         container.style.display = '';
         const heading = Jig.dom.createElement('h3', {textContent: '相互依存と原因'});
-        const list = Jig.dom.createElement('ul');
-
-        items.forEach(item => {
+        const cards = items.map(item => {
             let diagramRendered = false;
 
             const tabSection = Jig.dom.tab.buildSection(
@@ -331,11 +329,11 @@ const PackageApp = (() => {
                     onTabChange: (id) => {
                         if (id === 'diagram' && !diagramRendered) {
                             diagramRendered = true;
-                            const container = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
-                            tabSection.panels['diagram'].appendChild(container);
+                            const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
+                            tabSection.panels['diagram'].appendChild(diagramContainer);
                             const generator = (dir) => buildMutualDependencyDiagramSource(item.causes, dir, item.pairLabel).source;
                             if (generator(context.mutualDependencyDiagramDirection)) {
-                                Jig.mermaid.render.renderWithControls(container, generator, {direction: context.mutualDependencyDiagramDirection});
+                                Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.mutualDependencyDiagramDirection});
                             }
                         }
                     }
@@ -353,11 +351,11 @@ const PackageApp = (() => {
                 })
             );
 
-            list.appendChild(Jig.dom.createElement('li', {children: [tabSection.section]}));
+            return Jig.dom.createElement('div', {className: 'jig-card jig-card--item', children: [tabSection.section]});
         });
         container.innerHTML = '';
         container.appendChild(heading);
-        container.appendChild(list);
+        cards.forEach(card => container.appendChild(card));
     }
 
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {

@@ -703,14 +703,15 @@ test.describe('package.js', () => {
                 );
 
                 assert.equal(container.style.display, '');
+                // heading + 1 card
                 assert.equal(container.children.length, 2);
-                // heading, list(ul)
                 assert.equal(container.children[0].tagName, 'h3');
-                assert.equal(container.children[1].tagName, 'ul');
 
-                const li = container.children[1].children[0];
-                // li has a tab section
-                const tabSection = li.children[0];
+                const card = container.children[1];
+                assert.equal(card.className, 'jig-card jig-card--item');
+
+                // card has a tab section
+                const tabSection = card.children[0];
                 const tabsBar = tabSection.children[0];
                 assert.equal(tabsBar.className, 'jig-tabs');
                 // 3 tabs: 概要, ダイアグラム, テキスト

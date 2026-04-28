@@ -122,8 +122,8 @@ const OutboundApp = (() => {
                     externalAccessors
                 }];
             }).sort((a, b) => {
-                const left = Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn).title;
-                const right = Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn).title;
+                const left = Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn, true).title;
+                const right = Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn, true).title;
                 return left.localeCompare(right, "ja");
             });
             return {outboundPort: port, operations};
@@ -561,7 +561,7 @@ const OutboundApp = (() => {
                     children: [
                         Jig.dom.createElement("td", {
                             className: "operation-cell",
-                            textContent: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title
+                            textContent: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title
                         }),
                         ...allPersistenceTargets.map(persistenceTarget => {
                             const cell = Jig.dom.createElement("td", {className: "crud-cell"});
@@ -616,12 +616,12 @@ const OutboundApp = (() => {
         };
 
         group.operations.forEach((operation) => {
-            const portOpName = Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title;
+            const portOpName = Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title;
             const portOpFqn = operation.outboundPortOperation.fqn;
 
             const adapterFqn = operation.outboundAdapter?.fqn;
             const adapterLabel = Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title;
-            const executionName = Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn).title;
+            const executionName = Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title;
             const executionFqn = operation.outboundAdapterExecution?.fqn;
 
             let lastNodeId = addPortNode(builder, contexts.portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -723,11 +723,11 @@ const OutboundApp = (() => {
         return {
             portFqn: operation.outboundPort.fqn,
             portLabel: Jig.glossary.getTypeTerm(operation.outboundPort.fqn).title,
-            portOpName: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title,
+            portOpName: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title,
             portOpFqn: operation.outboundPortOperation.fqn,
             adapterFqn: operation.outboundAdapter?.fqn,
             adapterLabel: Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title,
-            executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn).title,
+            executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title,
             executionFqn: operation.outboundAdapterExecution?.fqn,
         };
     }
@@ -821,7 +821,7 @@ const OutboundApp = (() => {
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.operations.forEach(accMethod => {
                 const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
-                builder.addNodeToSubgraph(sg, accMethodNodeId, Jig.glossary.getMethodTerm(accMethod.fqn).title, 'method');
+                builder.addNodeToSubgraph(sg, accMethodNodeId, Jig.glossary.getMethodTerm(accMethod.fqn, true).title, 'method');
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
             });

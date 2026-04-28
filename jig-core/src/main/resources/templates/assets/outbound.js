@@ -8,7 +8,6 @@ const OutboundApp = (() => {
         target: true,
         externalAccessor: false, externalAccessorMethod: false,
         externalType: true, externalTypeMethod: true,
-        direction: 'LR',
         crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
     };
 
@@ -322,7 +321,7 @@ const OutboundApp = (() => {
                 const currentVisibility = readVisibility();
                 const generator = (dir) => generatePortMermaidCode(group, {...currentVisibility, direction: dir});
                 if (generator(currentVisibility.direction)) {
-                    renderMermaid(generator, container, {direction: currentVisibility.direction});
+                    renderMermaid(generator, container, {direction: 'LR'});
                 }
             }, {className: "mermaid-diagram port-diagram"});
 
@@ -337,7 +336,7 @@ const OutboundApp = (() => {
                         direction: dir
                     });
                     if (generator(currentVisibility.direction)) {
-                        renderMermaid(generator, mermaidContainer, {direction: currentVisibility.direction});
+                        renderMermaid(generator, mermaidContainer, {direction: 'LR'});
                     }
                 });
 
@@ -434,7 +433,7 @@ const OutboundApp = (() => {
                 const currentVisibility = readVisibility();
                 const generator = (dir) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir});
                 if (generator(currentVisibility.direction)) {
-                    renderMermaid(generator, persistenceMermaidContainer, {direction: currentVisibility.direction});
+                    renderMermaid(generator, persistenceMermaidContainer, {direction: 'LR'});
                 }
             });
 
@@ -473,7 +472,7 @@ const OutboundApp = (() => {
                 const currentVisibility = readVisibility();
                 const generator = (dir) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir});
                 if (generator(currentVisibility.direction)) {
-                    renderMermaid(generator, externalMermaidContainer, {direction: currentVisibility.direction});
+                    renderMermaid(generator, externalMermaidContainer, {direction: 'LR'});
                 }
             });
 
@@ -898,12 +897,6 @@ const OutboundApp = (() => {
         });
 
         updateChildDisabled();
-
-        document.querySelectorAll('input[name="diagram-direction"]').forEach(input => {
-            input.addEventListener('change', () => {
-                setState({visibility: readVisibility()});
-            });
-        });
     }
 
     function readVisibility() {
@@ -911,7 +904,6 @@ const OutboundApp = (() => {
             const el = document.querySelector(`input[name="${name}"]`);
             return el ? el.checked : false;
         };
-        const directionEl = document.querySelector('input[name="diagram-direction"]:checked');
         return {
             port: checked("show-port"),
             operation: checked("show-operation"),
@@ -924,7 +916,6 @@ const OutboundApp = (() => {
             externalAccessorMethod: checked("show-accessor-method"),
             externalType: checked("show-target"),
             externalTypeMethod: checked("show-external-type-method"),
-            direction: directionEl ? directionEl.value : 'LR',
             crudCreate: checked("show-crud-c"),
             crudRead: checked("show-crud-r"),
             crudUpdate: checked("show-crud-u"),

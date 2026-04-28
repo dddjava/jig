@@ -486,6 +486,24 @@ td.fqn {
     margin-bottom: 0.5em;
 }
 
+.jig-card.jig-card--type > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.jig-card.jig-card--type > summary::-webkit-details-marker {
+    display: none;
+}
+
+.jig-card.jig-card--type[open] > summary {
+    margin-bottom: 0.5em;
+}
+
 .jig-card--type h3 .card-title-anchor {
     color: inherit;
     text-decoration: none;

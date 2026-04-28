@@ -713,6 +713,7 @@ test.describe('package.js', () => {
                 assert.equal(container.children.length, 1);
                 const details = container.children[0];
                 assert.equal(details.tagName, 'details');
+                assert.ok(details.className.includes('jig-card--type'));
                 assert.equal(details.children[0].tagName, 'summary');
                 assert.equal(details.children[0].textContent, '相互依存分析');
 

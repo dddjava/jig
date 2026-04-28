@@ -643,6 +643,11 @@ body.hide-usecase-members .tab-member-section {
     padding: 12px;
 }
 
+.tab-mutual-dependency .jig-tab-panel pre {
+    white-space: pre-wrap;
+    margin: 0;
+}
+
 .tab-mutual-dependency .jig-tabs {
     align-items: center;
 }
@@ -1191,28 +1196,6 @@ label {
     margin: 0 auto;
 }
 
-.package-relation .mutual-dependencies h2 {
-    margin: 0 0 6px 0;
-    font-size: 1em;
-}
-
-.package-relation .mutual-dependencies ul {
-    margin: 0 0 0 1.2em;
-    padding: 0;
-}
-
-.package-relation .mutual-dependencies li {
-    margin: 6px 0;
-}
-
-.package-relation .mutual-dependencies .pair {
-    font-weight: bold;
-}
-
-.package-relation .mutual-dependencies pre {
-    margin: 4px 0 0 0;
-    white-space: pre-wrap;
-}
 
 .package-relation table .col-action {
     width: 2.5em;

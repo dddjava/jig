@@ -1476,6 +1476,14 @@ table td.number {
     user-select: none;
 }
 
+.in-page-sidebar__title--sub {
+    border-bottom: none;
+    font-weight: normal;
+    color: #6b7280;
+    font-size: 0.8rem;
+    padding-bottom: 0;
+}
+
 .in-page-sidebar__title .in-page-sidebar__link {
     font-size: inherit;
     padding: 0;

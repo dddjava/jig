@@ -389,7 +389,7 @@ const OutboundApp = (() => {
                     })
                 });
                 const packageTitle = Jig.dom.createElement("p", {
-                    className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                    className: "in-page-sidebar__title in-page-sidebar__title--collapsible in-page-sidebar__title--sub",
                     children: [
                         Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
                         Jig.dom.sidebar.createToggle(typeList)

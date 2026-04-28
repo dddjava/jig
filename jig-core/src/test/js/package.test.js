@@ -709,31 +709,21 @@ test.describe('package.js', () => {
                 assert.equal(container.children[1].tagName, 'ul');
 
                 const li = container.children[1].children[0];
-                const pairDiv = li.children[0];
-                assert.equal(pairDiv.className, 'pair');
-                assert.equal(pairDiv.children[1].className, 'diagram-button');
-                assert.equal(pairDiv.children[2].className, 'text-button');
-                assert.equal(li.children[1].className, 'causes');
-                assert.equal(li.children[1].style.display, 'none');
-                assert.equal(li.children[2].className, 'mutual-dependency-diagram');
-            });
-
-            test('renderMutualDependencyDiagram: ダイアグラムを描画する', () => {
-                const doc = setupDocument();
-                const itemNode = new Element('li', doc);
-                const diagram = new Element('div', doc);
-                diagram.className = 'mutual-dependency-diagram';
-                itemNode.appendChild(diagram);
-
-                const renderWithControls = test.mock.fn(() => {
-                });
-                globalThis.Jig.mermaid.render.renderWithControls = renderWithControls;
-
-                const item = {causes: ['a.A -> b.B']};
-                PackageApp.renderMutualDependencyDiagram(item, itemNode, testContext);
-
-                assert.ok(diagram.style.display === 'block' || diagram.style.display === '');
-                assert.equal(renderWithControls.mock.calls.length, 1);
+                // li has a tab section
+                const tabSection = li.children[0];
+                const tabsBar = tabSection.children[0];
+                assert.equal(tabsBar.className, 'jig-tabs');
+                // 3 tabs: 概要, ダイアグラム, テキスト
+                assert.equal(tabsBar.children.length, 3);
+                assert.equal(tabsBar.children[0].textContent, '概要');
+                assert.equal(tabsBar.children[1].textContent, 'ダイアグラム');
+                assert.equal(tabsBar.children[2].textContent, 'テキスト');
+                // 概要パネルにペアラベルが表示される
+                const overviewPanel = tabSection.children[1];
+                assert.equal(overviewPanel.children[0].textContent, 'app.alpha <-> app.beta');
+                // テキストパネルにcausesが表示される
+                const textPanel = tabSection.children[3];
+                assert.equal(textPanel.children[0].className, 'causes');
             });
 
             test('renderHierarchyDiagram: 相互依存を含めて描画する', () => {
@@ -753,8 +743,8 @@ test.describe('package.js', () => {
                 PackageApp.renderHierarchyDiagram(testContext);
 
                 const diagram = doc.getElementById('package-relation-diagram');
-                assert.equal(diagram.textContent.includes('graph'), true);
-                assert.equal(diagram.textContent.includes('<-->'), true);
+                assert.equal(diagram._textContent.includes('graph'), true);
+                assert.equal(diagram._textContent.includes('<-->'), true);
                 const mutual = doc.getElementById('mutual-dependency-list');
                 assert.equal(mutual.children.length > 0, true);
             });

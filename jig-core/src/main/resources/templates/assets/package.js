@@ -318,67 +318,46 @@ const PackageApp = (() => {
         const list = Jig.dom.createElement('ul');
 
         items.forEach(item => {
-            const diagramButton = Jig.dom.createElement('button', {
-                className: 'diagram-button',
-                textContent: 'ダイアグラムを表示',
-                attributes: {type: 'button'}
-            });
-            const textButton = Jig.dom.createElement('button', {
-                className: 'text-button',
-                textContent: 'テキストを表示',
-                attributes: {type: 'button'}
-            });
-            const causesEl = Jig.dom.createElement('pre', {
-                className: 'causes',
-                textContent: item.causes?.length ? item.causes.join('\n') : '',
-                style: {display: 'none'}
-            });
-            const diagramContainer = Jig.dom.createElement('div', {className: 'mutual-dependency-diagram'});
-            const itemNode = Jig.dom.createElement('li', {
-                children: [
-                    Jig.dom.createElement('div', {
-                        className: 'pair',
-                        children: [
-                            Jig.dom.createElement('span', {textContent: item.pairLabel}),
-                            diagramButton,
-                            textButton
-                        ]
-                    }),
-                    causesEl,
-                    diagramContainer
-                ]
-            });
+            let diagramRendered = false;
 
-            diagramButton.addEventListener('click', () => {
-                renderMutualDependencyDiagram(item, itemNode, context);
-                diagramButton.remove();
-            });
+            const tabSection = Jig.dom.tab.buildSection(
+                [
+                    {id: 'overview', label: '概要'},
+                    {id: 'diagram', label: 'ダイアグラム'},
+                    {id: 'text', label: 'テキスト'},
+                ],
+                {
+                    initialActiveId: 'overview',
+                    onTabChange: (id) => {
+                        if (id === 'diagram' && !diagramRendered) {
+                            diagramRendered = true;
+                            const container = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
+                            tabSection.panels['diagram'].appendChild(container);
+                            const generator = (dir) => buildMutualDependencyDiagramSource(item.causes, dir, item.pairLabel).source;
+                            if (generator(context.mutualDependencyDiagramDirection)) {
+                                Jig.mermaid.render.renderWithControls(container, generator, {direction: context.mutualDependencyDiagramDirection});
+                            }
+                        }
+                    }
+                }
+            );
 
-            textButton.addEventListener('click', () => {
-                causesEl.style.display = '';
-                textButton.remove();
-            });
+            tabSection.panels['overview'].appendChild(
+                Jig.dom.createElement('span', {className: 'pair-label', textContent: item.pairLabel})
+            );
 
-            list.appendChild(itemNode);
+            tabSection.panels['text'].appendChild(
+                Jig.dom.createElement('pre', {
+                    className: 'causes',
+                    textContent: item.causes?.length ? item.causes.join('\n') : ''
+                })
+            );
+
+            list.appendChild(Jig.dom.createElement('li', {children: [tabSection.section]}));
         });
         container.innerHTML = '';
         container.appendChild(heading);
         container.appendChild(list);
-    }
-
-    function renderMutualDependencyDiagram(item, itemNode, context) {
-        const diagram = itemNode.querySelector('.mutual-dependency-diagram');
-        if (!diagram) return;
-
-        const generator = (dir) => buildMutualDependencyDiagramSource(item.causes, dir, item.pairLabel).source;
-        if (!generator(context.mutualDependencyDiagramDirection)) {
-            diagram.innerHTML = '';
-            diagram.style.display = 'none';
-            return;
-        }
-
-        diagram.style.display = 'block';
-        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.mutualDependencyDiagramDirection});
     }
 
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
@@ -1276,7 +1255,6 @@ const PackageApp = (() => {
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         renderMutualDependencyList,
-        renderMutualDependencyDiagram,
         buildMutualDependencyDiagramSource,
         renderHierarchyDiagram,
         renderHierarchyDiagramAndTable,

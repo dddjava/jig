@@ -307,7 +307,7 @@ main table thead {
 
 .sidebar--collapsed .sidebar-settings,
 .sidebar--collapsed .sidebar-filter,
-.sidebar--collapsed #domain-sidebar-list {
+.sidebar--collapsed .in-page-sidebar__list {
     display: none;
 }
 

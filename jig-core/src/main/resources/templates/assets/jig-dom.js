@@ -333,6 +333,24 @@ globalThis.Jig.dom = (() => {
         input.addEventListener('input', () => onChange(input.value.trim()));
     }
 
+    function initSidebarCollapseBtn() {
+        const collapseBtn = document.getElementById('sidebar-collapse-btn');
+        if (!collapseBtn) return;
+        const nav = collapseBtn.closest('nav');
+        if (!nav) return;
+        collapseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const collapsed = nav.classList.toggle('sidebar--collapsed');
+            collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+        });
+        nav.addEventListener('click', () => {
+            if (nav.classList.contains('sidebar--collapsed')) {
+                nav.classList.remove('sidebar--collapsed');
+                collapseBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    }
+
     // --- Tab section ---
 
     function buildTabSection(tabDefs, options = {}) {
@@ -551,6 +569,7 @@ globalThis.Jig.dom = (() => {
             section: createSection,
             renderSection,
             initTextFilter: initSidebarTextFilter,
+            initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
         },
         tab: {

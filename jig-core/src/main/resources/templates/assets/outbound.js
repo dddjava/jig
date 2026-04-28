@@ -844,6 +844,7 @@ const OutboundApp = (() => {
         state.persistenceGrouped = model.persistenceGrouped;
         state.externalGrouped = model.externalGrouped;
 
+        Jig.dom.sidebar.initCollapseBtn();
         bindEvents();
         renderAllPanels();
     }

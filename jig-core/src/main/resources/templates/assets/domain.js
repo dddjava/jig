@@ -1208,21 +1208,7 @@ const DomainApp = (() => {
             applyVisibilitySettings();
         });
 
-        const collapseBtn = document.getElementById('sidebar-collapse-btn');
-        const nav = document.getElementById('domain-sidebar');
-        if (collapseBtn && nav) {
-            collapseBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const collapsed = nav.classList.toggle('sidebar--collapsed');
-                collapseBtn.setAttribute('aria-expanded', String(!collapsed));
-            });
-            nav.addEventListener('click', () => {
-                if (nav.classList.contains('sidebar--collapsed')) {
-                    nav.classList.remove('sidebar--collapsed');
-                    collapseBtn.setAttribute('aria-expanded', 'true');
-                }
-            });
-        }
+        Jig.dom.sidebar.initCollapseBtn();
     }
 
     /**

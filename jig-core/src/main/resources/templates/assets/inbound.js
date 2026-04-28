@@ -139,6 +139,7 @@ const InboundApp = (() => {
             return;
         }
 
+        Jig.dom.sidebar.initCollapseBtn();
         Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
             state.sidebarFilterText = text;
             renderSidebar(filteredAdapters());

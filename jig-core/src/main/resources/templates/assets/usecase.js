@@ -881,6 +881,7 @@ const UsecaseApp = (() => {
             });
         });
 
+        Jig.dom.sidebar.initCollapseBtn();
         Jig.dom.sidebar.initTextFilter('usecase-sidebar-filter', text => {
             state.sidebarFilterText = text;
             renderSidebar(state.data.usecases);

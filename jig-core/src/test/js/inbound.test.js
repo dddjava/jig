@@ -208,6 +208,7 @@ test.describe('InboundApp', () => {
                     const section = createSidebarSection(title, items);
                     if (section) container.appendChild(section);
                 },
+                initCollapseBtn: () => {},
                 initTextFilter: (inputId, onChange) => {
                     const input = document.getElementById(inputId);
                     if (!input) return;

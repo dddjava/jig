@@ -341,6 +341,12 @@ const PackageApp = (() => {
                 }
             );
 
+            const tabsBar = tabSection.section.children[0];
+            tabsBar.insertBefore(
+                Jig.dom.createElement('span', {className: 'mutual-dependency-title', textContent: item.pairLabel}),
+                tabsBar.children[0]
+            );
+
             tabSection.panels['overview'].appendChild(
                 Jig.dom.createElement('span', {className: 'pair-label', textContent: item.pairLabel})
             );

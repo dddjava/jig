@@ -1,7 +1,6 @@
 :root {
     --sidebar-width: 260px;
     --sidebar-collapsed-width: 28px;
-    --in-page-sidebar-padding: 12px;
     --color-text-secondary: #666;
 }
 
@@ -301,6 +300,14 @@ main table thead {
 
 .split-view > nav.sidebar--collapsed {
     width: var(--sidebar-collapsed-width);
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.sidebar--collapsed .sidebar-settings,
+.sidebar--collapsed .sidebar-filter,
+.sidebar--collapsed #domain-sidebar-list {
+    display: none;
 }
 
 .split-view > main,
@@ -1457,7 +1464,7 @@ table td.number {
     border: 1px solid #d9e1ea;
     border-radius: 10px;
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
-    padding: var(--in-page-sidebar-padding);
+    padding: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1636,19 +1643,30 @@ table td.number {
 }
 
 
+/* サイドバー ヘッダー（表示設定＋折りたたみボタン） */
+.sidebar-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+
 /* サイドバー 折りたたみボタン */
 .sidebar-collapse-btn {
-    margin: calc(-1 * var(--in-page-sidebar-padding)) calc(-1 * var(--in-page-sidebar-padding)) 8px;
-    width: calc(100% + 2 * var(--in-page-sidebar-padding));
-    height: 28px;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
-    border: none;
-    border-bottom: 1px solid #d9e1ea;
+    border: 1px solid #d9e1ea;
+    border-radius: 4px;
     cursor: pointer;
     padding: 0;
     color: #5a7a9a;
+    font-size: 10px;
 }
 
 .sidebar-collapse-btn:hover {
@@ -1657,24 +1675,16 @@ table td.number {
 
 .sidebar-collapse-btn::after {
     content: "◀";
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 10px;
-    line-height: 1;
 }
 
 .sidebar--collapsed .sidebar-collapse-btn::after {
     content: "▶";
-    right: auto;
-    left: 8px;
 }
 
 /* サイドバー 表示設定パネル */
 .sidebar-settings {
-    flex-shrink: 0;
-    margin-bottom: 8px;
+    flex: 1;
+    min-width: 0;
     border: 1px solid #d9e1ea;
 }
 

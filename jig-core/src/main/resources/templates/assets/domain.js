@@ -1211,15 +1211,9 @@ const DomainApp = (() => {
         const collapseBtn = document.getElementById('sidebar-collapse-btn');
         const nav = document.getElementById('domain-sidebar');
         if (collapseBtn && nav) {
-            const COLLAPSE_KEY = 'domain-sidebar-collapsed';
-            if (localStorage.getItem(COLLAPSE_KEY) === 'true') {
-                nav.classList.add('sidebar--collapsed');
-                collapseBtn.setAttribute('aria-expanded', 'false');
-            }
             collapseBtn.addEventListener('click', () => {
                 const collapsed = nav.classList.toggle('sidebar--collapsed');
                 collapseBtn.setAttribute('aria-expanded', String(!collapsed));
-                localStorage.setItem(COLLAPSE_KEY, String(collapsed));
             });
         }
     }

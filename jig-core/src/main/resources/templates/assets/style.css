@@ -1646,7 +1646,7 @@ table td.number {
 /* サイドバー ヘッダー（表示設定＋折りたたみボタン） */
 .sidebar-header {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 4px;
     flex-shrink: 0;
     margin-bottom: 8px;
@@ -1655,7 +1655,6 @@ table td.number {
 /* サイドバー 折りたたみボタン */
 .sidebar-collapse-btn {
     width: 24px;
-    height: 24px;
     flex-shrink: 0;
     display: flex;
     align-items: center;

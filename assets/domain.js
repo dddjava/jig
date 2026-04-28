@@ -6,10 +6,8 @@ const DomainApp = (() => {
         showDiagrams: true,
         showDescriptions: true,
         showDeprecatedNodes: true,
-        showFields: true,
-        showMethods: true,
-        showStaticMethods: true,
-        showEnumOnly: false,
+        showMembers: true,
+        kindFilter: 'all',
         transitiveReductionEnabled: true,
         sidebarFilterText: '',
     };
@@ -63,20 +61,22 @@ const DomainApp = (() => {
     }
 
     /**
-     * パッケージが enum 型を含むかを判定する（再帰的）
+     * パッケージに含まれる kind の集合を返す（再帰的）
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
-     * @returns {boolean}
+     * @returns {Set<string>}
      */
-    function pkgHasEnum(pkg, childPackagesMap, typesMap) {
-        // このパッケージのタイプに enum があるか
-        if (pkg.types.some(type => typesMap?.get(type.fqn)?.enumInfo)) {
-            return true;
-        }
-        // 子パッケージに enum があるか
-        const childPackages = getDirectChildPackages(pkg, childPackagesMap);
-        return childPackages.some(childPkg => pkgHasEnum(childPkg, childPackagesMap, typesMap));
+    function pkgKinds(pkg, childPackagesMap, typesMap) {
+        const kinds = new Set();
+        pkg.types.forEach(type => {
+            const kind = typesMap?.get(type.fqn)?.kind;
+            if (kind) kinds.add(kind);
+        });
+        getDirectChildPackages(pkg, childPackagesMap).forEach(childPkg => {
+            pkgKinds(childPkg, childPackagesMap, typesMap).forEach(k => kinds.add(k));
+        });
+        return kinds;
     }
 
     /**
@@ -124,7 +124,7 @@ const DomainApp = (() => {
                 className: "in-page-sidebar__item",
                 children: [
                     Jig.dom.createElement("div", {
-                        attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
+                        attributes: {"data-kind": domainType?.kind || ''},
                         children: [link]
                     })
                 ]
@@ -140,7 +140,7 @@ const DomainApp = (() => {
             ]
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
-        const wrapperAttrs = {"data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"};
+        const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap)].join(' ')};
 
         if (isTopLevel) {
             return Jig.dom.createElement("section", {
@@ -177,7 +177,7 @@ const DomainApp = (() => {
      * @returns {string|null}
      */
     function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection) {
-        const directRelations = allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+        const directRelations = collectPackageDirectRelations(pkg, allPackageRelations);
         if (directRelations.length === 0) return null;
 
         const packageFqns = new Set([pkg.fqn]);
@@ -197,6 +197,14 @@ const DomainApp = (() => {
         return source;
     }
 
+    function collectPackageDirectRelations(pkg, allPackageRelations) {
+        return allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+    }
+
+    function hasPackageDirectRelationDiagram(pkg, allPackageRelations) {
+        return collectPackageDirectRelations(pkg, allPackageRelations).length > 0;
+    }
+
     /**
      * パッケージカードに表示するパッケージ内パッケージ関連図
      * @param pkg
@@ -206,14 +214,37 @@ const DomainApp = (() => {
      * @return {string|null}
      */
     function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection) {
-        return Jig.mermaid.createPackageLevelDiagram(
-            pkg, allPackages, allPackageRelations,
+        const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
+        if (!elements) return null;
+        const {uniqueRelations, packageFqns} = elements;
+        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
+            packageFqns,
+            uniqueRelations,
             {
-                transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
                 diagramDirection: direction,
                 nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
             }
         );
+        return source;
+    }
+
+    function collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations) {
+        const {uniqueRelations, packageFqns} = Jig.mermaid.builder.buildVisibleDiagramRelations(
+            allPackages,
+            allPackageRelations,
+            [],
+            {
+                packageFilterFqn: [pkg.fqn],
+                aggregationDepth: pkg.fqn.split('.').length + 1,
+                transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
+            }
+        );
+        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
+        return {uniqueRelations, packageFqns};
+    }
+
+    function hasPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
+        return collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations) !== null;
     }
 
     /**
@@ -271,9 +302,10 @@ const DomainApp = (() => {
      * @param {DomainType} type
      * @param {Array} typeRelations
      * @param {Map} typesMap
+     * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {{edges: Array, involvedFqns: Set<string>} | null}
      */
-    function collectTypeRelationEdges(type, typeRelations, typesMap) {
+    function collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing = true, showIncoming = true} = {}) {
         const allRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -282,14 +314,16 @@ const DomainApp = (() => {
 
         if (outgoing.length === 0 && incoming.length === 0) return null;
 
-        const filteredOut = domainSettings.showDeprecatedNodes
-            ? outgoing
-            : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated);
-        const filteredIn = domainSettings.showDeprecatedNodes
-            ? incoming
-            : incoming.filter(r => !typesMap?.get(r.from)?.isDeprecated);
+        const filteredOut = showOutgoing
+            ? (domainSettings.showDeprecatedNodes ? outgoing : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated))
+            : [];
+        const filteredIn = showIncoming
+            ? (domainSettings.showDeprecatedNodes ? incoming : incoming.filter(r => !typesMap?.get(r.from)?.isDeprecated))
+            : [];
 
-        if (filteredOut.length === 0 && filteredIn.length === 0) return null;
+        if (filteredOut.length === 0 && filteredIn.length === 0) {
+            return (!showOutgoing || !showIncoming) ? {edges: [], involvedFqns: new Set([type.fqn])} : null;
+        }
 
         const edgeMap = new Map();
         [...filteredOut, ...filteredIn].forEach(r => edgeMap.set(`${r.from}::${r.to}`, r));
@@ -307,10 +341,11 @@ const DomainApp = (() => {
      * @param {Array} typeRelations
      * @param {Map} typesMap
      * @param {string} direction
+     * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
-        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true} = {}) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
@@ -366,10 +401,17 @@ const DomainApp = (() => {
      * @param {Array} typeRelations
      * @param {Map} typesMap
      * @param {string} direction
+     * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
-        const result = collectTypeRelationEdges(type, typeRelations, typesMap);
+    const VISIBILITY_ORDER = ['PUBLIC', 'PROTECTED', 'PACKAGE', 'PRIVATE'];
+
+    function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {
+        showOutgoing = true, showIncoming = true,
+        showFields = true, showMethods = true,
+        maxVisibility = 'PRIVATE'
+    } = {}) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
@@ -384,6 +426,9 @@ const DomainApp = (() => {
             return 'dependency';
         }
 
+        const maxVisibilityIndex = VISIBILITY_ORDER.indexOf(maxVisibility);
+        const visibilityAllowed = (v) => VISIBILITY_ORDER.indexOf(v) <= maxVisibilityIndex;
+
         const builder = new Jig.mermaid.ClassDiagramBuilder();
 
         involvedFqns.forEach(fqn => {
@@ -391,23 +436,40 @@ const DomainApp = (() => {
             builder.addClass(nodeId, Jig.glossary.typeSimpleName(fqn));
 
             const domainType = typesMap?.get(fqn);
-            (domainType?.fields || []).forEach(f => {
-                builder.addField(nodeId, typeNameWithGenerics(f.typeRef), f.name);
-            });
-            (domainType?.methods || []).forEach(m => {
-                const {name, params, returnType} = parseMethodInfo(m);
-                builder.addMethod(nodeId, m.visibility, name, params, returnType, false);
-            });
-            (domainType?.staticMethods || []).forEach(m => {
-                const {name, params, returnType} = parseMethodInfo(m);
-                builder.addMethod(nodeId, m.visibility, name, params, returnType, true);
-            });
+            if (showFields) {
+                (domainType?.fields || []).forEach(f => {
+                    builder.addField(nodeId, typeNameWithGenerics(f.typeRef), f.name);
+                });
+            }
+            if (showMethods) {
+                (domainType?.methods || []).filter(m => visibilityAllowed(m.visibility)).forEach(m => {
+                    const {name, params, returnType} = parseMethodInfo(m);
+                    builder.addMethod(nodeId, m.visibility, name, params, returnType, false);
+                });
+                (domainType?.staticMethods || []).filter(m => visibilityAllowed(m.visibility)).forEach(m => {
+                    const {name, params, returnType} = parseMethodInfo(m);
+                    builder.addMethod(nodeId, m.visibility, name, params, returnType, true);
+                });
+            }
 
             builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
         });
         edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
 
         return builder.build(direction);
+    }
+
+    function hasTypeRelationDiagram(type, typeRelations, typesMap) {
+        return collectTypeRelationEdges(type, typeRelations, typesMap) !== null;
+    }
+
+    function hasPackageTypeRelationDiagram(pkg, typesMap) {
+        let pkgTypeFqns = new Set(pkg.types.map(t => t.fqn));
+        if (pkgTypeFqns.size === 0) return false;
+        if (!domainSettings.showDeprecatedNodes) {
+            pkgTypeFqns = new Set([...pkgTypeFqns].filter(fqn => !typesMap?.get(fqn)?.isDeprecated));
+        }
+        return pkgTypeFqns.size > 0;
     }
 
     function typeNameWithGenerics(typeRef) {
@@ -604,12 +666,12 @@ const DomainApp = (() => {
         });
     }
 
-    function createFieldsList(fields) {
-        return Jig.dom.type.fieldsList(fields, Jig.dom.type.refElement);
+    function createFieldsList(fields, options = {}) {
+        return Jig.dom.type.fieldsList(fields, options);
     }
 
-    function createMethodsList(kind, methods) {
-        return Jig.dom.type.methodsList(kind, methods, Jig.dom.type.refElement);
+    function createMethodsList(kind, methods, options = {}) {
+        return Jig.dom.type.methodsList(kind, methods, options);
     }
 
     /**
@@ -682,6 +744,149 @@ const DomainApp = (() => {
         return Array.from(relMap.values());
     }
 
+    function registerDiagramPanel(panel, diagramDef) {
+        return Jig.mermaid.diagram.createAndRegister(panel, (container) => {
+            renderDiagram(container, diagramDef);
+        });
+    }
+
+    function setupTypeDiagramPanel(panel, type, typeRelations, typesMap, diagramType) {
+        const outgoingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "type-relation-outgoing"}
+        });
+        outgoingCheckbox.checked = true;
+        const incomingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "type-relation-incoming"}
+        });
+        incomingCheckbox.checked = true;
+        panel.appendChild(Jig.dom.createElement("fieldset", {
+            className: "diagram-panel-options",
+            children: [
+                Jig.dom.createElement("legend", {textContent: "表示"}),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [incomingCheckbox, "関連元"]
+                }),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [outgoingCheckbox, "関連先"]
+                }),
+            ]
+        }));
+
+        const extraControls = [];
+        let getClassDefOptions = () => ({});
+
+        if (diagramType === 'classDefinition') {
+            const showFieldsCheckbox = Jig.dom.createElement("input", {attributes: {type: "checkbox"}});
+            showFieldsCheckbox.checked = true;
+            const showMethodsCheckbox = Jig.dom.createElement("input", {attributes: {type: "checkbox"}});
+            showMethodsCheckbox.checked = true;
+            panel.appendChild(Jig.dom.createElement("fieldset", {
+                className: "diagram-panel-options",
+                children: [
+                    Jig.dom.createElement("legend", {textContent: "メンバ"}),
+                    Jig.dom.createElement("label", {
+                        className: "diagram-panel-option",
+                        children: [showFieldsCheckbox, "フィールド"]
+                    }),
+                    Jig.dom.createElement("label", {
+                        className: "diagram-panel-option",
+                        children: [showMethodsCheckbox, "メソッド"]
+                    }),
+                ]
+            }));
+
+            const visibilityRadioGroupName = `visibility-filter-${Math.random().toString(36).slice(2)}`;
+            const visibilityRadios = VISIBILITY_ORDER.map((v, i) => {
+                const radio = Jig.dom.createElement("input", {
+                    attributes: {type: "radio", name: visibilityRadioGroupName, value: v}
+                });
+                radio.checked = i === VISIBILITY_ORDER.length - 1;
+                return radio;
+            });
+            const visibilityLabels = ['PUBLIC のみ', 'PROTECTED 以上', 'PACKAGE 以上', 'すべて'];
+            panel.appendChild(Jig.dom.createElement("fieldset", {
+                className: "diagram-panel-options",
+                children: [
+                    Jig.dom.createElement("legend", {textContent: "可視性"}),
+                    ...visibilityRadios.map((radio, i) => Jig.dom.createElement("label", {
+                        className: "diagram-panel-option",
+                        children: [radio, visibilityLabels[i]]
+                    }))
+                ]
+            }));
+
+            extraControls.push(showFieldsCheckbox, showMethodsCheckbox, ...visibilityRadios);
+            getClassDefOptions = () => ({
+                showFields: showFieldsCheckbox.checked,
+                showMethods: showMethodsCheckbox.checked,
+                maxVisibility: visibilityRadios.find(r => r.checked)?.value ?? 'PRIVATE'
+            });
+        }
+
+        const render = (container) => {
+            renderDiagram(container, {
+                pkg: undefined, type, diagramType, typeRelations, typesMap,
+                showOutgoing: outgoingCheckbox.checked,
+                showIncoming: incomingCheckbox.checked,
+                ...getClassDefOptions()
+            });
+        };
+        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
+        [outgoingCheckbox, incomingCheckbox, ...extraControls].forEach(el => {
+            el.addEventListener('change', () => render(container));
+        });
+    }
+
+    function setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap) {
+        const outgoingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
+        });
+        outgoingCheckbox.checked = true;
+        const incomingCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "class-relation-external-incoming"}
+        });
+        incomingCheckbox.checked = true;
+        panel.appendChild(Jig.dom.createElement("fieldset", {
+            className: "diagram-panel-options",
+            children: [
+                Jig.dom.createElement("legend", {textContent: "表示"}),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [incomingCheckbox, "関連元"]
+                }),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [outgoingCheckbox, "関連先"]
+                }),
+            ]
+        }));
+
+        const render = (container) => {
+            renderDiagram(container, {pkg, type: undefined, diagramType: 'type', typeRelations, typesMap});
+        };
+        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
+        outgoingCheckbox.addEventListener('change', () => render(container));
+        incomingCheckbox.addEventListener('change', () => render(container));
+    }
+
+    function appendConfiguredTabs(cardSection, tabConfigs, options = {}) {
+        const enabledTabs = tabConfigs.filter(tab => tab.enabled);
+        if (enabledTabs.length === 0) return null;
+        const {className, initialActiveId, onTabChange} = options;
+        const fullClassName = ["jig-card-section", "tab-content-section", className].filter(Boolean).join(" ");
+        const tabDefs = enabledTabs.map(({id, label}) => ({id, label}));
+        const tabSection = Jig.dom.tab.buildSection(tabDefs, {
+            className: fullClassName,
+            initialActiveId,
+            onTabChange
+        });
+        cardSection.appendChild(tabSection.section);
+        enabledTabs.forEach(tab => tab.setup(tabSection.panels[tab.id]));
+        return tabSection;
+    }
+
     /**
      * @param {PackageType[]} packages
      * @param {Array} typeRelations
@@ -702,7 +907,7 @@ const DomainApp = (() => {
                 title: Jig.glossary.getTypeTerm(pkg.fqn).title,
                 fqn: pkg.fqn,
                 kind: "パッケージ",
-                attributes: {"data-has-enum-children": pkgHasEnum(pkg, childPackagesMap, typesMap) ? "true" : "false"}
+                attributes: {"data-kind-children": [...pkgKinds(pkg, childPackagesMap, typesMap)].join(' ')}
             });
 
             const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
@@ -718,65 +923,39 @@ const DomainApp = (() => {
                 section.appendChild(childrenTable);
             }
 
-            // データのあるダイアグラムのみタブとして表示
-            const tabDefs = [
-                createPackageDirectRelationDiagram(pkg, allPackageRelations) !== null
-                && {id: 'direct', label: 'パッケージ関連図', diagramType: 'packageDirect'},
-                createPackageRelationDiagram(pkg, allPackages, allPackageRelations) !== null
-                && {id: 'inner-pkg', label: 'パッケージ内パッケージ関連図', diagramType: 'package'},
-                pkg.types.length > 0 && createRelationDiagram(pkg, typeRelations, typesMap) !== null
-                && {id: 'inner-class', label: 'パッケージ内クラス関連図', diagramType: 'type'},
-            ].filter(Boolean);
-
-            if (tabDefs.length > 0) {
-                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "jig-card-section tab-diagram-section"});
-                section.appendChild(diagramSection);
-
-                if (panels['direct']) {
-                    Jig.mermaid.diagram.createAndRegister(panels['direct'], (container) => {
-                        const diagramDef = {pkg, type: undefined, diagramType: 'packageDirect', allPackageRelations};
-                        renderDiagram(container, diagramDef);
-                    });
-                }
-                if (panels['inner-pkg']) {
-                    Jig.mermaid.diagram.createAndRegister(panels['inner-pkg'], (container) => {
-                        const diagramDef = {pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations, typeRelations, typesMap};
-                        renderDiagram(container, diagramDef);
-                    });
-                }
-                if (panels['inner-class']) {
-                    const outgoingCheckbox = Jig.dom.createElement("input", {
-                        attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
-                    });
-                    outgoingCheckbox.checked = true;
-                    const incomingCheckbox = Jig.dom.createElement("input", {
-                        attributes: {type: "checkbox", class: "class-relation-external-incoming"}
-                    });
-                    incomingCheckbox.checked = true;
-                    panels['inner-class'].appendChild(Jig.dom.createElement("fieldset", {
-                        className: "diagram-panel-options",
-                        children: [
-                            Jig.dom.createElement("legend", {textContent: "パッケージ外クラス"}),
-                            Jig.dom.createElement("label", {
-                                className: "diagram-panel-option",
-                                children: [outgoingCheckbox, "関連先"]
-                            }),
-                            Jig.dom.createElement("label", {
-                                className: "diagram-panel-option",
-                                children: [incomingCheckbox, "関連元"]
-                            }),
-                        ]
-                    }));
-
-                    const render = (container) => {
-                        const diagramDef = {container, pkg, type: undefined, diagramType: 'type', typeRelations, typesMap};
-                        renderDiagram(container, diagramDef);
-                    };
-                    const c = Jig.mermaid.diagram.createAndRegister(panels['inner-class'], render);
-                    outgoingCheckbox.addEventListener('change', () => render(c));
-                    incomingCheckbox.addEventListener('change', () => render(c));
-                }
-            }
+            appendConfiguredTabs(section, [
+                {
+                    id: 'direct',
+                    label: 'パッケージ関連図',
+                    enabled: hasPackageDirectRelationDiagram(pkg, allPackageRelations),
+                    setup: panel => registerDiagramPanel(panel, {
+                        pkg,
+                        type: undefined,
+                        diagramType: 'packageDirect',
+                        allPackageRelations
+                    })
+                },
+                {
+                    id: 'inner-pkg',
+                    label: 'パッケージ内パッケージ関連図',
+                    enabled: hasPackageRelationDiagram(pkg, allPackages, allPackageRelations),
+                    setup: panel => registerDiagramPanel(panel, {
+                        pkg,
+                        type: undefined,
+                        diagramType: 'package',
+                        allPackages,
+                        allPackageRelations,
+                        typeRelations,
+                        typesMap
+                    })
+                },
+                {
+                    id: 'inner-class',
+                    label: 'パッケージ内クラス関連図',
+                    enabled: hasPackageTypeRelationDiagram(pkg, typesMap),
+                    setup: panel => setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap)
+                },
+            ], {className: "tab-diagram-section"});
 
             container.appendChild(section);
         });
@@ -816,7 +995,7 @@ const DomainApp = (() => {
                 title: titleSpan,
                 fqn: fqnDiv,
                 kind: "クラス",
-                attributes: {"data-has-enum": type.enumInfo ? "true" : "false"}
+                attributes: {"data-kind": type.kind || ''}
             });
 
             const typeDescription = Jig.glossary.getTypeTerm(type.fqn).description;
@@ -831,28 +1010,46 @@ const DomainApp = (() => {
                 section.appendChild(createEnumSection(type));
             }
 
-            const fieldsList = createFieldsList(type.fields);
-            if (fieldsList) section.appendChild(fieldsList);
+            const fieldsList = createFieldsList(type.fields, {showTitle: false});
+            const methodList = createMethodsList("メソッド", type.methods, {showTitle: false});
+            const staticList = createMethodsList("staticメソッド", type.staticMethods, {showTitle: false});
+            const hasTypeRelation = hasTypeRelationDiagram(type, typeRelations, typesMap);
 
-            const methodList = createMethodsList("メソッド", type.methods);
-            if (methodList) section.appendChild(methodList);
+            appendConfiguredTabs(section, [
+                {
+                    id: 'fields',
+                    label: 'フィールド',
+                    enabled: Boolean(fieldsList),
+                    setup: panel => panel.appendChild(fieldsList)
+                },
+                {
+                    id: 'methods',
+                    label: 'メソッド',
+                    enabled: Boolean(methodList),
+                    setup: panel => panel.appendChild(methodList)
+                },
+                {
+                    id: 'static-methods',
+                    label: 'staticメソッド',
+                    enabled: Boolean(staticList),
+                    setup: panel => panel.appendChild(staticList)
+                },
+            ], {className: "tab-member-section"});
 
-            const staticList = createMethodsList("staticメソッド", type.staticMethods);
-            if (staticList) section.appendChild(staticList);
-
-            if (createTypeRelationDiagram(type, typeRelations, typesMap) !== null) {
-                const tabDefs = [
-                    {id: 'relation', label: 'クラス関連図', diagramType: 'classDirect'},
-                    {id: 'classdiag', label: 'クラス図', diagramType: 'classDefinition'},
-                ];
-                const {panels, section: diagramSection} = Jig.mermaid.diagram.buildTabSection(tabDefs, {className: "jig-card-section tab-diagram-section"});
-                section.appendChild(diagramSection);
-                tabDefs.forEach(tab => {
-                    Jig.mermaid.diagram.createAndRegister(panels[tab.id], (container) => {
-                        renderDiagram(container, {pkg: undefined, type, diagramType: tab.diagramType, typeRelations, typesMap});
-                    });
-                });
-            }
+            appendConfiguredTabs(section, [
+                {
+                    id: 'relation',
+                    label: 'クラス関連図',
+                    enabled: hasTypeRelation,
+                    setup: panel => setupTypeDiagramPanel(panel, type, typeRelations, typesMap, 'classDirect')
+                },
+                {
+                    id: 'classdiag',
+                    label: 'クラス図',
+                    enabled: hasTypeRelation,
+                    setup: panel => setupTypeDiagramPanel(panel, type, typeRelations, typesMap, 'classDefinition')
+                },
+            ], {className: "tab-diagram-section"});
 
             const relatedList = createRelatedClassesList(type, typeRelations, typesMap);
             if (relatedList) section.appendChild(relatedList);
@@ -862,29 +1059,12 @@ const DomainApp = (() => {
     }
 
     /**
-     * @returns {void}
-     */
-    function updateDirectionIcon() {
-        const verticalArrows = document.querySelector('.vertical-arrows');
-        const horizontalArrows = document.querySelector('.horizontal-arrows');
-        if (verticalArrows && horizontalArrows) {
-            if (domainSettings.diagramDirection === 'TB') {
-                verticalArrows.style.display = '';
-                horizontalArrows.style.display = 'none';
-            } else {
-                verticalArrows.style.display = 'none';
-                horizontalArrows.style.display = '';
-            }
-        }
-    }
-
-    /**
      * 指定されたダイアグラムを再生成
      * @param {HTMLElement} container
      * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap} = diagram;
+        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true, showFields = true, showMethods = true, maxVisibility = 'PRIVATE'} = diagram;
 
         container.innerHTML = "";
 
@@ -899,12 +1079,12 @@ const DomainApp = (() => {
         } else if (diagramType === 'package') {
             renderIfNonNull((dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir));
         } else if (diagramType === 'classDirect') {
-            renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir));
+            renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else if (diagramType === 'classDefinition') {
-            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir));
+            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility}));
         } else {
             // テスト環境など closest が使えない場合に対応
-            const panel = typeof container.closest === 'function' ? container.closest('.diagram-panel') : null;
+            const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
             const outgoing = panel?.querySelector('.class-relation-external-outgoing');
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
@@ -925,63 +1105,40 @@ const DomainApp = (() => {
         const main = document.getElementById('domain-main');
         if (!main) return;
 
-        const fieldsSections = main.querySelectorAll('section.methods-section');
-        fieldsSections.forEach(section => {
-            const h4 = section.querySelector('h4');
-            if (h4 && h4.textContent === 'フィールド') {
-                section.style.display = domainSettings.showFields ? '' : 'none';
-            } else if (h4 && h4.textContent === 'メソッド') {
-                section.style.display = domainSettings.showMethods ? '' : 'none';
-            } else if (h4 && h4.textContent === 'staticメソッド') {
-                section.style.display = domainSettings.showStaticMethods ? '' : 'none';
-            }
+        main.querySelectorAll('.tab-member-section').forEach(section => {
+            section.style.display = domainSettings.showMembers ? '' : 'none';
         });
 
-        // 「列挙のみ表示」フィルター
-        if (domainSettings.showEnumOnly) {
-            // メインのパッケージセクションは全て非表示
-            const packageSections = main.querySelectorAll('section.jig-card--type[data-has-enum-children]');
-            packageSections.forEach(section => {
-                section.style.display = 'none';
+        const selectedKind = domainSettings.kindFilter;
+        const sidebar = document.getElementById('domain-sidebar');
+
+        if (selectedKind !== 'all') {
+            main.querySelectorAll('section.jig-card--type[data-kind-children]').forEach(section => {
+                section.style.display = section.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
+            });
+            main.querySelectorAll('section.jig-card--type[data-kind]').forEach(section => {
+                section.style.display = section.dataset.kind === selectedKind ? '' : 'none';
             });
 
-            // メインのタイプセクションのフィルター（enum でないタイプは非表示）
-            const typeSections = main.querySelectorAll('section.jig-card--type[data-has-enum]');
-            typeSections.forEach(section => {
-                section.style.display = section.dataset.hasEnum === 'true' ? '' : 'none';
-            });
-
-            // サイドバーのパッケージのフィルター（enum を含まないパッケージは非表示）
-            const sidebar = document.getElementById('domain-sidebar');
             if (sidebar) {
-                const packageItems = sidebar.querySelectorAll('[data-has-enum-children]');
-                packageItems.forEach(item => {
-                    item.style.display = item.dataset.hasEnumChildren === 'true' ? '' : 'none';
+                sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
+                    item.style.display = item.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
                 });
-
-                // サイドバーの型リンクのフィルター（enum でない型は非表示）
-                const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
-                typeItems.forEach(div => {
-                    div.parentElement.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
+                sidebar.querySelectorAll('div[data-kind]').forEach(div => {
+                    div.closest('li').style.display = div.dataset.kind === selectedKind ? '' : 'none';
                 });
             }
         } else {
-            // 全て表示
-            const allSections = main.querySelectorAll('section.jig-card--type');
-            allSections.forEach(section => {
+            main.querySelectorAll('section.jig-card--type').forEach(section => {
                 section.style.display = '';
             });
 
-            const sidebar = document.getElementById('domain-sidebar');
             if (sidebar) {
-                const packageItems = sidebar.querySelectorAll('[data-has-enum-children]');
-                packageItems.forEach(item => {
+                sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
                     item.style.display = '';
                 });
-
-                const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
-                typeItems.forEach(div => {
-                    div.style.display = '';
+                sidebar.querySelectorAll('div[data-kind]').forEach(div => {
+                    div.closest('li').style.display = '';
                 });
             }
         }
@@ -995,20 +1152,23 @@ const DomainApp = (() => {
         const sidebar = document.getElementById('domain-sidebar');
         if (!sidebar) return;
 
-        sidebar.querySelectorAll('div[data-has-enum]').forEach(div => {
+        sidebar.querySelectorAll('div[data-kind]').forEach(div => {
             const link = div.querySelector('a');
             const text = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
-            div.parentElement.style.display = text.includes(filterText) ? '' : 'none';
+            div.closest('li').style.display = text.includes(filterText) ? '' : 'none';
         });
 
-        Array.from(sidebar.querySelectorAll('[data-has-enum-children]'))
+        [...sidebar.querySelectorAll('[data-kind-children]')]
             .reverse()
             .forEach(item => {
-                const childList = Array.from(item.children).find(child => child.tagName === 'ul');
-                const hasVisible = childList && Array.from(childList.children).some(child =>
+                const link = item.querySelector('a');
+                const packageText = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
+                const packageMatches = packageText.includes(filterText);
+                const childList = item.querySelector('ul');
+                const hasVisible = childList && [...childList.children].some(child =>
                     child.style.display !== 'none'
                 );
-                item.style.display = hasVisible ? '' : 'none';
+                item.style.display = (packageMatches || hasVisible) ? '' : 'none';
             });
     }
 
@@ -1016,27 +1176,24 @@ const DomainApp = (() => {
      * @returns {void}
      */
     function initSettings() {
-        const directionToggle = document.getElementById('direction-toggle');
-        if (directionToggle) {
-            directionToggle.addEventListener('click', () => {
-                domainSettings.diagramDirection = domainSettings.diagramDirection === 'TB' ? 'LR' : 'TB';
-                updateDirectionIcon();
-                Jig.mermaid.diagram.rerenderVisible();
-            });
-        }
-
         const reductionCheckbox = document.getElementById('transitive-reduction-toggle');
         if (reductionCheckbox) reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
+
+        document.querySelectorAll('input[name="kind-filter"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    domainSettings.kindFilter = radio.value;
+                    applyVisibilitySettings();
+                }
+            });
+        });
 
         [
             {id: 'show-deprecated-nodes',       key: 'showDeprecatedNodes',        after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'transitive-reduction-toggle', key: 'transitiveReductionEnabled', after: () => Jig.mermaid.diagram.rerenderVisible()},
             {id: 'show-diagrams',               key: 'showDiagrams',               after: v => document.body.classList.toggle('hide-domain-diagrams', !v)},
             {id: 'show-descriptions',           key: 'showDescriptions',           after: v => document.body.classList.toggle('hide-domain-descriptions', !v)},
-            {id: 'show-fields',                 key: 'showFields',                 after: applyVisibilitySettings},
-            {id: 'show-methods',                key: 'showMethods',                after: applyVisibilitySettings},
-            {id: 'show-static-methods',         key: 'showStaticMethods',          after: applyVisibilitySettings},
-            {id: 'show-enum-only',              key: 'showEnumOnly',               after: applyVisibilitySettings},
+            {id: 'show-members',                key: 'showMembers',                after: applyVisibilitySettings},
         ].forEach(({id, key, after}) => {
             const el = document.getElementById(id);
             if (!el) return;

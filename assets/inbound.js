@@ -205,17 +205,90 @@ const InboundApp = (() => {
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
-        for (const {type, label} of TYPE_CONFIG) {
-            const items = adapters
-                .filter(c => c.entrypoints?.some(ep => ep.entrypointType === type))
-                .flatMap(c => {
-                    const title = Jig.glossary.getTypeTerm(c.fqn).title;
-                    if (filterText && !title.toLowerCase().includes(filterText)) return [];
-                    return [{id: Jig.util.fqnToId(ADAPTER_ID_PREFIX,c.fqn), label: title}];
-                });
-            if (items.length === 0) continue;
-            Jig.dom.sidebar.renderSection(sidebar, label, items, {collapsible: true});
-        }
+        const byPackage = new Map();
+        adapters.forEach(adapter => {
+            const title = Jig.glossary.getTypeTerm(adapter.fqn).title;
+            if (filterText && !title.toLowerCase().includes(filterText)) return;
+            const dotIdx = adapter.fqn.lastIndexOf('.');
+            const pkg = dotIdx === -1 ? '' : adapter.fqn.slice(0, dotIdx);
+            Jig.util.pushToMap(byPackage, pkg, adapter);
+        });
+
+        byPackage.forEach((pkgAdapters, packageFqn) => {
+            const typeList = Jig.dom.createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: pkgAdapters.map(adapter =>
+                    Jig.dom.createElement("li", {
+                        className: "in-page-sidebar__item",
+                        children: [
+                            Jig.dom.createElement("a", {
+                                className: "in-page-sidebar__link",
+                                attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
+                                textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
+                            })
+                        ]
+                    })
+                )
+            });
+
+            const packageTitle = Jig.dom.createElement("p", {
+                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                children: [
+                    Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
+                    Jig.dom.sidebar.createToggle(typeList)
+                ]
+            });
+
+            sidebar.appendChild(Jig.dom.createElement("section", {
+                className: "in-page-sidebar__section",
+                children: [packageTitle, typeList]
+            }));
+        });
+    }
+
+    function buildEntrypointItem(ep) {
+        const methodTerm = Jig.glossary.getMethodTerm(ep.fqn, true);
+
+        const inputDd = (ep.parameters && ep.parameters.length > 0)
+            ? Jig.dom.createElement("dd", {
+                className: "entrypoint-item__params",
+                children: ep.parameters.flatMap(param => [
+                    Jig.dom.type.refElement(param.typeRef),
+                    Jig.dom.createElement("span", {
+                        className: "entrypoint-item__param-name",
+                        textContent: param.nameSource === 'METHOD_PARAMETERS' ? param.name : ''
+                    })
+                ])
+            })
+            : Jig.dom.createElement("dd", {className: "entrypoint-item__empty", textContent: "-"});
+
+        return Jig.dom.createElement("div", {
+            className: "entrypoint-item",
+            children: [
+                Jig.dom.createElement("div", {
+                    className: "entrypoint-item__header",
+                    children: [
+                        Jig.dom.createElement("span", {
+                            className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
+                            textContent: methodTerm.title
+                        }),
+                        Jig.dom.createElement("span", {
+                            className: "entrypoint-item__path",
+                            textContent: ep.path || ''
+                        })
+                    ]
+                }),
+                Jig.dom.createElement("dl", {
+                    className: "entrypoint-item__io",
+                    children: [
+                        Jig.dom.createElement("dt", {textContent: "入力"}),
+                        inputDd,
+                        Jig.dom.createElement("dt", {textContent: "出力"}),
+                        Jig.dom.createElement("dd", {children: [Jig.dom.type.refElement(ep.returnTypeRef)]})
+                    ]
+                })
+            ]
+        });
     }
 
     function splitHttpPath(path) {
@@ -368,8 +441,11 @@ const InboundApp = (() => {
                 }));
             }
 
-            const methodsList = Jig.dom.type.methodsList("エントリーポイント", adapter.entrypoints);
-            if (methodsList) jigCard.appendChild(methodsList);
+            if (adapter.entrypoints && adapter.entrypoints.length > 0) {
+                const epSection = Jig.dom.card.item({title: "エントリーポイント"});
+                adapter.entrypoints.forEach(ep => epSection.appendChild(buildEntrypointItem(ep)));
+                jigCard.appendChild(epSection);
+            }
 
             const diagramGenerator = (dir) => {
                 const data = prepareDiagramData(adapter, Jig.data.usecase.get());

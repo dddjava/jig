@@ -19,10 +19,16 @@
                 表示設定
             </summary>
             <div class="sidebar-settings-panel">
-                <label>
-                    <input type="checkbox" id="show-enum-only">
-                    列挙のみ表示
-                </label>
+                <fieldset>
+                    <legend>種類</legend>
+                    <label><input type="radio" name="kind-filter" value="all" checked> すべて</label>
+                    <label><input type="radio" name="kind-filter" value="文字列"> 文字列</label>
+                    <label><input type="radio" name="kind-filter" value="数値"> 数値</label>
+                    <label><input type="radio" name="kind-filter" value="日付"> 日付</label>
+                    <label><input type="radio" name="kind-filter" value="期間"> 期間</label>
+                    <label><input type="radio" name="kind-filter" value="区分"> 区分</label>
+                    <label><input type="radio" name="kind-filter" value="コレクション"> コレクション</label>
+                </fieldset>
                 <fieldset>
                     <legend>表示内容</legend>
                     <label>
@@ -30,16 +36,8 @@
                         説明
                     </label>
                     <label>
-                        <input type="checkbox" id="show-fields" checked>
-                        フィールド
-                    </label>
-                    <label>
-                        <input type="checkbox" id="show-methods" checked>
-                        メソッド
-                    </label>
-                    <label>
-                        <input type="checkbox" id="show-static-methods" checked>
-                        staticメソッド
+                        <input type="checkbox" id="show-members" checked>
+                        メンバ
                     </label>
                 </fieldset>
                 <fieldset>
@@ -48,30 +46,7 @@
                         <input type="checkbox" id="show-diagrams" checked>
                         ダイアグラム表示
                     </label>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button type="button" id="direction-toggle" class="direction-toggle">
-                            向きを変更
-                            <svg class="direction-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <!-- 初期: 縦方向 -->
-                                <g class="vertical-arrows">
-                                    <path d="M12 5v14"/>
-                                    <path d="M12 5l-3 3"/>
-                                    <path d="M12 5l3 3"/>
-                                    <path d="M12 19l-3-3"/>
-                                    <path d="M12 19l3-3"/>
-                                </g>
-                                <!-- 横方向（display:none） -->
-                                <g class="horizontal-arrows" style="display:none">
-                                    <path d="M5 12h14"/>
-                                    <path d="M19 12l-3-3"/>
-                                    <path d="M19 12l-3 3"/>
-                                    <path d="M5 12l3-3"/>
-                                    <path d="M5 12l3 3"/>
-                                </g>
-                            </svg>
-                        </button>
-                    </div>
-                    <label>
+<label>
                         <input type="checkbox" id="show-deprecated-nodes" checked>
                         Deprecated ノード
                     </label>

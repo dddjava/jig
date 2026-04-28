@@ -668,21 +668,19 @@ globalThis.Jig.dom = (() => {
 
     // --- Type detail builders ---
 
-    function createParameterElement(param, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
+    function createParameterElement(param) {
         return createElement("span", {
             children: param.nameSource === 'METHOD_PARAMETERS'
-                ? [param.name + ': ', fn(param.typeRef)]
-                : [fn(param.typeRef)]
+                ? [param.name + ': ', createElementForTypeRef(param.typeRef)]
+                : [createElementForTypeRef(param.typeRef)]
         });
     }
 
-    function createMethodItem(method, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
+    function createMethodItem(method) {
         const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
 
         const paramElements = method.parameters
-            .map(param => createParameterElement(param, fn))
+            .map(param => createParameterElement(param))
             .flatMap((el, i) => i ? [', ', el] : [el]);
 
         const signatureEl = createElement("div", {
@@ -696,7 +694,7 @@ globalThis.Jig.dom = (() => {
                 ...paramElements,
                 ')',
                 createElement("span", {className: "method-return-sep", textContent: ":"}),
-                fn(method.returnTypeRef)
+                createElementForTypeRef(method.returnTypeRef)
             ]
         });
 
@@ -711,8 +709,7 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createFieldsList(fields, createTypeRefFn) {
-        const fn = createTypeRefFn || createElementForTypeRef;
+    function createFieldsList(fields, options = {}) {
         if (fields.length === 0) return null;
 
         const items = fields.map(field => createElement("div", {
@@ -726,22 +723,24 @@ globalThis.Jig.dom = (() => {
                             textContent: field.name
                         }),
                         createElement("span", {className: "method-return-sep", textContent: ":"}),
-                        fn(field.typeRef)
+                        createElementForTypeRef(field.typeRef)
                     ]
                 })
             ]
         }));
 
-        const card = createItemCard({title: "フィールド", extraClass: "methods-section fields"});
+        const title = options.showTitle !== false ? "フィールド" : undefined;
+        const card = createItemCard({title, extraClass: "methods-section fields"});
         items.forEach(item => card.appendChild(item));
         return card;
     }
 
-    function createMethodsList(kind, methods, createTypeRefFn) {
+    function createMethodsList(kind, methods, options = {}) {
         if (methods.length === 0) return null;
 
-        const card = createItemCard({title: kind, extraClass: "methods-section"});
-        methods.forEach(method => card.appendChild(createMethodItem(method, createTypeRefFn)));
+        const title = options.showTitle !== false ? kind : undefined;
+        const card = createItemCard({title, extraClass: "methods-section"});
+        methods.forEach(method => card.appendChild(createMethodItem(method)));
         return card;
     }
 
@@ -840,6 +839,43 @@ globalThis.Jig.dom = (() => {
         const input = document.getElementById(inputId);
         if (!input) return;
         input.addEventListener('input', () => onChange(input.value.trim()));
+    }
+
+    // --- Tab section ---
+
+    function buildTabSection(tabDefs, options = {}) {
+        const {className, initialActiveId, onTabChange} = options;
+        const tabsBar = createElement("div", {className: "jig-tabs"});
+        const panels = {};
+        const buttons = [];
+
+        const activeId = initialActiveId ?? tabDefs[0]?.id;
+
+        tabDefs.forEach(tab => {
+            panels[tab.id] = createElement("div", {
+                className: ["jig-tab-panel", tab.id !== activeId ? "hidden" : null].filter(Boolean).join(" ")
+            });
+            const btn = createElement("button", {
+                className: ["jig-tab", tab.id === activeId ? "active" : null].filter(Boolean).join(" "),
+                textContent: tab.label,
+            });
+            buttons.push(btn);
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                panelEls.forEach(p => p.classList.add('hidden'));
+                btn.classList.add('active');
+                panels[tab.id].classList.remove('hidden');
+                if (onTabChange) onTabChange(tab.id);
+            });
+            tabsBar.appendChild(btn);
+        });
+
+        const panelEls = Object.values(panels);
+        const section = createElement("div", {
+            className,
+            children: [tabsBar, ...panelEls],
+        });
+        return {panels, section};
     }
 
     // --- Table ---
@@ -1024,6 +1060,9 @@ globalThis.Jig.dom = (() => {
             renderSection,
             initTextFilter: initSidebarTextFilter,
             createToggle: createSidebarToggle,
+        },
+        tab: {
+            buildSection: buildTabSection,
         },
     };
 })();
@@ -2505,43 +2544,10 @@ globalThis.Jig.mermaid = (() => {
             return container;
         }
 
-        function buildTabSection(tabDefs, options = {}) {
-            const {className, initialActiveId, onTabChange} = options;
-            const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
-            const panels = {};
-
-            const activeId = initialActiveId || tabDefs[0]?.id;
-
-            tabDefs.forEach(tab => {
-                panels[tab.id] = Jig.dom.createElement("div", {
-                    className: "diagram-panel" + (tab.id !== activeId ? " hidden" : "")
-                });
-                const btn = Jig.dom.createElement("button", {
-                    className: "diagram-tab" + (tab.id === activeId ? " active" : ""),
-                    textContent: tab.label,
-                });
-                btn.addEventListener('click', () => {
-                    tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
-                    Object.values(panels).forEach(p => p.classList.add('hidden'));
-                    btn.classList.add('active');
-                    panels[tab.id].classList.remove('hidden');
-                    if (onTabChange) onTabChange(tab.id);
-                });
-                tabsBar.appendChild(btn);
-            });
-
-            const section = Jig.dom.createElement("div", {
-                className,
-                children: [tabsBar, ...Object.values(panels)],
-            });
-            return {panels, section};
-        }
-
         return {
             register,
             rerenderVisible,
             createAndRegister,
-            buildTabSection
         };
     })();
 
@@ -2577,7 +2583,14 @@ globalThis.Jig.mermaid = (() => {
         return source;
     }
 
-    const CLASS_DIAGRAM_ARROW_MAP = {association: '-->', inheritance: '--|>', realization: '..|>', dependency: '..>'};
+    const CLASS_DIAGRAM_ARROW_MAP = {association: '-->', realization: '..|>', dependency: '..>'};
+    function edgeWithArrow (edge) {
+        // 継承は矢印を逆転する
+        if (edge.edgeType === 'inheritance') {
+            return `${edge.to} <|-- ${edge.from}`;
+        }
+        return `${edge.from} ${CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>'} ${edge.to}`;
+    }
 
     // classDiagram ビルダー
     class ClassDiagramBuilder {
@@ -2638,7 +2651,7 @@ globalThis.Jig.mermaid = (() => {
                     lines.push(`  class ${id}["${cls.label}"]`);
                 }
             });
-            this._edges.forEach(e => lines.push(`  ${e.from} ${CLASS_DIAGRAM_ARROW_MAP[e.edgeType] ?? '..>'} ${e.to}`));
+            this._edges.forEach(e => lines.push(`  ${edgeWithArrow(e)}`));
             this._clicks.forEach(c => lines.push(c));
             return lines.join('\n');
         }

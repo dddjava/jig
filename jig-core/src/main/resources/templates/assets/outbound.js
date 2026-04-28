@@ -363,10 +363,43 @@ const OutboundApp = (() => {
             container.appendChild(portCard);
         });
 
-        Jig.dom.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => ({
-            id: Jig.util.fqnToId("port", group.outboundPort.fqn),
-            label: Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
-        })), {collapsible: true});
+        if (sidebar) {
+            const byPackage = new Map();
+            grouped.forEach(group => {
+                const fqn = group.outboundPort.fqn;
+                const dotIdx = fqn.lastIndexOf('.');
+                const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
+                Jig.util.pushToMap(byPackage, pkg, group);
+            });
+
+            byPackage.forEach((pkgGroups, packageFqn) => {
+                const typeList = Jig.dom.createElement("ul", {
+                    className: "in-page-sidebar__links",
+                    children: pkgGroups.map(group => {
+                        const fqn = group.outboundPort.fqn;
+                        return Jig.dom.createElement("li", {
+                            className: "in-page-sidebar__item",
+                            children: [Jig.dom.createElement("a", {
+                                className: "in-page-sidebar__link",
+                                attributes: {href: "#" + Jig.util.fqnToId("port", fqn)},
+                                textContent: Jig.glossary.getTypeTerm(fqn).title
+                            })]
+                        });
+                    })
+                });
+                const packageTitle = Jig.dom.createElement("p", {
+                    className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                    children: [
+                        Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
+                        Jig.dom.sidebar.createToggle(typeList)
+                    ]
+                });
+                sidebar.appendChild(Jig.dom.createElement("section", {
+                    className: "in-page-sidebar__section",
+                    children: [packageTitle, typeList]
+                }));
+            });
+        }
 
         if (grouped.length === 0) renderNoData(container);
     }

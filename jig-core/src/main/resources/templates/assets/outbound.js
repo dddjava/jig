@@ -450,14 +450,18 @@ const OutboundApp = (() => {
 
     function renderCrudTable(grouped) {
         const container = document.getElementById("outbound-crud-panel");
+        const sidebar = document.getElementById("crud-sidebar-list");
         if (!container) return;
         container.innerHTML = "";
+        if (sidebar) sidebar.innerHTML = "";
 
         const allPersistenceTargets = collectAllTargets(grouped);
         if (allPersistenceTargets.length === 0) {
             container.textContent = "永続化操作なし";
             return;
         }
+
+        Jig.dom.sidebar.renderSection(sidebar, null, [{id: "outbound-crud-panel", label: "永続化(CRUD)"}]);
 
         const headerRow = Jig.dom.createElement("tr", {
             children: [

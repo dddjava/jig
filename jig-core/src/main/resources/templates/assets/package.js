@@ -315,7 +315,7 @@ const PackageApp = (() => {
 
         container.style.display = '';
         const heading = Jig.dom.createElement('h3', {textContent: '相互依存と原因'});
-        const cards = items.map(item => {
+        const sections = items.map(item => {
             let diagramRendered = false;
 
             const tabSection = Jig.dom.tab.buildSection(
@@ -325,6 +325,7 @@ const PackageApp = (() => {
                     {id: 'text', label: 'テキスト'},
                 ],
                 {
+                    className: 'jig-card-section tab-content-section tab-mutual-dependency',
                     initialActiveId: 'overview',
                     onTabChange: (id) => {
                         if (id === 'diagram' && !diagramRendered) {
@@ -351,11 +352,11 @@ const PackageApp = (() => {
                 })
             );
 
-            return Jig.dom.createElement('div', {className: 'jig-card jig-card--item', children: [tabSection.section]});
+            return tabSection.section;
         });
         container.innerHTML = '';
         container.appendChild(heading);
-        cards.forEach(card => container.appendChild(card));
+        sections.forEach(section => container.appendChild(section));
     }
 
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {

@@ -621,6 +621,10 @@ body.hide-usecase-members .tab-member-section {
     padding: 12px;
 }
 
+.tab-content-section.tab-mutual-dependency .jig-tab-panel {
+    padding: 12px;
+}
+
 .tab-content-section.tab-member-section .jig-tab-panel .jig-card.jig-card--item {
     border: none;
     box-shadow: none;

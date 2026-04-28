@@ -328,7 +328,7 @@ const PackageApp = (() => {
         }
 
         container.style.display = '';
-        const heading = Jig.dom.createElement('h3', {textContent: '相互依存と原因'});
+        const heading = Jig.dom.createElement('h3', {textContent: '相互依存分析'});
         const sections = items.map(item => {
             let diagramRendered = false;
 

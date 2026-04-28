@@ -302,6 +302,7 @@ main table thead {
     width: var(--sidebar-collapsed-width);
     padding-left: 0;
     padding-right: 0;
+    cursor: pointer;
 }
 
 .sidebar--collapsed .sidebar-settings,

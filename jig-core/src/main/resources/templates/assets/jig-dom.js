@@ -335,7 +335,8 @@ globalThis.Jig.dom = (() => {
 
     function initSidebarCollapseBtn() {
         const collapseBtn = document.getElementById('sidebar-collapse-btn');
-        if (!collapseBtn) return;
+        if (!collapseBtn || collapseBtn.dataset.initialized) return;
+        collapseBtn.dataset.initialized = 'true';
         const nav = collapseBtn.closest('nav');
         if (!nav) return;
         collapseBtn.addEventListener('click', (e) => {

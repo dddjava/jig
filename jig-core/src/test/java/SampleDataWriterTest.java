@@ -39,7 +39,8 @@ class SampleDataWriterTest {
         writeDataJs("outbound-data.js", "outboundData",
                 OutboundDataAdapter.buildOutboundJson(outboundAdapters, externalAccessorRepositories));
 
-        var domainPackageRoots = jigService.coreDomainJigTypes(repository).domainPackageRoots();
+        var coreDomainJigTypes = jigService.coreDomainJigTypes(repository);
+        var domainPackageRoots = coreDomainJigTypes.domainPackageRoots();
         writeDataJs("glossary-data.js", "glossaryData",
                 GlossaryDataAdapter.buildGlossaryJson(jigService.glossary(repository), domainPackageRoots));
 
@@ -58,7 +59,7 @@ class SampleDataWriterTest {
         writeDataJs("usecase-data.js", "usecaseData",
                 UsecaseDataAdapter.buildUsecaseJson(jigService.serviceTypes(repository)));
 
-        var coreDomainJigTypes = jigService.coreDomainJigTypes(repository);
+
         if (!coreDomainJigTypes.isEmpty()) {
             var enumModels = repository.jigDataProvider().fetchEnumModels();
             writeDataJs("domain-data.js", "domainData",

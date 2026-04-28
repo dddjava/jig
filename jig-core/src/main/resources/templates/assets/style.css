@@ -1176,9 +1176,6 @@ label {
 
 .package-relation .mutual-dependencies {
     margin: 12px 0 16px 0;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
 }
 
 .package-relation #package-relation-diagram,

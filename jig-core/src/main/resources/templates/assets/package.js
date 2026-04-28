@@ -420,7 +420,7 @@ const PackageApp = (() => {
 
             return tabSection.section;
         });
-        const details = Jig.dom.createElement('details', {className: 'jig-card jig-card--type', attributes: {open: ''}});
+        const details = Jig.dom.createElement('details', {className: 'jig-card jig-card--type'});
         details.appendChild(Jig.dom.createElement('summary', {textContent: '相互依存分析'}));
         sections.forEach(section => details.appendChild(section));
         container.innerHTML = '';

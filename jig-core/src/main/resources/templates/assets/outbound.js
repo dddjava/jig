@@ -320,29 +320,24 @@ const OutboundApp = (() => {
             Jig.mermaid.diagram.createAndRegister(portCard, (container) => {
                 const currentVisibility = readVisibility();
                 const generator = (dir) => generatePortMermaidCode(group, {...currentVisibility, direction: dir});
-                if (generator(currentVisibility.direction)) {
-                    renderMermaid(generator, container, {direction: 'LR'});
+                if (generator('LR')) {
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
                 }
-            }, {className: "mermaid-diagram port-diagram"});
+            }, {className: "mermaid-diagram"});
 
             const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
             group.operations.forEach(operation => {
-                const mermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
-                Jig.mermaid.diagram.register(mermaidContainer, () => {
-                    const currentVisibility = readVisibility();
-                    const generator = (dir) => generateOperationMermaidCode(operationWithPort, {
-                        ...currentVisibility,
-                        direction: dir
-                    });
-                    if (generator(currentVisibility.direction)) {
-                        renderMermaid(generator, mermaidContainer, {direction: 'LR'});
-                    }
-                });
 
                 const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item"});
                 operationItem.appendChild(Jig.dom.type.methodItem(operation.outboundPortOperation));
-                operationItem.appendChild(mermaidContainer);
+                Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
+                    const currentVisibility = readVisibility();
+                    const generator = (dir) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir});
+                    if (generator('LR')) {
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    }
+                });
                 operationItem.appendChild(Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}));
                 operationItem.appendChild(Jig.dom.createElement("ul", {
                     className: "outbound-persistence-detail-list",
@@ -428,20 +423,17 @@ const OutboundApp = (() => {
             if (!persistenceMermaidCode) return;
             const targetId = Jig.util.fqnToId("persistence", group.persistenceTarget);
 
-            const persistenceMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.mermaid.diagram.register(persistenceMermaidContainer, () => {
-                const currentVisibility = readVisibility();
-                const generator = (dir) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir});
-                if (generator(currentVisibility.direction)) {
-                    renderMermaid(generator, persistenceMermaidContainer, {direction: 'LR'});
-                }
-            });
-
             const persistenceCard = Jig.dom.card.type({
                 id: targetId,
                 title: group.persistenceTarget,
             });
-            persistenceCard.appendChild(persistenceMermaidContainer);
+            Jig.mermaid.diagram.createAndRegister(persistenceCard, (container) => {
+                const currentVisibility = readVisibility();
+                const generator = (dir) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir});
+                if (generator('LR')) {
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                }
+            });
             container.appendChild(persistenceCard);
         });
 
@@ -467,21 +459,18 @@ const OutboundApp = (() => {
             const externalId = Jig.util.fqnToId("external", externalFqn);
             const externalLabel = Jig.glossary.getTypeTerm(externalFqn).title;
 
-            const externalMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.mermaid.diagram.register(externalMermaidContainer, () => {
-                const currentVisibility = readVisibility();
-                const generator = (dir) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir});
-                if (generator(currentVisibility.direction)) {
-                    renderMermaid(generator, externalMermaidContainer, {direction: 'LR'});
-                }
-            });
-
             const externalCard = Jig.dom.card.type({
                 id: externalId,
                 title: externalLabel,
                 fqn: externalFqn,
             });
-            externalCard.appendChild(externalMermaidContainer);
+            Jig.mermaid.diagram.createAndRegister(externalCard, (container) => {
+                const currentVisibility = readVisibility();
+                const generator = (dir) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir});
+                if (generator('LR')) {
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                }
+            });
             container.appendChild(externalCard);
         });
 
@@ -590,12 +579,6 @@ const OutboundApp = (() => {
 
     function renderNoData(container) {
         container.appendChild(Jig.dom.createElement("p", {className: "weak", textContent: "データなし"}));
-    }
-
-    function renderMermaid(diagramFn, container, options = {}) {
-        if (!diagramFn || !container) return;
-        container.innerHTML = "";
-        Jig.mermaid.render.renderWithControls(container, diagramFn, options);
     }
 
     function generatePortMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {

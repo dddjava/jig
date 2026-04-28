@@ -298,14 +298,21 @@ const PackageApp = (() => {
             const titles = [getGlossaryTitle(parts[0]), getGlossaryTitle(parts[1])];
             const titleLabel = `${titles[0]} <-> ${titles[1]}`;
             const allCauses = Array.from(relationMap.get(key) ?? []).sort();
-            const causesForward = allCauses.filter(c => {
-                const fromPkg = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(c.split(' -> ')[0]), aggregationDepth);
-                return fromPkg === parts[0];
+            const classesPerPart = [new Set(), new Set()];
+            const causesForward = [];
+            const causesBackward = [];
+            allCauses.forEach(c => {
+                const [from, to] = c.split(' -> ');
+                const fromPkg = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(from), aggregationDepth);
+                const i = fromPkg === parts[0] ? 0 : 1;
+                classesPerPart[i].add(from);
+                classesPerPart[1 - i].add(to);
+                if (i === 0) causesForward.push(c); else causesBackward.push(c);
             });
-            const causesBackward = allCauses.filter(c => {
-                const fromPkg = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(c.split(' -> ')[0]), aggregationDepth);
-                return fromPkg === parts[1];
-            });
+            const stats = parts.map((_, i) => ({
+                classCount: classesPerPart[i].size,
+                relationCount: i === 0 ? causesForward.length : causesBackward.length,
+            }));
             return {
                 pairLabel,
                 titleLabel,
@@ -313,6 +320,7 @@ const PackageApp = (() => {
                 causes: allCauses,
                 causesForward,
                 causesBackward,
+                stats,
             };
         });
     }
@@ -386,6 +394,23 @@ const PackageApp = (() => {
             tabSection.panels['overview'].appendChild(
                 Jig.dom.createElement('span', {className: 'pair-label', textContent: item.pairLabel})
             );
+            tabSection.panels['overview'].appendChild(Jig.dom.createElement('table', {
+                className: 'mutual-dependency-stats',
+                children: [
+                    Jig.dom.createElement('thead', {children: [Jig.dom.createElement('tr', {children: [
+                        Jig.dom.createElement('th', {textContent: 'パッケージ'}),
+                        Jig.dom.createElement('th', {textContent: 'クラス'}),
+                        Jig.dom.createElement('th', {textContent: '関連'}),
+                    ]})]}),
+                    Jig.dom.createElement('tbody', {children: item.titles.map((title, i) =>
+                        Jig.dom.createElement('tr', {children: [
+                            Jig.dom.createElement('td', {textContent: title}),
+                            Jig.dom.createElement('td', {className: 'number', textContent: String(item.stats[i].classCount)}),
+                            Jig.dom.createElement('td', {className: 'number', textContent: String(item.stats[i].relationCount)}),
+                        ]})
+                    )}),
+                ],
+            }));
 
             tabSection.panels['text'].appendChild(
                 Jig.dom.createElement('pre', {

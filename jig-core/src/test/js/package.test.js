@@ -616,6 +616,10 @@ test.describe('package.js', () => {
                 assert.equal(items[0].causes.length, 2);
                 assert.equal(items[0].causesForward.length, 1);  // app.alpha -> app.beta
                 assert.equal(items[0].causesBackward.length, 1); // app.beta -> app.alpha
+                assert.equal(items[0].stats[0].classCount, 1);   // app.alpha: A のみ（from/toで重複排除）
+                assert.equal(items[0].stats[0].relationCount, 1);
+                assert.equal(items[0].stats[1].classCount, 1);   // app.beta: B のみ（from/toで重複排除）
+                assert.equal(items[0].stats[1].relationCount, 1);
             });
 
             test('buildMutualDependencyDiagramSource: 相互依存のMermaidソースを生成する', () => {
@@ -720,9 +724,15 @@ test.describe('package.js', () => {
                 assert.equal(tabsBar.children[1].textContent, '概要');
                 assert.equal(tabsBar.children[2].textContent, 'クラス関連図');
                 assert.equal(tabsBar.children[3].textContent, 'テキスト');
-                // 概要パネルにペアラベルが表示される
+                // 概要パネルにペアラベルとstatsテーブルが表示される
                 const overviewPanel = tabSection.children[1];
                 assert.equal(overviewPanel.children[0].textContent, 'app.alpha <-> app.beta');
+                const statsTable = overviewPanel.children[1];
+                assert.equal(statsTable.className, 'mutual-dependency-stats');
+                const rows = statsTable.querySelector('tbody').children;
+                assert.equal(rows.length, 2);
+                assert.equal(rows[0].children[0].textContent, 'alpha'); // glossary title
+                assert.equal(rows[1].children[0].textContent, 'beta');
                 // テキストパネルにcausesが表示される
                 const textPanel = tabSection.children[3];
                 assert.equal(textPanel.children[0].className, 'causes');

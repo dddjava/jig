@@ -1,5 +1,7 @@
 :root {
     --sidebar-width: 260px;
+    --sidebar-collapsed-width: 28px;
+    --in-page-sidebar-padding: 12px;
     --color-text-secondary: #666;
 }
 
@@ -292,8 +294,13 @@ main table thead {
 .split-view > nav {
     width: var(--sidebar-width);
     flex-shrink: 0;
-    overflow: auto;
+    overflow: hidden;
     box-sizing: border-box;
+    transition: width 0.2s ease;
+}
+
+.split-view > nav.sidebar--collapsed {
+    width: var(--sidebar-collapsed-width);
 }
 
 .split-view > main,
@@ -1450,7 +1457,7 @@ table td.number {
     border: 1px solid #d9e1ea;
     border-radius: 10px;
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
-    padding: 12px;
+    padding: var(--in-page-sidebar-padding);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1628,6 +1635,41 @@ table td.number {
     font-size: 0.85em;
 }
 
+
+/* サイドバー 折りたたみボタン */
+.sidebar-collapse-btn {
+    margin: calc(-1 * var(--in-page-sidebar-padding)) calc(-1 * var(--in-page-sidebar-padding)) 8px;
+    width: calc(100% + 2 * var(--in-page-sidebar-padding));
+    height: 28px;
+    flex-shrink: 0;
+    position: relative;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #d9e1ea;
+    cursor: pointer;
+    padding: 0;
+    color: #5a7a9a;
+}
+
+.sidebar-collapse-btn:hover {
+    background-color: #e8f0fb;
+}
+
+.sidebar-collapse-btn::after {
+    content: "◀";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    line-height: 1;
+}
+
+.sidebar--collapsed .sidebar-collapse-btn::after {
+    content: "▶";
+    right: auto;
+    left: 8px;
+}
 
 /* サイドバー 表示設定パネル */
 .sidebar-settings {

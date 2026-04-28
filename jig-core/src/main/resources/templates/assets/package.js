@@ -336,7 +336,6 @@ const PackageApp = (() => {
         }
 
         container.style.display = '';
-        const heading = Jig.dom.createElement('h3', {textContent: '相互依存分析'});
         const sections = items.map(item => {
             let diagramRendered = false;
 
@@ -421,9 +420,11 @@ const PackageApp = (() => {
 
             return tabSection.section;
         });
+        const details = Jig.dom.createElement('details', {attributes: {open: ''}});
+        details.appendChild(Jig.dom.createElement('summary', {textContent: '相互依存分析'}));
+        sections.forEach(section => details.appendChild(section));
         container.innerHTML = '';
-        container.appendChild(heading);
-        sections.forEach(section => container.appendChild(section));
+        container.appendChild(details);
     }
 
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {

@@ -709,11 +709,14 @@ test.describe('package.js', () => {
                 );
 
                 assert.equal(container.style.display, '');
-                // heading + 1 tab section
-                assert.equal(container.children.length, 2);
-                assert.equal(container.children[0].tagName, 'h3');
+                // details要素のみ
+                assert.equal(container.children.length, 1);
+                const details = container.children[0];
+                assert.equal(details.tagName, 'details');
+                assert.equal(details.children[0].tagName, 'summary');
+                assert.equal(details.children[0].textContent, '相互依存分析');
 
-                const tabSection = container.children[1];
+                const tabSection = details.children[1];
                 assert.ok(tabSection.className.includes('tab-content-section'));
                 const tabsBar = tabSection.children[0];
                 assert.equal(tabsBar.className, 'jig-tabs');

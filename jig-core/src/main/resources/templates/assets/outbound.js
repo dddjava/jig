@@ -363,7 +363,7 @@ const OutboundApp = (() => {
             container.appendChild(portCard);
         });
 
-        if (sidebar) {
+        if (sidebar && grouped.length > 0) {
             const byPackage = new Map();
             grouped.forEach(group => {
                 const fqn = group.outboundPort.fqn;
@@ -372,6 +372,7 @@ const OutboundApp = (() => {
                 Jig.util.pushToMap(byPackage, pkg, group);
             });
 
+            const packageContainer = Jig.dom.createElement("div", {});
             byPackage.forEach((pkgGroups, packageFqn) => {
                 const typeList = Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
@@ -394,11 +395,23 @@ const OutboundApp = (() => {
                         Jig.dom.sidebar.createToggle(typeList)
                     ]
                 });
-                sidebar.appendChild(Jig.dom.createElement("section", {
+                packageContainer.appendChild(Jig.dom.createElement("section", {
                     className: "in-page-sidebar__section",
                     children: [packageTitle, typeList]
                 }));
             });
+
+            const portTitle = Jig.dom.createElement("p", {
+                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                children: [
+                    Jig.dom.createElement("span", {textContent: "出力ポート"}),
+                    Jig.dom.sidebar.createToggle(packageContainer)
+                ]
+            });
+            sidebar.appendChild(Jig.dom.createElement("section", {
+                className: "in-page-sidebar__section",
+                children: [portTitle, packageContainer]
+            }));
         }
 
         if (grouped.length === 0) renderNoData(container);

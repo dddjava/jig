@@ -1114,7 +1114,7 @@ const DomainApp = (() => {
 
         if (selectedKind !== 'all') {
             main.querySelectorAll('section.jig-card--type[data-kind-children]').forEach(section => {
-                section.style.display = section.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
+                section.style.display = 'none';
             });
             main.querySelectorAll('section.jig-card--type[data-kind]').forEach(section => {
                 section.style.display = section.dataset.kind === selectedKind ? '' : 'none';

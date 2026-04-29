@@ -1112,35 +1112,30 @@ const DomainApp = (() => {
         const selectedKind = domainSettings.kindFilter;
         const sidebar = document.getElementById('domain-sidebar');
 
-        if (selectedKind !== 'all') {
-            main.querySelectorAll('section.jig-card--type[data-kind-children]').forEach(section => {
-                section.style.display = 'none';
-            });
-            main.querySelectorAll('section.jig-card--type[data-kind]').forEach(section => {
-                section.style.display = section.dataset.kind === selectedKind ? '' : 'none';
-            });
+        const packageItemDisplay = (item) => {
+            if (selectedKind === 'all' || selectedKind === 'パッケージ') return '';
+            return item.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
+        };
+        const typeItemDisplay = (item) => {
+            if (selectedKind === 'all') return '';
+            if (selectedKind === 'パッケージ') return 'none';
+            return item.dataset.kind === selectedKind ? '' : 'none';
+        };
 
-            if (sidebar) {
-                sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
-                    item.style.display = item.dataset.kindChildren.split(' ').includes(selectedKind) ? '' : 'none';
-                });
-                sidebar.querySelectorAll('div[data-kind]').forEach(div => {
-                    div.closest('li').style.display = div.dataset.kind === selectedKind ? '' : 'none';
-                });
-            }
-        } else {
-            main.querySelectorAll('section.jig-card--type').forEach(section => {
-                section.style.display = '';
-            });
+        main.querySelectorAll('section.jig-card--type[data-kind-children]').forEach(section => {
+            section.style.display = packageItemDisplay(section);
+        });
+        main.querySelectorAll('section.jig-card--type[data-kind]').forEach(section => {
+            section.style.display = typeItemDisplay(section);
+        });
 
-            if (sidebar) {
-                sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
-                    item.style.display = '';
-                });
-                sidebar.querySelectorAll('div[data-kind]').forEach(div => {
-                    div.closest('li').style.display = '';
-                });
-            }
+        if (sidebar) {
+            sidebar.querySelectorAll('[data-kind-children]').forEach(item => {
+                item.style.display = packageItemDisplay(item);
+            });
+            sidebar.querySelectorAll('div[data-kind]').forEach(div => {
+                div.closest('li').style.display = typeItemDisplay(div);
+            });
         }
         applySidebarTextFilter();
     }

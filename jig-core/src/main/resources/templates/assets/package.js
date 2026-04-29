@@ -325,7 +325,62 @@ const PackageApp = (() => {
         });
     }
 
-    function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context) {
+    function renderPairSimulation(panel, item, uniqueRelations, packageFqns, context) {
+        const parts = item.pairLabel.split(' <-> ');
+
+        if (!uniqueRelations || !packageFqns) {
+            panel.appendChild(Jig.dom.createElement('span', {textContent: 'データが利用できません'}));
+            return;
+        }
+
+        let selectedDir = 'both';
+
+        const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
+
+        const getFilteredRelations = () => {
+            if (selectedDir === 'both') return uniqueRelations;
+            return uniqueRelations.filter(rel => {
+                if (selectedDir === 'forward') return !(rel.from === parts[1] && rel.to === parts[0]);
+                return !(rel.from === parts[0] && rel.to === parts[1]);
+            });
+        };
+
+        const renderDiagram = () => {
+            diagramContainer.innerHTML = '';
+            const generator = (dir) => Jig.mermaid.builder.buildMermaidDiagramSource(
+                packageFqns, getFilteredRelations(),
+                {diagramDirection: dir}
+            ).source;
+            Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection});
+        };
+
+        const radioName = `sim-dir-${encodeURIComponent(item.pairLabel)}`;
+        const bothRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'both'}});
+        bothRadio.checked = true;
+        const forwardRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'forward'}});
+        const backwardRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'backward'}});
+
+        [[bothRadio, 'both'], [forwardRadio, 'forward'], [backwardRadio, 'backward']].forEach(([radio, value]) => {
+            radio.addEventListener('change', () => {
+                selectedDir = value;
+                renderDiagram();
+            });
+        });
+
+        panel.appendChild(Jig.dom.createElement('fieldset', {
+            className: 'diagram-panel-options',
+            children: [
+                Jig.dom.createElement('legend', {textContent: '依存方向'}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [bothRadio, '両方向（変更なし）']}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardRadio, `${item.titles[0]} → ${item.titles[1]} のみ`]}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardRadio, `${item.titles[0]} ← ${item.titles[1]} のみ`]}),
+            ],
+        }));
+        panel.appendChild(diagramContainer);
+        renderDiagram();
+    }
+
+    function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context, uniqueRelations, packageFqns) {
         const container = dom.getMutualDependencyList();
         if (!container) return;
         const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth);
@@ -338,17 +393,23 @@ const PackageApp = (() => {
         container.style.display = '';
         const sections = items.map(item => {
             let diagramRendered = false;
+            let simRendered = false;
 
             const tabSection = Jig.dom.tab.buildSection(
                 [
                     {id: 'overview', label: '概要'},
                     {id: 'diagram', label: 'クラス関連図'},
                     {id: 'text', label: 'テキスト'},
+                    {id: 'simulation', label: 'シミュレーション'},
                 ],
                 {
                     className: 'jig-card-section tab-content-section tab-mutual-dependency',
                     initialActiveId: 'overview',
                     onTabChange: (id) => {
+                        if (id === 'simulation' && !simRendered) {
+                            simRendered = true;
+                            renderPairSimulation(tabSection.panels['simulation'], item, uniqueRelations, packageFqns, context);
+                        }
                         if (id === 'diagram' && !diagramRendered) {
                             diagramRendered = true;
                             const forwardCheckbox = Jig.dom.createElement('input', {attributes: {type: 'checkbox'}});
@@ -645,13 +706,14 @@ const PackageApp = (() => {
             nodeIdToFqn,
             mutualPairs,
             uniqueRelations,
+            packageFqns,
             filteredCauseRelationEvidence,
         };
     }
 
     function applyHierarchyDiagramRenderPlan(context, renderPlan) {
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
-        renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
+        renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context, renderPlan.uniqueRelations, renderPlan.packageFqns);
     }
 
     function setDiagramSource(diagram, source) {

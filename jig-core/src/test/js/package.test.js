@@ -721,13 +721,14 @@ test.describe('package.js', () => {
                 assert.ok(tabSection.className.includes('tab-content-section'));
                 const tabsBar = tabSection.children[0];
                 assert.equal(tabsBar.className, 'jig-tabs');
-                // title + 3 tabs: 概要, ダイアグラム, テキスト
-                assert.equal(tabsBar.children.length, 4);
+                // title + 4 tabs: 概要, クラス関連図, テキスト, シミュレーション
+                assert.equal(tabsBar.children.length, 5);
                 assert.equal(tabsBar.children[0].className, 'mutual-dependency-title');
                 assert.equal(tabsBar.children[0].textContent, 'alpha <-> beta');
                 assert.equal(tabsBar.children[1].textContent, '概要');
                 assert.equal(tabsBar.children[2].textContent, 'クラス関連図');
                 assert.equal(tabsBar.children[3].textContent, 'テキスト');
+                assert.equal(tabsBar.children[4].textContent, 'シミュレーション');
                 // 概要パネルにペアラベルとstatsテーブルが表示される
                 const overviewPanel = tabSection.children[1];
                 assert.equal(overviewPanel.children[0].textContent, 'app.alpha <-> app.beta');

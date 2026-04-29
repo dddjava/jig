@@ -326,7 +326,7 @@ const PackageApp = (() => {
     }
 
     function renderPairSimulation(panel, item, uniqueRelations, packageFqns, context) {
-        const parts = item.pairLabel.split(' <-> ');
+        const [partA, partB] = item.pairLabel.split(' <-> ');
 
         if (!uniqueRelations || !packageFqns) {
             panel.appendChild(Jig.dom.createElement('span', {textContent: 'データが利用できません'}));
@@ -334,21 +334,29 @@ const PackageApp = (() => {
         }
 
         let selectedDir = 'both';
+        const EXTRACT_FQN = '(抽出)';
+
+        const buildSimulationData = () => {
+            if (selectedDir === 'both') return {fqns: packageFqns, relations: uniqueRelations};
+            if (selectedDir === 'forward') return {fqns: packageFqns, relations: uniqueRelations.filter(rel => !(rel.from === partB && rel.to === partA))};
+            if (selectedDir === 'backward') return {fqns: packageFqns, relations: uniqueRelations.filter(rel => !(rel.from === partA && rel.to === partB))};
+
+            const baseRelations = uniqueRelations.filter(rel =>
+                !(rel.from === partA && rel.to === partB) && !(rel.from === partB && rel.to === partA)
+            );
+            const extractRelations = selectedDir === 'extract-in'
+                ? [{from: EXTRACT_FQN, to: partA}, {from: EXTRACT_FQN, to: partB}]
+                : [{from: partA, to: EXTRACT_FQN}, {from: partB, to: EXTRACT_FQN}];
+            return {fqns: [...packageFqns, EXTRACT_FQN], relations: [...baseRelations, ...extractRelations]};
+        };
 
         const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
 
-        const getFilteredRelations = () => {
-            if (selectedDir === 'both') return uniqueRelations;
-            return uniqueRelations.filter(rel => {
-                if (selectedDir === 'forward') return !(rel.from === parts[1] && rel.to === parts[0]);
-                return !(rel.from === parts[0] && rel.to === parts[1]);
-            });
-        };
-
         const renderDiagram = () => {
             diagramContainer.innerHTML = '';
+            const {fqns, relations} = buildSimulationData();
             const generator = (dir) => Jig.mermaid.builder.buildMermaidDiagramSource(
-                packageFqns, getFilteredRelations(),
+                fqns, relations,
                 {diagramDirection: dir}
             ).source;
             Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection});
@@ -359,8 +367,10 @@ const PackageApp = (() => {
         bothRadio.checked = true;
         const forwardRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'forward'}});
         const backwardRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'backward'}});
+        const extractInRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'extract-in'}});
+        const extractOutRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'extract-out'}});
 
-        [[bothRadio, 'both'], [forwardRadio, 'forward'], [backwardRadio, 'backward']].forEach(([radio, value]) => {
+        [[bothRadio, 'both'], [forwardRadio, 'forward'], [backwardRadio, 'backward'], [extractInRadio, 'extract-in'], [extractOutRadio, 'extract-out']].forEach(([radio, value]) => {
             radio.addEventListener('change', () => {
                 selectedDir = value;
                 renderDiagram();
@@ -374,6 +384,8 @@ const PackageApp = (() => {
                 Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [bothRadio, '両方向（変更なし）']}),
                 Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardRadio, `${item.titles[0]} → ${item.titles[1]} のみ`]}),
                 Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardRadio, `${item.titles[0]} ← ${item.titles[1]} のみ`]}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [extractInRadio, `X → ${item.titles[0]}, X → ${item.titles[1]} （抽出）`]}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [extractOutRadio, `${item.titles[0]} → X, ${item.titles[1]} → X （抽出）`]}),
             ],
         }));
         panel.appendChild(diagramContainer);

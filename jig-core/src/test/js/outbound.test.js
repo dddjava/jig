@@ -416,7 +416,7 @@ test.describe("outbound.js", () => {
             assert.ok(code !== null);
             assert.ok(code.startsWith("graph LR"));
             assert.ok(code.includes("Port"), `ポート名が含まれない: ${code}`);
-            assert.ok(code.includes("Adapter"), `アダプター名が含まれない: ${code}`);
+            assert.ok(!code.includes("Adapter"), `デフォルトではアダプター名が含まれるべきでない: ${code}`);
         });
 
         test("すべての表示設定を false にすると null を返す", () => {

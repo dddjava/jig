@@ -4,7 +4,7 @@ const OutboundApp = (() => {
     const DEFAULT_VISIBILITY = {
         callerUsecase: true,
         port: true, operation: true,
-        adapter: true, execution: true,
+        adapter: false, execution: true,
         accessor: false, accessorMethod: false,
         target: true,
         externalAccessor: false, externalAccessorMethod: false,

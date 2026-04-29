@@ -708,6 +708,7 @@ const UsecaseApp = (() => {
 
                 const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
                 methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
+                methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
 
                 if (methodDescription) {
                     methodSection.appendChild(Jig.dom.createElement("section", {
@@ -812,8 +813,6 @@ const UsecaseApp = (() => {
                         });
                     }
                 }
-
-                methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
 
                 section.appendChild(methodSection);
             });

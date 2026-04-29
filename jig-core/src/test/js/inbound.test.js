@@ -222,6 +222,32 @@ test.describe('InboundApp', () => {
                     if (!typeRef) return createElement('span', {});
                     const text = typeRef.fqn.split('.').pop();
                     return createElement('span', {textContent: text});
+                },
+                methodIOSection: (parameters, returnTypeRef) => {
+                    const toSpan = (typeRef) => typeRef
+                        ? createElement('span', {textContent: typeRef.fqn.split('.').pop()})
+                        : createElement('span', {});
+                    const inputDd = parameters.length > 0
+                        ? createElement('dd', {
+                            className: 'entrypoint-item__params',
+                            children: parameters.flatMap(param => [
+                                toSpan(param.typeRef),
+                                createElement('span', {
+                                    className: 'entrypoint-item__param-name',
+                                    textContent: param.nameSource === 'METHOD_PARAMETERS' ? param.name : ''
+                                })
+                            ])
+                        })
+                        : createElement('dd', {className: 'entrypoint-item__empty', textContent: '-'});
+                    return createElement('dl', {
+                        className: 'entrypoint-item__io',
+                        children: [
+                            createElement('dt', {textContent: '入力'}),
+                            inputDd,
+                            createElement('dt', {textContent: '出力'}),
+                            createElement('dd', {children: [toSpan(returnTypeRef)]})
+                        ]
+                    });
                 }
             }
         };

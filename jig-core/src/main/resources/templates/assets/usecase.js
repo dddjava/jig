@@ -813,22 +813,7 @@ const UsecaseApp = (() => {
                     }
                 }
 
-                const depends = Jig.dom.createElement("div", {className: "depends"});
-                if (method.parameters.length > 0) {
-                    const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
-                    parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "入力"}));
-                    method.parameters.forEach(param => {
-                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.parameterElement(param)]}));
-                    });
-                    depends.appendChild(parametersSection);
-                }
-                if (method.returnTypeRef.fqn !== 'void') {
-                    const returnSection = Jig.dom.createElement("section", {className: "depends-section"});
-                    returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "出力"}));
-                    returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.refElement(method.returnTypeRef)]}));
-                    depends.appendChild(returnSection);
-                }
-                methodSection.appendChild(depends);
+                methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
 
                 section.appendChild(methodSection);
             });

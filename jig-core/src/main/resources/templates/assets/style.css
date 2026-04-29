@@ -1220,6 +1220,10 @@ label {
     width: 2.5em;
 }
 
+.package-relation table .col-number {
+    width: 4em;
+}
+
 .package-relation td.glossary-cell {
     text-align: center;
 }

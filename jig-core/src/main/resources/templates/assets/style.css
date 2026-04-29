@@ -1220,8 +1220,10 @@ label {
     width: 2.5em;
 }
 
-.package-relation table .col-number {
-    width: 4em;
+.package-relation #hierarchy-package-table th:nth-child(n+4),
+.package-relation #explore-package-table th:nth-child(n+4) {
+    white-space: nowrap;
+    width: 1px;
 }
 
 .package-relation td.glossary-cell {
@@ -1323,6 +1325,7 @@ label {
 .package-relation #hierarchy-package-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .package-relation #explore-package-table tbody tr,

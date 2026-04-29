@@ -347,7 +347,7 @@ const PackageApp = (() => {
             const extractRelations = selectedDir === 'extract-in'
                 ? [{from: EXTRACT_FQN, to: partA}, {from: EXTRACT_FQN, to: partB}]
                 : [{from: partA, to: EXTRACT_FQN}, {from: partB, to: EXTRACT_FQN}];
-            return {fqns: [...packageFqns, EXTRACT_FQN], relations: [...baseRelations, ...extractRelations]};
+            return {fqns: new Set([...packageFqns, EXTRACT_FQN]), relations: [...baseRelations, ...extractRelations]};
         };
 
         const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});

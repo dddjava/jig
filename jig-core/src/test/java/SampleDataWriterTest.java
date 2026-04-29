@@ -35,9 +35,10 @@ class SampleDataWriterTest {
         var jigTypes = jigService.jigTypes(repository);
         var externalAccessorRepositories = repository.externalAccessorRepositories();
         var outboundAdapters = OutboundAdapters.from(jigTypes, externalAccessorRepositories);
+        var serviceAngles = jigService.serviceAngles(repository);
 
         writeDataJs("outbound-data.js", "outboundData",
-                OutboundDataAdapter.buildOutboundJson(outboundAdapters, externalAccessorRepositories));
+                OutboundDataAdapter.buildOutboundJson(outboundAdapters, externalAccessorRepositories, serviceAngles));
 
         var coreDomainJigTypes = jigService.coreDomainJigTypes(repository);
         var domainPackageRoots = coreDomainJigTypes.domainPackageRoots();

@@ -9,11 +9,14 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorReposito
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
+import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 出力インタフェース（outbound-data.js）
@@ -38,10 +41,19 @@ public class OutboundDataAdapter implements DataAdapter {
 
     @Override
     public String buildJson(JigRepository jigRepository) {
-        return buildOutboundJson(jigService.outboundAdapters(jigRepository), jigRepository.externalAccessorRepositories());
+        return buildOutboundJson(
+                jigService.outboundAdapters(jigRepository),
+                jigRepository.externalAccessorRepositories(),
+                jigService.serviceAngles(jigRepository)
+        );
     }
 
-    public static String buildOutboundJson(OutboundAdapters outboundAdapters, ExternalAccessorRepositories externalAccessorRepositories) {
+    public static String buildOutboundJson(OutboundAdapters outboundAdapters, ExternalAccessorRepositories externalAccessorRepositories, ServiceAngles serviceAngles) {
+        var portOperationToCallerUsecases = serviceAngles.list().stream()
+                .flatMap(usecase -> usecase.usingRepositoryMethods().stream()
+                        .map(repositoryMethod -> Map.entry(repositoryMethod.fqn(), usecase.serviceMethod().method().fqn())))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
 
@@ -65,7 +77,8 @@ public class OutboundDataAdapter implements DataAdapter {
 
                 outboundPort.operationStream().forEach(portOperation -> {
                     String portOperationFqn = portOperation.jigMethod().fqn();
-                    portOperations.add(JsonSupport.buildMethodJson(portOperation.jigMethod()));
+                    portOperations.add(JsonSupport.buildMethodJson(portOperation.jigMethod())
+                            .and("callerUsecases", Json.array(portOperationToCallerUsecases.getOrDefault(portOperationFqn, List.of()))));
 
                     outboundAdapter.findExecution(portOperation).ifPresent(adapterExecution -> {
                         String adapterExecutionFqn = adapterExecution.jigMethod().fqn();

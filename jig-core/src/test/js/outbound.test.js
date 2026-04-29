@@ -465,6 +465,79 @@ test.describe("outbound.js", () => {
             assert.ok(code.includes("orders"), `ターゲット名が含まれない: ${code}`);
         });
 
+        test("callerUsecase=trueのとき呼び出し元ユースケースノードとエッジを含む", () => {
+            const groupWithCallers = {
+                outboundPort: {fqn: "com.example.Port"},
+                operations: [{
+                    outboundPortOperation: {
+                        ...makeMethodData("com.example.Port#save()"),
+                        callerUsecases: ["com.example.OrderService#createOrder(Request)"]
+                    },
+                    outboundAdapter: {fqn: "com.example.Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#save()"),
+                    persistenceAccessors: [],
+                    externalAccessors: []
+                }]
+            };
+            const visibility = {callerUsecase: true, port: true, operation: true, adapter: true, execution: true,
+                accessor: false, accessorMethod: false, target: true,
+                externalAccessor: false, externalAccessorMethod: false,
+                externalType: true, externalTypeMethod: true,
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = OutboundApp.generatePortMermaidCode(groupWithCallers, visibility);
+            assert.ok(code !== null);
+            assert.ok(code.includes("OrderService"), `ユースケースクラス名が含まれない: ${code}`);
+            assert.ok(code.includes("createOrder"), `ユースケースメソッド名が含まれない: ${code}`);
+            assert.ok(code.includes("-->"), `エッジが含まれない: ${code}`);
+        });
+
+        test("callerUsecase=falseのとき呼び出し元ユースケースを含まない", () => {
+            const groupWithCallers = {
+                outboundPort: {fqn: "com.example.Port"},
+                operations: [{
+                    outboundPortOperation: {
+                        ...makeMethodData("com.example.Port#save()"),
+                        callerUsecases: ["com.example.OrderService#createOrder(Request)"]
+                    },
+                    outboundAdapter: {fqn: "com.example.Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#save()"),
+                    persistenceAccessors: [],
+                    externalAccessors: []
+                }]
+            };
+            const code = OutboundApp.generatePortMermaidCode(groupWithCallers);
+            assert.ok(code !== null);
+            assert.ok(!code.includes("OrderService"), `デフォルトではユースケースが含まれるべきでない: ${code}`);
+        });
+
+        test("同じポート操作を複数ユースケースが呼ぶ場合、全てのエッジが生成される", () => {
+            const groupWithMultipleCallers = {
+                outboundPort: {fqn: "com.example.Port"},
+                operations: [{
+                    outboundPortOperation: {
+                        ...makeMethodData("com.example.Port#save()"),
+                        callerUsecases: [
+                            "com.example.OrderService#createOrder(Request)",
+                            "com.example.OrderService#updateOrder(Request)"
+                        ]
+                    },
+                    outboundAdapter: {fqn: "com.example.Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#save()"),
+                    persistenceAccessors: [],
+                    externalAccessors: []
+                }]
+            };
+            const visibility = {callerUsecase: true, port: true, operation: true, adapter: true, execution: true,
+                accessor: false, accessorMethod: false, target: true,
+                externalAccessor: false, externalAccessorMethod: false,
+                externalType: true, externalTypeMethod: true,
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = OutboundApp.generatePortMermaidCode(groupWithMultipleCallers, visibility);
+            assert.ok(code !== null);
+            assert.equal((code.match(/createOrder/g) || []).length, 1, "ノードは1回だけ定義される");
+            assert.equal((code.match(/updateOrder/g) || []).length, 1, "ノードは1回だけ定義される");
+        });
+
         test("direction 設定が反映される", () => {
             const visibility = {
                 ...OutboundApp.generatePortMermaidCode.length,

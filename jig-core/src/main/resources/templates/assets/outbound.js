@@ -2,6 +2,7 @@ const OutboundApp = (() => {
     const Jig = globalThis.Jig;
 
     const DEFAULT_VISIBILITY = {
+        callerUsecase: false,
         port: true, operation: true,
         adapter: true, execution: true,
         accessor: false, accessorMethod: false,
@@ -595,7 +596,10 @@ const OutboundApp = (() => {
             persistenceTargetNodes: new Map(),
             extAccessorNodes: new Map(),
             extAccessorSubgraphs: new Map(),
-            extTypeNodes: new Map()
+            extTypeNodes: new Map(),
+            usecaseSubgraphs: new Map(),
+            usecaseNodes: new Map(),
+            usecaseEdges: new Set()
         };
 
         group.operations.forEach((operation) => {
@@ -608,6 +612,7 @@ const OutboundApp = (() => {
             const executionFqn = operation.outboundAdapterExecution?.fqn;
 
             let lastNodeId = addPortNode(builder, contexts.portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
+            addCallerUsecaseNodes(builder, lastNodeId, portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
             lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, contexts.adapterSubgraphs);
 
             operation.persistenceAccessors.forEach(op => {
@@ -638,7 +643,8 @@ const OutboundApp = (() => {
         const contexts = {
             portSubgraphs: new Map(), adapterSubgraphs: new Map(),
             accessorSubgraphs: new Map(), accessorNodes: new Map(),
-            persistenceTargetNodes: new Map()
+            persistenceTargetNodes: new Map(),
+            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set()
         };
 
         group.operations.forEach((operation) => {
@@ -648,6 +654,7 @@ const OutboundApp = (() => {
                 .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
                 .forEach(op => {
                     let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
+                    addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
                     currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs);
                     currentNode = addAccessorNode(builder, currentNode, op, visibility, contexts.accessorSubgraphs, contexts.accessorNodes);
 
@@ -671,7 +678,8 @@ const OutboundApp = (() => {
         const contexts = {
             portSubgraphs: new Map(), adapterSubgraphs: new Map(),
             extAccessorNodes: new Map(), extAccessorSubgraphs: new Map(),
-            extTypeNodes: new Map()
+            extTypeNodes: new Map(),
+            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set()
         };
 
         const filterToExternalType = accessor => ({
@@ -689,6 +697,7 @@ const OutboundApp = (() => {
 
             relevantAccessors.forEach(accessor => {
                 let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
+                addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
                 currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs);
                 addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
             });
@@ -713,6 +722,26 @@ const OutboundApp = (() => {
             executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title,
             executionFqn: operation.outboundAdapterExecution?.fqn,
         };
+    }
+
+    function addCallerUsecaseNodes(builder, portOpNodeId, portOpFqn, callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges) {
+        if (!visibility.callerUsecase || !portOpNodeId || !callerUsecases?.length) return;
+        callerUsecases.forEach(usecaseFqn => {
+            const edgeKey = usecaseFqn + '->' + portOpFqn;
+            if (usecaseEdges.has(edgeKey)) return;
+            usecaseEdges.add(edgeKey);
+            if (!usecaseNodes.has(usecaseFqn)) {
+                const nodeId = Jig.util.fqnToId("usecase", usecaseFqn);
+                const hashIdx = usecaseFqn.indexOf('#');
+                const classFqn = hashIdx !== -1 ? usecaseFqn.slice(0, hashIdx) : usecaseFqn;
+                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, Jig.glossary.getTypeTerm(classFqn).title);
+                builder.addNodeToSubgraph(sg, nodeId, Jig.glossary.getMethodTerm(usecaseFqn, true).title, 'method');
+                builder.addClass(nodeId, "usecase");
+                builder.addClick(nodeId, `./usecase.html#${Jig.util.fqnToId("method", usecaseFqn)}`);
+                usecaseNodes.set(usecaseFqn, nodeId);
+            }
+            builder.addEdge(usecaseNodes.get(usecaseFqn), portOpNodeId);
+        });
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
@@ -889,6 +918,7 @@ const OutboundApp = (() => {
             return el ? el.checked : false;
         };
         return {
+            callerUsecase: checked("show-caller-usecase"),
             port: checked("show-port"),
             operation: checked("show-operation"),
             adapter: checked("show-adapter"),

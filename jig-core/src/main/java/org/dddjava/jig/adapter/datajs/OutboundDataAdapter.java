@@ -50,6 +50,7 @@ public class OutboundDataAdapter implements DataAdapter {
 
     public static String buildOutboundJson(OutboundAdapters outboundAdapters, ExternalAccessorRepositories externalAccessorRepositories, ServiceAngles serviceAngles) {
         var portOperationToCallerUsecases = serviceAngles.list().stream()
+                .filter(usecase -> usecase.serviceMethod().method().isPublic())
                 .flatMap(usecase -> usecase.usingRepositoryMethods().stream()
                         .map(repositoryMethod -> Map.entry(repositoryMethod.fqn(), usecase.serviceMethod().method().fqn())))
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));

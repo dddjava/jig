@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.types;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,12 +32,7 @@ public record JigAnnotationElementValuePair(String name, JigAnnotationElementVal
     }
 
     public boolean matchName(String[] elementNames) {
-        for (String elementName : elementNames) {
-            if (elementName.equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.asList(elementNames).contains(name);
     }
 
     public String valueAsString() {

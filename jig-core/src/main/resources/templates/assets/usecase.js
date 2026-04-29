@@ -590,18 +590,6 @@ const UsecaseApp = (() => {
         });
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
-        const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
-        const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
-        const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
-
-        /** @type {DiagramContext} */
-        const diagramContext = {
-            methodMap,
-            outboundOperationSet,
-            showDiagramInternalMethods,
-            showDiagramOutboundPorts,
-            showDiagramDomainTypes
-        };
 
         const buildCurrentDiagramContext = () => ({
             methodMap,
@@ -717,10 +705,10 @@ const UsecaseApp = (() => {
                     }));
                 }
 
-                const usecaseDiagram = buildUsecaseDiagram(method, diagramContext);
+                const usecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
                 const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-                const sequenceDiagram = SequenceDiagram.buildDiagram(method, diagramContext);
+                const sequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
                 const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
                 const hasSequenceDiagram = sequenceDiagramCode !== null;
 

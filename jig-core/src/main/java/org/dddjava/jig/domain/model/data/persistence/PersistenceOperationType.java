@@ -137,7 +137,7 @@ public enum PersistenceOperationType {
         return tables;
     }
 
-    public PersistenceTarget unexpectedTable() {
+    public static PersistenceTarget unexpectedTable() {
         return new PersistenceTarget("（解析失敗）");
     }
 

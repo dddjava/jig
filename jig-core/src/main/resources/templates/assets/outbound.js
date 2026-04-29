@@ -2,7 +2,7 @@ const OutboundApp = (() => {
     const Jig = globalThis.Jig;
 
     const DEFAULT_VISIBILITY = {
-        callerUsecase: false,
+        callerUsecase: true,
         port: true, operation: true,
         adapter: true, execution: true,
         accessor: false, accessorMethod: false,

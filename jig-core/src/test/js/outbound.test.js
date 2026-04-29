@@ -505,9 +505,9 @@ test.describe("outbound.js", () => {
                     externalAccessors: []
                 }]
             };
-            const code = OutboundApp.generatePortMermaidCode(groupWithCallers);
+            const code = OutboundApp.generatePortMermaidCode(groupWithCallers, {callerUsecase: false, port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: true, crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true});
             assert.ok(code !== null);
-            assert.ok(!code.includes("OrderService"), `デフォルトではユースケースが含まれるべきでない: ${code}`);
+            assert.ok(!code.includes("OrderService"), `callerUsecase=falseではユースケースが含まれるべきでない: ${code}`);
         });
 
         test("同じポート操作を複数ユースケースが呼ぶ場合、全てのエッジが生成される", () => {

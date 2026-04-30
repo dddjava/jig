@@ -336,7 +336,7 @@ globalThis.Jig.mermaid = (() => {
                 const nodeId = `P${nodeIndex++}`;
                 nodeIdByFqn.set(fqn, nodeId);
                 nodeIdToFqn.set(nodeId, fqn);
-                const label = showPhysicalName ? fqn : globalThis.Jig.glossary.getPackageTerm(fqn).title;
+                const label = showPhysicalName ? fqn.split('.').pop() : globalThis.Jig.glossary.getPackageTerm(fqn).title;
                 nodeLabelById.set(nodeId, label);
                 return nodeId;
             };

@@ -223,7 +223,8 @@ globalThis.Jig.mermaid = (() => {
                     clickHandlerName,
                     nodeClickUrlCallback,
                     parentFqnsWithRelations,
-                    subgraphNodeIds
+                    subgraphNodeIds,
+                    showPhysicalName: options.showPhysicalName,
                 }
             );
             const {
@@ -290,6 +291,7 @@ globalThis.Jig.mermaid = (() => {
                     clickHandlerName,
                     parentFqnsWithRelations,
                     subgraphNodeIds,
+                    showPhysicalName: options.showPhysicalName,
                 }
             );
             const {edgeLines, linkStyles} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
@@ -399,7 +401,7 @@ globalThis.Jig.mermaid = (() => {
          * @param {DiagramNodeLinesOptions} options
          */
         function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
-            const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback} = options;
+            const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback, showPhysicalName} = options;
 
             const packageFqnList = Array.from(packageFqns).sort();
             const parentFqns = buildParentFqns(packageFqns);
@@ -421,7 +423,7 @@ globalThis.Jig.mermaid = (() => {
                     lines.push(`class ${nodeId} parentPackage`);
                 }
             };
-            return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, options.subgraphNodeIds);
+            return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, options.subgraphNodeIds, showPhysicalName);
         }
 
         function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {
@@ -432,8 +434,9 @@ globalThis.Jig.mermaid = (() => {
             return displayLabel ?? '';
         }
 
-        function buildDiagramSubgraphLabel(subgraphFqn) {
+        function buildDiagramSubgraphLabel(subgraphFqn, showPhysicalName = false) {
             if (!subgraphFqn) return '';
+            if (showPhysicalName) return subgraphFqn.split('.').pop();
             return globalThis.Jig.glossary.getPackageTerm(subgraphFqn).title;
         }
 
@@ -462,7 +465,7 @@ globalThis.Jig.mermaid = (() => {
             return rootGroup;
         }
 
-        function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, subgraphNodeIds = null) {
+        function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, subgraphNodeIds = null, showPhysicalName = false) {
             const lines = [];
             let groupIndex = 0;
             const collectNodeIds = group => {
@@ -487,7 +490,7 @@ globalThis.Jig.mermaid = (() => {
                         return;
                     }
                     const groupId = `G${groupIndex++}`;
-                    const label = buildDiagramSubgraphLabel(child.key);
+                    const label = buildDiagramSubgraphLabel(child.key, showPhysicalName);
                     if (subgraphNodeIds) {
                         subgraphNodeIds.set(groupId, new Set(collectNodeIds(child)));
                     }

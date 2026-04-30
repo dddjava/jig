@@ -417,7 +417,8 @@ globalThis.Jig.mermaid = (() => {
                 }
                 if (nodeClickUrlCallback && fqn) {
                     const url = escapeMermaidText(nodeClickUrlCallback(fqn));
-                    lines.push(`click ${nodeId} href "${url}"`);
+                    const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
+                    lines.push(`click ${nodeId} href "${url}" "${tooltip}"`);
                 }
                 if (fqn && parentFqns.has(fqn)) {
                     lines.push(`class ${nodeId} parentPackage`);

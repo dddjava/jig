@@ -300,6 +300,7 @@ const GlossaryApp = (() => {
 
         changeControls.forEach(el => el.addEventListener("change", updateArticles));
 
+        Jig.dom.sidebar.initCollapseBtn();
         Jig.dom.sidebar.initTextFilter('glossary-sidebar-filter', text => {
             controls.filterText = text;
             updateArticles();

@@ -6,155 +6,122 @@
     <link href="./assets/style.css" rel="stylesheet">
     <link rel="icon" href="./assets/favicon.ico">
     <title>出力インタフェース</title>
-    </head>
-    <body class="outbound-interface">
-    <header class="top">
+</head>
+<body class="outbound-interface">
+<header class="top">
     <a href="./index.html">JIG</a> / <b class="jig-page-title">出力インタフェース</b>
-    </header>
+</header>
 
-<main>
-    <div id="jig-document-description" class="hidden">
-        <p>出力インタフェース（外部へのアクセス）の構造を可視化するドキュメントです。</p>
-        <h2>用語</h2>
-        <dl>
-            <dt>出力ポート</dt>
-            <dd>アプリケーション層で定義される出力インタフェース（例: Repository インタフェース）。「何をするか」を定義し、実装の詳細には依存しません。</dd>
-            <dt>アダプタ</dt>
-            <dd>出力ポートの実装クラス。外部アクセサを使用する具体的な実装を担います。</dd>
-            <dt>外部アクセサ（永続化）</dt>
-            <dd>データベースへの直接アクセスを担うクラス（例: MyBatisやSpringDataJDBCのインタフェース）。</dd>
-            <dt>外部アクセサ（その他）</dt>
-            <dd>データベース以外の外部システムへのアクセスを担うクラス（例: HTTP クライアント、メッセージキュークライアント）。外部型を使用するものは一律こちらになります。</dd>
-            <dt>外部操作対象（永続化）</dt>
-            <dd>永続化操作の対象となるリソース（例: テーブル名）。SELECT / INSERT / UPDATE / DELETE の種別とともに表示されます。</dd>
-            <dt>外部操作対象（外部型）</dt>
-            <dd>外部アクセサが呼び出すクラス。解析対象クラスのインスタンスフィールドが解析対象外の場合に「外部型」としています。</dd>
-        </dl>
-        <div>
-            <h2>ダイアグラムの構造</h2>
-            <p>各要素の関係と配色は以下のとおりです。</p>
-            <div class="mermaid">
-                graph LR
-                    subgraph sg_port ["出力ポート"]
-                        op(["操作"]):::outbound
-                    end
-                    subgraph sg_adapter ["アダプタ"]
-                        exec(["実行"])
-                    end
-                    subgraph sg_pacc ["外部アクセサ"]
-                        paccMethod(["メソッド"])
-                    end
-                    target[("永続化")]
-                    subgraph sg_ext ["外部アクセサ"]
-                        extAcc(["メソッド"])
-                    end
-                    extType(("外部型"))
-                    op --> exec
-                    exec --> paccMethod
-                    paccMethod --"SELECT"--> target
-                    exec --> extAcc
-                    extAcc --"method"--> extType
-                    classDef outbound fill:#FFF0E6,stroke:#CC6600
-            </div>
-            <ul>
-                <li>出力ポートは他ドキュメントからのリンク先になるので着色しています。</li>
-                <li>出力ポートとアダプタは「表示要素」チェックボックスで表示・非表示を切り替えられます。</li>
-                <li>永続化アクセサ・外部アクセサはデフォルトで非表示です。チェックボックスで表示できます。</li>
-            </ul>
-        </div>
-        <div>
-            <h2>タブの説明</h2>
-            <dl>
-                <dt>ポート</dt>
-                <dd>出力ポート単位で関連を表示します。</dd>
-                <dt>永続化</dt>
-                <dd>外部操作対象の永続化（テーブルなど）単位で関連を表示します。</dd>
-                <dt>永続化(CRUD)</dt>
-                <dd>出力ポートと操作対象の対応を CRUD（SELECT / INSERT / UPDATE / DELETE）のマトリクスで表示します。</dd>
-                <dt>外部型</dt>
-                <dd>外部操作対象の外部型単位で関連を表示します。</dd>
-            </dl>
-        </div>
-    </div>
-    <div class="outbound-sticky-header">
-        <details class="outbound-settings-panel jig-card jig-card--type" open>
-            <summary class="outbound-settings-panel__title">表示設定</summary>
-            <div class="outbound-visibility-panel">
-                <div class="outbound-visibility-panel__groups">
-                    <div class="outbound-visibility-panel__group">
-                        <p class="outbound-visibility-panel__group-label">表示要素</p>
-                        <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-port" checked> ポート</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-operation" checked> メソッド</label>
+<div class="split-view">
+    <nav id="outbound-sidebar" class="in-page-sidebar in-page-sidebar--tree">
+        <div class="sidebar-header">
+        <details id="sidebar-settings" class="sidebar-settings">
+            <summary>
+                <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                表示設定
+            </summary>
+            <div class="sidebar-settings-panel">
+                <div class="outbound-visibility-panel">
+                    <div class="outbound-visibility-panel__groups">
+                        <div class="outbound-visibility-panel__group">
+                            <p class="outbound-visibility-panel__group-label">表示要素</p>
+                            <label><input type="checkbox" name="show-caller-usecase" checked> 呼び出しユースケース</label>
+                            <div class="checkbox-pair">
+                                <label><input type="checkbox" name="show-port" checked> ポート</label>
+                                <label class="checkbox-child"><input type="checkbox" name="show-operation" checked> メソッド</label>
+                            </div>
+                            <div class="checkbox-pair">
+                                <label><input type="checkbox" name="show-adapter"> アダプタ</label>
+                                <label class="checkbox-child"><input type="checkbox" name="show-execution" checked> メソッド</label>
+                            </div>
+                            <div class="checkbox-pair">
+                                <label><input type="checkbox" name="show-accessor"> 外部アクセサ</label>
+                                <label class="checkbox-child"><input type="checkbox" name="show-accessor-method"> メソッド</label>
+                            </div>
+                            <div class="checkbox-pair">
+                                <label><input type="checkbox" name="show-target" checked> 外部操作対象</label>
+                                <label class="checkbox-child"><input type="checkbox" name="show-external-type-method" checked> 操作方法</label>
+                            </div>
                         </div>
-                        <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-adapter" checked> アダプタ</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-execution" checked> メソッド</label>
+                        <div class="outbound-visibility-panel__group">
+                            <p class="outbound-visibility-panel__group-label">永続化操作方法</p>
+                            <div class="outbound-visibility-panel__group--grid">
+                                <label><input type="checkbox" name="show-crud-r" checked> SELECT</label>
+                                <label><input type="checkbox" name="show-crud-c" checked> INSERT</label>
+                                <label><input type="checkbox" name="show-crud-u" checked> UPDATE</label>
+                                <label><input type="checkbox" name="show-crud-d" checked> DELETE</label>
+                            </div>
                         </div>
-                        <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-accessor"> 外部アクセサ</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-accessor-method"> メソッド</label>
-                        </div>
-                        <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-target" checked> 外部操作対象</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-external-type-method" checked> 操作方法</label>
-                        </div>
-                    </div>
-                    <div class="outbound-visibility-panel__group">
-                        <p class="outbound-visibility-panel__group-label">永続化操作方法</p>
-                        <label><input type="checkbox" name="show-crud-r" checked> SELECT</label>
-                        <label><input type="checkbox" name="show-crud-c" checked> INSERT</label>
-                        <label><input type="checkbox" name="show-crud-u" checked> UPDATE</label>
-                        <label><input type="checkbox" name="show-crud-d" checked> DELETE</label>
-                    </div>
-                    <div class="outbound-visibility-panel__group">
-                        <p class="outbound-visibility-panel__group-label">ダイアグラムの方向</p>
-                        <label><input type="radio" name="diagram-direction" value="LR" checked> 左→右</label>
-                        <label><input type="radio" name="diagram-direction" value="TB"> 上→下</label>
                     </div>
                 </div>
             </div>
         </details>
-
-        <nav class="outbound-tab-list">
-            <button class="tab-button is-active" data-tab="outbound">ポート</button>
-            <button class="tab-button" data-tab="persistence">永続化</button>
-            <button class="tab-button" data-tab="crud">永続化(CRUD)</button>
-            <button class="tab-button" data-tab="external">外部型</button>
-        </nav>
-    </div>
-
-    <div id="outbound-tab-panel" class="outbound-tab-panel is-active">
-        <div class="split-view outbound-view-container">
-            <nav id="outbound-port-sidebar" class="outbound-sidebar in-page-sidebar">
-                <div id="outbound-sidebar-list" class="in-page-sidebar__list"></div>
-            </nav>
-            <section id="outbound-port-list" class="outbound-group-list"></section>
+        <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" aria-expanded="true" title="サイドバーを折りたたむ/展開する"></button>
         </div>
-    </div>
-
-    <div id="persistence-tab-panel" class="outbound-tab-panel">
-        <div class="split-view outbound-view-container">
-            <nav id="outbound-persistence-sidebar" class="outbound-sidebar in-page-sidebar">
-                <div id="persistence-sidebar-list" class="in-page-sidebar__list"></div>
-            </nav>
-            <section id="outbound-persistence-list" class="outbound-group-list"></section>
+        <div class="in-page-sidebar__list">
+            <div id="outbound-sidebar-list"></div>
+            <div id="persistence-sidebar-list"></div>
+            <div id="crud-sidebar-list"></div>
+            <div id="external-sidebar-list"></div>
         </div>
-    </div>
-
-    <div id="crud-tab-panel" class="outbound-tab-panel">
+    </nav>
+    <main>
+        <div id="jig-document-description" class="hidden">
+            <p>出力インタフェース（外部へのアクセス）の構造を可視化するドキュメントです。</p>
+            <h2>用語</h2>
+            <dl>
+                <dt>出力ポート</dt>
+                <dd>アプリケーション層で定義される出力インタフェース（例: Repository インタフェース）。「何をするか」を定義し、実装の詳細には依存しません。</dd>
+                <dt>アダプタ</dt>
+                <dd>出力ポートの実装クラス。外部アクセサを使用する具体的な実装を担います。</dd>
+                <dt>外部アクセサ（永続化）</dt>
+                <dd>データベースへの直接アクセスを担うクラス（例: MyBatisやSpringDataJDBCのインタフェース）。</dd>
+                <dt>外部アクセサ（その他）</dt>
+                <dd>データベース以外の外部システムへのアクセスを担うクラス（例: HTTP クライアント、メッセージキュークライアント）。外部型を使用するものは一律こちらになります。</dd>
+                <dt>外部操作対象（永続化）</dt>
+                <dd>永続化操作の対象となるリソース（例: テーブル名）。SELECT / INSERT / UPDATE / DELETE の種別とともに表示されます。</dd>
+                <dt>外部操作対象（外部型）</dt>
+                <dd>外部アクセサが呼び出すクラス。解析対象クラスのインスタンスフィールドが解析対象外の場合に「外部型」としています。</dd>
+            </dl>
+            <div>
+                <h2>ダイアグラムの構造</h2>
+                <p>各要素の関係と配色は以下のとおりです。</p>
+                <div class="mermaid">
+                    graph LR
+                        subgraph sg_port ["出力ポート"]
+                            op(["操作"]):::outbound
+                        end
+                        subgraph sg_adapter ["アダプタ"]
+                            exec(["実行"])
+                        end
+                        subgraph sg_pacc ["外部アクセサ"]
+                            paccMethod(["メソッド"])
+                        end
+                        target[("永続化")]
+                        subgraph sg_ext ["外部アクセサ"]
+                            extAcc(["メソッド"])
+                        end
+                        extType(("外部型"))
+                        op --> exec
+                        exec --> paccMethod
+                        paccMethod --"SELECT"--> target
+                        exec --> extAcc
+                        extAcc --"method"--> extType
+                        classDef outbound fill:#FFF0E6,stroke:#CC6600
+                </div>
+                <ul>
+                    <li>出力ポートは他ドキュメントからのリンク先になるので着色しています。</li>
+                    <li>出力ポートとアダプタはサイドバーの表示設定チェックボックスで表示・非表示を切り替えられます。</li>
+                    <li>永続化アクセサ・外部アクセサはデフォルトで非表示です。チェックボックスで表示できます。</li>
+                </ul>
+            </div>
+        </div>
+        <div id="outbound-port-list" class="outbound-group-list"></div>
+        <div id="outbound-persistence-list" class="outbound-group-list"></div>
         <section id="outbound-crud-panel" class="outbound-crud-panel"></section>
-    </div>
-
-    <div id="external-tab-panel" class="outbound-tab-panel">
-        <div class="split-view outbound-view-container">
-            <nav id="outbound-external-sidebar" class="outbound-sidebar in-page-sidebar">
-                <div id="external-sidebar-list" class="in-page-sidebar__list"></div>
-            </nav>
-            <section id="outbound-external-list" class="outbound-group-list"></section>
-        </div>
-    </div>
-</main>
+        <div id="outbound-external-list" class="outbound-group-list"></div>
+    </main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>

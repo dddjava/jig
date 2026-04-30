@@ -295,15 +295,104 @@ const PackageApp = (() => {
         return Array.from(mutualPairs).sort().map(key => {
             const parts = key.split('::');
             const pairLabel = `${parts[0]} <-> ${parts[1]}`;
-            const causes = relationMap.get(key);
+            const titles = [getGlossaryTitle(parts[0]), getGlossaryTitle(parts[1])];
+            const titleLabel = `${titles[0]} <-> ${titles[1]}`;
+            const allCauses = Array.from(relationMap.get(key) ?? []).sort();
+            const classesPerPart = [new Set(), new Set()];
+            const causesForward = [];
+            const causesBackward = [];
+            allCauses.forEach(c => {
+                const [from, to] = c.split(' -> ');
+                const fromPkg = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(from), aggregationDepth);
+                const i = fromPkg === parts[0] ? 0 : 1;
+                classesPerPart[i].add(from);
+                classesPerPart[1 - i].add(to);
+                if (i === 0) causesForward.push(c); else causesBackward.push(c);
+            });
+            const stats = parts.map((_, i) => ({
+                classCount: classesPerPart[i].size,
+                relationCount: i === 0 ? causesForward.length : causesBackward.length,
+            }));
             return {
                 pairLabel,
-                causes: causes ? Array.from(causes).sort() : [],
+                titleLabel,
+                titles,
+                causes: allCauses,
+                causesForward,
+                causesBackward,
+                stats,
             };
         });
     }
 
-    function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context) {
+    function renderPairSimulation(panel, item, uniqueRelations, packageFqns, context) {
+        const [partA, partB] = item.pairLabel.split(' <-> ');
+
+        if (!uniqueRelations || !packageFqns) {
+            panel.appendChild(Jig.dom.createElement('span', {textContent: 'データが利用できません'}));
+            return;
+        }
+
+        let selectedDir = 'both';
+        const EXTRACT_FQN = '(抽出)';
+
+        const buildSimulationData = () => {
+            if (selectedDir === 'both') return {fqns: packageFqns, relations: uniqueRelations};
+            if (selectedDir === 'forward') return {fqns: packageFqns, relations: uniqueRelations.filter(rel => !(rel.from === partB && rel.to === partA))};
+            if (selectedDir === 'backward') return {fqns: packageFqns, relations: uniqueRelations.filter(rel => !(rel.from === partA && rel.to === partB))};
+
+            const baseRelations = uniqueRelations.filter(rel =>
+                !(rel.from === partA && rel.to === partB) && !(rel.from === partB && rel.to === partA)
+            );
+            const extractRelations = selectedDir === 'extract-in'
+                ? [{from: EXTRACT_FQN, to: partA}, {from: EXTRACT_FQN, to: partB}]
+                : [{from: partA, to: EXTRACT_FQN}, {from: partB, to: EXTRACT_FQN}];
+            return {fqns: new Set([...packageFqns, EXTRACT_FQN]), relations: [...baseRelations, ...extractRelations]};
+        };
+
+        const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
+
+        const renderDiagram = () => {
+            diagramContainer.innerHTML = '';
+            const {fqns, relations} = buildSimulationData();
+            const generator = (dir) => Jig.mermaid.builder.buildMermaidDiagramSource(
+                fqns, relations,
+                {diagramDirection: dir}
+            ).source;
+            Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection});
+        };
+
+        const radioName = `sim-dir-${encodeURIComponent(item.pairLabel)}`;
+        const bothRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'both'}});
+        bothRadio.checked = true;
+        const forwardRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'forward'}});
+        const backwardRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'backward'}});
+        const extractInRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'extract-in'}});
+        const extractOutRadio = Jig.dom.createElement('input', {attributes: {type: 'radio', name: radioName, value: 'extract-out'}});
+
+        [[bothRadio, 'both'], [forwardRadio, 'forward'], [backwardRadio, 'backward'], [extractInRadio, 'extract-in'], [extractOutRadio, 'extract-out']].forEach(([radio, value]) => {
+            radio.addEventListener('change', () => {
+                selectedDir = value;
+                renderDiagram();
+            });
+        });
+
+        panel.appendChild(Jig.dom.createElement('fieldset', {
+            className: 'diagram-panel-options',
+            children: [
+                Jig.dom.createElement('legend', {textContent: '依存方向'}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [bothRadio, '両方向（変更なし）']}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardRadio, `${item.titles[0]} → ${item.titles[1]} のみ`]}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardRadio, `${item.titles[0]} ← ${item.titles[1]} のみ`]}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [extractInRadio, `X → ${item.titles[0]}, X → ${item.titles[1]} （抽出）`]}),
+                Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [extractOutRadio, `${item.titles[0]} → X, ${item.titles[1]} → X （抽出）`]}),
+            ],
+        }));
+        panel.appendChild(diagramContainer);
+        renderDiagram();
+    }
+
+    function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context, uniqueRelations, packageFqns) {
         const container = dom.getMutualDependencyList();
         if (!container) return;
         const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth);
@@ -314,71 +403,101 @@ const PackageApp = (() => {
         }
 
         container.style.display = '';
-        const heading = Jig.dom.createElement('h3', {textContent: '相互依存と原因'});
-        const list = Jig.dom.createElement('ul');
+        const sections = items.map(item => {
+            let diagramRendered = false;
+            let simRendered = false;
 
-        items.forEach(item => {
-            const diagramButton = Jig.dom.createElement('button', {
-                className: 'diagram-button',
-                textContent: 'ダイアグラムを表示',
-                attributes: {type: 'button'}
-            });
-            const textButton = Jig.dom.createElement('button', {
-                className: 'text-button',
-                textContent: 'テキストを表示',
-                attributes: {type: 'button'}
-            });
-            const causesEl = Jig.dom.createElement('pre', {
-                className: 'causes',
-                textContent: item.causes?.length ? item.causes.join('\n') : '',
-                style: {display: 'none'}
-            });
-            const diagramContainer = Jig.dom.createElement('div', {className: 'mutual-dependency-diagram'});
-            const itemNode = Jig.dom.createElement('li', {
+            const tabSection = Jig.dom.tab.buildSection(
+                [
+                    {id: 'overview', label: '概要'},
+                    {id: 'diagram', label: 'クラス関連図'},
+                    {id: 'text', label: 'テキスト'},
+                    {id: 'simulation', label: 'シミュレーション'},
+                ],
+                {
+                    className: 'jig-card-section tab-content-section tab-mutual-dependency',
+                    initialActiveId: 'overview',
+                    onTabChange: (id) => {
+                        if (id === 'simulation' && !simRendered) {
+                            simRendered = true;
+                            renderPairSimulation(tabSection.panels['simulation'], item, uniqueRelations, packageFqns, context);
+                        }
+                        if (id === 'diagram' && !diagramRendered) {
+                            diagramRendered = true;
+                            const forwardCheckbox = Jig.dom.createElement('input', {attributes: {type: 'checkbox'}});
+                            forwardCheckbox.checked = true;
+                            const backwardCheckbox = Jig.dom.createElement('input', {attributes: {type: 'checkbox'}});
+                            backwardCheckbox.checked = true;
+                            tabSection.panels['diagram'].appendChild(Jig.dom.createElement('fieldset', {
+                                className: 'diagram-panel-options',
+                                children: [
+                                    Jig.dom.createElement('legend', {textContent: '表示する関連'}),
+                                    Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardCheckbox, `${item.titles[0]} → ${item.titles[1]} (${item.causesForward.length}件)`]}),
+                                    Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardCheckbox, `${item.titles[0]} ← ${item.titles[1]} (${item.causesBackward.length}件)`]}),
+                                ],
+                            }));
+                            const diagramContainer = Jig.dom.createElement('div', {className: 'mermaid-diagram'});
+                            tabSection.panels['diagram'].appendChild(diagramContainer);
+                            const render = (container) => {
+                                container.innerHTML = '';
+                                const filteredCauses = [
+                                    ...(forwardCheckbox.checked ? item.causesForward : []),
+                                    ...(backwardCheckbox.checked ? item.causesBackward : []),
+                                ];
+                                const generator = (dir) => buildMutualDependencyDiagramSource(filteredCauses, dir, item.pairLabel).source;
+                                if (generator(context.mutualDependencyDiagramDirection)) {
+                                    Jig.mermaid.render.renderWithControls(container, generator, {direction: context.mutualDependencyDiagramDirection});
+                                }
+                            };
+                            render(diagramContainer);
+                            forwardCheckbox.addEventListener('change', () => render(diagramContainer));
+                            backwardCheckbox.addEventListener('change', () => render(diagramContainer));
+                        }
+                    }
+                }
+            );
+
+            const tabsBar = tabSection.section.children[0];
+            tabsBar.insertBefore(
+                Jig.dom.createElement('span', {className: 'mutual-dependency-title', textContent: item.titleLabel}),
+                tabsBar.children[0]
+            );
+
+            tabSection.panels['overview'].appendChild(
+                Jig.dom.createElement('span', {className: 'pair-label', textContent: item.pairLabel})
+            );
+            tabSection.panels['overview'].appendChild(Jig.dom.createElement('table', {
+                className: 'mutual-dependency-stats',
                 children: [
-                    Jig.dom.createElement('div', {
-                        className: 'pair',
-                        children: [
-                            Jig.dom.createElement('span', {textContent: item.pairLabel}),
-                            diagramButton,
-                            textButton
-                        ]
-                    }),
-                    causesEl,
-                    diagramContainer
-                ]
-            });
+                    Jig.dom.createElement('thead', {children: [Jig.dom.createElement('tr', {children: [
+                        Jig.dom.createElement('th', {textContent: 'パッケージ'}),
+                        Jig.dom.createElement('th', {textContent: 'クラス'}),
+                        Jig.dom.createElement('th', {textContent: '関連'}),
+                    ]})]}),
+                    Jig.dom.createElement('tbody', {children: item.titles.map((title, i) =>
+                        Jig.dom.createElement('tr', {children: [
+                            Jig.dom.createElement('td', {textContent: title}),
+                            Jig.dom.createElement('td', {className: 'number', textContent: String(item.stats[i].classCount)}),
+                            Jig.dom.createElement('td', {className: 'number', textContent: String(item.stats[i].relationCount)}),
+                        ]})
+                    )}),
+                ],
+            }));
 
-            diagramButton.addEventListener('click', () => {
-                renderMutualDependencyDiagram(item, itemNode, context);
-                diagramButton.remove();
-            });
+            tabSection.panels['text'].appendChild(
+                Jig.dom.createElement('pre', {
+                    className: 'causes',
+                    textContent: item.causes?.length ? item.causes.join('\n') : ''
+                })
+            );
 
-            textButton.addEventListener('click', () => {
-                causesEl.style.display = '';
-                textButton.remove();
-            });
-
-            list.appendChild(itemNode);
+            return tabSection.section;
         });
+        const details = Jig.dom.createElement('details', {className: 'jig-card jig-card--type'});
+        details.appendChild(Jig.dom.createElement('summary', {textContent: '相互依存分析'}));
+        sections.forEach(section => details.appendChild(section));
         container.innerHTML = '';
-        container.appendChild(heading);
-        container.appendChild(list);
-    }
-
-    function renderMutualDependencyDiagram(item, itemNode, context) {
-        const diagram = itemNode.querySelector('.mutual-dependency-diagram');
-        if (!diagram) return;
-
-        const generator = (dir) => buildMutualDependencyDiagramSource(item.causes, dir, item.pairLabel).source;
-        if (!generator(context.mutualDependencyDiagramDirection)) {
-            diagram.innerHTML = '';
-            diagram.style.display = 'none';
-            return;
-        }
-
-        diagram.style.display = 'block';
-        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.mutualDependencyDiagramDirection});
+        container.appendChild(details);
     }
 
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
@@ -599,13 +718,14 @@ const PackageApp = (() => {
             nodeIdToFqn,
             mutualPairs,
             uniqueRelations,
+            packageFqns,
             filteredCauseRelationEvidence,
         };
     }
 
     function applyHierarchyDiagramRenderPlan(context, renderPlan) {
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
-        renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
+        renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context, renderPlan.uniqueRelations, renderPlan.packageFqns);
     }
 
     function setDiagramSource(diagram, source) {
@@ -1276,7 +1396,6 @@ const PackageApp = (() => {
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         renderMutualDependencyList,
-        renderMutualDependencyDiagram,
         buildMutualDependencyDiagramSource,
         renderHierarchyDiagram,
         renderHierarchyDiagramAndTable,

@@ -709,6 +709,31 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    function createMethodIOSection(parameters, returnTypeRef) {
+        const inputDd = parameters.length > 0
+            ? createElement("dd", {
+                className: "entrypoint-item__params",
+                children: parameters.flatMap(param => [
+                    createElementForTypeRef(param.typeRef),
+                    createElement("span", {
+                        className: "entrypoint-item__param-name",
+                        textContent: param.nameSource === 'METHOD_PARAMETERS' ? param.name : ''
+                    })
+                ])
+            })
+            : createElement("dd", {className: "entrypoint-item__empty", textContent: "-"});
+
+        return createElement("dl", {
+            className: "entrypoint-item__io",
+            children: [
+                createElement("dt", {textContent: "入力"}),
+                inputDd,
+                createElement("dt", {textContent: "出力"}),
+                createElement("dd", {children: [createElementForTypeRef(returnTypeRef)]})
+            ]
+        });
+    }
+
     function createFieldsList(fields, options = {}) {
         if (fields.length === 0) return null;
 
@@ -839,6 +864,25 @@ globalThis.Jig.dom = (() => {
         const input = document.getElementById(inputId);
         if (!input) return;
         input.addEventListener('input', () => onChange(input.value.trim()));
+    }
+
+    function initSidebarCollapseBtn() {
+        const collapseBtn = document.getElementById('sidebar-collapse-btn');
+        if (!collapseBtn || collapseBtn.dataset.initialized) return;
+        collapseBtn.dataset.initialized = 'true';
+        const nav = collapseBtn.closest('nav');
+        if (!nav) return;
+        collapseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const collapsed = nav.classList.toggle('sidebar--collapsed');
+            collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+        });
+        nav.addEventListener('click', () => {
+            if (nav.classList.contains('sidebar--collapsed')) {
+                nav.classList.remove('sidebar--collapsed');
+                collapseBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
     }
 
     // --- Tab section ---
@@ -1051,6 +1095,7 @@ globalThis.Jig.dom = (() => {
             getResolver: getTypeLinkResolver,
             refElement: createElementForTypeRef,
             parameterElement: createParameterElement,
+            methodIOSection: createMethodIOSection,
             fieldsList: createFieldsList,
             methodItem: createMethodItem,
             methodsList: createMethodsList,
@@ -1059,6 +1104,7 @@ globalThis.Jig.dom = (() => {
             section: createSection,
             renderSection,
             initTextFilter: initSidebarTextFilter,
+            initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
         },
         tab: {

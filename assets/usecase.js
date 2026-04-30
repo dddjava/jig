@@ -590,18 +590,6 @@ const UsecaseApp = (() => {
         });
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
-        const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
-        const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
-        const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
-
-        /** @type {DiagramContext} */
-        const diagramContext = {
-            methodMap,
-            outboundOperationSet,
-            showDiagramInternalMethods,
-            showDiagramOutboundPorts,
-            showDiagramDomainTypes
-        };
 
         const buildCurrentDiagramContext = () => ({
             methodMap,
@@ -708,6 +696,7 @@ const UsecaseApp = (() => {
 
                 const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
                 methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
+                methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
 
                 if (methodDescription) {
                     methodSection.appendChild(Jig.dom.createElement("section", {
@@ -716,10 +705,10 @@ const UsecaseApp = (() => {
                     }));
                 }
 
-                const usecaseDiagram = buildUsecaseDiagram(method, diagramContext);
+                const usecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
                 const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-                const sequenceDiagram = SequenceDiagram.buildDiagram(method, diagramContext);
+                const sequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
                 const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
                 const hasSequenceDiagram = sequenceDiagramCode !== null;
 
@@ -813,23 +802,6 @@ const UsecaseApp = (() => {
                     }
                 }
 
-                const depends = Jig.dom.createElement("div", {className: "depends"});
-                if (method.parameters.length > 0) {
-                    const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
-                    parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "入力"}));
-                    method.parameters.forEach(param => {
-                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.parameterElement(param)]}));
-                    });
-                    depends.appendChild(parametersSection);
-                }
-                if (method.returnTypeRef.fqn !== 'void') {
-                    const returnSection = Jig.dom.createElement("section", {className: "depends-section"});
-                    returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "出力"}));
-                    returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.refElement(method.returnTypeRef)]}));
-                    depends.appendChild(returnSection);
-                }
-                methodSection.appendChild(depends);
-
                 section.appendChild(methodSection);
             });
 
@@ -881,6 +853,7 @@ const UsecaseApp = (() => {
             });
         });
 
+        Jig.dom.sidebar.initCollapseBtn();
         Jig.dom.sidebar.initTextFilter('usecase-sidebar-filter', text => {
             state.sidebarFilterText = text;
             renderSidebar(state.data.usecases);

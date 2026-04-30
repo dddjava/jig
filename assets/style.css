@@ -1,5 +1,6 @@
 :root {
     --sidebar-width: 260px;
+    --sidebar-collapsed-width: 28px;
     --color-text-secondary: #666;
 }
 
@@ -15,10 +16,6 @@ body:has(> .split-view) {
     overflow: hidden;
 }
 
-/* outbound は従来通り（split-view は main の中にある） */
-body.outbound-interface {
-    overflow: hidden;
-}
 
 main, nav {
     padding: 0 1em;
@@ -296,8 +293,22 @@ main table thead {
 .split-view > nav {
     width: var(--sidebar-width);
     flex-shrink: 0;
-    overflow: auto;
+    overflow: hidden;
     box-sizing: border-box;
+    transition: width 0.2s ease;
+}
+
+.split-view > nav.sidebar--collapsed {
+    width: var(--sidebar-collapsed-width);
+    padding-left: 0;
+    padding-right: 0;
+    cursor: pointer;
+}
+
+.sidebar--collapsed .sidebar-settings,
+.sidebar--collapsed .sidebar-filter,
+.sidebar--collapsed .in-page-sidebar__list {
+    display: none;
 }
 
 .split-view > main,
@@ -490,6 +501,24 @@ td.fqn {
     margin-bottom: 0.5em;
 }
 
+.jig-card.jig-card--type > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.jig-card.jig-card--type > summary::-webkit-details-marker {
+    display: none;
+}
+
+.jig-card.jig-card--type[open] > summary {
+    margin-bottom: 0.5em;
+}
+
 .jig-card--type h3 .card-title-anchor {
     color: inherit;
     text-decoration: none;
@@ -623,6 +652,29 @@ body.hide-usecase-members .tab-member-section {
 
 .tab-content-section.tab-diagram-section .jig-tab-panel {
     padding: 12px;
+}
+
+.tab-content-section.tab-mutual-dependency .jig-tab-panel {
+    padding: 12px;
+}
+
+.tab-mutual-dependency .jig-tab-panel pre {
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+.tab-mutual-dependency .jig-tabs {
+    align-items: center;
+}
+
+.mutual-dependency-title {
+    font-size: 0.9em;
+    font-weight: bold;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-right: 8px;
+    align-self: flex-end;
+    padding-bottom: 6px;
 }
 
 .tab-content-section.tab-member-section .jig-tab-panel .jig-card.jig-card--item {
@@ -1144,9 +1196,6 @@ label {
 
 .package-relation .mutual-dependencies {
     margin: 12px 0 16px 0;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
 }
 
 .package-relation #package-relation-diagram,
@@ -1162,28 +1211,6 @@ label {
     margin: 0 auto;
 }
 
-.package-relation .mutual-dependencies h2 {
-    margin: 0 0 6px 0;
-    font-size: 1em;
-}
-
-.package-relation .mutual-dependencies ul {
-    margin: 0 0 0 1.2em;
-    padding: 0;
-}
-
-.package-relation .mutual-dependencies li {
-    margin: 6px 0;
-}
-
-.package-relation .mutual-dependencies .pair {
-    font-weight: bold;
-}
-
-.package-relation .mutual-dependencies pre {
-    margin: 4px 0 0 0;
-    white-space: pre-wrap;
-}
 
 .package-relation table .col-action {
     width: 2.5em;
@@ -1191,6 +1218,12 @@ label {
 
 .package-relation table .col-glossary {
     width: 2.5em;
+}
+
+.package-relation #hierarchy-package-table th:nth-child(n+4),
+.package-relation #explore-package-table th:nth-child(n+4) {
+    white-space: nowrap;
+    width: 1px;
 }
 
 .package-relation td.glossary-cell {
@@ -1292,6 +1325,7 @@ label {
 .package-relation #hierarchy-package-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .package-relation #explore-package-table tbody tr,
@@ -1476,6 +1510,14 @@ table td.number {
     user-select: none;
 }
 
+.in-page-sidebar__title--sub {
+    border-bottom: none;
+    font-weight: normal;
+    color: #6b7280;
+    font-size: 0.8rem;
+    padding-bottom: 0;
+}
+
 .in-page-sidebar__title .in-page-sidebar__link {
     font-size: inherit;
     padding: 0;
@@ -1609,10 +1651,47 @@ table td.number {
 }
 
 
-/* サイドバー 表示設定パネル */
-.sidebar-settings {
+/* サイドバー ヘッダー（表示設定＋折りたたみボタン） */
+.sidebar-header {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
     flex-shrink: 0;
     margin-bottom: 8px;
+}
+
+/* サイドバー 折りたたみボタン */
+.sidebar-collapse-btn {
+    width: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid #d9e1ea;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+    color: #5a7a9a;
+    font-size: 10px;
+}
+
+.sidebar-collapse-btn:hover {
+    background-color: #e8f0fb;
+}
+
+.sidebar-collapse-btn::after {
+    content: "◀";
+}
+
+.sidebar--collapsed .sidebar-collapse-btn::after {
+    content: "▶";
+}
+
+/* サイドバー 表示設定パネル */
+.sidebar-settings {
+    flex: 1;
+    min-width: 0;
     border: 1px solid #d9e1ea;
 }
 
@@ -1741,21 +1820,6 @@ table td.number {
 }
 
 /* 出力インタフェース概要 */
-.outbound-interface main {
-    height: calc(100vh - 2em);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.outbound-interface .outbound-view-container {
-    padding-top: 16px;
-}
-
-.outbound-interface .outbound-sidebar {
-    padding-bottom: 20px;
-}
-
 .outbound-interface .outbound-group-list {
     display: grid;
     gap: 16px;
@@ -1798,26 +1862,6 @@ table td.number {
     margin-top: 0;
     margin-bottom: 10px;
     color: #1b3a66;
-}
-
-.outbound-interface .outbound-operation-item-meta {
-    margin: 0;
-    display: grid;
-    gap: 6px;
-}
-
-.outbound-interface .outbound-operation-item-field {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    gap: 8px;
-}
-
-.outbound-interface .outbound-operation-item-field > dt {
-    font-weight: bold;
-}
-
-.outbound-interface .outbound-operation-item-field > dd {
-    margin: 0;
 }
 
 .outbound-interface .outbound-persistence-detail-title {
@@ -1907,39 +1951,15 @@ table td.number {
 }
 
 .outbound-interface .outbound-crud-panel {
-    flex: 1;
     overflow: auto;
     width: 100%;
-    height: 100%;
     box-sizing: border-box;
 }
 
-.outbound-interface .outbound-sticky-header {
-    flex-shrink: 0;
-    background-color: #fff;
-}
-
-.outbound-interface .outbound-settings-panel {
-    margin: 16px 0 0 0;
-}
-
-.outbound-interface .outbound-settings-panel__title {
-    margin: 0;
-    color: #31455f;
-    font-size: 0.85rem;
-    font-weight: bold;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    align-items: center;
-}
-
 .outbound-interface .outbound-visibility-panel {
-    padding: 8px;
+    padding: 6px;
     background-color: #eef4ff;
     border-radius: 6px;
-    font-size: 0.9em;
     margin-top: 8px;
 }
 
@@ -1951,9 +1971,9 @@ table td.number {
 
 .outbound-interface .outbound-visibility-panel__group {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .outbound-interface .outbound-visibility-panel__group-label {
@@ -1981,49 +2001,11 @@ table td.number {
     color: #374151;
 }
 
-.outbound-interface .outbound-tab-list {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #dee2e6;
-    padding-top: 10px;
-}
-
-.outbound-interface .tab-button {
-    padding: 10px 20px;
-    border: 1px solid #dee2e6;
-    border-bottom: none;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    background-color: #e9ecef;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    color: #495057;
-    margin-bottom: -2px;
-}
-
-.outbound-interface .tab-button:hover {
-    background-color: #dee2e6;
-}
-
-.outbound-interface .tab-button.is-active {
-    background-color: #fff;
-    border-color: #dee2e6;
-    border-bottom: 2px solid #fff;
-    color: #1b3a66;
-}
-
-.outbound-interface .outbound-tab-panel {
-    display: none;
-}
-
-.outbound-interface .outbound-tab-panel.is-active {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
+.outbound-interface .outbound-visibility-panel__group--grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 4px 12px;
+    align-items: center;
 }
 
 .outbound-interface .crud-table {

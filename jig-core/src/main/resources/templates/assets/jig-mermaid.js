@@ -1055,7 +1055,7 @@ globalThis.Jig.mermaid = (() => {
         function ensureLabelToggleButton(container, showPhysicalName, onToggle) {
             if (!container) return null;
             const label = showPhysicalName ? "用語名を表示" : "物理名を表示";
-            const button = ensureMermaidControlButton(container, "mermaid-label-toggle-button", label, null);
+            const button = ensureMermaidControlButton(container, "mermaid-label-toggle-button", label, "T");
             if (!button) return null;
             button.onclick = onToggle;
             return button;

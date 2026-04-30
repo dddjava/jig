@@ -1876,7 +1876,8 @@ table td.number {
 
 .mermaid-copy-button,
 .mermaid-download-button,
-.mermaid-direction-button {
+.mermaid-direction-button,
+.mermaid-label-toggle-button {
     position: absolute;
     top: 6px;
     width: 28px;
@@ -1896,14 +1897,16 @@ table td.number {
 
 .mermaid-diagram:hover > .mermaid-copy-button,
 .mermaid-diagram:hover > .mermaid-download-button,
-.mermaid-diagram:hover > .mermaid-direction-button {
+.mermaid-diagram:hover > .mermaid-direction-button,
+.mermaid-diagram:hover > .mermaid-label-toggle-button {
     opacity: 0.6;
     pointer-events: auto;
 }
 
 .mermaid-copy-button::after,
 .mermaid-download-button::after,
-.mermaid-direction-button::after {
+.mermaid-direction-button::after,
+.mermaid-label-toggle-button::after {
     content: attr(data-tooltip);
     position: absolute;
     right: 0;
@@ -1923,7 +1926,8 @@ table td.number {
 
 .mermaid-copy-button:hover,
 .mermaid-download-button:hover,
-.mermaid-direction-button:hover {
+.mermaid-direction-button:hover,
+.mermaid-label-toggle-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
 }
@@ -1933,7 +1937,9 @@ table td.number {
 .mermaid-download-button:hover::after,
 .mermaid-download-button:focus-visible::after,
 .mermaid-direction-button:hover::after,
-.mermaid-direction-button:focus-visible::after {
+.mermaid-direction-button:focus-visible::after,
+.mermaid-label-toggle-button:hover::after,
+.mermaid-label-toggle-button:focus-visible::after {
     opacity: 1;
     transform: translateY(0);
 }
@@ -1948,6 +1954,12 @@ table td.number {
 
 .mermaid-direction-button {
     right: 74px;
+}
+
+.mermaid-label-toggle-button {
+    right: 108px;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .outbound-interface .outbound-crud-panel {

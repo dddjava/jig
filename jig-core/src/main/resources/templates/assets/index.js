@@ -14,19 +14,20 @@ const IndexApp = (() => {
 
         domainPackageDiagram.innerHTML = "";
         console.log("Rendering package diagram for " + packageRoot);
-        const generator = (dir) => Jig.mermaid.createPackageLevelDiagram(
+        const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,
             {
                 transitiveReductionEnabled: true,
-                diagramDirection: dir
+                diagramDirection: dir,
+                showPhysicalName: opts?.showPhysicalName
             }
         );
 
         if (generator("TB")) {
             // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
             packageDiagramContainer.insertBefore(Jig.dom.createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
-            Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB"});
+            Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
         }
     }
 

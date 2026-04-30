@@ -210,7 +210,7 @@ globalThis.Jig.mermaid = (() => {
                 "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
                 "---",
                 `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
             const subgraphNodeIds = new Map();
 
             const nodeLines = buildDiagramNodeLines(
@@ -277,7 +277,7 @@ globalThis.Jig.mermaid = (() => {
                 "    clusterBkg: '#ffffde'",
                 "---",
                 `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
             const subgraphNodeIds = new Map();
 
             const nodeLines = buildDiagramNodeLines(
@@ -322,9 +322,11 @@ globalThis.Jig.mermaid = (() => {
         /**
          * ダイアグラムで使用する各種Mapを構築する
          * @param {Set<string>} packageFqns - 対象パッケージFQNセット
+         * @param {{showPhysicalName?: boolean}} [options={}]
          * @returns {{nodeIdByFqn: Map<string, string>, nodeIdToFqn: Map<string, string>, nodeLabelById: Map<string, string>, ensureNodeId: function(string): string}} - ノードマップとノードID生成関数
          */
-        function buildDiagramNodeMaps(packageFqns) {
+        function buildDiagramNodeMaps(packageFqns, options = {}) {
+            const showPhysicalName = options.showPhysicalName ?? false;
             const nodeIdByFqn = new Map();
             const nodeIdToFqn = new Map();
             const nodeLabelById = new Map();
@@ -334,7 +336,7 @@ globalThis.Jig.mermaid = (() => {
                 const nodeId = `P${nodeIndex++}`;
                 nodeIdByFqn.set(fqn, nodeId);
                 nodeIdToFqn.set(nodeId, fqn);
-                const label = globalThis.Jig.glossary.getPackageTerm(fqn).title;
+                const label = showPhysicalName ? fqn : globalThis.Jig.glossary.getPackageTerm(fqn).title;
                 nodeLabelById.set(nodeId, label);
                 return nodeId;
             };
@@ -1050,6 +1052,15 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
+        function ensureLabelToggleButton(container, showPhysicalName, onToggle) {
+            if (!container) return null;
+            const label = showPhysicalName ? "用語名を表示" : "物理名を表示";
+            const button = ensureMermaidControlButton(container, "mermaid-label-toggle-button", label, null);
+            if (!button) return null;
+            button.onclick = onToggle;
+            return button;
+        }
+
         function ensureEdgeWarningPanel(container) {
             if (!container) return null;
             let panel = container.querySelector(":scope > .mermaid-edge-warning");
@@ -1146,7 +1157,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderWithControls(targetEl, diagramFn, {direction} = {}) {
+        function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle} = {}) {
             if (!targetEl) return;
 
             let diagramEl = null;
@@ -1166,13 +1177,21 @@ globalThis.Jig.mermaid = (() => {
 
             const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
+            let showPhysicalName = false;
+
             const renderDiagram = (newDirection) => {
-                const currentSource = diagramFn(newDirection) ?? "";
+                const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 ensureCopySourceButton(container, currentSource);
                 ensureDownloadButton(container);
                 if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
                     ensureDirectionButton(container, newDirection, renderDiagram);
+                }
+                if (enableLabelToggle) {
+                    ensureLabelToggleButton(container, showPhysicalName, () => {
+                        showPhysicalName = !showPhysicalName;
+                        renderDiagram(newDirection);
+                    });
                 }
 
                 if (isTooLarge(currentSource)) {
@@ -1197,7 +1216,7 @@ globalThis.Jig.mermaid = (() => {
 
             let initialDirection = direction;
             if (!initialDirection) {
-                const text = diagramFn("LR");
+                const text = diagramFn("LR", {showPhysicalName: false});
                 const graphMatch = text?.match(/^\s*(?:graph|flowchart)\s+(TB|TD|LR)\b/m);
                 const classDiagMatch = text?.match(/^\s*direction\s+(TB|LR)\b/m);
                 initialDirection = graphMatch?.[1] ?? classDiagMatch?.[1] ?? "LR";
@@ -1483,7 +1502,7 @@ globalThis.Jig.mermaid = (() => {
      * @returns {string|null}
      */
     function createPackageLevelDiagram(pkg, allPackages, allPackageRelations, options) {
-        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback, focusedPackageFqn} = options;
+        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback, focusedPackageFqn, showPhysicalName} = options;
         const {uniqueRelations, packageFqns} = builder.buildVisibleDiagramRelations(
             allPackages,
             allPackageRelations,
@@ -1499,7 +1518,7 @@ globalThis.Jig.mermaid = (() => {
 
         const {source} = builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            {diagramDirection, nodeClickUrlCallback, focusedPackageFqn}
+            {diagramDirection, nodeClickUrlCallback, focusedPackageFqn, showPhysicalName}
         );
         return source;
     }

@@ -355,11 +355,11 @@ const PackageApp = (() => {
         const renderDiagram = () => {
             diagramContainer.innerHTML = '';
             const {fqns, relations} = buildSimulationData();
-            const generator = (dir) => Jig.mermaid.builder.buildMermaidDiagramSource(
+            const generator = (dir, opts) => Jig.mermaid.builder.buildMermaidDiagramSource(
                 fqns, relations,
-                {diagramDirection: dir}
+                {diagramDirection: dir, showPhysicalName: opts?.showPhysicalName}
             ).source;
-            Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection});
+            Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection, enableLabelToggle: true});
         };
 
         const radioName = `sim-dir-${encodeURIComponent(item.pairLabel)}`;
@@ -693,11 +693,11 @@ const PackageApp = (() => {
         applyHierarchyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
-        const generator = (dir) => buildHierarchyDiagramRenderPlan(context, dir).source;
-        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+        const generator = (dir, opts) => buildHierarchyDiagramRenderPlan(context, dir, opts?.showPhysicalName).source;
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection, enableLabelToggle: true});
     }
 
-    function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection) {
+    function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection, showPhysicalName = false) {
         const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
         const {
             uniqueRelations,
@@ -713,7 +713,7 @@ const PackageApp = (() => {
         );
         const {source, nodeIdToFqn, mutualPairs} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            {diagramDirection: direction, clickHandlerName: HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME}
+            {diagramDirection: direction, clickHandlerName: HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME, showPhysicalName}
         );
         return {
             source,
@@ -804,20 +804,21 @@ const PackageApp = (() => {
             visibleRelations.push({from, to});
         });
 
-        const exploreOptions = (dir) => ({
+        const exploreOptions = (dir, showPhysicalName = false) => ({
             targetFqns: resolvedTargetSet,
             callerFqns: resolvedCallerSet,
             calleeFqns: resolvedCalleeSet,
             diagramDirection: dir,
             clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+            showPhysicalName,
         });
 
         const renderPlan = Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(context.diagramDirection));
         setDiagramSource(diagram, renderPlan.source);
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
 
-        const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir)).source;
-        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+        const generator = (dir, opts) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir, opts?.showPhysicalName)).source;
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection, enableLabelToggle: true});
         syncStateToURL();
     }
 

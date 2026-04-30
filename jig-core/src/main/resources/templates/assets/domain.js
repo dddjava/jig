@@ -176,7 +176,7 @@ const DomainApp = (() => {
      * @param {string} direction
      * @returns {string|null}
      */
-    function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection) {
+    function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false) {
         const directRelations = collectPackageDirectRelations(pkg, allPackageRelations);
         if (directRelations.length === 0) return null;
 
@@ -192,6 +192,7 @@ const DomainApp = (() => {
                 diagramDirection: direction,
                 nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
                 focusedPackageFqn: pkg.fqn,
+                showPhysicalName,
             }
         );
         return source;
@@ -213,7 +214,7 @@ const DomainApp = (() => {
      * @param {string} direction
      * @return {string|null}
      */
-    function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection) {
+    function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false) {
         const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
         if (!elements) return null;
         const {uniqueRelations, packageFqns} = elements;
@@ -223,6 +224,7 @@ const DomainApp = (() => {
             {
                 diagramDirection: direction,
                 nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
+                showPhysicalName,
             }
         );
         return source;
@@ -1068,16 +1070,22 @@ const DomainApp = (() => {
 
         container.innerHTML = "";
 
-        const renderIfNonNull = (generator) => {
+        const renderIfNonNull = (generator, renderOptions = {}) => {
             if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection, ...renderOptions});
             }
         };
 
         if (diagramType === 'packageDirect') {
-            renderIfNonNull((dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir));
+            renderIfNonNull(
+                (dir, opts) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir, opts?.showPhysicalName),
+                {enableLabelToggle: true}
+            );
         } else if (diagramType === 'package') {
-            renderIfNonNull((dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir));
+            renderIfNonNull(
+                (dir, opts) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir, opts?.showPhysicalName),
+                {enableLabelToggle: true}
+            );
         } else if (diagramType === 'classDirect') {
             renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
         } else if (diagramType === 'classDefinition') {

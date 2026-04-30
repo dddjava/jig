@@ -519,7 +519,7 @@ const PackageApp = (() => {
             const packageFqn = Jig.util.getPackageFqnFromTypeFqn(node);
             const packageName = packageFqn === '(default)'
                 ? '(default)'
-                : Jig.glossary.typeSimpleName(packageFqn);
+                : Jig.glossary.getPackageTerm(packageFqn).title;
             if (!packages.has(packageFqn)) {
                 packages.set(packageFqn, {nodes: new Set(), name: packageName});
             }
@@ -622,11 +622,13 @@ const PackageApp = (() => {
             });
             classNodes.forEach(classFqn => current.classes.add(classFqn));
         };
-        const renderTreeNode = (targetLines, label, node, counter) => {
+        const renderTreeNode = (targetLines, segment, node, counter, parentFqn) => {
+            const fqn = parentFqn ? `${parentFqn}.${segment}` : segment;
+            const label = Jig.glossary.getPackageTerm(fqn).title;
             targetLines.push(`subgraph P${counter.value++}[${escapeLabel(label)}]`);
             appendClassNodes(targetLines, node.classes);
-            Array.from(node.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([segment, child]) => {
-                renderTreeNode(targetLines, segment, child, counter);
+            Array.from(node.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([childSegment, child]) => {
+                renderTreeNode(targetLines, childSegment, child, counter, fqn);
             });
             targetLines.push('end');
         };
@@ -642,7 +644,7 @@ const PackageApp = (() => {
             }
             const subgraphCounter = {value: 0};
             outerRoots.forEach((root, outerIndex) => {
-                const rootLabel = Jig.glossary.typeSimpleName(root);
+                const rootLabel = Jig.glossary.getPackageTerm(root).title;
                 lines.push(`subgraph O${outerIndex}[${escapeLabel(rootLabel || root)}]`);
                 const groupedPackages = groups.get(root) || [];
                 const treeRoot = createTreeNode();
@@ -663,7 +665,7 @@ const PackageApp = (() => {
                 });
                 appendClassNodes(lines, outerDirectClasses);
                 Array.from(treeRoot.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([segment, child]) => {
-                    renderTreeNode(lines, segment, child, subgraphCounter);
+                    renderTreeNode(lines, segment, child, subgraphCounter, root);
                 });
                 lines.push('end');
             });

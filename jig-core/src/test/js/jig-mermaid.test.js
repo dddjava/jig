@@ -148,8 +148,8 @@ test.describe('jig-mermaid.js', () => {
             assert.equal(label, 'model');
         });
 
-        test('buildDiagramSubgraphLabel: 親サブグラフ配下ならプレフィックスを省略する', () => {
-            const label = sut.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
+        test('buildDiagramSubgraphLabel: グロッサリー未登録の場合は単純名を返す', () => {
+            const label = sut.buildDiagramSubgraphLabel('com.example.domain');
             assert.equal(label, 'domain');
         });
 
@@ -196,7 +196,7 @@ test.describe('jig-mermaid.js', () => {
 
             assert.equal(lines.some(line => line.includes('node ROOT')), true);
             assert.equal(lines.some(line => line.includes('node P0')), true);
-            assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["com.example"]')), true);
+            assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["example"]')), true);
             assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["domain"]')), true);
         });
 

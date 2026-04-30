@@ -430,12 +430,9 @@ globalThis.Jig.mermaid = (() => {
             return displayLabel ?? '';
         }
 
-        function buildDiagramSubgraphLabel(subgraphFqn, parentSubgraphFqn) {
+        function buildDiagramSubgraphLabel(subgraphFqn) {
             if (!subgraphFqn) return '';
-            if (parentSubgraphFqn && subgraphFqn.startsWith(`${parentSubgraphFqn}.`)) {
-                return subgraphFqn.substring(parentSubgraphFqn.length + 1);
-            }
-            return subgraphFqn;
+            return globalThis.Jig.glossary.getPackageTerm(subgraphFqn).title;
         }
 
         function buildDiagramNodeTooltip(fqn) {
@@ -488,7 +485,7 @@ globalThis.Jig.mermaid = (() => {
                         return;
                     }
                     const groupId = `G${groupIndex++}`;
-                    const label = buildDiagramSubgraphLabel(child.key, parentSubgraphFqnForNodes);
+                    const label = buildDiagramSubgraphLabel(child.key);
                     if (subgraphNodeIds) {
                         subgraphNodeIds.set(groupId, new Set(collectNodeIds(child)));
                     }

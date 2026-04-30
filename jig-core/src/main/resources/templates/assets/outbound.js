@@ -320,9 +320,9 @@ const OutboundApp = (() => {
 
             Jig.mermaid.diagram.createAndRegister(portCard, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir) => generatePortMermaidCode(group, {...currentVisibility, direction: dir});
+                const generator = (dir, opts) => generatePortMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
-                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
             }, {className: "mermaid-diagram"});
 
@@ -334,9 +334,9 @@ const OutboundApp = (() => {
                 operationItem.appendChild(Jig.dom.type.methodItem(operation.outboundPortOperation));
                 Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
                     const currentVisibility = readVisibility();
-                    const generator = (dir) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir});
+                    const generator = (dir, opts) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                     if (generator('LR')) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                     }
                 });
                 operationItem.appendChild(Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}));
@@ -430,9 +430,9 @@ const OutboundApp = (() => {
             });
             Jig.mermaid.diagram.createAndRegister(persistenceCard, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir});
+                const generator = (dir, opts) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
-                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
             });
             container.appendChild(persistenceCard);
@@ -467,9 +467,9 @@ const OutboundApp = (() => {
             });
             Jig.mermaid.diagram.createAndRegister(externalCard, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir});
+                const generator = (dir, opts) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
-                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
             });
             container.appendChild(externalCard);
@@ -585,8 +585,9 @@ const OutboundApp = (() => {
     function generatePortMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         const portFqn = group.outboundPort.fqn;
-        const portLabel = Jig.glossary.getTypeTerm(portFqn).title;
+        const portLabel = showPhysicalName ? Jig.glossary.typeSimpleName(portFqn) : Jig.glossary.getTypeTerm(portFqn).title;
 
         const contexts = {
             portSubgraphs: new Map(),
@@ -603,13 +604,13 @@ const OutboundApp = (() => {
         };
 
         group.operations.forEach((operation) => {
-            const portOpName = Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title;
-            const portOpFqn = operation.outboundPortOperation.fqn;
-
-            const adapterFqn = operation.outboundAdapter?.fqn;
-            const adapterLabel = Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title;
-            const executionName = Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title;
-            const executionFqn = operation.outboundAdapterExecution?.fqn;
+            const props = extractOperationProps({...operation, outboundPort: group.outboundPort}, showPhysicalName);
+            const portOpFqn = props.portOpFqn;
+            const portOpName = props.portOpName;
+            const adapterFqn = props.adapterFqn;
+            const adapterLabel = props.adapterLabel;
+            const executionName = props.executionName;
+            const executionFqn = props.executionFqn;
 
             let lastNodeId = addPortNode(builder, contexts.portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
             addCallerUsecaseNodes(builder, lastNodeId, portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
@@ -638,6 +639,7 @@ const OutboundApp = (() => {
     function generatePersistenceMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         const persistenceTarget = group.persistenceTarget;
 
         const contexts = {
@@ -648,7 +650,7 @@ const OutboundApp = (() => {
         };
 
         group.operations.forEach((operation) => {
-            const props = extractOperationProps(operation);
+            const props = extractOperationProps(operation, showPhysicalName);
             operation.persistenceAccessors
                 .filter(op => persistenceTarget in op.targetOperationTypes)
                 .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
@@ -673,6 +675,7 @@ const OutboundApp = (() => {
     function generateExternalTypeMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         const externalType = group.externalType;
 
         const contexts = {
@@ -693,7 +696,7 @@ const OutboundApp = (() => {
             const relevantAccessors = operation.externalAccessors.filter(accessor =>
                 accessor.operations.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
 
-            const props = extractOperationProps(operation);
+            const props = extractOperationProps(operation, showPhysicalName);
 
             relevantAccessors.forEach(accessor => {
                 let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
@@ -711,21 +714,24 @@ const OutboundApp = (() => {
         return builder.build(visibility.direction);
     }
 
-    function extractOperationProps(operation) {
+    function extractOperationProps(operation, showPhysicalName = false) {
+        const typeLabel = (fqn) => showPhysicalName ? (fqn ? Jig.glossary.typeSimpleName(fqn) : '') : Jig.glossary.getTypeTerm(fqn).title;
+        const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
         return {
             portFqn: operation.outboundPort.fqn,
-            portLabel: Jig.glossary.getTypeTerm(operation.outboundPort.fqn).title,
-            portOpName: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title,
+            portLabel: typeLabel(operation.outboundPort.fqn),
+            portOpName: mLabel(operation.outboundPortOperation.fqn),
             portOpFqn: operation.outboundPortOperation.fqn,
             adapterFqn: operation.outboundAdapter?.fqn,
-            adapterLabel: Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title,
-            executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title,
+            adapterLabel: typeLabel(operation.outboundAdapter?.fqn),
+            executionName: mLabel(operation.outboundAdapterExecution?.fqn),
             executionFqn: operation.outboundAdapterExecution?.fqn,
         };
     }
 
     function addCallerUsecaseNodes(builder, portOpNodeId, portOpFqn, callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges) {
         if (!visibility.callerUsecase || !portOpNodeId || !callerUsecases?.length) return;
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         callerUsecases.forEach(usecaseFqn => {
             const edgeKey = usecaseFqn + '->' + portOpFqn;
             if (usecaseEdges.has(edgeKey)) return;
@@ -734,8 +740,10 @@ const OutboundApp = (() => {
                 const nodeId = Jig.util.fqnToId("usecase", usecaseFqn);
                 const hashIdx = usecaseFqn.indexOf('#');
                 const classFqn = hashIdx !== -1 ? usecaseFqn.slice(0, hashIdx) : usecaseFqn;
-                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, Jig.glossary.getTypeTerm(classFqn).title);
-                builder.addNodeToSubgraph(sg, nodeId, Jig.glossary.getMethodTerm(usecaseFqn, true).title, 'method');
+                const sgLabel = showPhysicalName ? Jig.glossary.typeSimpleName(classFqn) : Jig.glossary.getTypeTerm(classFqn).title;
+                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, sgLabel);
+                const mLabel = showPhysicalName ? Jig.glossary.methodSimpleName(usecaseFqn) : Jig.glossary.getMethodTerm(usecaseFqn, true).title;
+                builder.addNodeToSubgraph(sg, nodeId, mLabel, 'method');
                 builder.addClass(nodeId, "usecase");
                 builder.addClick(nodeId, `./usecase.html#${Jig.util.fqnToId("method", usecaseFqn)}`);
                 usecaseNodes.set(usecaseFqn, nodeId);
@@ -779,7 +787,8 @@ const OutboundApp = (() => {
         const groupId = op.group;
         if (!visibility.accessor || !groupId) return sourceNodeId;
 
-        const groupLabel = Jig.glossary.getTypeTerm(groupId).title;
+        const showPhysicalName = visibility.showPhysicalName ?? false;
+        const groupLabel = showPhysicalName ? Jig.glossary.typeSimpleName(groupId) : Jig.glossary.getTypeTerm(groupId).title;
         if (visibility.accessorMethod) {
             const opNodeId = Jig.util.fqnToId("op", op.id);
             builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
@@ -809,11 +818,13 @@ const OutboundApp = (() => {
     }
 
     function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes) {
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         const addExternal = (fromNodeId, ext) => {
             if (!visibility.externalType) return;
             if (!extTypeNodes.has(ext.fqn)) {
                 extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-                builder.addNode(extTypeNodes.get(ext.fqn), Jig.glossary.getTypeTerm(ext.fqn).title, 'external');
+                const extLabel = showPhysicalName ? Jig.glossary.typeSimpleName(ext.fqn) : Jig.glossary.getTypeTerm(ext.fqn).title;
+                builder.addNode(extTypeNodes.get(ext.fqn), extLabel, 'external');
             }
             const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
             if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
@@ -828,12 +839,13 @@ const OutboundApp = (() => {
             return sourceNodeId;
         }
 
-        const accessorLabel = Jig.glossary.getTypeTerm(accessor.fqn).title;
+        const accessorLabel = showPhysicalName ? Jig.glossary.typeSimpleName(accessor.fqn) : Jig.glossary.getTypeTerm(accessor.fqn).title;
         if (visibility.externalAccessorMethod) {
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.operations.forEach(accMethod => {
                 const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
-                builder.addNodeToSubgraph(sg, accMethodNodeId, Jig.glossary.getMethodTerm(accMethod.fqn, true).title, 'method');
+                const accMLabel = showPhysicalName ? Jig.glossary.methodSimpleName(accMethod.fqn) : Jig.glossary.getMethodTerm(accMethod.fqn, true).title;
+                builder.addNodeToSubgraph(sg, accMethodNodeId, accMLabel, 'method');
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
             });

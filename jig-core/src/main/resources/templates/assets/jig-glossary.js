@@ -18,6 +18,14 @@ globalThis.Jig.glossary = (() => {
         return fqn.substring(fqn.lastIndexOf('.') + 1);
     }
 
+    function methodSimpleName(fqn) {
+        if (!fqn) return '';
+        const hashIdx = fqn.indexOf('#');
+        if (hashIdx === -1) return typeSimpleName(fqn);
+        const parenIdx = fqn.indexOf('(', hashIdx);
+        return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
+    }
+
     function getPackageTerm(fqn) {
         const term = findTerm(fqn);
         if (term) return term;
@@ -100,6 +108,7 @@ globalThis.Jig.glossary = (() => {
         getMethodTerm,
         findTerm,
         typeSimpleName,
+        methodSimpleName,
     };
 })();
 

@@ -627,40 +627,41 @@ const UsecaseApp = (() => {
 
                 Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
                     mmdContainer.innerHTML = "";
-                    const builder = new Jig.mermaid.Builder();
-                    builder.applyThemeClassDefs();
+                    const generator = (dir, opts) => {
+                        const showPhysicalName = opts?.showPhysicalName;
+                        const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+                        const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
+                        const builder = new Jig.mermaid.Builder();
+                        builder.applyThemeClassDefs();
 
-                    classGraph.nodes.forEach(node => {
-                        const nodeId = fqnToNodeId(node.fqn);
-                        if (node.kind === "inbound-class") {
-                            const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
-                            builder.addNode(nodeId, nodeLabel, 'class');
-                            builder.addClass(nodeId, "inbound");
-                            builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
-                        } else if (node.kind === "domain-type") {
-                            const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
-                            builder.addNode(nodeId, nodeLabel, 'class');
-                            builder.addClass(nodeId, "domain");
-                            builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
-                        } else {
-                            const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                            if (node.kind === "usecase") {
-                                builder.addNode(nodeId, nodeLabel, 'method');
-                                builder.addClass(nodeId, "usecase");
-                                builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                        classGraph.nodes.forEach(node => {
+                            const nodeId = fqnToNodeId(node.fqn);
+                            if (node.kind === "inbound-class") {
+                                builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                                builder.addClass(nodeId, "inbound");
+                                builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
+                            } else if (node.kind === "domain-type") {
+                                builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                                builder.addClass(nodeId, "domain");
+                                builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                             } else {
-                                builder.addNode(nodeId, nodeLabel, 'method');
-                                builder.addClass(nodeId, "inactive");
+                                if (node.kind === "usecase") {
+                                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                                    builder.addClass(nodeId, "usecase");
+                                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                                } else {
+                                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                                    builder.addClass(nodeId, "inactive");
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    classGraph.edges.forEach(edge => {
-                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
-                    });
-
-                    const generator = (dir) => builder.build(dir);
-                    Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                        classGraph.edges.forEach(edge => {
+                            builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+                        });
+                        return builder.build(dir);
+                    };
+                    Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR', enableLabelToggle: true});
                 });
             }
 
@@ -734,59 +735,59 @@ const UsecaseApp = (() => {
                     if (hasUsecaseDiagram) {
                         Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
                             mmdContainer.innerHTML = "";
-                            const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+                            const generator = (dir, opts) => {
+                                const showPhysicalName = opts?.showPhysicalName;
+                                const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+                                const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
+                                const sgLabel = (classFqn) => showPhysicalName ? Jig.glossary.typeSimpleName(classFqn) : Jig.glossary.getTypeTerm(classFqn).title;
+                                const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
 
-                            const builder = new Jig.mermaid.Builder();
-                            builder.applyThemeClassDefs();
+                                const builder = new Jig.mermaid.Builder();
+                                builder.applyThemeClassDefs();
 
-                            const classSubgraphs = new Map();
-                            const ensureClassSubgraph = (fqn) => {
-                                const classFqn = getClassFqnFromMethodFqn(fqn);
-                                return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), Jig.glossary.getTypeTerm(classFqn).title, 'LR')};
-                            };
-                            currentUsecaseDiagram.nodes.forEach(node => {
-                                const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "inbound-method") {
-                                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
-                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                    builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                    builder.addClass(nodeId, "inbound");
-                                    builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
-                                } else if (node.kind === "outbound-method") {
-                                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
-                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                    builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                    builder.addClass(nodeId, "outbound");
-                                    builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
-                                } else if (node.kind === "domain-type") {
-                                    const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
-                                    builder.addNode(nodeId, nodeLabel, 'class');
-                                    builder.addClass(nodeId, "domain");
-                                    builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
-                                } else {
-                                    const {subgraph} = ensureClassSubgraph(node.fqn);
-                                    if (node.kind === "usecase") {
-                                        const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                        builder.addClass(nodeId, "usecase");
-                                        if (node.fqn === method.fqn) {
-                                            builder.addStyle(nodeId, "font-weight:bold");
-                                        }
-                                        builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                                const classSubgraphs = new Map();
+                                const ensureClassSubgraph = (fqn) => {
+                                    const classFqn = getClassFqnFromMethodFqn(fqn);
+                                    return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), sgLabel(classFqn), 'LR')};
+                                };
+                                currentUsecaseDiagram.nodes.forEach(node => {
+                                    const nodeId = fqnToNodeId(node.fqn);
+                                    if (node.kind === "inbound-method") {
+                                        const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
+                                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                                        builder.addClass(nodeId, "inbound");
+                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
+                                    } else if (node.kind === "outbound-method") {
+                                        const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
+                                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                                        builder.addClass(nodeId, "outbound");
+                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
+                                    } else if (node.kind === "domain-type") {
+                                        builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                                        builder.addClass(nodeId, "domain");
+                                        builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                                     } else {
-                                        const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                        builder.addClass(nodeId, "inactive");
+                                        const {subgraph} = ensureClassSubgraph(node.fqn);
+                                        if (node.kind === "usecase") {
+                                            builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                                            builder.addClass(nodeId, "usecase");
+                                            if (node.fqn === method.fqn) {
+                                                builder.addStyle(nodeId, "font-weight:bold");
+                                            }
+                                            builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                                        } else {
+                                            builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                                            builder.addClass(nodeId, "inactive");
+                                        }
                                     }
-                                }
-                            });
+                                });
 
-                            currentUsecaseDiagram.edges.forEach(edge => {
-                                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
-                            });
-
-                            const generator = (dir) => builder.build(dir);
-                            Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                                currentUsecaseDiagram.edges.forEach(edge => {
+                                    builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+                                });
+                                return builder.build(dir);
+                            };
+                            Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR', enableLabelToggle: true});
                         });
                     }
 

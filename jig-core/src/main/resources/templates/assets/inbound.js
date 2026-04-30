@@ -79,15 +79,17 @@ const InboundApp = (() => {
         };
     }
 
-    function buildDiagramBuilder(data, builder) {
+    function buildDiagramBuilder(data, builder, showPhysicalName = false) {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         builder.applyThemeClassDefs();
+        const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+        const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
 
         data.entrypointGroups.forEach((eps, typeFqn) => {
-            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));
             eps.forEach(ep => {
                 const nodeId = fqnToNodeId(ep.fqn);
-                builder.addNodeToSubgraph(subgraph, nodeId, Jig.glossary.getMethodTerm(ep.fqn, true).title, 'method');
+                builder.addNodeToSubgraph(subgraph, nodeId, mLabel(ep.fqn), 'method');
                 builder.addClass(nodeId, "inbound");
             });
         });
@@ -100,20 +102,20 @@ const InboundApp = (() => {
         });
 
         data.usecaseGroups.forEach((methods, typeFqn) => {
-            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));
             methods.forEach(fqn => {
                 const mId = fqnToNodeId(fqn);
-                builder.addNodeToSubgraph(subgraph, mId, Jig.glossary.getMethodTerm(fqn, true).title, 'method');
+                builder.addNodeToSubgraph(subgraph, mId, mLabel(fqn), 'method');
                 builder.addClass(mId, "usecase");
                 builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`);
             });
         });
 
         data.methodGroups.forEach((methods, typeFqn) => {
-            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));
             methods.forEach(fqn => {
                 const nodeId = fqnToNodeId(fqn);
-                builder.addNodeToSubgraph(subgraph, nodeId, Jig.glossary.getMethodTerm(fqn, true).title, 'method');
+                builder.addNodeToSubgraph(subgraph, nodeId, mLabel(fqn), 'method');
                 builder.addClass(nodeId, "inactive");
             });
         });
@@ -427,14 +429,14 @@ const InboundApp = (() => {
                 jigCard.appendChild(epSection);
             }
 
-            const diagramGenerator = (dir) => {
-                const data = prepareDiagramData(adapter, Jig.data.usecase.get());
-                const builder = new Jig.mermaid.Builder();
-                buildDiagramBuilder(data, builder);
-                return builder.build(dir);
-            };
             Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
-                Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR'});
+                const diagramGenerator = (dir, opts) => {
+                    const data = prepareDiagramData(adapter, Jig.data.usecase.get());
+                    const builder = new Jig.mermaid.Builder();
+                    buildDiagramBuilder(data, builder, opts?.showPhysicalName);
+                    return builder.build(dir);
+                };
+                Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR', enableLabelToggle: true});
             });
 
             container.appendChild(jigCard);

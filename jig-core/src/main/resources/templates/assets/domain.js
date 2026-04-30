@@ -346,13 +346,15 @@ const DomainApp = (() => {
      * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true} = {}) {
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true, showPhysicalName = false} = {}) {
         const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+        const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
 
         function packageOf(fqn) {
             const idx = fqn.lastIndexOf('.');
@@ -381,10 +383,10 @@ const DomainApp = (() => {
         const builder = new Jig.mermaid.Builder();
         byPackage.forEach((fqns, pkgFqn) => {
             if (pkgFqn) {
-                const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkgFqn), Jig.glossary.getTypeTerm(pkgFqn).title);
-                fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
+                const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkgFqn), pkgLabel(pkgFqn));
+                fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
             } else {
-                fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
+                fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), typeLabel(fqn)));
             }
         });
         involvedFqns.forEach(fqn => builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`));
@@ -411,7 +413,8 @@ const DomainApp = (() => {
     function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {
         showOutgoing = true, showIncoming = true,
         showFields = true, showMethods = true,
-        maxVisibility = 'PRIVATE'
+        maxVisibility = 'PRIVATE',
+        showPhysicalName = false
     } = {}) {
         const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
@@ -435,7 +438,7 @@ const DomainApp = (() => {
 
         involvedFqns.forEach(fqn => {
             const nodeId = fqnToNodeId(fqn);
-            builder.addClass(nodeId, Jig.glossary.typeSimpleName(fqn));
+            builder.addClass(nodeId, showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title);
 
             const domainType = typesMap?.get(fqn);
             if (showFields) {
@@ -502,7 +505,8 @@ const DomainApp = (() => {
     function createRelationDiagram(pkg, typeRelations, typesMap, {
         showExternalOutgoing = true,
         showExternalIncoming = true,
-        direction = domainSettings.diagramDirection
+        direction = domainSettings.diagramDirection,
+        showPhysicalName = false
     } = {}) {
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
@@ -575,10 +579,13 @@ const DomainApp = (() => {
             edges: edges
         });
 
+        const nodeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+
         const builder = new Jig.mermaid.Builder();
-        const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), Jig.glossary.getTypeTerm(pkg.fqn).title, direction);
-        internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
-        externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title, 'package'));
+        const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
+        internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), nodeLabel(fqn)));
+        externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), pkgLabel(fqn), 'package'));
         [...internalFqns, ...externalPkgFqns].forEach(fqn =>
             builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)
         );
@@ -1087,9 +1094,15 @@ const DomainApp = (() => {
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'classDirect') {
-            renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
+            renderIfNonNull(
+                (dir, opts) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showPhysicalName: opts?.showPhysicalName}),
+                {enableLabelToggle: true}
+            );
         } else if (diagramType === 'classDefinition') {
-            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility}));
+            renderIfNonNull(
+                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName}),
+                {enableLabelToggle: true}
+            );
         } else {
             // テスト環境など closest が使えない場合に対応
             const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
@@ -1097,11 +1110,10 @@ const DomainApp = (() => {
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
             const showExternalIncoming = incoming ? incoming.checked : true;
-            renderIfNonNull((dir) => createRelationDiagram(pkg, typeRelations, typesMap, {
-                showExternalOutgoing,
-                showExternalIncoming,
-                direction: dir
-            }));
+            renderIfNonNull(
+                (dir, opts) => createRelationDiagram(pkg, typeRelations, typesMap, {showExternalOutgoing, showExternalIncoming, direction: dir, showPhysicalName: opts?.showPhysicalName}),
+                {enableLabelToggle: true}
+            );
         }
     }
 

@@ -87,14 +87,14 @@ globalThis.Jig.mermaid = (() => {
             addClick(id, url, tooltip) {
                 if (!id || !url || this.clickSet.has(id)) return;
                 this.clickSet.add(id);
-                const tooltipPart = tooltip ? ` "${tooltip}"` : '';
+                const tooltipPart = tooltip ? ` "${escapeMermaidText(tooltip)}"` : '';
                 this.clicks.push(`click ${id} href "${url}"${tooltipPart}`);
             }
 
             addTooltip(id, tooltip) {
                 if (!id || !tooltip || this.clickSet.has(id)) return;
                 this.clickSet.add(id);
-                this.clicks.push(`click ${id} call _jigNoop "${tooltip}"`);
+                this.clicks.push(`click ${id} _jigNoop "${escapeMermaidText(tooltip)}"`);
             }
 
             addClass(id, className) {

@@ -69,12 +69,13 @@ const GlossaryApp = (() => {
     }
 
     function buildGlossaryCsv(terms) {
-        const header = ["用語（英名）", "用語", "説明", "種類", "識別子"];
+        const header = ["用語（英名）", "用語", "説明", "種類", "由来", "識別子"];
         const rows = terms.map(term => [
             term.simpleText ?? "",
             term.title ?? "",
             term.description ?? "",
             term.kind ?? "",
+            term.origin ?? "",
             term.fqn ?? "",
         ]);
 
@@ -179,6 +180,7 @@ const GlossaryApp = (() => {
                 if (term.fqn) metaItems.push(createMetaItem("完全修飾名", term.fqn));
                 if (term.simpleText) metaItems.push(createMetaItem("単純名", term.simpleText));
                 if (term.kind) metaItems.push(createMetaItem("種類", term.kind));
+                if (term.origin) metaItems.push(createMetaItem("由来", term.origin));
                 if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
                     const fqn = term.fqn;
                     const isInDomain = domainRoots.length > 0 && domainRoots.some(root =>

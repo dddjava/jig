@@ -9,7 +9,7 @@ public record Term(TermId id,
                    String title,
                    String description,
                    TermKind termKind,
-                   @Nullable Object additionalInformation) {
+                   @Nullable TermOrigin origin) {
     public Term {
         title = title.isEmpty() ? id.simpleText() : title;
     }

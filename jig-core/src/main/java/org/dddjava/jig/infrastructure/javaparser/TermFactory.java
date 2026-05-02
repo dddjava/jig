@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.terms.TermOrigin;
 
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -20,25 +21,25 @@ class TermFactory {
     public static Term fromPackage(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.パッケージ);
+        return new Term(termId, title, bodyText(title, text), TermKind.パッケージ, TermOrigin.Javadoc);
     }
 
     public static Term fromClass(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.クラス);
+        return new Term(termId, title, bodyText(title, text), TermKind.クラス, TermOrigin.Javadoc);
     }
 
     public static Term fromMethod(TermId termId, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
+        return new Term(termId, title, bodyText(title, text), TermKind.メソッド, TermOrigin.Javadoc);
     }
 
     public static Term fromField(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.フィールド, javadocDescriptionText);
+        return new Term(termId, title, bodyText(title, text), TermKind.フィールド, TermOrigin.Javadoc);
     }
 
     /**

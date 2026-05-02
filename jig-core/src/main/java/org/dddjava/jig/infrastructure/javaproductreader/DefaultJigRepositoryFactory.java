@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.terms.TermOrigin;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
@@ -192,7 +193,7 @@ public class DefaultJigRepositoryFactory {
         if (existingTermIds.contains(termId)) {
             logger.info("[JIG] {} はJavadocによる用語が登録済みのためSwagger {}をスキップします", termId.asText(), annotationName);
         } else {
-            glossaryRepository.register(Term.simple(termId, value, kind));
+            glossaryRepository.register(new Term(termId, value, "", kind, TermOrigin.Swagger));
         }
     }
 

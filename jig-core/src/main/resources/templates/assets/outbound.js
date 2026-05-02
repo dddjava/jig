@@ -727,7 +727,7 @@ itemList.appendChild(operationItem);
                 const mLabel = showPhysicalName ? Jig.glossary.methodSimpleName(usecaseFqn) : Jig.glossary.getMethodTerm(usecaseFqn, true).title;
                 builder.addNodeToSubgraph(sg, nodeId, mLabel, 'method');
                 builder.addClass(nodeId, "usecase");
-                builder.addClick(nodeId, `./usecase.html#${Jig.util.fqnToId("method", usecaseFqn)}`);
+                builder.addClick(nodeId, `./usecase.html#${Jig.util.fqnToId("method", usecaseFqn)}`, usecaseFqn);
                 usecaseNodes.set(usecaseFqn, nodeId);
             }
             builder.addEdge(usecaseNodes.get(usecaseFqn), portOpNodeId);
@@ -743,7 +743,7 @@ itemList.appendChild(operationItem);
             builder.addNodeToSubgraph(builder.ensureSubgraph(portSubgraphs, portFqn, portLabel), portOpId, portOpName, 'method');
             builder.addClass(portOpId, "outbound");
             if (isNew) builder.addClick(portFqn, `#${portCardId}`);
-            builder.addClick(portOpId, `#${portOpId}`);
+            builder.addClick(portOpId, `#${portOpId}`, portOpFqn);
             return portOpId;
         } else {
             const isNew = !portSubgraphs.has(portFqn);
@@ -761,6 +761,7 @@ itemList.appendChild(operationItem);
             const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
             const executionId = Jig.util.fqnToId("exec", executionFqn);
             builder.addNodeToSubgraph(sg, executionId, executionName, 'method');
+            builder.addTooltip(executionId, executionFqn);
             if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
             return executionId;
         } else {
@@ -780,6 +781,7 @@ itemList.appendChild(operationItem);
         if (visibility.accessorMethod) {
             const opNodeId = Jig.util.fqnToId("op", op.id);
             builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
+            builder.addTooltip(opNodeId, op.id);
             if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
             return opNodeId;
         } else {
@@ -836,6 +838,7 @@ itemList.appendChild(operationItem);
                 const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
                 const accMLabel = showPhysicalName ? Jig.glossary.methodSimpleName(accMethod.fqn) : Jig.glossary.getMethodTerm(accMethod.fqn, true).title;
                 builder.addNodeToSubgraph(sg, accMethodNodeId, accMLabel, 'method');
+                builder.addTooltip(accMethodNodeId, accMethod.fqn);
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
             });

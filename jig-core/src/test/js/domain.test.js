@@ -252,7 +252,7 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idA} --> ${idB}`), 'A→B の関連が含まれること');
             assert.ok(result.includes(`${idC} --> ${idA}`), 'C→A の関連が含まれること');
             const domainIdA = Jig.util.fqnToId("domain", 'org.example.A');
-            assert.ok(result.includes(`click ${idA} "#${domainIdA}"`), 'Aへのクリックリンクが含まれること');
+            assert.ok(result.includes(`click ${idA} href "#${domainIdA}"`), 'Aへのクリックリンクが含まれること');
             assert.ok(result.includes(`style ${idA} font-weight:bold`), '自身（A）が強調表示されること');
             const sgId = Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId}`), 'パッケージのサブグラフが含まれること');

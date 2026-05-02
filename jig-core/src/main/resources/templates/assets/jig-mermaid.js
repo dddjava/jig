@@ -54,6 +54,7 @@ globalThis.Jig.mermaid = (() => {
                 this.styles = [];
                 this.clicks = [];
                 this.edgeSet = new Set();
+                this.tooltipSet = new Set();
             }
 
             sanitize(id) {
@@ -83,9 +84,16 @@ globalThis.Jig.mermaid = (() => {
                 this.styles.push(`style ${id} ${style}`);
             }
 
-            addClick(id, url) {
+            addClick(id, url, tooltip) {
                 if (!id || !url) return;
-                this.clicks.push(`click ${id} "${url}"`);
+                const tooltipPart = tooltip ? ` "${tooltip}"` : '';
+                this.clicks.push(`click ${id} href "${url}"${tooltipPart}`);
+            }
+
+            addTooltip(id, tooltip) {
+                if (!id || !tooltip || this.tooltipSet.has(id)) return;
+                this.tooltipSet.add(id);
+                this.clicks.push(`click ${id} call _jigNoop "${tooltip}"`);
             }
 
             addClass(id, className) {
@@ -1614,6 +1622,7 @@ globalThis.Jig.mermaid = (() => {
 })();
 
 if (typeof document !== "undefined") {
+    window._jigNoop = () => {};
 
     document.addEventListener("DOMContentLoaded", function () {
         globalThis.Jig.mermaid.render.initializeMermaid();

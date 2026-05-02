@@ -505,8 +505,8 @@ test.describe("outbound.js", () => {
                 crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = OutboundApp.generatePortMermaidCode(groupWithMultipleCallers, visibility);
             assert.ok(code !== null);
-            assert.equal((code.match(/createOrder/g) || []).length, 1, "ノードは1回だけ定義される");
-            assert.equal((code.match(/updateOrder/g) || []).length, 1, "ノードは1回だけ定義される");
+            assert.equal((code.match(/\["createOrder"\]/g) || []).length, 1, "ノードは1回だけ定義される");
+            assert.equal((code.match(/\["updateOrder"\]/g) || []).length, 1, "ノードは1回だけ定義される");
         });
 
         test("direction 設定が反映される", () => {

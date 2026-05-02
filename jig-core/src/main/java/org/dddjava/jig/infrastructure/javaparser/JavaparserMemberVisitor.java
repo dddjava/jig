@@ -55,7 +55,7 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         );
 
         methodDeclaration.getJavadoc().ifPresent(javadoc ->
-                glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeId, methodImplementationDeclarator), methodImplementationDeclarator, javadoc.getDescription().toText()))
+                glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeId, methodImplementationDeclarator), javadoc.getDescription().toText()))
         );
     }
 }

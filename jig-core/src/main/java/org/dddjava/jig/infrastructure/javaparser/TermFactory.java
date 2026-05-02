@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
@@ -30,7 +29,7 @@ class TermFactory {
         return new Term(termId, title, bodyText(title, text), TermKind.クラス, TermOrigin.Javadoc);
     }
 
-    public static Term fromMethod(TermId termId, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
+    public static Term fromMethod(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
         return new Term(termId, title, bodyText(title, text), TermKind.メソッド, TermOrigin.Javadoc);

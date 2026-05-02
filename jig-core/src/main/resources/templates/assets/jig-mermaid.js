@@ -54,7 +54,7 @@ globalThis.Jig.mermaid = (() => {
                 this.styles = [];
                 this.clicks = [];
                 this.edgeSet = new Set();
-                this.tooltipSet = new Set();
+                this.clickSet = new Set();
             }
 
             sanitize(id) {
@@ -85,14 +85,15 @@ globalThis.Jig.mermaid = (() => {
             }
 
             addClick(id, url, tooltip) {
-                if (!id || !url) return;
+                if (!id || !url || this.clickSet.has(id)) return;
+                this.clickSet.add(id);
                 const tooltipPart = tooltip ? ` "${tooltip}"` : '';
                 this.clicks.push(`click ${id} href "${url}"${tooltipPart}`);
             }
 
             addTooltip(id, tooltip) {
-                if (!id || !tooltip || this.tooltipSet.has(id)) return;
-                this.tooltipSet.add(id);
+                if (!id || !tooltip || this.clickSet.has(id)) return;
+                this.clickSet.add(id);
                 this.clicks.push(`click ${id} call _jigNoop "${tooltip}"`);
             }
 
@@ -1621,9 +1622,11 @@ globalThis.Jig.mermaid = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
+if (typeof window !== "undefined") {
     window._jigNoop = () => {};
+}
 
+if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
         globalThis.Jig.mermaid.render.initializeMermaid();
         globalThis.Jig.mermaid.render.setupLazyMermaidRender();

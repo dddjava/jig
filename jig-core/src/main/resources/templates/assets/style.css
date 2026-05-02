@@ -1864,16 +1864,6 @@ table td.number {
     color: #1b3a66;
 }
 
-.outbound-interface .outbound-persistence-detail-title {
-    margin: 10px 0 6px 0;
-    font-weight: bold;
-}
-
-.outbound-interface .outbound-persistence-detail-list {
-    margin: 0;
-    padding-left: 18px;
-}
-
 .mermaid-copy-button,
 .mermaid-download-button,
 .mermaid-direction-button,

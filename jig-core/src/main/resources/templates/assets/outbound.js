@@ -209,19 +209,6 @@ const OutboundApp = (() => {
         return Array.from(map.values());
     }
 
-    function formatPersistenceAccessors(persistenceAccessors) {
-        if (!Array.isArray(persistenceAccessors) || persistenceAccessors.length === 0) {
-            return ["なし"];
-        }
-        return persistenceAccessors
-            .map(operation => {
-                const operationTypes = Object.entries(operation.targetOperationTypes)
-                    .map(([persistenceTarget, operationType]) => `${operationType}:${persistenceTarget}`)
-                    .join(", ")
-                return `${operation.id} [${operationTypes}]`.trim();
-            });
-    }
-
     function toCrudChar(operationType) {
         const type = (operationType || "").toUpperCase();
         if (type === "SELECT") return "R";
@@ -339,12 +326,7 @@ const OutboundApp = (() => {
                         Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                     }
                 });
-                operationItem.appendChild(Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}));
-                operationItem.appendChild(Jig.dom.createElement("ul", {
-                    className: "outbound-persistence-detail-list",
-                    children: formatPersistenceAccessors(operation.persistenceAccessors).map(text => Jig.dom.createElement("li", {textContent: text}))
-                }));
-                itemList.appendChild(operationItem);
+itemList.appendChild(operationItem);
             });
             const itemListDetails = Jig.dom.createElement("details", {});
             const itemListSummary = Jig.dom.createElement("summary", {
@@ -963,7 +945,6 @@ const OutboundApp = (() => {
         groupOperationsByPersistenceTarget,
         groupOperationsByExternalType,
         groupDirectExternalAccessors,
-        formatPersistenceAccessors,
         toCrudChar,
         renderOutboundList,
         renderPersistenceList,

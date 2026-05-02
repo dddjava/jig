@@ -96,35 +96,6 @@ test.describe("outbound.js", () => {
         });
     });
 
-    // ----- formatPersistenceAccessors -----
-
-    test.describe("formatPersistenceAccessors", () => {
-        test("空配列の場合は [\"なし\"] を返す", () => {
-            assert.deepEqual(OutboundApp.formatPersistenceAccessors([]), ["なし"]);
-        });
-
-        test("null の場合は [\"なし\"] を返す", () => {
-            assert.deepEqual(OutboundApp.formatPersistenceAccessors(null), ["なし"]);
-        });
-
-        test("永続化操作をid・操作タイプ・ターゲット名を含む文字列に整形する", () => {
-            const result = OutboundApp.formatPersistenceAccessors([
-                {id: "com.example.Mapper.find", targetOperationTypes: {"orders": "SELECT"}}
-            ]);
-            assert.equal(result.length, 1);
-            assert.ok(result[0].includes("com.example.Mapper.find"), "idを含む");
-            assert.ok(result[0].includes("SELECT:orders"), "操作タイプ:ターゲット名を含む");
-        });
-
-        test("複数の操作は複数の文字列として返す", () => {
-            const result = OutboundApp.formatPersistenceAccessors([
-                {id: "op1", targetOperationTypes: {"tableA": "INSERT"}},
-                {id: "op2", targetOperationTypes: {"tableB": "SELECT"}}
-            ]);
-            assert.equal(result.length, 2);
-        });
-    });
-
     // ----- groupOperationsByOutboundPort -----
 
     test.describe("groupOperationsByOutboundPort", () => {

@@ -108,7 +108,7 @@ const InboundApp = (() => {
                 const mId = fqnToNodeId(fqn);
                 builder.addNodeToSubgraph(subgraph, mId, mLabel(fqn), 'method');
                 builder.addClass(mId, "usecase");
-                builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`, fqn);
+                builder.addClick(mId, Jig.mermaid.nav.usecaseMethodUrl(fqn), fqn);
             });
         });
 

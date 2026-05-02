@@ -390,6 +390,15 @@ test.describe("outbound.js", () => {
             assert.ok(!code.includes("Adapter"), `デフォルトではアダプター名が含まれるべきでない: ${code}`);
         });
 
+        test("operation=falseの場合、portCardノードにportFqnのツールチップが含まれる", () => {
+            const visibility = {callerUsecase: false, port: true, operation: false, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, externalAccessor: false, externalAccessorMethod: false, externalType: false, externalTypeMethod: false, crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = OutboundApp.generatePortMermaidCode(simpleGroup, visibility);
+            assert.ok(code !== null);
+            const portCardId = Jig.util.fqnToId("port", simpleGroup.outboundPort.fqn);
+            assert.ok(code.includes(`click ${portCardId} href`), `portCardへのclickが含まれること: ${code}`);
+            assert.ok(code.includes(`"${simpleGroup.outboundPort.fqn}"`), `portFqnのツールチップが含まれること: ${code}`);
+        });
+
         test("すべての表示設定を false にすると null を返す", () => {
             const allHidden = {
                 port: false, operation: false,

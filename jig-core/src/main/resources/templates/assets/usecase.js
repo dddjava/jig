@@ -639,11 +639,11 @@ const UsecaseApp = (() => {
                             if (node.kind === "inbound-class") {
                                 builder.addNode(nodeId, typeLabel(node.fqn), 'class');
                                 builder.addClass(nodeId, "inbound");
-                                builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
+                                builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
                             } else if (node.kind === "domain-type") {
                                 builder.addNode(nodeId, typeLabel(node.fqn), 'class');
                                 builder.addClass(nodeId, "domain");
-                                builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
+                                builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
                             } else {
                                 if (node.kind === "usecase") {
                                     builder.addNode(nodeId, mLabel(node.fqn), 'method');
@@ -757,16 +757,16 @@ const UsecaseApp = (() => {
                                         const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                                         builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                                         builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn), node.fqn);
+                                        builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(classFqn), node.fqn);
                                     } else if (node.kind === "outbound-method") {
                                         const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                                         builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                                         builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn), node.fqn);
+                                        builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(classFqn), node.fqn);
                                     } else if (node.kind === "domain-type") {
                                         builder.addNode(nodeId, typeLabel(node.fqn), 'class');
                                         builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
+                                        builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
                                     } else {
                                         const {subgraph} = ensureClassSubgraph(node.fqn);
                                         if (node.kind === "usecase") {

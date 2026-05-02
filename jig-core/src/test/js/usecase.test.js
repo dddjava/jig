@@ -320,6 +320,7 @@ test.describe('usecase.js', () => {
             assert.ok(code.includes(`${orderNodeId} -.-> ${method1NodeId}`), '引数→メソッドのエッジが破線で含まれること');
             assert.ok(code.includes(`${findOrderNodeId} -.-> ${orderNodeId}`), 'メソッド→戻り値のエッジが破線で含まれること');
             assert.ok(code.includes('./domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
+            assert.ok(code.includes('"com.example.Order"'), 'domain-typeノードにFQNのツールチップが含まれること');
 
             delete globalThis.domainData;
         });
@@ -453,6 +454,7 @@ test.describe('usecase.js', () => {
             assert.ok(code.includes(`${ctrlNodeId} --> ${method1NodeId}`), 'inbound→method1のエッジが含まれること');
             assert.ok(code.includes(`${ctrlNodeId} --> ${otherMethodNodeId}`), 'inbound→otherMethodのエッジが含まれること');
             assert.ok(code.includes('./inbound.html#' + globalThis.Jig.util.fqnToId("adapter", 'web.OrderCtrl')), 'inbound.htmlへのリンクが含まれること');
+            assert.ok(code.includes('"web.OrderCtrl"'), 'inbound-classノードにFQNのツールチップが含まれること');
         });
 
         test('renderUsecaseAppList should handle empty data', () => {
@@ -699,6 +701,7 @@ test.describe('usecase.js', () => {
             assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
             assert.ok(code.includes(`${orderNodeId} -.-> ${methodNodeId}`), '引数→メソッドのエッジが破線で含まれること');
             assert.ok(code.includes('./domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
+            assert.ok(code.includes('"com.example.Order"'), 'ユースケース図のdomain-typeノードにFQNのツールチップが含まれること');
 
             delete globalThis.domainData;
         });

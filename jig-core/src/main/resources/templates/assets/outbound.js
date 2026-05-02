@@ -730,7 +730,7 @@ itemList.appendChild(operationItem);
                 const mLabel = showPhysicalName ? Jig.glossary.methodSimpleName(usecaseFqn) : Jig.glossary.getMethodTerm(usecaseFqn, true).title;
                 builder.addNodeToSubgraph(sg, nodeId, mLabel, 'method');
                 builder.addClass(nodeId, "usecase");
-                builder.addClick(nodeId, `./usecase.html#${Jig.util.fqnToId("method", usecaseFqn)}`, usecaseFqn);
+                builder.addClick(nodeId, Jig.mermaid.nav.usecaseMethodUrl(usecaseFqn), usecaseFqn);
                 usecaseNodes.set(usecaseFqn, nodeId);
             }
             builder.addEdge(usecaseNodes.get(usecaseFqn), portOpNodeId);
@@ -744,13 +744,13 @@ itemList.appendChild(operationItem);
             const portOpId = Jig.util.fqnToId("portOp", portOpFqn);
             builder.addNodeToSubgraph(builder.ensureSubgraph(portSubgraphs, portFqn, portLabel), portOpId, portOpName, 'method');
             builder.addClass(portOpId, "outbound");
-            builder.addClick(portFqn, `#${portCardId}`);
+            builder.addClick(portFqn, `#${portCardId}`, portFqn);
             builder.addClick(portOpId, `#${portOpId}`, portOpFqn);
             return portOpId;
         } else {
             builder.addNode(portCardId, portLabel, 'class');
             builder.addClass(portCardId, "outbound");
-            builder.addClick(portCardId, `#${portCardId}`);
+            builder.addClick(portCardId, `#${portCardId}`, portFqn);
             return portCardId;
         }
     }

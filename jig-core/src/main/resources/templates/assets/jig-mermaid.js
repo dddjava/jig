@@ -1610,6 +1610,15 @@ globalThis.Jig.mermaid = (() => {
         }
     }
 
+    // クロスページナビゲーションURLの生成
+    const navUrl = (page, idPrefix) => (fqn) => `./${page}.html#${Jig.util.fqnToId(idPrefix, fqn)}`;
+    const nav = {
+        usecaseMethodUrl:  navUrl("usecase", "method"),
+        inboundAdapterUrl: navUrl("inbound", "adapter"),
+        outboundPortUrl:   navUrl("outbound", "port"),
+        domainTypeUrl:     navUrl("domain",   "domain"),
+    };
+
     return {
         builder,
         graph,
@@ -1619,6 +1628,7 @@ globalThis.Jig.mermaid = (() => {
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
         ClassDiagramBuilder,
+        nav,
     };
 })();
 

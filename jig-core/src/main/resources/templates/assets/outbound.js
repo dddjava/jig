@@ -320,7 +320,7 @@ const OutboundApp = (() => {
                 const op = operation.outboundPortOperation;
                 const opTerm = Jig.glossary.getMethodTerm(op.fqn);
                 const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item", id: Jig.util.fqnToId("portOp", op.fqn), title: opTerm.title});
-                operationItem.appendChild(Jig.dom.createElement("div", {className: "declaration weak", textContent: opTerm.shortDeclaration}));
+                operationItem.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: opTerm.shortDeclaration}));
                 operationItem.appendChild(Jig.dom.type.methodIOSection(op.parameters, op.returnTypeRef));
                 Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
                     const currentVisibility = readVisibility();

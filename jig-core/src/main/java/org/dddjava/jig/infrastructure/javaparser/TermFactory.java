@@ -18,27 +18,25 @@ import java.util.stream.Stream;
 class TermFactory {
 
     public static Term fromPackage(TermId termId, String javadocDescriptionText) {
-        var text = normalize(javadocDescriptionText);
-        var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.パッケージ, TermOrigin.Javadoc);
+        return createTerm(termId, javadocDescriptionText, TermKind.パッケージ);
     }
 
     public static Term fromClass(TermId termId, String javadocDescriptionText) {
-        var text = normalize(javadocDescriptionText);
-        var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.クラス, TermOrigin.Javadoc);
+        return createTerm(termId, javadocDescriptionText, TermKind.クラス);
     }
 
     public static Term fromMethod(TermId termId, String javadocDescriptionText) {
-        var text = normalize(javadocDescriptionText);
-        var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.メソッド, TermOrigin.Javadoc);
+        return createTerm(termId, javadocDescriptionText, TermKind.メソッド);
     }
 
     public static Term fromField(TermId termId, String javadocDescriptionText) {
+        return createTerm(termId, javadocDescriptionText, TermKind.フィールド);
+    }
+
+    private static Term createTerm(TermId termId, String javadocDescriptionText, TermKind termKind) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(termId, title, bodyText(title, text), TermKind.フィールド, TermOrigin.Javadoc);
+        return new Term(termId, title, bodyText(title, text), termKind, TermOrigin.Javadoc);
     }
 
     /**

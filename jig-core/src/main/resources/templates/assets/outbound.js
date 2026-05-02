@@ -330,7 +330,7 @@ const OutboundApp = (() => {
             group.operations.forEach(operation => {
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
 
-                const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item"});
+                const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item", id: Jig.util.fqnToId("portOp", operation.outboundPortOperation.fqn)});
                 operationItem.appendChild(Jig.dom.type.methodItem(operation.outboundPortOperation));
                 Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
                     const currentVisibility = readVisibility();
@@ -761,6 +761,7 @@ const OutboundApp = (() => {
             builder.addNodeToSubgraph(builder.ensureSubgraph(portSubgraphs, portFqn, portLabel), portOpId, portOpName, 'method');
             builder.addClass(portOpId, "outbound");
             if (isNew) builder.addClick(portFqn, `#${portCardId}`);
+            builder.addClick(portOpId, `#${portOpId}`);
             return portOpId;
         } else {
             const isNew = !portSubgraphs.has(portFqn);

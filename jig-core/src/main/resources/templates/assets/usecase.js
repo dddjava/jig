@@ -648,10 +648,11 @@ const UsecaseApp = (() => {
                                 if (node.kind === "usecase") {
                                     builder.addNode(nodeId, mLabel(node.fqn), 'method');
                                     builder.addClass(nodeId, "usecase");
-                                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
                                 } else {
                                     builder.addNode(nodeId, mLabel(node.fqn), 'method');
                                     builder.addClass(nodeId, "inactive");
+                                    builder.addTooltip(nodeId, node.fqn);
                                 }
                             }
                         });
@@ -756,12 +757,12 @@ const UsecaseApp = (() => {
                                         const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                                         builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                                         builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
+                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn), node.fqn);
                                     } else if (node.kind === "outbound-method") {
                                         const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                                         builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                                         builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
+                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn), node.fqn);
                                     } else if (node.kind === "domain-type") {
                                         builder.addNode(nodeId, typeLabel(node.fqn), 'class');
                                         builder.addClass(nodeId, "domain");
@@ -774,10 +775,11 @@ const UsecaseApp = (() => {
                                             if (node.fqn === method.fqn) {
                                                 builder.addStyle(nodeId, "font-weight:bold");
                                             }
-                                            builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                                            builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
                                         } else {
                                             builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                                             builder.addClass(nodeId, "inactive");
+                                            builder.addTooltip(nodeId, node.fqn);
                                         }
                                     }
                                 });

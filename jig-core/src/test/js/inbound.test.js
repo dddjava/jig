@@ -426,7 +426,7 @@ test.describe('InboundApp', () => {
         // entrypointおよびmethodのsubgraphが生成される
         assert.ok(mermaidPre.textContent.includes('subgraph'));
         // usecase.htmlへのclickリンクは生成されない
-        assert.ok(!mermaidPre.textContent.includes('click'));
+        assert.ok(!mermaidPre.textContent.includes('usecase.html'));
         assert.ok(mermaidPre.textContent.includes('GET /method1'));
     });
 

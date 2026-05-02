@@ -91,6 +91,7 @@ const InboundApp = (() => {
                 const nodeId = fqnToNodeId(ep.fqn);
                 builder.addNodeToSubgraph(subgraph, nodeId, mLabel(ep.fqn), 'method');
                 builder.addClass(nodeId, "inbound");
+                builder.addTooltip(nodeId, ep.fqn);
             });
         });
 
@@ -107,7 +108,7 @@ const InboundApp = (() => {
                 const mId = fqnToNodeId(fqn);
                 builder.addNodeToSubgraph(subgraph, mId, mLabel(fqn), 'method');
                 builder.addClass(mId, "usecase");
-                builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`);
+                builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`, fqn);
             });
         });
 
@@ -117,6 +118,7 @@ const InboundApp = (() => {
                 const nodeId = fqnToNodeId(fqn);
                 builder.addNodeToSubgraph(subgraph, nodeId, mLabel(fqn), 'method');
                 builder.addClass(nodeId, "inactive");
+                builder.addTooltip(nodeId, fqn);
             });
         });
 

@@ -810,7 +810,9 @@ const OutboundApp = (() => {
             if (!isCrudVisible(operationType, visibility)) return;
             if (!persistenceTargetNodes.has(persistenceTarget)) {
                 persistenceTargetNodes.set(persistenceTarget, `Target_${persistenceTargetNodes.size}`);
-                builder.addNode(persistenceTargetNodes.get(persistenceTarget), persistenceTarget, 'database');
+                const nodeId = persistenceTargetNodes.get(persistenceTarget);
+                builder.addNode(nodeId, persistenceTarget, 'database');
+                builder.addClick(nodeId, `#${Jig.util.fqnToId("persistence", persistenceTarget)}`);
             }
             const edgeLabel = visibility.externalTypeMethod ? operationType : undefined;
             if (sourceNodeId) builder.addEdge(sourceNodeId, persistenceTargetNodes.get(persistenceTarget), edgeLabel);

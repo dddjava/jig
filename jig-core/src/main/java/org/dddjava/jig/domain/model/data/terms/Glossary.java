@@ -15,15 +15,4 @@ public record Glossary(Collection<Term> terms) {
                 .toList();
     }
 
-    public Term termOf(String idText, TermKind termKind) {
-        TermId termId = new TermId(idText);
-        return terms.stream()
-                .filter(term -> term.termKind() == termKind)
-                .filter(term -> term.id().equals(termId))
-                .findAny()
-                .orElseGet(() -> {
-                    String title = termId.simpleText();
-                    return new Term(termId, title, "", termKind, TermOrigin.その他);
-                });
-    }
 }

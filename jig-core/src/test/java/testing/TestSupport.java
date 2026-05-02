@@ -1,5 +1,6 @@
 package testing;
 
+import org.dddjava.jig.domain.model.data.terms.*;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -116,5 +117,16 @@ public class TestSupport {
         );
         JigTypeMembers members = new JigTypeMembers(List.of(), List.of(), List.of(), List.of(), List.of());
         return new JigType(header, members);
+    }
+
+    public static Term termOf(Glossary glossary, String idText, TermKind termKind) {
+        TermId termId = new TermId(idText);
+        return glossary.terms().stream()
+                .filter(term -> term.termKind() == termKind)
+                .filter(term -> term.id().equals(termId))
+                .findAny()
+                .orElseGet(() -> {
+                    return new Term(termId, "", "", termKind, TermOrigin.その他);
+                });
     }
 }

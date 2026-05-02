@@ -80,7 +80,7 @@ class JavaparserReaderTest {
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var term = glossary.termOf(TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class).value(), TermKind.クラス);
+        var term = TestSupport.termOf(glossary, TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class).value(), TermKind.クラス);
 
         assertEquals("クラスコメント", term.title());
     }
@@ -93,7 +93,7 @@ class JavaparserReaderTest {
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var term = glossary.termOf(JigMethodId.from(
+        var term = TestSupport.termOf(glossary, JigMethodId.from(
                 TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class),
                 "method", List.of()).value(), TermKind.メソッド);
 
@@ -108,7 +108,7 @@ class JavaparserReaderTest {
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var term = glossary.termOf(JigFieldId.from(
+        var term = TestSupport.termOf(glossary, JigFieldId.from(
                 TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class),
                 "field").value(), TermKind.フィールド);
 
@@ -123,26 +123,26 @@ class JavaparserReaderTest {
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var outerTerm = glossary.termOf(
-                TestSupport.getTypeIdFromClass(ParseTargetNestedClass.class).value(),
+        var outerTerm = TestSupport.termOf(
+                glossary, TestSupport.getTypeIdFromClass(ParseTargetNestedClass.class).value(),
                 TermKind.クラス
         );
         var innerTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.Inner");
-        var innerTerm = glossary.termOf(innerTypeId.value(), TermKind.クラス);
-        var innerMethodTerm = glossary.termOf(
-                JigMethodId.from(innerTypeId, "innerMethod", List.of()).value(),
+        var innerTerm = TestSupport.termOf(glossary, innerTypeId.value(), TermKind.クラス);
+        var innerMethodTerm = TestSupport.termOf(
+                glossary, JigMethodId.from(innerTypeId, "innerMethod", List.of()).value(),
                 TermKind.メソッド
         );
         var innerEnumTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerEnum");
-        var innerEnumTerm = glossary.termOf(innerEnumTypeId.value(), TermKind.クラス);
+        var innerEnumTerm = TestSupport.termOf(glossary, innerEnumTypeId.value(), TermKind.クラス);
         var innerRecordTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerRecord");
-        var innerRecordTerm = glossary.termOf(innerRecordTypeId.value(), TermKind.クラス);
-        var innerRecordMethodTerm = glossary.termOf(
-                JigMethodId.from(innerRecordTypeId, "label", List.of()).value(),
+        var innerRecordTerm = TestSupport.termOf(glossary, innerRecordTypeId.value(), TermKind.クラス);
+        var innerRecordMethodTerm = TestSupport.termOf(
+                glossary, JigMethodId.from(innerRecordTypeId, "label", List.of()).value(),
                 TermKind.メソッド
         );
         var innerAnnotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerAnnotation");
-        var innerAnnotationTerm = glossary.termOf(innerAnnotationTypeId.value(), TermKind.クラス);
+        var innerAnnotationTerm = TestSupport.termOf(glossary, innerAnnotationTypeId.value(), TermKind.クラス);
 
         assertEquals("外側クラスコメント", outerTerm.title());
         assertEquals("内側クラスコメント", innerTerm.title());
@@ -164,8 +164,8 @@ class JavaparserReaderTest {
         var firstTypeId = TestSupport.getTypeIdFromClass(ParseTargetMultipleTopLevelClass.class);
         var secondTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.SecondTopLevelClass");
 
-        var firstTerm = glossary.termOf(firstTypeId.value(), TermKind.クラス);
-        var secondTerm = glossary.termOf(secondTypeId.value(), TermKind.クラス);
+        var firstTerm = TestSupport.termOf(glossary, firstTypeId.value(), TermKind.クラス);
+        var secondTerm = TestSupport.termOf(glossary, secondTypeId.value(), TermKind.クラス);
 
         assertEquals("最初のクラスコメント", firstTerm.title());
         assertEquals("2つ目のクラスコメント", secondTerm.title());
@@ -180,7 +180,7 @@ class JavaparserReaderTest {
 
         var glossary = glossaryRepository.all();
         var annotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetTopLevelAnnotation");
-        var annotationTerm = glossary.termOf(annotationTypeId.value(), TermKind.クラス);
+        var annotationTerm = TestSupport.termOf(glossary, annotationTypeId.value(), TermKind.クラス);
 
         assertEquals("トップレベルannotationコメント", annotationTerm.title());
     }

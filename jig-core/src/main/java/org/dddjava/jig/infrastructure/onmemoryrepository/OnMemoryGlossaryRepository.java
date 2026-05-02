@@ -5,10 +5,7 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermId;
-import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.terms.*;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.ArrayList;
@@ -29,7 +26,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> {
                     String title = packageId.simpleName();
-                    return new Term(termId, title, "", TermKind.パッケージ);
+                    return new Term(termId, title, "", TermKind.パッケージ, TermOrigin.その他);
                 });
     }
 

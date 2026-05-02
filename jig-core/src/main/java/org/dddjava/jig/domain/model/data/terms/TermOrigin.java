@@ -5,5 +5,6 @@ package org.dddjava.jig.domain.model.data.terms;
  */
 public enum TermOrigin {
     Javadoc,
-    Swagger
+    Swagger,
+    その他
 }

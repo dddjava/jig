@@ -1,10 +1,7 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.datajs.GlossaryDataAdapter;
-import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermId;
-import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.terms.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,7 +14,7 @@ class GlossaryAdapterTest {
     @Test
     void 用語集JSONはHTMLではなくglossaryDataとしてJSに書き出す() {
         var glossary = new Glossary(List.of(
-                new Term(new TermId("app.Account"), "Account", "desc", TermKind.クラス)
+                new Term(new TermId("app.Account"), "Account", "desc", TermKind.クラス, TermOrigin.その他)
         ));
 
         String js = "globalThis.glossaryData = " + GlossaryDataAdapter.buildGlossaryJson(glossary, List.of());

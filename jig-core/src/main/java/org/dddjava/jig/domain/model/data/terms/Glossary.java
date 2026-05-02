@@ -21,6 +21,9 @@ public record Glossary(Collection<Term> terms) {
                 .filter(term -> term.termKind() == termKind)
                 .filter(term -> term.id().equals(termId))
                 .findAny()
-                .orElseGet(() -> Term.simple(termId, termId.simpleText(), termKind));
+                .orElseGet(() -> {
+                    String title = termId.simpleText();
+                    return new Term(termId, title, "", termKind, TermOrigin.その他);
+                });
     }
 }

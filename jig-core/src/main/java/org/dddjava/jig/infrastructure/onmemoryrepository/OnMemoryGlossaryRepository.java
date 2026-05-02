@@ -27,7 +27,10 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.id().equals(termId))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termId, packageId.simpleName(), TermKind.パッケージ));
+                .orElseGet(() -> {
+                    String title = packageId.simpleName();
+                    return new Term(termId, title, "", TermKind.パッケージ);
+                });
     }
 
     @Override

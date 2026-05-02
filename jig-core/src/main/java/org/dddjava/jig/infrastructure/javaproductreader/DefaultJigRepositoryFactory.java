@@ -14,6 +14,7 @@ import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
@@ -37,6 +38,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DefaultJigRepositoryFactory {
@@ -120,19 +122,24 @@ public class DefaultJigRepositoryFactory {
 
             JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations);
 
-            // Swagger @Operation(summary) 由来の用語を登録する
+            // Swagger アノテーション由来の用語を登録する
             // Javadocに由来する用語が優先のため、TermIdが重複する場合はスキップしてログを出力する
             var existingTermIds = glossaryRepository.all().terms().stream()
                     .map(Term::id)
                     .collect(Collectors.toSet());
+            // @Operation(summary) 由来のメソッド用語
             InboundAdapters.from(jigTypes).listEntrypoint().forEach(entrypoint ->
                     entrypoint.swaggerSummary().ifPresent(summary -> {
                         var termId = new TermId(entrypoint.jigMethod().fqn());
-                        if (existingTermIds.contains(termId)) {
-                            logger.info("[JIG] {} はJavadocによる用語が登録済みのためSwagger @Operationをスキップします", termId.asText());
-                        } else {
-                            glossaryRepository.register(Term.simple(termId, summary, TermKind.メソッド));
-                        }
+                        registerSwaggerTerm(existingTermIds, termId, summary, TermKind.メソッド, "@Operation");
+                    })
+            );
+            // @Schema(description) 由来のクラス用語
+            var schemaTypeId = TypeId.valueOf("io.swagger.v3.oas.annotations.media.Schema");
+            jigTypes.stream().forEach(jigType ->
+                    jigType.annotationValueOf(schemaTypeId, "description").ifPresent(description -> {
+                        var termId = new TermId(jigType.fqn());
+                        registerSwaggerTerm(existingTermIds, termId, description, TermKind.クラス, "@Schema");
                     })
             );
 
@@ -179,6 +186,14 @@ public class DefaultJigRepositoryFactory {
                 };
             });
         }));
+    }
+
+    private void registerSwaggerTerm(Set<TermId> existingTermIds, TermId termId, String value, TermKind kind, String annotationName) {
+        if (existingTermIds.contains(termId)) {
+            logger.info("[JIG] {} はJavadocによる用語が登録済みのためSwagger {}をスキップします", termId.asText(), annotationName);
+        } else {
+            glossaryRepository.register(Term.simple(termId, value, kind));
+        }
     }
 
     /**

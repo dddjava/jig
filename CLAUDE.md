@@ -62,7 +62,7 @@ org.dddjava.jig/
 │   └── sources/       # ソース読み取り（filesystem, javasources, mybatis 等）
 ├── annotation/        # アノテーション定義
 ├── application/       # JigService 等のアプリケーションサービス
-├── adapter/           # 出力アダプター（html, graphviz, poi, json 等）
+├── adapter/           # 出力アダプター（html, json 等）
 └── infrastructure/    # インフラ実装（asm, javaparser, configuration 等）
 ```
 

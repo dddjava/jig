@@ -177,6 +177,7 @@ const InboundApp = (() => {
         }
 
         fieldset.innerHTML = "";
+        fieldset.appendChild(Jig.dom.createElement('legend', {textContent: '表示種別'}));
         const options = [
             {value: 'all', label: 'すべて'},
             ...TYPE_CONFIG.filter(c => types.has(c.type)).map(c => ({value: c.type, label: c.label})),

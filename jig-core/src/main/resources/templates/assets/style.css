@@ -1741,12 +1741,10 @@ table td.number {
     border: none;
     margin: 0;
     padding: 0 0 8px;
-    border-bottom: 1px solid #e8edf5;
 }
 
-.sidebar-settings-panel fieldset:last-child {
-    padding-bottom: 0;
-    border-bottom: none;
+.sidebar-settings-panel fieldset:not(:last-child) {
+    border-bottom: 1px solid #e8edf5;
 }
 
 .sidebar-settings-panel legend {

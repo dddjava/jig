@@ -543,6 +543,43 @@ test.describe("outbound.js", () => {
             builder.addNode("A", "NodeA");
             assert.ok(builder.build("TB").startsWith("graph TB"));
         });
+
+        test("アダプタ実行メソッドと外部アクセサメソッドが同じ場合、ノードが1つに統合される", () => {
+            const group = {
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
+                operations: [{
+                    outboundPortOperation: makeMethodData("com.example.Port#call()"),
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#call()"),
+                    persistenceAccessors: [],
+                    externalAccessors: [{
+                        fqn: "com.example.Adapter",
+                        operations: [{
+                            ...makeMethodData("com.example.Adapter#call()"),
+                            externals: [{fqn: "com.example.ExtService", method: "get"}]
+                        }]
+                    }]
+                }]
+            };
+            const visibility = {
+                port: true, operation: true,
+                adapter: true, execution: true,
+                accessor: false, accessorMethod: false,
+                target: false,
+                externalAccessor: true, externalAccessorMethod: true,
+                externalType: true, externalTypeMethod: true,
+                direction: "LR",
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
+            };
+            const code = OutboundApp.generatePortMermaidCode(group, visibility);
+            assert.ok(code !== null);
+            const execId = Jig.util.fqnToId("exec", "com.example.Adapter#call()");
+            const accMethodId = Jig.util.fqnToId("accMethod", "com.example.Adapter#call()");
+            const execCount = (code.match(new RegExp(execId, "g")) || []).length;
+            const accMethodCount = (code.match(new RegExp(accMethodId, "g")) || []).length;
+            assert.ok(execCount > 0, `実行ノード(${execId})が存在すること: ${code}`);
+            assert.equal(accMethodCount, 0, `外部アクセサメソッドノード(${accMethodId})は重複生成されないこと: ${code}`);
+        });
     });
 
     // ----- generateOperationMermaidCode -----

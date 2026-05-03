@@ -585,7 +585,8 @@ itemList.appendChild(operationItem);
             extTypeNodes: new Map(),
             usecaseSubgraphs: new Map(),
             usecaseNodes: new Map(),
-            usecaseEdges: new Set()
+            usecaseEdges: new Set(),
+            methodFqnToNodeId: new Map()
         };
 
         group.operations.forEach((operation) => {
@@ -599,7 +600,7 @@ itemList.appendChild(operationItem);
 
             let lastNodeId = addPortNode(builder, contexts.portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
             addCallerUsecaseNodes(builder, lastNodeId, portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-            lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, contexts.adapterSubgraphs);
+            lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, contexts.adapterSubgraphs, contexts.methodFqnToNodeId);
 
             operation.persistenceAccessors.forEach(op => {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, contexts.accessorSubgraphs, contexts.accessorNodes);
@@ -609,7 +610,7 @@ itemList.appendChild(operationItem);
             });
 
             operation.externalAccessors.forEach(accessor => {
-                addExternalAccessorNode(builder, lastNodeId, accessor, visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+                addExternalAccessorNode(builder, lastNodeId, accessor, visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
             });
         });
 
@@ -667,7 +668,8 @@ itemList.appendChild(operationItem);
             portSubgraphs: new Map(), adapterSubgraphs: new Map(),
             extAccessorNodes: new Map(), extAccessorSubgraphs: new Map(),
             extTypeNodes: new Map(),
-            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set()
+            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set(),
+            methodFqnToNodeId: new Map()
         };
 
         const filterToExternalType = accessor => ({
@@ -686,13 +688,13 @@ itemList.appendChild(operationItem);
             relevantAccessors.forEach(accessor => {
                 let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
                 addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-                currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs);
-                addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+                currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs, contexts.methodFqnToNodeId);
+                addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
             });
         });
 
         (group.directAccessors || []).forEach(accessor => {
-            addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+            addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
         });
 
         if (builder.isEmpty()) return null;
@@ -755,7 +757,7 @@ itemList.appendChild(operationItem);
         }
     }
 
-    function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs) {
+    function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs, methodFqnToNodeId = null) {
         if (!visibility.adapter) return sourceNodeId;
         if (visibility.execution) {
             const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
@@ -763,6 +765,7 @@ itemList.appendChild(operationItem);
             builder.addNodeToSubgraph(sg, executionId, executionName, 'method');
             builder.addTooltip(executionId, executionFqn);
             if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
+            methodFqnToNodeId?.set(executionFqn, executionId);
             return executionId;
         } else {
             const adapterNodeId = Jig.util.fqnToId("adapter", adapterFqn);
@@ -809,7 +812,7 @@ itemList.appendChild(operationItem);
         });
     }
 
-    function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes) {
+    function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, methodFqnToNodeId = null) {
         const showPhysicalName = visibility.showPhysicalName ?? false;
         const addExternal = (fromNodeId, ext) => {
             if (!visibility.externalType) return;
@@ -835,11 +838,18 @@ itemList.appendChild(operationItem);
         if (visibility.externalAccessorMethod) {
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.operations.forEach(accMethod => {
+                const existingNodeId = methodFqnToNodeId?.get(accMethod.fqn);
+                if (existingNodeId !== undefined) {
+                    if (sourceNodeId && sourceNodeId !== existingNodeId) builder.addEdge(sourceNodeId, existingNodeId);
+                    accMethod.externals.forEach(ext => addExternal(existingNodeId, ext));
+                    return;
+                }
                 const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
                 const accMLabel = showPhysicalName ? Jig.glossary.methodSimpleName(accMethod.fqn) : Jig.glossary.getMethodTerm(accMethod.fqn, true).title;
                 builder.addNodeToSubgraph(sg, accMethodNodeId, accMLabel, 'method');
                 builder.addTooltip(accMethodNodeId, accMethod.fqn);
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
+                methodFqnToNodeId?.set(accMethod.fqn, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
             });
             return null;

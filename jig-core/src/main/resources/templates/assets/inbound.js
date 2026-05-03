@@ -173,7 +173,7 @@ const InboundApp = (() => {
         );
 
         if (types.size <= 1) {
-            settingsEl.style.display = 'none';
+            fieldset.style.display = 'none';
             return;
         }
 

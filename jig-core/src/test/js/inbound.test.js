@@ -519,8 +519,8 @@ test.describe('InboundApp', () => {
         setGlossaryData(mockGlossaryData);
         InboundApp.init();
 
-        const settingsEl = document.getElementById('sidebar-settings');
-        assert.equal(settingsEl.style.display, 'none');
+        const fieldset = document.getElementById('display-type-fieldset');
+        assert.equal(fieldset.style.display, 'none');
         assert.equal(document.querySelectorAll('input[name="display-type"]').length, 0);
     });
 

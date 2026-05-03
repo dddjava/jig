@@ -5,7 +5,7 @@ const OutboundApp = (() => {
         callerUsecase: true,
         port: true, operation: true,
         adapter: false, execution: true,
-        accessor: false, accessorMethod: false,
+        accessor: false, accessorMethod: true,
         target: true,
         externalAccessor: false, externalAccessorMethod: false,
         externalType: true, externalTypeMethod: true,

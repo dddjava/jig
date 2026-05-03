@@ -214,13 +214,9 @@ const InboundApp = (() => {
             state.simplified = checkbox.checked;
             renderMain(filteredAdapters());
         });
-        panel.appendChild(Jig.dom.createElement('fieldset', {
-            children: [
-                Jig.dom.createElement('label', {
-                    attributes: {for: 'simplified-toggle'},
-                    children: [checkbox, ' 簡略表示']
-                })
-            ]
+        panel.appendChild(Jig.dom.createElement('label', {
+            attributes: {for: 'simplified-toggle'},
+            children: [checkbox, ' 簡略表示']
         }));
     }
 

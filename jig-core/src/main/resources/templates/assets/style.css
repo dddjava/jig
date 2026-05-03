@@ -1758,15 +1758,15 @@ table td.number {
     padding: 0;
 }
 
-.sidebar-settings-panel fieldset label {
+.sidebar-settings-panel label {
     display: flex;
     align-items: center;
     gap: 8px;
     color: #1b3a66;
 }
 
-.sidebar-settings-panel fieldset input[type="radio"],
-.sidebar-settings-panel fieldset input[type="checkbox"] {
+.sidebar-settings-panel input[type="radio"],
+.sidebar-settings-panel input[type="checkbox"] {
     cursor: pointer;
 }
 

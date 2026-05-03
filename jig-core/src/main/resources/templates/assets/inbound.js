@@ -164,9 +164,8 @@ const InboundApp = (() => {
     }
 
     function initDisplayTypeSettings() {
-        const settingsEl = document.getElementById('sidebar-settings');
         const fieldset = document.getElementById('display-type-fieldset');
-        if (!settingsEl || !fieldset) return;
+        if (!fieldset) return;
 
         const types = new Set(
             (state.data.inboundAdapters || []).flatMap(c => (c.entrypoints || []).map(ep => ep.entrypointType)).filter(Boolean)
@@ -199,8 +198,8 @@ const InboundApp = (() => {
     }
 
     function initSimplifiedSetting() {
-        const settingsEl = document.getElementById('sidebar-settings');
-        if (!settingsEl) return;
+        const panel = document.querySelector('.sidebar-settings-panel');
+        if (!panel) return;
 
         const existing = document.getElementById('simplified-toggle');
         if (existing) {
@@ -215,9 +214,13 @@ const InboundApp = (() => {
             state.simplified = checkbox.checked;
             renderMain(filteredAdapters());
         });
-        settingsEl.appendChild(Jig.dom.createElement('label', {
-            attributes: {for: 'simplified-toggle'},
-            children: [checkbox, ' 簡略表示']
+        panel.appendChild(Jig.dom.createElement('fieldset', {
+            children: [
+                Jig.dom.createElement('label', {
+                    attributes: {for: 'simplified-toggle'},
+                    children: [checkbox, ' 簡略表示']
+                })
+            ]
         }));
     }
 

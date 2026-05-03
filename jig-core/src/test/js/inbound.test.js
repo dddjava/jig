@@ -145,12 +145,15 @@ test.describe('InboundApp', () => {
             el.id = id;
             doc.body.appendChild(el);
         });
-        // 表示設定パネル
+        // 表示設定パネル（inbound.htmlの実際の構造に合わせる）
         const settingsEl = doc.createElement('details');
         settingsEl.id = 'sidebar-settings';
+        const panel = doc.createElement('div');
+        panel.className = 'sidebar-settings-panel';
         const fieldset = doc.createElement('fieldset');
         fieldset.id = 'display-type-fieldset';
-        settingsEl.appendChild(fieldset);
+        panel.appendChild(fieldset);
+        settingsEl.appendChild(panel);
         doc.body.appendChild(settingsEl);
         global.marked = {parse: (text) => text}; // markedのモック
         global.mermaid = {

@@ -219,8 +219,8 @@ test.describe('glossary.js', () => {
             const csv = glossary.buildGlossaryCsv(terms);
             assert.equal(
                 csv,
-                '"用語（英名）","用語","説明","種類","識別子"\r\n' +
-                '"Account","口座","desc","クラス","app.Account"'
+                '"用語（英名）","用語","説明","種類","由来","識別子"\r\n' +
+                '"Account","口座","desc","クラス","","app.Account"'
             );
         });
     });

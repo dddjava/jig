@@ -14,6 +14,7 @@ const InboundApp = (() => {
         data: null,
         sidebarFilterText: '',
         displayType: 'all',
+        simplified: false,
     };
 
     function prepareDiagramData(controller, usecaseData) {
@@ -137,6 +138,7 @@ const InboundApp = (() => {
         state.data = null;
         state.sidebarFilterText = '';
         state.displayType = 'all';
+        state.simplified = false;
 
         state.data = parseInboundData();
         if (!state.data) {
@@ -150,6 +152,7 @@ const InboundApp = (() => {
         });
 
         initDisplayTypeSettings();
+        initSimplifiedSetting();
 
         render();
     }
@@ -193,6 +196,29 @@ const InboundApp = (() => {
             });
             fieldset.appendChild(Jig.dom.createElement('label', {children: [radio, ' ' + label]}));
         });
+    }
+
+    function initSimplifiedSetting() {
+        const settingsEl = document.getElementById('sidebar-settings');
+        if (!settingsEl) return;
+
+        const existing = document.getElementById('simplified-toggle');
+        if (existing) {
+            existing.checked = false;
+            return;
+        }
+
+        const checkbox = Jig.dom.createElement('input', {
+            attributes: {type: 'checkbox', id: 'simplified-toggle'}
+        });
+        checkbox.addEventListener('change', () => {
+            state.simplified = checkbox.checked;
+            renderMain(filteredAdapters());
+        });
+        settingsEl.appendChild(Jig.dom.createElement('label', {
+            attributes: {for: 'simplified-toggle'},
+            children: [checkbox, ' 簡略表示']
+        }));
     }
 
     function render() {
@@ -254,24 +280,29 @@ const InboundApp = (() => {
     function buildEntrypointItem(ep) {
         const methodTerm = Jig.glossary.getMethodTerm(ep.fqn, true);
 
+        const children = [
+            Jig.dom.createElement("div", {
+                className: "entrypoint-item__header",
+                children: [
+                    Jig.dom.createElement("span", {
+                        className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
+                        textContent: methodTerm.title
+                    }),
+                    Jig.dom.createElement("span", {
+                        className: "entrypoint-item__path",
+                        textContent: ep.path || ''
+                    })
+                ]
+            })
+        ];
+
+        if (!state.simplified) {
+            children.push(Jig.dom.type.methodIOSection(ep.parameters || [], ep.returnTypeRef));
+        }
+
         return Jig.dom.createElement("div", {
             className: "entrypoint-item",
-            children: [
-                Jig.dom.createElement("div", {
-                    className: "entrypoint-item__header",
-                    children: [
-                        Jig.dom.createElement("span", {
-                            className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
-                            textContent: methodTerm.title
-                        }),
-                        Jig.dom.createElement("span", {
-                            className: "entrypoint-item__path",
-                            textContent: ep.path || ''
-                        })
-                    ]
-                }),
-                Jig.dom.type.methodIOSection(ep.parameters || [], ep.returnTypeRef)
-            ]
+            children
         });
     }
 

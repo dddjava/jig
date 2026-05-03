@@ -467,6 +467,53 @@ test.describe('InboundApp', () => {
         assert.equal(tbody.children[0].style.display, '', 'クリアすると全行表示');
     });
 
+    test('簡略表示チェックボックスで入出力セクションを非表示にできる', () => {
+        globalThis.inboundData = mockInboundData;
+        setGlossaryData(mockGlossaryData);
+        globalThis.usecaseData = mockUsecaseData;
+        InboundApp.init();
+
+        // 初期状態では入出力セクションが表示されている
+        const mainList = document.getElementById('inbound-list');
+        assert.ok(mainList.querySelector('.entrypoint-item__io'), '初期状態では入出力セクションが表示されている');
+
+        // 簡略表示チェックボックスを取得してオン
+        const checkbox = document.getElementById('simplified-toggle');
+        assert.ok(checkbox, '簡略表示チェックボックスが存在する');
+        checkbox._checked = true;
+        checkbox.dispatchEvent(new EventStub('change'));
+
+        assert.ok(!mainList.querySelector('.entrypoint-item__io'), '簡略表示オン: 入出力セクションが非表示になる');
+        assert.ok(mainList.querySelector('.entrypoint-item__name'), '簡略表示オン: 名称は表示されている');
+        assert.ok(mainList.querySelector('.entrypoint-item__path'), '簡略表示オン: パスは表示されている');
+
+        // チェックボックスをオフに戻す
+        checkbox._checked = false;
+        checkbox.dispatchEvent(new EventStub('change'));
+
+        assert.ok(mainList.querySelector('.entrypoint-item__io'), '簡略表示オフ: 入出力セクションが再表示される');
+    });
+
+    test('init再呼び出し時に簡略表示チェックボックスはリセットされリスナーは重複しない', () => {
+        globalThis.inboundData = mockInboundData;
+        setGlossaryData(mockGlossaryData);
+        globalThis.usecaseData = mockUsecaseData;
+        InboundApp.init();
+
+        const checkbox = document.getElementById('simplified-toggle');
+        assert.ok(checkbox);
+        checkbox._checked = true;
+        checkbox.dispatchEvent(new EventStub('change'));
+        assert.ok(!document.getElementById('inbound-list').querySelector('.entrypoint-item__io'), '簡略表示オン');
+
+        // init再呼び出し
+        InboundApp.init();
+
+        assert.ok(document.getElementById('simplified-toggle'), 'チェックボックスは存在する');
+        assert.equal(document.getElementById('simplified-toggle').checked, false, 'チェックはリセットされる');
+        assert.ok(document.getElementById('inbound-list').querySelector('.entrypoint-item__io'), '入出力セクションが再表示される');
+    });
+
     test('エントリーポイント種別が1種類以下の場合は表示設定パネルを非表示にする', () => {
         globalThis.inboundData = mockInboundData; // HTTP_APIのみ
         setGlossaryData(mockGlossaryData);

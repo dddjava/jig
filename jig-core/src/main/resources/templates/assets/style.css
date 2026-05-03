@@ -1371,6 +1371,27 @@ label {
     font-size: 1rem; /* pre.mermaid が font-size: 0 を設定するため上書きが必要 */
 }
 
+#insight-section-nav {
+    position: sticky;
+    top: 2em;
+    z-index: 100;
+    display: flex;
+    gap: 1em;
+    padding: 0.3em 0.5em;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.9em;
+}
+
+#insight-section-nav a {
+    color: #243D1E;
+    text-decoration: none;
+}
+
+#insight-section-nav a:hover {
+    text-decoration: underline;
+}
+
 .insight table {
     border-collapse: collapse;
     width: 100%;

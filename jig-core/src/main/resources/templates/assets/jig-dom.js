@@ -44,10 +44,7 @@ globalThis.Jig.dom = (() => {
     }
 
     function createCell(text, className) {
-        return createElement("td", {
-            className: className || undefined,
-            textContent: text
-        });
+        return createElement("td", {className, textContent: text});
     }
 
     // --- Markdown ---
@@ -70,9 +67,7 @@ globalThis.Jig.dom = (() => {
     // --- CSV utility ---
 
     function escapeCsvValue(value) {
-        const text = String(value ?? "")
-            .replace(/\r\n/g, "\n")
-            .replace(/\r/g, "\n");
+        const text = String(value ?? "").replace(/\r\n|\r/g, "\n");
         return `"${text.replace(/"/g, "\"\"")}"`;
     }
 
@@ -226,10 +221,8 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createFieldsList(fields, options = {}) {
-        if (fields.length === 0) return null;
-
-        const items = fields.map(field => createElement("div", {
+    function createFieldItem(field) {
+        return createElement("div", {
             className: "method-item",
             children: [
                 createElement("div", {
@@ -244,11 +237,14 @@ globalThis.Jig.dom = (() => {
                     ]
                 })
             ]
-        }));
+        });
+    }
 
+    function createFieldsList(fields, options = {}) {
+        if (fields.length === 0) return null;
         const title = options.showTitle !== false ? "フィールド" : undefined;
         const card = createItemCard({title, extraClass: "methods-section fields"});
-        items.forEach(item => card.appendChild(item));
+        fields.forEach(field => card.appendChild(createFieldItem(field)));
         return card;
     }
 
@@ -398,7 +394,7 @@ globalThis.Jig.dom = (() => {
             buttons.push(btn);
             btn.addEventListener('click', () => {
                 buttons.forEach(b => b.classList.remove('active'));
-                panelEls.forEach(p => p.classList.add('hidden'));
+                Object.values(panels).forEach(p => p.classList.add('hidden'));
                 btn.classList.add('active');
                 panels[tab.id].classList.remove('hidden');
                 if (onTabChange) onTabChange(tab.id);
@@ -588,6 +584,7 @@ globalThis.Jig.dom = (() => {
             refElement: createElementForTypeRef,
             parameterElement: createParameterElement,
             methodIOSection: createMethodIOSection,
+            fieldItem: createFieldItem,
             fieldsList: createFieldsList,
             methodItem: createMethodItem,
             methodsList: createMethodsList,

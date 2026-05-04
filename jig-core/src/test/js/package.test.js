@@ -80,6 +80,16 @@ function setupDiagramEnvironment(doc, context) {
     return diagram;
 }
 
+function setupExploreEnv(doc) {
+    const exploreTable = doc.createElement('table');
+    exploreTable.id = 'explore-package-table';
+    doc.elementsById.set('explore-package-table', exploreTable);
+    const exploreDiagram = doc.createElement('div');
+    exploreDiagram.id = 'package-explore-diagram';
+    doc.elementsById.set('package-explore-diagram', exploreDiagram);
+    return {exploreTable, exploreDiagram};
+}
+
 test.describe('package.js', () => {
     test.beforeEach(() => {
         // Use the module's internal state for testing, resetting it before each test
@@ -91,6 +101,13 @@ test.describe('package.js', () => {
         testContext.diagramDirection = 'TB';
         testContext.mutualDependencyDiagramDirection = 'LR';
         testContext.transitiveReductionEnabled = true;
+
+        PackageApp.exploreState.exploreTargetPackages = [];
+        PackageApp.exploreState.exploreCollapsedPackages = [];
+        PackageApp.exploreState.exploreCallerMode = '1';
+        PackageApp.exploreState.exploreCalleeMode = '1';
+        PackageApp.exploreState.diagramNodeIdToFqn = new Map();
+        PackageApp.exploreState.diagramDirection = 'TB';
 
         setupDomMocks();
     });
@@ -539,9 +556,7 @@ test.describe('package.js', () => {
                         {from: 'app.a', to: 'app.b'},
                     ],
                 }, PackageApp.hierarchyState);
-                const table = doc.createElement('table');
-                table.id = 'explore-package-table';
-                doc.elementsById.set('explore-package-table', table);
+                const {exploreTable: table} = setupExploreEnv(doc);
 
                 PackageApp.renderExplorePackageList(PackageApp.exploreState);
 
@@ -575,9 +590,7 @@ test.describe('package.js', () => {
                     ],
                 }, PackageApp.hierarchyState);
                 PackageApp.exploreState.exploreCollapsedPackages = ['app.domain'];
-                const table = doc.createElement('table');
-                table.id = 'explore-package-table';
-                doc.elementsById.set('explore-package-table', table);
+                const {exploreTable: table} = setupExploreEnv(doc);
 
                 PackageApp.renderExplorePackageList(PackageApp.exploreState);
 
@@ -593,8 +606,6 @@ test.describe('package.js', () => {
                 assert.equal(appRow.querySelector('td[data-count="class"]').textContent, '1');
                 assert.equal(appRow.querySelector('td[data-count="incoming"]').textContent, '0');
                 assert.equal(appRow.querySelector('td[data-count="outgoing"]').textContent, '1');
-
-                PackageApp.exploreState.exploreCollapsedPackages = [];
             });
         });
     });
@@ -872,28 +883,16 @@ test.describe('package.js', () => {
     });
 
     test.describe('registerExploreDiagramClickHandler', () => {
-        function setupExploreEnv(doc) {
-            const exploreTable = doc.createElement('table');
-            exploreTable.id = 'explore-package-table';
-            doc.elementsById.set('explore-package-table', exploreTable);
-            const exploreDiagram = doc.createElement('div');
-            exploreDiagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', exploreDiagram);
-            return {exploreTable, exploreDiagram};
-        }
-
         test('ノードクリックで探索対象パッケージを追加して再描画する', () => {
             const doc = setupDocument();
             setupExploreEnv(doc);
             setPackageData({packages: [{fqn: 'app.example', classCount: 1}], relations: []}, PackageApp.exploreState);
-            PackageApp.exploreState.exploreTargetPackages = [];
             PackageApp.exploreState.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
 
             PackageApp.registerExploreDiagramClickHandler(PackageApp.exploreState);
             global.window[PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME]('P1');
 
             assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, ['app.example']);
-            PackageApp.exploreState.exploreTargetPackages = [];
         });
 
         test('既に選択済みのノードは追加しない', () => {
@@ -904,7 +903,6 @@ test.describe('package.js', () => {
             global.window[PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME]('P1');
 
             assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, ['app.example']);
-            PackageApp.exploreState.exploreTargetPackages = [];
         });
 
         test('存在しないノードIDのクリックは無視する', () => {
@@ -919,18 +917,13 @@ test.describe('package.js', () => {
         test('diagram要素がなければsyncStateToURLを呼んで終了する', () => {
             const doc = setupDocument();
             setPackageData({packages: [], relations: []}, PackageApp.exploreState);
-            PackageApp.exploreState.exploreTargetPackages = [];
-            // 例外なく実行される（package-explore-diagram なし）
             PackageApp.renderExploreDiagram(PackageApp.exploreState);
         });
 
         test('対象パッケージが空ならプレースホルダーを表示する', () => {
             const doc = setupDocument();
-            const diagram = doc.createElement('div');
-            diagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', diagram);
+            const {exploreDiagram: diagram} = setupExploreEnv(doc);
             setPackageData({packages: [], relations: []}, PackageApp.exploreState);
-            PackageApp.exploreState.exploreTargetPackages = [];
 
             PackageApp.renderExploreDiagram(PackageApp.exploreState);
 
@@ -939,23 +932,16 @@ test.describe('package.js', () => {
 
         test('対象パッケージがあれば図を描画する', () => {
             const doc = setupDocument();
-            const diagram = doc.createElement('div');
-            diagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', diagram);
-            const exploreTable = doc.createElement('table');
-            exploreTable.id = 'explore-package-table';
-            doc.elementsById.set('explore-package-table', exploreTable);
+            const {exploreDiagram: diagram} = setupExploreEnv(doc);
             setPackageData({
                 packages: [{fqn: 'app.a', classCount: 1}, {fqn: 'app.b', classCount: 1}],
                 relations: [{from: 'app.a', to: 'app.b'}]
             }, PackageApp.exploreState);
             PackageApp.exploreState.exploreTargetPackages = ['app.a'];
-            PackageApp.exploreState.diagramDirection = 'TB';
 
             PackageApp.renderExploreDiagram(PackageApp.exploreState);
 
             assert.ok(diagram._textContent.length > 0 || diagram.innerHTML.length > 0, "図のコンテンツが設定される");
-            PackageApp.exploreState.exploreTargetPackages = [];
         });
     });
 
@@ -991,12 +977,7 @@ test.describe('package.js', () => {
 
         test('クリアボタンで選択をリセットして再描画する', () => {
             const doc = setupDocument();
-            const diagram = doc.createElement('div');
-            diagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', diagram);
-            const exploreTable = doc.createElement('table');
-            exploreTable.id = 'explore-package-table';
-            doc.elementsById.set('explore-package-table', exploreTable);
+            setupExploreEnv(doc);
             setPackageData({packages: [{fqn: 'app.a', classCount: 1}], relations: []}, PackageApp.exploreState);
 
             const {clearButton} = setupExploreControlElements(doc);
@@ -1010,42 +991,28 @@ test.describe('package.js', () => {
 
         test('依存元ラジオボタン変更でexploreCallerModeを更新する', () => {
             const doc = setupDocument();
-            const diagram = doc.createElement('div');
-            diagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', diagram);
-            const exploreTable = doc.createElement('table');
-            exploreTable.id = 'explore-package-table';
-            doc.elementsById.set('explore-package-table', exploreTable);
+            setupExploreEnv(doc);
             setPackageData({packages: [], relations: []}, PackageApp.exploreState);
             const {callerRadio0} = setupExploreControlElements(doc);
-            PackageApp.exploreState.exploreCallerMode = '1';
 
             PackageApp.setupExploreControl(PackageApp.exploreState);
             callerRadio0.checked = true;
             callerRadio0.dispatchEvent({type: 'change'});
 
             assert.equal(PackageApp.exploreState.exploreCallerMode, '0');
-            PackageApp.exploreState.exploreCallerMode = '1';
         });
 
         test('依存先ラジオボタン変更でexploreCalleeModeを更新する', () => {
             const doc = setupDocument();
-            const diagram = doc.createElement('div');
-            diagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', diagram);
-            const exploreTable = doc.createElement('table');
-            exploreTable.id = 'explore-package-table';
-            doc.elementsById.set('explore-package-table', exploreTable);
+            setupExploreEnv(doc);
             setPackageData({packages: [], relations: []}, PackageApp.exploreState);
             const {calleeRadio0} = setupExploreControlElements(doc);
-            PackageApp.exploreState.exploreCalleeMode = '1';
 
             PackageApp.setupExploreControl(PackageApp.exploreState);
             calleeRadio0.checked = true;
             calleeRadio0.dispatchEvent({type: 'change'});
 
             assert.equal(PackageApp.exploreState.exploreCalleeMode, '0');
-            PackageApp.exploreState.exploreCalleeMode = '1';
         });
     });
 
@@ -1168,11 +1135,9 @@ test.describe('package.js', () => {
             const tbody = table.querySelector('tbody');
             const appRow = tbody.children.find(tr => tr.dataset.fqn === 'app');
             const toggleBtn = appRow?.querySelector('.explore-collapse-toggle');
-            if (toggleBtn) {
-                toggleBtn.dispatchEvent({type: 'click', stopPropagation: () => {}});
-                assert.ok(testContext.hierarchyCollapsedPackages.includes('app'));
-                testContext.hierarchyCollapsedPackages = [];
-            }
+            assert.ok(toggleBtn, 'toggle button should exist');
+            toggleBtn.dispatchEvent({type: 'click', stopPropagation: () => {}});
+            assert.ok(testContext.hierarchyCollapsedPackages.includes('app'));
         });
 
         test('フィルター入力でFQNに一致する行のみ表示する', () => {
@@ -1206,27 +1171,20 @@ test.describe('package.js', () => {
     test.describe('renderExplorePackageList - onRowClick', () => {
         test('行クリックで探索対象に追加する', () => {
             const doc = setupDocument();
-            const diagram = doc.createElement('div');
-            diagram.id = 'package-explore-diagram';
-            doc.elementsById.set('package-explore-diagram', diagram);
-            const table = doc.createElement('table');
-            table.id = 'explore-package-table';
-            doc.elementsById.set('explore-package-table', table);
+            const {exploreTable: table} = setupExploreEnv(doc);
             setPackageData({packages: [{fqn: 'app.a', classCount: 1}], relations: []}, PackageApp.exploreState);
-            PackageApp.exploreState.exploreTargetPackages = [];
 
             PackageApp.renderExplorePackageList(PackageApp.exploreState);
 
             const tbody = table.querySelector('tbody');
             const row = tbody?.children.find(tr => tr.dataset.fqn === 'app.a');
-            if (row) {
-                row.dispatchEvent({type: 'click'});
-                assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, ['app.a']);
+            assert.ok(row, 'app.a の行が存在すること');
+            row.dispatchEvent({type: 'click'});
+            assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, ['app.a']);
 
-                // 再クリックで解除
-                row.dispatchEvent({type: 'click'});
-                assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, []);
-            }
+            // 再クリックで解除
+            row.dispatchEvent({type: 'click'});
+            assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, []);
         });
     });
 

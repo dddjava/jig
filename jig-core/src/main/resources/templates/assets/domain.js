@@ -89,7 +89,7 @@ const DomainApp = (() => {
     function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
-        const mergedNames = [Jig.glossary.getTypeTerm(pkg.fqn).title];
+        const mergedNames = [Jig.glossary.getPackageTerm(pkg.fqn).title];
 
         while (true) {
             const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
@@ -97,7 +97,7 @@ const DomainApp = (() => {
             if (currentPkg.types.length > 0) break;
 
             const childPkg = childPackages[0];
-            mergedNames.push(Jig.glossary.getTypeTerm(childPkg.fqn).title);
+            mergedNames.push(Jig.glossary.getPackageTerm(childPkg.fqn).title);
             currentPkg = childPkg;
         }
 
@@ -354,7 +354,7 @@ const DomainApp = (() => {
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
         const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getPackageTerm(fqn).title;
 
         function packageOf(fqn) {
             const idx = fqn.lastIndexOf('.');
@@ -580,7 +580,7 @@ const DomainApp = (() => {
         });
 
         const nodeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
+        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getPackageTerm(fqn).title;
 
         const builder = new Jig.mermaid.Builder();
         const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
@@ -638,7 +638,7 @@ const DomainApp = (() => {
             ...childPackages.map(childPkg => ({
                 isPackage: true,
                 fqn: childPkg.fqn,
-                title: Jig.glossary.getTypeTerm(childPkg.fqn).title
+                title: Jig.glossary.getPackageTerm(childPkg.fqn).title
             })),
             ...types.map(type => ({
                 isPackage: false,
@@ -911,15 +911,16 @@ const DomainApp = (() => {
         const allPackages = Jig.data.domain.getPackages();
 
         packages.forEach(pkg => {
+            const pkgTerm = Jig.glossary.getPackageTerm(pkg.fqn);
             const section = Jig.dom.card.type({
                 id: Jig.util.fqnToId("domain", pkg.fqn),
-                title: Jig.glossary.getTypeTerm(pkg.fqn).title,
+                title: pkgTerm.title,
                 fqn: pkg.fqn,
                 kind: "パッケージ",
                 attributes: {"data-kind-children": [...pkgKinds(pkg, childPackagesMap, typesMap)].join(' ')}
             });
 
-            const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
+            const pkgDescription = pkgTerm.description;
             if (pkgDescription) {
                 section.appendChild(Jig.dom.createElement("section", {
                     className: "jig-card-section description",

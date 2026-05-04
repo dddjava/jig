@@ -66,7 +66,7 @@ const PackageApp = (() => {
     }
 
     function getGlossaryTitle(fqn) {
-        return Jig.glossary.getTypeTerm(fqn).title;
+        return Jig.glossary.getPackageTerm(fqn).title;
     }
 
     function getMaxPackageDepth() {

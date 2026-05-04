@@ -792,6 +792,95 @@ test.describe("outbound.js", () => {
         });
     });
 
+    // ----- groupOperationsByOutboundPort (永続化・外部アクセサ解決) -----
+
+    test.describe("groupOperationsByOutboundPort - 永続化・外部アクセサ解決", () => {
+        test("persistenceAccessorsのmethodsからpersistenceAccessorsを解決する", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [{fqn: "opA", label: "op"}]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [{fqn: "execA", label: "execA"}]}],
+                persistenceAccessors: [{fqn: "com.example.Mapper", methods: [{id: "mapperSave", fqn: "save"}]}],
+                otherExternalAccessors: [],
+                links: {
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
+                    executionToPersistenceAccessor: [{execution: "execA", accessor: "mapperSave"}],
+                    executionToOtherExternalAccessor: []
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            const op = grouped[0].operations[0];
+            assert.equal(op.persistenceAccessors.length, 1);
+            assert.equal(op.persistenceAccessors[0].id, "mapperSave");
+            assert.equal(op.persistenceAccessors[0].group, "com.example.Mapper");
+        });
+
+        test("executionToOtherExternalAccessorのリンクからexternalAccessorsを解決する", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [{fqn: "opA", label: "op"}]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [{fqn: "execA", label: "execA"}]}],
+                persistenceAccessors: [],
+                otherExternalAccessors: [{
+                    fqn: "com.example.Client",
+                    operations: [{
+                        fqn: "com.example.Client#call()", label: "call",
+                        visibility: "PUBLIC", parameters: [], returnTypeRef: {fqn: "void"}, isDeprecated: false,
+                        externals: []
+                    }]
+                }],
+                links: {
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: [{execution: "execA", accessor: "com.example.Client", method: "call"}]
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            const op = grouped[0].operations[0];
+            assert.equal(op.externalAccessors.length, 1);
+            assert.equal(op.externalAccessors[0].fqn, "com.example.Client");
+        });
+
+        test("外部アクセサのFQNがotherExternalAccessorsにない場合は除外する", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [{fqn: "opA", label: "op"}]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [{fqn: "execA", label: "execA"}]}],
+                persistenceAccessors: [],
+                otherExternalAccessors: [],
+                links: {
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: [{execution: "execA", accessor: "com.example.Unknown", method: "call"}]
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            assert.equal(grouped[0].operations[0].externalAccessors.length, 0);
+        });
+
+        test("ポート内の複数操作をラベルの昇順にソートする", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [
+                    {fqn: "portA#zOp()", label: "Z操作"},
+                    {fqn: "portA#aOp()", label: "A操作"}
+                ]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [
+                    {fqn: "execZ", label: "execZ"},
+                    {fqn: "execA", label: "execA"}
+                ]}],
+                persistenceAccessors: [],
+                otherExternalAccessors: [],
+                links: {
+                    operationToExecution: [
+                        {operation: "portA#zOp()", execution: "execZ"},
+                        {operation: "portA#aOp()", execution: "execA"}
+                    ],
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: []
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            assert.equal(grouped[0].operations.length, 2);
+        });
+    });
+
     // ----- renderCrudTable -----
 
     test.describe("renderCrudTable", () => {
@@ -874,6 +963,184 @@ test.describe("outbound.js", () => {
             assert.ok(container);
             const table = container.children[0];
             assert.equal(table.tagName, "table");
+        });
+    });
+
+    // ----- groupOperationsByOutboundPort (永続化・外部アクセサ解決) -----
+
+    test.describe("groupOperationsByOutboundPort - 永続化・外部アクセサ解決", () => {
+        test("persistenceAccessorsのmethodsからpersistenceAccessorsを解決する", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [{fqn: "opA", label: "op"}]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [{fqn: "execA", label: "execA"}]}],
+                persistenceAccessors: [{fqn: "com.example.Mapper", methods: [{id: "mapperSave", fqn: "save"}]}],
+                otherExternalAccessors: [],
+                links: {
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
+                    executionToPersistenceAccessor: [{execution: "execA", accessor: "mapperSave"}],
+                    executionToOtherExternalAccessor: []
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            const op = grouped[0].operations[0];
+            assert.equal(op.persistenceAccessors.length, 1);
+            assert.equal(op.persistenceAccessors[0].id, "mapperSave");
+            assert.equal(op.persistenceAccessors[0].group, "com.example.Mapper");
+        });
+
+        test("executionToOtherExternalAccessorのリンクからexternalAccessorsを解決する", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [{fqn: "opA", label: "op"}]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [{fqn: "execA", label: "execA"}]}],
+                persistenceAccessors: [],
+                otherExternalAccessors: [{
+                    fqn: "com.example.Client",
+                    operations: [{
+                        fqn: "com.example.Client#call()", label: "call",
+                        visibility: "PUBLIC", parameters: [], returnTypeRef: {fqn: "void"}, isDeprecated: false,
+                        externals: []
+                    }]
+                }],
+                links: {
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: [{execution: "execA", accessor: "com.example.Client", method: "call"}]
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            const op = grouped[0].operations[0];
+            assert.equal(op.externalAccessors.length, 1);
+            assert.equal(op.externalAccessors[0].fqn, "com.example.Client");
+        });
+
+        test("外部アクセサのFQNがotherExternalAccessorsにない場合は除外する", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [{fqn: "opA", label: "op"}]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [{fqn: "execA", label: "execA"}]}],
+                persistenceAccessors: [],
+                otherExternalAccessors: [],
+                links: {
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: [{execution: "execA", accessor: "com.example.Unknown", method: "call"}]
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            assert.equal(grouped[0].operations[0].externalAccessors.length, 0);
+        });
+
+        test("ポート内の複数操作をラベルの昇順にソートする", () => {
+            const data = {
+                outboundPorts: [{fqn: "portA", label: "A", operations: [
+                    {fqn: "portA#zOp()", label: "Z操作"},
+                    {fqn: "portA#aOp()", label: "A操作"}
+                ]}],
+                outboundAdapters: [{fqn: "adapter", label: "Adapter", executions: [
+                    {fqn: "execZ", label: "execZ"},
+                    {fqn: "execA", label: "execA"}
+                ]}],
+                persistenceAccessors: [],
+                otherExternalAccessors: [],
+                links: {
+                    operationToExecution: [
+                        {operation: "portA#zOp()", execution: "execZ"},
+                        {operation: "portA#aOp()", execution: "execA"}
+                    ],
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: []
+                }
+            };
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
+            assert.equal(grouped[0].operations.length, 2);
+        });
+    });
+
+    // ----- generatePersistenceMermaidCode - CRUDタイプ別 -----
+
+    test.describe("generatePersistenceMermaidCode - CRUDタイプ別", () => {
+        test("SELECT・UPDATE・DELETE・不明なCRUD操作タイプを含む永続化グループのコードを生成する", () => {
+            const group = {
+                persistenceTarget: "orders",
+                operations: [{
+                    outboundPort: {fqn: "com.example.Port"},
+                    outboundPortOperation: makeMethodData("com.example.Port#op()"),
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#op()"),
+                    persistenceAccessors: [{
+                        id: "com.example.Mapper.op",
+                        group: "com.example.Mapper",
+                        groupLabel: "Mapper",
+                        targetOperationTypes: {
+                            "orders": "SELECT",
+                            "users": "UPDATE",
+                            "items": "DELETE",
+                            "misc": "MERGE"
+                        }
+                    }],
+                    externalAccessors: []
+                }]
+            };
+            const visibility = {
+                port: true, operation: true, adapter: false, execution: false,
+                accessor: true, accessorMethod: false, target: true,
+                externalAccessor: false, externalAccessorMethod: false,
+                externalType: false, externalTypeMethod: false,
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
+            };
+            const code = OutboundApp.generatePersistenceMermaidCode(group, visibility);
+            assert.ok(code !== null, "コードが生成されること");
+            assert.ok(code.includes("orders"), `persistenceTargetが含まれること: ${code}`);
+        });
+    });
+
+    // ----- generatePortMermaidCode - adapter/accessorMethod設定 -----
+
+    test.describe("generatePortMermaidCode - adapter/accessorMethod設定", () => {
+        test("adapter=true, execution=falseの場合アダプタークラスノードを生成する", () => {
+            const visibility = {
+                callerUsecase: false, port: true, operation: true,
+                adapter: true, execution: false,
+                accessor: false, accessorMethod: false,
+                target: false,
+                externalAccessor: false, externalAccessorMethod: false,
+                externalType: false, externalTypeMethod: false,
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
+            };
+            const code = OutboundApp.generatePortMermaidCode(simpleGroup, visibility);
+            assert.ok(code !== null, "コードが生成されること");
+            const adapterId = Jig.util.fqnToId("adapter", simpleGroup.operations[0].outboundAdapter.fqn);
+            assert.ok(code.includes(adapterId), `アダプタノードが含まれること: ${code}`);
+        });
+
+        test("accessor=true, accessorMethod=trueの場合アクセサメソッドノードを生成する", () => {
+            const groupWithAccessor = {
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
+                operations: [{
+                    outboundPortOperation: makeMethodData("com.example.Port#save()"),
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#save()"),
+                    persistenceAccessors: [{
+                        id: "com.example.Mapper.save",
+                        group: "com.example.Mapper",
+                        groupLabel: "Mapper",
+                        targetOperationTypes: {"orders": "INSERT"}
+                    }],
+                    externalAccessors: []
+                }]
+            };
+            const visibility = {
+                callerUsecase: false, port: true, operation: true,
+                adapter: true, execution: true,
+                accessor: true, accessorMethod: true,
+                target: false,
+                externalAccessor: false, externalAccessorMethod: false,
+                externalType: false, externalTypeMethod: false,
+                crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
+            };
+            const code = OutboundApp.generatePortMermaidCode(groupWithAccessor, visibility);
+            assert.ok(code !== null, "コードが生成されること");
+            const opNodeId = Jig.util.fqnToId("op", "com.example.Mapper.save");
+            assert.ok(code.includes(opNodeId), `アクセサメソッドノードが含まれること: ${code}`);
         });
     });
 

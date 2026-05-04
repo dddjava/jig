@@ -49,7 +49,7 @@ const mockGlossaryData = {
     }
 };
 
-test.describe('InboundApp', () => {
+test.describe('inbound.js', () => {
     let InboundApp;
     let doc;
 

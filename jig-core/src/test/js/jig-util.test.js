@@ -130,4 +130,62 @@ test.describe('jig-util.js', () => {
             assert.deepStrictEqual(map.get('key'), new Set(['value']));
         });
     });
+
+    test.describe('fqnToId', () => {
+
+        test("プレフィックスを付けてIDを生成する", () => {
+            const id = jigUtil.fqnToId("port", "com.example.MyPort");
+            assert.match(id, /^port_MyPort_exa_[a-z0-9]+$/);
+        });
+
+        test("異なるfqnなら異なるIDを生成する", () => {
+            const id1 = jigUtil.fqnToId("persistence", "my_table");
+            const id2 = jigUtil.fqnToId("persistence", "another_table");
+            assert.notEqual(id1, id2);
+        });
+
+        test("同じfqnなら同じIDを生成する（一意性）", () => {
+            const id1 = jigUtil.fqnToId("op", "com.example.Port#save(java.lang.String)");
+            const id2 = jigUtil.fqnToId("op", "com.example.Port#save(java.lang.String)");
+            assert.equal(id1, id2);
+        });
+
+        test("マルチバイト文字でも正しくハッシュ化される", () => {
+            const id1 = jigUtil.fqnToId("persistence", "テーブル1");
+            const id2 = jigUtil.fqnToId("persistence", "テーブル2");
+            assert.notEqual(id1, id2);
+            assert.match(id1, /^persistence_[\w-]+_[a-z0-9]+$/);
+        });
+    });
+
+    test('getPackageDepth: 深さを返す', () => {
+        assert.equal(jigUtil.getPackageDepth(''), 0);
+        assert.equal(jigUtil.getPackageDepth('(default)'), 0);
+        assert.equal(jigUtil.getPackageDepth('app.domain'), 2);
+    });
+
+    test('getCommonPrefixDepth: 共通プレフィックス深さを返す', () => {
+        assert.equal(jigUtil.getCommonPrefixDepth([]), 0);
+        assert.equal(jigUtil.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
+        assert.equal(jigUtil.getCommonPrefixDepth(['app', 'lib.tool']), 0);
+    });
+
+    test('getPackageFqnFromTypeFqn: 型FQNからパッケージFQNを返す', () => {
+        assert.equal(jigUtil.getPackageFqnFromTypeFqn('com.example.domain.User'), 'com.example.domain');
+        assert.equal(jigUtil.getPackageFqnFromTypeFqn('TopLevelClass'), '(default)');
+        assert.equal(jigUtil.getPackageFqnFromTypeFqn(null), '(default)');
+    });
+
+    test('isWithinPackageFilters: パッケージフィルタのマッチ判定', () => {
+        assert.equal(jigUtil.isWithinPackageFilters('com.example', ['com.example']), true);
+        assert.equal(jigUtil.isWithinPackageFilters('com.example.domain', ['com.example']), true);
+        assert.equal(jigUtil.isWithinPackageFilters('com.other', ['com.example']), false);
+        assert.equal(jigUtil.isWithinPackageFilters('com.example', []), true);
+    });
+
+    test('getAggregatedFqn: 指定深さで集約する', () => {
+        assert.equal(jigUtil.getAggregatedFqn('com.example.domain', 2), 'com.example');
+        assert.equal(jigUtil.getAggregatedFqn('com.example.domain', 0), 'com.example.domain');
+        assert.equal(jigUtil.getAggregatedFqn('(default)', 2), '(default)');
+    });
 });

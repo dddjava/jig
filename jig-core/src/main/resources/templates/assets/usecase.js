@@ -113,7 +113,7 @@ const UsecaseApp = (() => {
             return diagramContext.showDiagramInternalMethods || kind === "usecase";
         }
 
-        const reverseCallerMap = diagramContext.reverseCallerMap ?? buildReverseCallerMap(diagramContext.methodMap);
+        const reverseCallerMap = diagramContext.reverseCallerMap;
 
         /**
          * @param {string} rootFqn
@@ -902,6 +902,7 @@ const UsecaseApp = (() => {
         init,
         state,
         buildOutboundOperationSet,
+        buildReverseCallerMap,
         buildUsecaseDiagram,
         buildClassGraph,
         SequenceDiagram,

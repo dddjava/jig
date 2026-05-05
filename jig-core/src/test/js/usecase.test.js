@@ -1244,6 +1244,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1263,6 +1264,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet,
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1286,6 +1288,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet,
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1315,6 +1318,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1332,6 +1336,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1355,6 +1360,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet,
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1376,6 +1382,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1396,6 +1403,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet,
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: false
@@ -1416,6 +1424,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1439,6 +1448,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1461,6 +1471,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1482,6 +1493,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1505,6 +1517,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet,
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true
@@ -1530,6 +1543,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1553,6 +1567,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1578,6 +1593,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true
@@ -1605,6 +1621,7 @@ test.describe('usecase.js', () => {
 
             const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
                 methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
                 showDiagramInternalMethods: false,
                 showDiagramOutboundPorts: true

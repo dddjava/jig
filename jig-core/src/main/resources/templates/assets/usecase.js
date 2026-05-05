@@ -568,6 +568,59 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {UsecaseMethod} method
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {function}
+     */
+    function createUsecaseDiagramGenerator(method, buildCurrentDiagramContext) {
+        return (dir, opts) => {
+            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+            const builder = new Jig.mermaid.Builder();
+            builder.applyThemeClassDefs();
+            const classSubgraphs = new Map();
+            const ensureClassSubgraph = (fqn) => {
+                const classFqn = getClassFqnFromMethodFqn(fqn);
+                return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), typeLabel(classFqn), 'LR')};
+            };
+            currentUsecaseDiagram.nodes.forEach(node => {
+                const nodeId = fqnToNodeId(node.fqn);
+                if (node.kind === "inbound-method") {
+                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "inbound");
+                    builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(classFqn), node.fqn);
+                } else if (node.kind === "outbound-method") {
+                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "outbound");
+                    builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(classFqn), node.fqn);
+                } else if (node.kind === "domain-type") {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                    builder.addClass(nodeId, "domain");
+                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+                } else {
+                    const {subgraph} = ensureClassSubgraph(node.fqn);
+                    if (node.kind === "usecase") {
+                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                        builder.addClass(nodeId, "usecase");
+                        if (node.fqn === method.fqn) builder.addStyle(nodeId, "font-weight:bold");
+                        builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
+                    } else {
+                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                        builder.addClass(nodeId, "inactive");
+                        builder.addTooltip(nodeId, node.fqn);
+                    }
+                }
+            });
+            currentUsecaseDiagram.edges.forEach(edge => {
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+            });
+            return builder.build(dir);
+        };
+    }
+
+    /**
      * @param {{nodes: DiagramNode[], edges: DiagramEdge[]}} classGraph
      * @returns {function}
      */
@@ -731,58 +784,7 @@ const UsecaseApp = (() => {
                     if (hasUsecaseDiagram) {
                         Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
                             mmdContainer.innerHTML = "";
-                            const generator = (dir, opts) => {
-                                const showPhysicalName = opts?.showPhysicalName;
-                                const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
-                                const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
-
-                                const builder = new Jig.mermaid.Builder();
-                                builder.applyThemeClassDefs();
-
-                                const classSubgraphs = new Map();
-                                const ensureClassSubgraph = (fqn) => {
-                                    const classFqn = getClassFqnFromMethodFqn(fqn);
-                                    return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), typeLabel(classFqn), 'LR')};
-                                };
-                                currentUsecaseDiagram.nodes.forEach(node => {
-                                    const nodeId = fqnToNodeId(node.fqn);
-                                    if (node.kind === "inbound-method") {
-                                        const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
-                                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
-                                        builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(classFqn), node.fqn);
-                                    } else if (node.kind === "outbound-method") {
-                                        const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
-                                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
-                                        builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(classFqn), node.fqn);
-                                    } else if (node.kind === "domain-type") {
-                                        builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                                        builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
-                                    } else {
-                                        const {subgraph} = ensureClassSubgraph(node.fqn);
-                                        if (node.kind === "usecase") {
-                                            builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
-                                            builder.addClass(nodeId, "usecase");
-                                            if (node.fqn === method.fqn) {
-                                                builder.addStyle(nodeId, "font-weight:bold");
-                                            }
-                                            builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
-                                        } else {
-                                            builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
-                                            builder.addClass(nodeId, "inactive");
-                                            builder.addTooltip(nodeId, node.fqn);
-                                        }
-                                    }
-                                });
-
-                                currentUsecaseDiagram.edges.forEach(edge => {
-                                    builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
-                                });
-                                return builder.build(dir);
-                            };
-                            Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR', enableLabelToggle: true});
+                            Jig.mermaid.render.renderWithControls(mmdContainer, createUsecaseDiagramGenerator(method, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
                         });
                     }
 

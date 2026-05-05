@@ -57,6 +57,19 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {Usecase[]} usecases
+     * @returns {Map<string, UsecaseMethod>}
+     */
+    function buildMethodMap(usecases) {
+        const map = new Map();
+        usecases.forEach(usecase => {
+            (usecase.methods || []).forEach(m => map.set(m.fqn, {...m, kind: isUsecase(m) ? "usecase" : "method"}));
+            (usecase.staticMethods || []).forEach(m => map.set(m.fqn, {...m, kind: "static-method"}));
+        });
+        return map;
+    }
+
+    /**
      * @param {Map<string, UsecaseMethod>} methodMap
      * @returns {Map<string, DiagramNode[]>}
      */
@@ -568,15 +581,7 @@ const UsecaseApp = (() => {
             return;
         }
 
-        /** @type {Map<string, UsecaseMethod>} */
-        const methodMap = new Map();
-        usecases.forEach(usecase => {
-            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, {
-                ...m,
-                kind: isUsecase(m) ? "usecase" : "method"
-            }));
-            (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: "static-method"}));
-        });
+        const methodMap = buildMethodMap(usecases);
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
 

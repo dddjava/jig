@@ -686,6 +686,65 @@ const UsecaseApp = (() => {
         return methodSection;
     }
 
+    function renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext) {
+        const visibleUsecaseMethods = usecase.methods.filter(
+            method => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn))
+        );
+        if (handlerFqns && visibleUsecaseMethods.length === 0) return null;
+
+        const term = Jig.glossary.getTypeTerm(usecase.fqn);
+        const section = Jig.dom.card.type({id: fqnToTypeId(usecase.fqn), title: term.title, fqn: usecase.fqn});
+
+        if (term.description) {
+            section.appendChild(Jig.dom.createElement("section", {
+                className: "jig-card-section description",
+                children: [Jig.dom.createMarkdownElement(term.description)]
+            }));
+        }
+
+        const classGraph = buildClassGraph(usecase, handlerFqns);
+        if (classGraph.edges.length > 0) {
+            const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
+            section.appendChild(classDiagramContainer);
+            Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
+                mmdContainer.innerHTML = "";
+                Jig.mermaid.render.renderWithControls(mmdContainer, createClassDiagramGenerator(classGraph), {direction: 'LR', enableLabelToggle: true});
+            });
+        }
+
+        const fieldsList = Jig.dom.type.fieldsList(usecase.fields, {showTitle: false});
+        if (fieldsList) fieldsList.classList.add("fields");
+
+        const staticList = usecase.staticMethods.length > 0
+            ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, {showTitle: false})
+            : null;
+        if (staticList) staticList.classList.add("static-methods");
+
+        const internalMethods = usecase.methods.filter(method => !isUsecase(method));
+        const methodList = internalMethods.length > 0
+            ? Jig.dom.type.methodsList("メソッド", internalMethods, {showTitle: false})
+            : null;
+        if (methodList) methodList.classList.add("methods");
+
+        const memberTabDefs = [
+            fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
+            staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
+            methodList && {id: 'methods', label: 'メソッド', el: methodList},
+        ].filter(Boolean);
+
+        if (memberTabDefs.length > 0) {
+            const {panels, section: memberSection} = Jig.dom.tab.buildSection(memberTabDefs, {className: "jig-card-section tab-content-section tab-member-section"});
+            section.appendChild(memberSection);
+            memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
+        }
+
+        visibleUsecaseMethods.forEach(method => {
+            section.appendChild(renderMethodSection(method, buildCurrentDiagramContext));
+        });
+
+        return section;
+    }
+
     /**
      * @param {{nodes: DiagramNode[], edges: DiagramEdge[]}} classGraph
      * @returns {function}
@@ -749,68 +808,10 @@ const UsecaseApp = (() => {
         });
 
         const handlerFqns = state.handlerFqns;
-        const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
 
         usecases.forEach(usecase => {
-            const visibleUsecaseMethods = usecase.methods.filter(isVisibleMethod);
-            if (handlerFqns && visibleUsecaseMethods.length === 0) return;
-
-            const term = Jig.glossary.getTypeTerm(usecase.fqn);
-            const section = Jig.dom.card.type({
-                id: fqnToTypeId(usecase.fqn),
-                title: term.title,
-                fqn: usecase.fqn
-            });
-
-            if (term.description) {
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "jig-card-section description",
-                    children: [Jig.dom.createMarkdownElement(term.description)]
-                }));
-            }
-
-            const classGraph = buildClassGraph(usecase, handlerFqns);
-            if (classGraph.edges.length > 0) {
-                const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
-                section.appendChild(classDiagramContainer);
-
-                Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
-                    mmdContainer.innerHTML = "";
-                    Jig.mermaid.render.renderWithControls(mmdContainer, createClassDiagramGenerator(classGraph), {direction: 'LR', enableLabelToggle: true});
-                });
-            }
-
-            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, {showTitle: false});
-            if (fieldsList) fieldsList.classList.add("fields");
-
-            const staticList = usecase.staticMethods.length > 0
-                ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, {showTitle: false})
-                : null;
-            if (staticList) staticList.classList.add("static-methods");
-
-            const internalMethods = usecase.methods.filter(method => !isUsecase(method));
-            const methodList = internalMethods.length > 0
-                ? Jig.dom.type.methodsList("メソッド", internalMethods, {showTitle: false})
-                : null;
-            if (methodList) methodList.classList.add("methods");
-
-            const memberTabDefs = [
-                fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
-                staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
-                methodList && {id: 'methods', label: 'メソッド', el: methodList},
-            ].filter(Boolean);
-
-            if (memberTabDefs.length > 0) {
-                const {panels, section: memberSection} = Jig.dom.tab.buildSection(memberTabDefs, {className: "jig-card-section tab-content-section tab-member-section"});
-                section.appendChild(memberSection);
-                memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
-            }
-
-            visibleUsecaseMethods.forEach(method => {
-                section.appendChild(renderMethodSection(method, buildCurrentDiagramContext));
-            });
-
-            container.appendChild(section);
+            const card = renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext);
+            if (card) container.appendChild(card);
         });
     }
 

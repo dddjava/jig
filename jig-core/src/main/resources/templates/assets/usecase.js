@@ -621,6 +621,72 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {UsecaseMethod} method
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {HTMLElement}
+     */
+    function renderMethodSection(method, buildCurrentDiagramContext) {
+        const methodTerm = Jig.glossary.getMethodTerm(method.fqn);
+        const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
+        methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
+        methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
+
+        if (methodTerm.description) {
+            methodSection.appendChild(Jig.dom.createElement("section", {
+                className: "description",
+                children: [Jig.dom.createMarkdownElement(methodTerm.description)]
+            }));
+        }
+
+        const usecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+        const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
+
+        const sequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
+        const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
+        const hasSequenceDiagram = sequenceDiagramCode !== null;
+
+        if (hasUsecaseDiagram || hasSequenceDiagram) {
+            let usecaseTarget, sequenceTarget;
+
+            if (hasUsecaseDiagram && hasSequenceDiagram) {
+                const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
+                const {panels, section} = Jig.dom.tab.buildSection(
+                    [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
+                    {className: "jig-card-section tab-content-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
+                );
+                methodSection.appendChild(section);
+                usecaseTarget = panels['usecase'];
+                sequenceTarget = panels['sequence'];
+            } else {
+                const container = Jig.dom.createElement("div", {className: "jig-card-section diagram-container"});
+                methodSection.appendChild(container);
+                if (hasUsecaseDiagram) usecaseTarget = container;
+                else sequenceTarget = container;
+            }
+
+            if (hasUsecaseDiagram) {
+                Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
+                    mmdContainer.innerHTML = "";
+                    Jig.mermaid.render.renderWithControls(mmdContainer, createUsecaseDiagramGenerator(method, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
+                });
+            }
+
+            if (hasSequenceDiagram) {
+                Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
+                    sequenceContainer.innerHTML = "";
+                    const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
+                    const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
+                    if (currentSequenceDiagramCode) {
+                        Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
+                    }
+                });
+            }
+        }
+
+        return methodSection;
+    }
+
+    /**
      * @param {{nodes: DiagramNode[], edges: DiagramEdge[]}} classGraph
      * @returns {function}
      */
@@ -741,66 +807,7 @@ const UsecaseApp = (() => {
             }
 
             visibleUsecaseMethods.forEach(method => {
-                const methodTerm = Jig.glossary.getMethodTerm(method.fqn);
-                const methodDescription = methodTerm.description;
-
-                const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
-                methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
-                methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
-
-                if (methodDescription) {
-                    methodSection.appendChild(Jig.dom.createElement("section", {
-                        className: "description",
-                        children: [Jig.dom.createMarkdownElement(methodDescription)]
-                    }));
-                }
-
-                const usecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
-                const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
-
-                const sequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
-                const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
-                const hasSequenceDiagram = sequenceDiagramCode !== null;
-
-                if (hasUsecaseDiagram || hasSequenceDiagram) {
-                    let usecaseTarget, sequenceTarget;
-
-                    if (hasUsecaseDiagram && hasSequenceDiagram) {
-                        const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
-                        const {panels, section} = Jig.dom.tab.buildSection(
-                            [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
-                            {className: "jig-card-section tab-content-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
-                        );
-                        methodSection.appendChild(section);
-                        usecaseTarget = panels['usecase'];
-                        sequenceTarget = panels['sequence'];
-                    } else {
-                        const container = Jig.dom.createElement("div", {className: "jig-card-section diagram-container"});
-                        methodSection.appendChild(container);
-                        if (hasUsecaseDiagram) usecaseTarget = container;
-                        else sequenceTarget = container;
-                    }
-
-                    if (hasUsecaseDiagram) {
-                        Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
-                            mmdContainer.innerHTML = "";
-                            Jig.mermaid.render.renderWithControls(mmdContainer, createUsecaseDiagramGenerator(method, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
-                        });
-                    }
-
-                    if (hasSequenceDiagram) {
-                        Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
-                            sequenceContainer.innerHTML = "";
-                            const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
-                            const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
-                            if (currentSequenceDiagramCode) {
-                                Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
-                            }
-                        });
-                    }
-                }
-
-                section.appendChild(methodSection);
+                section.appendChild(renderMethodSection(method, buildCurrentDiagramContext));
             });
 
             container.appendChild(section);

@@ -571,8 +571,9 @@ itemList.appendChild(operationItem);
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
         const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
         const portFqn = group.outboundPort.fqn;
-        const portLabel = showPhysicalName ? Jig.glossary.typeSimpleName(portFqn) : Jig.glossary.getTypeTerm(portFqn).title;
+        const portLabel = typeLabel(portFqn);
 
         const contexts = {
             portSubgraphs: new Map(),
@@ -703,7 +704,7 @@ itemList.appendChild(operationItem);
 
     function extractOperationProps(operation, showPhysicalName = false) {
         const typeLabel = (fqn) => showPhysicalName ? (fqn ? Jig.glossary.typeSimpleName(fqn) : '') : Jig.glossary.getTypeTerm(fqn).title;
-        const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
+        const {method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
         return {
             portFqn: operation.outboundPort.fqn,
             portLabel: typeLabel(operation.outboundPort.fqn),
@@ -719,6 +720,7 @@ itemList.appendChild(operationItem);
     function addCallerUsecaseNodes(builder, portOpNodeId, portOpFqn, callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges) {
         if (!visibility.callerUsecase || !portOpNodeId || !callerUsecases?.length) return;
         const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
         callerUsecases.forEach(usecaseFqn => {
             const edgeKey = usecaseFqn + '->' + portOpFqn;
             if (usecaseEdges.has(edgeKey)) return;
@@ -727,10 +729,8 @@ itemList.appendChild(operationItem);
                 const nodeId = Jig.util.fqnToId("usecase", usecaseFqn);
                 const hashIdx = usecaseFqn.indexOf('#');
                 const classFqn = hashIdx !== -1 ? usecaseFqn.slice(0, hashIdx) : usecaseFqn;
-                const sgLabel = showPhysicalName ? Jig.glossary.typeSimpleName(classFqn) : Jig.glossary.getTypeTerm(classFqn).title;
-                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, sgLabel);
-                const mLabel = showPhysicalName ? Jig.glossary.methodSimpleName(usecaseFqn) : Jig.glossary.getMethodTerm(usecaseFqn, true).title;
-                builder.addNodeToSubgraph(sg, nodeId, mLabel, 'method');
+                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, typeLabel(classFqn));
+                builder.addNodeToSubgraph(sg, nodeId, mLabel(usecaseFqn), 'method');
                 builder.addClass(nodeId, "usecase");
                 builder.addClick(nodeId, Jig.mermaid.nav.usecaseMethodUrl(usecaseFqn), usecaseFqn);
                 usecaseNodes.set(usecaseFqn, nodeId);
@@ -780,7 +780,8 @@ itemList.appendChild(operationItem);
         if (!visibility.accessor || !groupId) return sourceNodeId;
 
         const showPhysicalName = visibility.showPhysicalName ?? false;
-        const groupLabel = showPhysicalName ? Jig.glossary.typeSimpleName(groupId) : Jig.glossary.getTypeTerm(groupId).title;
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
+        const groupLabel = typeLabel(groupId);
         if (visibility.accessorMethod) {
             const opNodeId = Jig.util.fqnToId("op", op.id);
             builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
@@ -814,11 +815,12 @@ itemList.appendChild(operationItem);
 
     function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, methodFqnToNodeId = null) {
         const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel, method: methodLabel} = Jig.glossary.makeLabels(showPhysicalName);
         const addExternal = (fromNodeId, ext) => {
             if (!visibility.externalType) return;
             if (!extTypeNodes.has(ext.fqn)) {
                 extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-                const extLabel = showPhysicalName ? Jig.glossary.typeSimpleName(ext.fqn) : Jig.glossary.getTypeTerm(ext.fqn).title;
+                const extLabel = typeLabel(ext.fqn);
                 builder.addNode(extTypeNodes.get(ext.fqn), extLabel, 'external');
             }
             const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
@@ -834,7 +836,7 @@ itemList.appendChild(operationItem);
             return sourceNodeId;
         }
 
-        const accessorLabel = showPhysicalName ? Jig.glossary.typeSimpleName(accessor.fqn) : Jig.glossary.getTypeTerm(accessor.fqn).title;
+        const accessorLabel = typeLabel(accessor.fqn);
         if (visibility.externalAccessorMethod) {
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.operations.forEach(accMethod => {
@@ -845,7 +847,7 @@ itemList.appendChild(operationItem);
                     return;
                 }
                 const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
-                const accMLabel = showPhysicalName ? Jig.glossary.methodSimpleName(accMethod.fqn) : Jig.glossary.getMethodTerm(accMethod.fqn, true).title;
+                const accMLabel = methodLabel(accMethod.fqn);
                 builder.addNodeToSubgraph(sg, accMethodNodeId, accMLabel, 'method');
                 builder.addTooltip(accMethodNodeId, accMethod.fqn);
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);

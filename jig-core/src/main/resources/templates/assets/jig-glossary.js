@@ -101,6 +101,18 @@ globalThis.Jig.glossary = (() => {
         };
     }
 
+    /**
+     * @param {boolean} showPhysicalName
+     * @return {{type: (function(string): string), pkg: (function(string): string), method: (function(string): string)}}
+     */
+    function makeLabels(showPhysicalName) {
+        return {
+            type: (fqn) => showPhysicalName ? typeSimpleName(fqn) : getTypeTerm(fqn).title,
+            pkg: (fqn) => showPhysicalName ? typeSimpleName(fqn) : getPackageTerm(fqn).title,
+            method: (fqn) => showPhysicalName ? methodSimpleName(fqn) : getMethodTerm(fqn, true).title,
+        };
+    }
+
     return {
         getPackageTerm,
         getTypeTerm,
@@ -109,6 +121,7 @@ globalThis.Jig.glossary = (() => {
         findTerm,
         typeSimpleName,
         methodSimpleName,
+        makeLabels,
     };
 })();
 

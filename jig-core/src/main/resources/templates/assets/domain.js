@@ -353,8 +353,7 @@ const DomainApp = (() => {
 
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
-        const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getPackageTerm(fqn).title;
+        const {type: typeLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function packageOf(fqn) {
             const idx = fqn.lastIndexOf('.');
@@ -422,6 +421,7 @@ const DomainApp = (() => {
 
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function edgeTypeFromKinds(kinds) {
             if (!kinds) return 'dependency';
@@ -438,7 +438,7 @@ const DomainApp = (() => {
 
         involvedFqns.forEach(fqn => {
             const nodeId = fqnToNodeId(fqn);
-            builder.addClass(nodeId, showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title);
+            builder.addClass(nodeId, typeLabel(fqn));
 
             const domainType = typesMap?.get(fqn);
             if (showFields) {
@@ -579,12 +579,11 @@ const DomainApp = (() => {
             edges: edges
         });
 
-        const nodeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-        const pkgLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getPackageTerm(fqn).title;
+        const {type: typeLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         const builder = new Jig.mermaid.Builder();
         const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
-        internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), nodeLabel(fqn)));
+        internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
         externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), pkgLabel(fqn), 'package'));
         [...internalFqns, ...externalPkgFqns].forEach(fqn =>
             builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)

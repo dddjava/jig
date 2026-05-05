@@ -629,8 +629,7 @@ const UsecaseApp = (() => {
                     mmdContainer.innerHTML = "";
                     const generator = (dir, opts) => {
                         const showPhysicalName = opts?.showPhysicalName;
-                        const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-                        const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
+                        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
                         const builder = new Jig.mermaid.Builder();
                         builder.applyThemeClassDefs();
 
@@ -738,9 +737,7 @@ const UsecaseApp = (() => {
                             mmdContainer.innerHTML = "";
                             const generator = (dir, opts) => {
                                 const showPhysicalName = opts?.showPhysicalName;
-                                const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-                                const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
-                                const sgLabel = (classFqn) => showPhysicalName ? Jig.glossary.typeSimpleName(classFqn) : Jig.glossary.getTypeTerm(classFqn).title;
+                                const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
                                 const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
 
                                 const builder = new Jig.mermaid.Builder();
@@ -749,7 +746,7 @@ const UsecaseApp = (() => {
                                 const classSubgraphs = new Map();
                                 const ensureClassSubgraph = (fqn) => {
                                     const classFqn = getClassFqnFromMethodFqn(fqn);
-                                    return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), sgLabel(classFqn), 'LR')};
+                                    return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), typeLabel(classFqn), 'LR')};
                                 };
                                 currentUsecaseDiagram.nodes.forEach(node => {
                                     const nodeId = fqnToNodeId(node.fqn);

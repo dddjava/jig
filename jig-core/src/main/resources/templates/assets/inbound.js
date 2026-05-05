@@ -83,8 +83,7 @@ const InboundApp = (() => {
     function buildDiagramBuilder(data, builder, showPhysicalName = false) {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         builder.applyThemeClassDefs();
-        const typeLabel = (fqn) => showPhysicalName ? Jig.glossary.typeSimpleName(fqn) : Jig.glossary.getTypeTerm(fqn).title;
-        const mLabel = (fqn) => showPhysicalName ? Jig.glossary.methodSimpleName(fqn) : Jig.glossary.getMethodTerm(fqn, true).title;
+        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         data.entrypointGroups.forEach((eps, typeFqn) => {
             const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));

@@ -568,6 +568,42 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {{nodes: DiagramNode[], edges: DiagramEdge[]}} classGraph
+     * @returns {function}
+     */
+    function createClassDiagramGenerator(classGraph) {
+        return (dir, opts) => {
+            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const builder = new Jig.mermaid.Builder();
+            builder.applyThemeClassDefs();
+            classGraph.nodes.forEach(node => {
+                const nodeId = fqnToNodeId(node.fqn);
+                if (node.kind === "inbound-class") {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                    builder.addClass(nodeId, "inbound");
+                    builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
+                } else if (node.kind === "domain-type") {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                    builder.addClass(nodeId, "domain");
+                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+                } else if (node.kind === "usecase") {
+                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
+                } else {
+                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "inactive");
+                    builder.addTooltip(nodeId, node.fqn);
+                }
+            });
+            classGraph.edges.forEach(edge => {
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+            });
+            return builder.build(dir);
+        };
+    }
+
+    /**
      * ユースケース一覧の描画
      * @param {Usecase[]} usecases
      */
@@ -621,41 +657,7 @@ const UsecaseApp = (() => {
 
                 Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
                     mmdContainer.innerHTML = "";
-                    const generator = (dir, opts) => {
-                        const showPhysicalName = opts?.showPhysicalName;
-                        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
-                        const builder = new Jig.mermaid.Builder();
-                        builder.applyThemeClassDefs();
-
-                        classGraph.nodes.forEach(node => {
-                            const nodeId = fqnToNodeId(node.fqn);
-                            if (node.kind === "inbound-class") {
-                                builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                                builder.addClass(nodeId, "inbound");
-                                builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
-                            } else if (node.kind === "domain-type") {
-                                builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                                builder.addClass(nodeId, "domain");
-                                builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
-                            } else {
-                                if (node.kind === "usecase") {
-                                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
-                                    builder.addClass(nodeId, "usecase");
-                                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
-                                } else {
-                                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
-                                    builder.addClass(nodeId, "inactive");
-                                    builder.addTooltip(nodeId, node.fqn);
-                                }
-                            }
-                        });
-
-                        classGraph.edges.forEach(edge => {
-                            builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
-                        });
-                        return builder.build(dir);
-                    };
-                    Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR', enableLabelToggle: true});
+                    Jig.mermaid.render.renderWithControls(mmdContainer, createClassDiagramGenerator(classGraph), {direction: 'LR', enableLabelToggle: true});
                 });
             }
 

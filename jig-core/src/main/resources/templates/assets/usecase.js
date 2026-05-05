@@ -113,7 +113,7 @@ const UsecaseApp = (() => {
             return diagramContext.showDiagramInternalMethods || kind === "usecase";
         }
 
-        const reverseCallerMap = buildReverseCallerMap(diagramContext.methodMap);
+        const reverseCallerMap = diagramContext.reverseCallerMap ?? buildReverseCallerMap(diagramContext.methodMap);
 
         /**
          * @param {string} rootFqn
@@ -599,18 +599,17 @@ const UsecaseApp = (() => {
                     builder.addNode(nodeId, typeLabel(node.fqn), 'class');
                     builder.addClass(nodeId, "domain");
                     builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+                } else if (node.kind === "usecase") {
+                    const {subgraph} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    if (node.fqn === method.fqn) builder.addStyle(nodeId, "font-weight:bold");
+                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
                 } else {
                     const {subgraph} = ensureClassSubgraph(node.fqn);
-                    if (node.kind === "usecase") {
-                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
-                        builder.addClass(nodeId, "usecase");
-                        if (node.fqn === method.fqn) builder.addStyle(nodeId, "font-weight:bold");
-                        builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
-                    } else {
-                        builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
-                        builder.addClass(nodeId, "inactive");
-                        builder.addTooltip(nodeId, node.fqn);
-                    }
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "inactive");
+                    builder.addTooltip(nodeId, node.fqn);
                 }
             });
             currentUsecaseDiagram.edges.forEach(edge => {
@@ -638,10 +637,11 @@ const UsecaseApp = (() => {
             }));
         }
 
-        const usecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+        const currentContext = buildCurrentDiagramContext();
+        const usecaseDiagram = buildUsecaseDiagram(method, currentContext);
         const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-        const sequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
+        const sequenceDiagram = SequenceDiagram.buildDiagram(method, currentContext);
         const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
         const hasSequenceDiagram = sequenceDiagramCode !== null;
 
@@ -796,11 +796,13 @@ const UsecaseApp = (() => {
         }
 
         const methodMap = buildMethodMap(usecases);
+        const reverseCallerMap = buildReverseCallerMap(methodMap);
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
 
         const buildCurrentDiagramContext = () => ({
             methodMap,
+            reverseCallerMap,
             outboundOperationSet,
             showDiagramInternalMethods: document.getElementById('show-diagram-internal-methods').checked,
             showDiagramOutboundPorts: document.getElementById('show-diagram-outbound-ports').checked,

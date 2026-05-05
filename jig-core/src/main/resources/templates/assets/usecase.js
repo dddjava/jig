@@ -57,61 +57,50 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {Map<string, UsecaseMethod>} methodMap
+     * @returns {Map<string, DiagramNode[]>}
+     */
+    function buildReverseCallerMap(methodMap) {
+        const map = new Map();
+        function addEntry(calleeFqn, callerNode) {
+            if (!calleeFqn || !callerNode?.fqn) return;
+            Jig.util.pushToMap(map, calleeFqn, callerNode);
+        }
+        for (const method of methodMap.values()) {
+            (method.callMethods || []).forEach(calleeFqn =>
+                addEntry(calleeFqn, {fqn: method.fqn, kind: method.kind})
+            );
+        }
+        Jig.data.inbound.getControllers().forEach(controller => {
+            (controller.relations || []).forEach(relation => {
+                if (!relation?.from || !relation?.to) return;
+                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
+                if (methodMap.has(callerClassFqn)) return;
+                addEntry(relation.to, {fqn: relation.from, kind: "inbound-method"});
+            });
+        });
+        return map;
+    }
+
+    /**
      * @param {UsecaseMethod} rootMethod
      * @param {DiagramContext} diagramContext
      * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
      */
     function buildUsecaseDiagram(rootMethod, diagramContext) {
-        /**
-         * @type {Map<string, DiagramNode>}
-         */
         const nodes = new Map();
         const edgeSet = new Set();
-        /**
-         * @type {DiagramEdge[]}
-         */
         const edges = [];
         const visited = new Set();
 
         nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
         visited.add(rootMethod.fqn);
 
-        /**
-         * @param {string} kind
-         * @returns {boolean}
-         */
         function shouldIncludeMethodNode(kind) {
             return diagramContext.showDiagramInternalMethods || kind === "usecase";
         }
 
-        /**
-         * @type {Map<string, DiagramNode[]>}
-         */
-        const reverseCallerMap = new Map();
-
-        /**
-         * @param {string} calleeFqn
-         * @param {DiagramNode} callerNode
-         */
-        function addReverseCaller(calleeFqn, callerNode) {
-            if (!calleeFqn || !callerNode?.fqn) return;
-            Jig.util.pushToMap(reverseCallerMap, calleeFqn, callerNode);
-        }
-
-        for (const method of diagramContext.methodMap.values()) {
-            (method.callMethods || []).forEach(calleeFqn => {
-                addReverseCaller(calleeFqn, {fqn: method.fqn, kind: method.kind});
-            });
-        }
-
-        Jig.data.inbound.getControllers().forEach(controller => {
-            (controller.relations || []).forEach(relation => {
-                if (!relation?.from || !relation?.to) return;
-                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
-                if (diagramContext.methodMap.has(callerClassFqn)) return;
-                addReverseCaller(relation.to, {fqn: relation.from, kind: "inbound-method"});
-            });
-        });
+        const reverseCallerMap = buildReverseCallerMap(diagramContext.methodMap);
 
         /**
          * @param {string} rootFqn

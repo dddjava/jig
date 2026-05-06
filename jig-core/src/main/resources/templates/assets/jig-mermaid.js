@@ -48,12 +48,11 @@ globalThis.Jig.mermaid = (() => {
 // Mermaid diagram builder
         class MermaidBuilder {
             constructor() {
-                this.nodes = [];
+                this.nodeSet = new Set();
                 this.edges = [];
                 this.subgraphs = [];
                 this.styles = [];
                 this.clicks = [];
-                this.nodeSet = new Set();
                 this.edgeSet = new Set();
                 this.clickSet = new Set();
             }
@@ -63,11 +62,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             addNode(id, label, shape = 'class') {
-                const nodeLine = getNodeDefinition(id, label, shape);
-                if (!this.nodeSet.has(nodeLine)) {
-                    this.nodeSet.add(nodeLine);
-                    this.nodes.push(nodeLine);
-                }
+                this.nodeSet.add(getNodeDefinition(id, label, shape));
                 return id;
             }
 
@@ -150,7 +145,7 @@ globalThis.Jig.mermaid = (() => {
                     });
                     code += `  end\n`;
                 });
-                this.nodes.forEach(node => {
+                this.nodeSet.forEach(node => {
                     code += `  ${node.trim()}\n`;
                 });
                 this.edges.forEach(edge => {
@@ -166,7 +161,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             isEmpty() {
-                return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
+                return this.nodeSet.size === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
             }
         }
 

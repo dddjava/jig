@@ -538,77 +538,20 @@ const ListOutputApp = (() => {
             button.addEventListener("click", () => activateTabGroup(button.dataset.tabGroup, button.dataset.tab));
         });
 
-        const businessPackageExportButton = document.getElementById("export-business-package-csv");
-        if (businessPackageExportButton) {
-            businessPackageExportButton.addEventListener("click", () => {
-                const csvText = buildBusinessPackageCsv(data.businessRules.packages);
-                Jig.dom.downloadCsv(csvText, "list-output-business-package.csv");
-            });
-        }
-
-        const businessAllExportButton = document.getElementById("export-business-all-csv");
-        if (businessAllExportButton) {
-            businessAllExportButton.addEventListener("click", () => {
-                const csvText = buildBusinessAllCsv(data.businessRules.all);
-                Jig.dom.downloadCsv(csvText, "list-output-business-all.csv");
-            });
-        }
-
-        const businessEnumExportButton = document.getElementById("export-business-enum-csv");
-        if (businessEnumExportButton) {
-            businessEnumExportButton.addEventListener("click", () => {
-                const csvText = buildBusinessEnumCsv(data.businessRules.enums);
-                Jig.dom.downloadCsv(csvText, "list-output-business-enum.csv");
-            });
-        }
-
-        const businessCollectionExportButton = document.getElementById("export-business-collection-csv");
-        if (businessCollectionExportButton) {
-            businessCollectionExportButton.addEventListener("click", () => {
-                const csvText = buildBusinessCollectionCsv(data.businessRules.collections);
-                Jig.dom.downloadCsv(csvText, "list-output-business-collection.csv");
-            });
-        }
-
-        const businessValidationExportButton = document.getElementById("export-business-validation-csv");
-        if (businessValidationExportButton) {
-            businessValidationExportButton.addEventListener("click", () => {
-                const csvText = buildBusinessValidationCsv(data.businessRules.validations);
-                Jig.dom.downloadCsv(csvText, "list-output-business-validation.csv");
-            });
-        }
-
-        const businessSmellExportButton = document.getElementById("export-business-smell-csv");
-        if (businessSmellExportButton) {
-            businessSmellExportButton.addEventListener("click", () => {
-                const csvText = buildBusinessSmellCsv(data.businessRules.methodSmells);
-                Jig.dom.downloadCsv(csvText, "list-output-business-smell.csv");
-            });
-        }
-
-        const controllerExportButton = document.getElementById("export-controller-csv");
-        if (controllerExportButton) {
-            controllerExportButton.addEventListener("click", () => {
-                const csvText = buildControllerCsv(data.applications.controllers);
-                Jig.dom.downloadCsv(csvText, "list-output-controller.csv");
-            });
-        }
-
-        const serviceExportButton = document.getElementById("export-service-csv");
-        if (serviceExportButton) {
-            serviceExportButton.addEventListener("click", () => {
-                const csvText = buildServiceCsv(data.applications.services);
-                Jig.dom.downloadCsv(csvText, "list-output-service.csv");
-            });
-        }
-
-        const repositoryExportButton = document.getElementById("export-repository-csv");
-        if (repositoryExportButton) {
-            repositoryExportButton.addEventListener("click", () => {
-                const csvText = buildRepositoryCsv(data.applications.repositories);
-                Jig.dom.downloadCsv(csvText, "list-output-repository.csv");
-            });
-        }
+        const csvExportBindings = [
+            {id: "export-business-package-csv",    build: () => buildBusinessPackageCsv(data.businessRules.packages),       file: "list-output-business-package.csv"},
+            {id: "export-business-all-csv",        build: () => buildBusinessAllCsv(data.businessRules.all),                file: "list-output-business-all.csv"},
+            {id: "export-business-enum-csv",       build: () => buildBusinessEnumCsv(data.businessRules.enums),             file: "list-output-business-enum.csv"},
+            {id: "export-business-collection-csv", build: () => buildBusinessCollectionCsv(data.businessRules.collections), file: "list-output-business-collection.csv"},
+            {id: "export-business-validation-csv", build: () => buildBusinessValidationCsv(data.businessRules.validations), file: "list-output-business-validation.csv"},
+            {id: "export-business-smell-csv",      build: () => buildBusinessSmellCsv(data.businessRules.methodSmells),     file: "list-output-business-smell.csv"},
+            {id: "export-controller-csv",          build: () => buildControllerCsv(data.applications.controllers),         file: "list-output-controller.csv"},
+            {id: "export-service-csv",             build: () => buildServiceCsv(data.applications.services),               file: "list-output-service.csv"},
+            {id: "export-repository-csv",          build: () => buildRepositoryCsv(data.applications.repositories),        file: "list-output-repository.csv"},
+        ];
+        csvExportBindings.forEach(({id, build, file}) => {
+            document.getElementById(id)?.addEventListener("click", () => Jig.dom.downloadCsv(build(), file));
+        });
     }
 
     return {

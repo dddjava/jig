@@ -13,7 +13,6 @@ const IndexApp = (() => {
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
         domainPackageDiagram.innerHTML = "";
-        console.log("Rendering package diagram for " + packageRoot);
         const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,

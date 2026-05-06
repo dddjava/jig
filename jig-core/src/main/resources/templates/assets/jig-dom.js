@@ -115,6 +115,7 @@ globalThis.Jig.dom = (() => {
         return typeLinkResolver;
     }
 
+    // Jig.glossary (jig-glossary.js) のロードが必要
     function createTypeLink(fqn, className = undefined) {
         // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
         const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';

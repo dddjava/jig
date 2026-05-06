@@ -190,16 +190,10 @@ const ListOutputApp = (() => {
     }
 
     function renderTableRows(tableId, items, buildCells) {
-        const tableBody = document.querySelector(`#${tableId} tbody`);
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            buildCells(item).forEach(cell => row.appendChild(cell));
-            fragment.appendChild(row);
-        });
-        tableBody.appendChild(fragment);
+        Jig.dom.renderTableRows(tableId, items,
+            (row, item) => buildCells(item).forEach(cell => row.appendChild(cell)),
+            {clear: true}
+        );
     }
 
     function buildControllerCsv(items) {
@@ -487,7 +481,7 @@ const ListOutputApp = (() => {
         });
 
         thead.appendChild(tr);
-        table.prepend(thead); // prepend so it's the first child
+        table.prepend(thead);
     }
 
     function activateTabGroup(group, tabName) {

@@ -189,10 +189,6 @@ const ListOutputApp = (() => {
         return value ? "◯" : "";
     }
 
-    function buildCsv(header, rows) {
-        return [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(",")).join("\r\n");
-    }
-
     function renderTableRows(tableId, items, buildCells) {
         const tableBody = document.querySelector(`#${tableId} tbody`);
         if (!tableBody) return;
@@ -217,7 +213,7 @@ const ListOutputApp = (() => {
             item.cyclomaticComplexity ?? "",
             item.path ?? "",
         ]);
-        return buildCsv(headerDefinitions.controller, rows);
+        return Jig.dom.buildCsv(headerDefinitions.controller, rows);
     }
 
     function buildServiceCsv(items) {
@@ -238,7 +234,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.useNull),
             markIfTrue(item.useStream),
         ]);
-        return buildCsv(headerDefinitions.service, rows);
+        return Jig.dom.buildCsv(headerDefinitions.service, rows);
     }
 
     function buildRepositoryCsv(items) {
@@ -258,7 +254,7 @@ const ListOutputApp = (() => {
             item.callerTypeCount ?? "",
             item.callerMethodCount ?? "",
         ]);
-        return buildCsv(headerDefinitions.repository, rows);
+        return Jig.dom.buildCsv(headerDefinitions.repository, rows);
     }
 
     function buildBusinessPackageCsv(items) {
@@ -267,7 +263,7 @@ const ListOutputApp = (() => {
             getPackageLabel(item),
             item.classCount ?? "",
         ]);
-        return buildCsv(headerDefinitions.businessPackage, rows);
+        return Jig.dom.buildCsv(headerDefinitions.businessPackage, rows);
     }
 
     function buildBusinessAllCsv(items) {
@@ -283,7 +279,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.samePackageOnly),
             item.incomingClassList ?? "",
         ]);
-        return buildCsv(headerDefinitions.businessAll, rows);
+        return Jig.dom.buildCsv(headerDefinitions.businessAll, rows);
     }
 
     function buildBusinessEnumCsv(items) {
@@ -299,7 +295,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.hasBehavior),
             markIfTrue(item.isPolymorphic),
         ]);
-        return buildCsv(headerDefinitions.businessEnum, rows);
+        return Jig.dom.buildCsv(headerDefinitions.businessEnum, rows);
     }
 
     function buildBusinessCollectionCsv(items) {
@@ -313,7 +309,7 @@ const ListOutputApp = (() => {
             item.methodCount ?? "",
             item.methods ?? "",
         ]);
-        return buildCsv(headerDefinitions.businessCollection, rows);
+        return Jig.dom.buildCsv(headerDefinitions.businessCollection, rows);
     }
 
     function buildBusinessValidationCsv(items) {
@@ -326,7 +322,7 @@ const ListOutputApp = (() => {
             item.annotationType ?? "",
             item.annotationDescription ?? "",
         ]);
-        return buildCsv(headerDefinitions.businessValidation, rows);
+        return Jig.dom.buildCsv(headerDefinitions.businessValidation, rows);
     }
 
     function buildBusinessSmellCsv(items) {
@@ -343,7 +339,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.returnsBoolean),
             markIfTrue(item.returnsVoid),
         ]);
-        return buildCsv(headerDefinitions.businessSmell, rows);
+        return Jig.dom.buildCsv(headerDefinitions.businessSmell, rows);
     }
 
     function renderControllerTable(items) {

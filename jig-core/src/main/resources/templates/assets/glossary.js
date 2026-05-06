@@ -66,9 +66,7 @@ const GlossaryApp = (() => {
             term.origin ?? "",
             term.fqn ?? "",
         ]);
-
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return Jig.dom.buildCsv(header, rows);
     }
 
     function renderTermSidebar(terms) {

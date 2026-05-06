@@ -11,6 +11,9 @@ globalThis.Jig.dom.escapeCsvValue ??= (value) => {
     const text = String(value ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
     return `"${text.replace(/"/g, "\"\"")}"`;
 };
+globalThis.Jig.dom.buildCsv ??= (header, rows) => {
+    return [header, ...rows].map(row => row.map(globalThis.Jig.dom.escapeCsvValue).join(",")).join("\r\n");
+};
 
 class Element {
     constructor(tagName) {

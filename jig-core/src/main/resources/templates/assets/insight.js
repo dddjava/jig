@@ -35,7 +35,7 @@ const InsightApp = (() => {
             row.appendChild(Jig.dom.createCell(pkg.numberOfUsingTypes, "number"));
             row.appendChild(Jig.dom.createCell(pkg.cyclomaticComplexity, "number"));
             row.appendChild(Jig.dom.createCell(pkg.size, "number"));
-        });
+        }, {clear: true});
     }
 
     function renderTypeInsights(types) {
@@ -52,7 +52,7 @@ const InsightApp = (() => {
             row.appendChild(Jig.dom.createCell(type.lcom.toFixed(2), "number"));
             row.appendChild(Jig.dom.createCell(type.cyclomaticComplexity, "number"));
             row.appendChild(Jig.dom.createCell(type.size, "number"));
-        });
+        }, {clear: true});
     }
 
     function renderMethodInsights(methods) {
@@ -70,7 +70,7 @@ const InsightApp = (() => {
             row.appendChild(Jig.dom.createCell(method.numberOfUsingOwnFields, "number"));
             row.appendChild(Jig.dom.createCell(method.numberOfUsingOwnMethods, "number"));
             row.appendChild(Jig.dom.createCell(method.size, "number"));
-        });
+        }, {clear: true});
     }
 
     function setupZoomIcons() {

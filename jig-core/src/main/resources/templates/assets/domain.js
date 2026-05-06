@@ -1103,8 +1103,7 @@ const DomainApp = (() => {
                 (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName}),
                 {enableLabelToggle: true}
             );
-        } else {
-            // テスト環境など closest が使えない場合に対応
+        } else if (diagramType === 'type') {
             const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
             const outgoing = panel?.querySelector('.class-relation-external-outgoing');
             const incoming = panel?.querySelector('.class-relation-external-incoming');

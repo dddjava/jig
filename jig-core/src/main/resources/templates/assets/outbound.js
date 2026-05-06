@@ -184,21 +184,20 @@ const OutboundApp = (() => {
     }
 
     function groupDirectExternalAccessors(data) {
-        const map = new Map();
+        const extMap = new Map();
         data.otherExternalAccessors.forEach(accessor => {
             accessor.operations.forEach(method => {
                 method.externals.forEach(ext => {
-                    if (!map.has(ext.fqn)) {
-                        map.set(ext.fqn, {externalType: {fqn: ext.fqn}, directAccessors: []});
+                    if (!extMap.has(ext.fqn)) {
+                        extMap.set(ext.fqn, {externalType: {fqn: ext.fqn}, accessorMap: new Map()});
                     }
-                    const group = map.get(ext.fqn);
-                    let existing = group.directAccessors.find(a => a.fqn === accessor.fqn);
-                    if (!existing) {
-                        existing = {fqn: accessor.fqn, operations: []};
-                        group.directAccessors.push(existing);
+                    const group = extMap.get(ext.fqn);
+                    if (!group.accessorMap.has(accessor.fqn)) {
+                        group.accessorMap.set(accessor.fqn, {fqn: accessor.fqn, operationMap: new Map()});
                     }
-                    if (!existing.operations.find(m => m.fqn === method.fqn)) {
-                        existing.operations.push({
+                    const accessorEntry = group.accessorMap.get(accessor.fqn);
+                    if (!accessorEntry.operationMap.has(method.fqn)) {
+                        accessorEntry.operationMap.set(method.fqn, {
                             ...method,
                             externals: method.externals.filter(e => e.fqn === ext.fqn)
                         });
@@ -206,7 +205,13 @@ const OutboundApp = (() => {
                 });
             });
         });
-        return Array.from(map.values());
+        return Array.from(extMap.values()).map(group => ({
+            externalType: group.externalType,
+            directAccessors: Array.from(group.accessorMap.values()).map(a => ({
+                fqn: a.fqn,
+                operations: Array.from(a.operationMap.values())
+            }))
+        }));
     }
 
     function toCrudChar(operationType) {

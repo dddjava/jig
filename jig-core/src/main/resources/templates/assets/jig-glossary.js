@@ -109,7 +109,7 @@ globalThis.Jig.glossary = (() => {
      */
     function makeLabels(showPhysicalName) {
         return {
-            type: (fqn) => showPhysicalName ? typeSimpleName(fqn) : getTypeTerm(fqn).title,
+            type: (fqn) => !fqn ? '' : showPhysicalName ? typeSimpleName(fqn) : getTypeTerm(fqn).title,
             pkg: (fqn) => showPhysicalName ? typeSimpleName(fqn) : getPackageTerm(fqn).title,
             method: (fqn) => showPhysicalName ? methodSimpleName(fqn) : getMethodTerm(fqn, true).title,
         };

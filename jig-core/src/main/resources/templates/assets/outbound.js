@@ -694,8 +694,7 @@ const OutboundApp = (() => {
     }
 
     function extractOperationProps(operation, showPhysicalName = false) {
-        const typeLabel = (fqn) => showPhysicalName ? (fqn ? Jig.glossary.typeSimpleName(fqn) : '') : Jig.glossary.getTypeTerm(fqn).title;
-        const {method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
+        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
         return {
             portFqn: operation.outboundPort.fqn,
             portLabel: typeLabel(operation.outboundPort.fqn),

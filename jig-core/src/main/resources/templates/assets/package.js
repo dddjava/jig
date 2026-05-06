@@ -70,8 +70,8 @@ const PackageApp = (() => {
     }
 
     function getMaxPackageDepth() {
-        const data = parsePackageRelationData(Jig.data.package.get() ?? {});
-        return data.packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
+        const {packages} = getPackageRelationData(hierarchyState);
+        return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
     function aggregatePackageData(packages, relations, depth) {

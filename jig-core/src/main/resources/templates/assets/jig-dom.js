@@ -484,7 +484,7 @@ globalThis.Jig.dom = (() => {
                 return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
             });
 
-            rows.forEach(row => table.getElementsByTagName("tbody")[0].appendChild(row));
+            rows.forEach(row => table.querySelector("tbody").appendChild(row));
 
             headerColumn.dataset.orderFlag = (!orderFlag).toString();
         }

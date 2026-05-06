@@ -111,10 +111,10 @@ globalThis.Jig.mermaid = (() => {
             }
 
             startSubgraph(id, label = id, direction = null) {
-                const subgraph = {id, label, lines: [], lineSet: new Set()};
+                const subgraph = {id, label, lineSet: new Set()};
                 if (direction) {
                     const safeDirection = (direction === 'TD') ? 'TB' : direction;
-                    subgraph.lines.push(`direction ${safeDirection}`);
+                    subgraph.lineSet.add(`direction ${safeDirection}`);
                 }
                 this.subgraphs.push(subgraph);
                 return subgraph;
@@ -128,11 +128,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             addNodeToSubgraph(subgraph, id, label, shape = 'class') {
-                const nodeLine = `    ${getNodeDefinition(id, label, shape)}`;
-                if (!subgraph.lineSet.has(nodeLine)) {
-                    subgraph.lineSet.add(nodeLine);
-                    subgraph.lines.push(nodeLine);
-                }
+                subgraph.lineSet.add(`    ${getNodeDefinition(id, label, shape)}`);
                 return id;
             }
 
@@ -140,7 +136,7 @@ globalThis.Jig.mermaid = (() => {
                 let code = `graph ${direction}\n`;
                 this.subgraphs.forEach(sg => {
                     code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
-                    sg.lines.forEach(line => {
+                    sg.lineSet.forEach(line => {
                         code += `    ${line.trim()}\n`;
                     });
                     code += `  end\n`;

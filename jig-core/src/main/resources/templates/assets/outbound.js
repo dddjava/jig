@@ -146,23 +146,20 @@ const OutboundApp = (() => {
                     if (!map.has(persistenceTarget)) {
                         map.set(persistenceTarget, {
                             persistenceTarget: persistenceTarget,
-                            operations: [],
+                            operationSet: new Set(),
                         });
                     }
-                    const group = map.get(persistenceTarget);
-                    if (!group.operations.includes(operation)) {
-                        group.operations.push(operation);
-                    }
+                    map.get(persistenceTarget).operationSet.add(operation);
                 });
             });
         });
         return Array.from(map.values()).map(group => {
-            group.operations.sort((a, b) => {
+            const operations = Array.from(group.operationSet).sort((a, b) => {
                 const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
                 const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
                 return left.localeCompare(right, "ja");
             });
-            return group;
+            return {persistenceTarget: group.persistenceTarget, operations};
         }).sort((a, b) => {
             return a.persistenceTarget.localeCompare(b.persistenceTarget, "ja");
         });
@@ -174,14 +171,14 @@ const OutboundApp = (() => {
             operation.externalAccessors.forEach(accessor => {
                 accessor.operations.forEach(accMethod => {
                     accMethod.externals.forEach(ext => {
-                        if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn}, operations: []});
-                        const group = map.get(ext.fqn);
-                        if (!group.operations.includes(operation)) group.operations.push(operation);
+                        if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn}, operationSet: new Set()});
+                        map.get(ext.fqn).operationSet.add(operation);
                     });
                 });
             });
         });
         return Array.from(map.values())
+            .map(group => ({externalType: group.externalType, operations: Array.from(group.operationSet)}))
             .sort((a, b) => Jig.glossary.getTypeTerm(a.externalType.fqn).title.localeCompare(Jig.glossary.getTypeTerm(b.externalType.fqn).title, "ja"));
     }
 

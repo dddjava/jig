@@ -56,7 +56,7 @@ const IndexApp = (() => {
         renderDocumentLinks();
 
         const packageDiagramContainer = document.getElementById("package-diagram");
-        if (!packageDiagramContainer) throw new Error("package-diagram container is not defined");
+        if (!packageDiagramContainer) return;
 
         const packageData = getPackageData();
         const allPackages = packageData.packages;

@@ -1,5 +1,4 @@
 globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
 
 const GlossaryApp = (() => {
     // 文字列の比較は日本語を優先しつつ大小を無視する

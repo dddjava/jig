@@ -10,12 +10,14 @@ const InboundApp = (() => {
         {type: 'OTHER',          label: 'その他'},
     ];
 
-    const state = {
+    const INITIAL_STATE = {
         data: null,
         sidebarFilterText: '',
         displayType: 'all',
         simplified: false,
     };
+
+    const state = {...INITIAL_STATE};
 
     function prepareDiagramData(controller, usecaseData) {
         const entrypointFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
@@ -134,10 +136,7 @@ const InboundApp = (() => {
 
     function init() {
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
-        state.data = null;
-        state.sidebarFilterText = '';
-        state.displayType = 'all';
-        state.simplified = false;
+        Object.assign(state, INITIAL_STATE);
 
         state.data = parseInboundData();
         if (!state.data) {

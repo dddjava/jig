@@ -1,12 +1,16 @@
 const UsecaseApp = (() => {
     const Jig = globalThis.Jig;
 
-    const state = {
-        data: null,
-        selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
-        handlerFqns: null,       // ハンドラのみ表示時のFQN集合、nullはすべて表示
-        sidebarFilterText: '',
-    };
+    function createInitialState() {
+        return {
+            data: null,
+            selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
+            handlerFqns: null,       // ハンドラのみ表示時のFQN集合、nullはすべて表示
+            sidebarFilterText: '',
+        };
+    }
+
+    const state = createInitialState();
 
     const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
     const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
@@ -884,10 +888,7 @@ const UsecaseApp = (() => {
         if (!document.body.classList.contains("usecase-model")) return;
 
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう、毎回 init で state をクリア
-        state.data = null;
-        state.selectedTabs = new Map();
-        state.handlerFqns = null;
-        state.sidebarFilterText = '';
+        Object.assign(state, createInitialState());
 
         state.data = Jig.data.usecase.get();
         if (!state.data) return;

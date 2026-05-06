@@ -334,7 +334,7 @@ const OutboundApp = (() => {
                         Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                     }
                 });
-itemList.appendChild(operationItem);
+                itemList.appendChild(operationItem);
             });
             const itemListDetails = Jig.dom.createElement("details", {});
             const itemListSummary = Jig.dom.createElement("summary", {

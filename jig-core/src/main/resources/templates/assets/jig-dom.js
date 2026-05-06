@@ -439,6 +439,19 @@ globalThis.Jig.dom = (() => {
 
     // --- Table ---
 
+    function renderTableRows(tableId, items, buildRow, {clear = false} = {}) {
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        if (!tableBody) return;
+        if (clear) tableBody.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        items.forEach(item => {
+            const row = createElement("tr");
+            buildRow(row, item);
+            fragment.appendChild(row);
+        });
+        tableBody.appendChild(fragment);
+    }
+
     function setupSortableTables() {
         function sortTable(event) {
             const headerColumn = event.target;
@@ -594,6 +607,7 @@ globalThis.Jig.dom = (() => {
         escapeCsvValue,
         buildCsv,
         downloadCsv,
+        renderTableRows,
         setupSortableTables,
         initCommonUi,
 

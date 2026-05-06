@@ -24,18 +24,8 @@ const InsightApp = (() => {
         });
     }
 
-    function renderInsightRows(tableId, items, buildRow) {
-        const tbody = document.querySelector(`#${tableId} tbody`);
-        if (!tbody) return;
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            buildRow(row, item);
-            tbody.appendChild(row);
-        });
-    }
-
     function renderPackageInsights(packages) {
-        renderInsightRows("package-insight-list", packages, (row, pkg) => {
+        Jig.dom.renderTableRows("package-insight-list", packages, (row, pkg) => {
             row.dataset.fqn = pkg.fqn;
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(pkg.fqn, "fqn"));
@@ -49,7 +39,7 @@ const InsightApp = (() => {
     }
 
     function renderTypeInsights(types) {
-        renderInsightRows("type-insight-list", types, (row, type) => {
+        Jig.dom.renderTableRows("type-insight-list", types, (row, type) => {
             row.dataset.fqn = type.fqn;
             row.dataset.packageFqn = type.packageFqn;
             row.appendChild(createZoomCell());
@@ -66,7 +56,7 @@ const InsightApp = (() => {
     }
 
     function renderMethodInsights(methods) {
-        renderInsightRows("method-insight-list", methods, (row, method) => {
+        Jig.dom.renderTableRows("method-insight-list", methods, (row, method) => {
             row.dataset.fqn = method.fqn;
             row.dataset.packageFqn = method.packageFqn;
             row.dataset.typeFqn = method.typeFqn;

@@ -214,8 +214,13 @@ class Element {
     }
 
     appendChild(child) {
-        if (child && typeof child === "object") child.parentNode = this;
-        this.children.push(child);
+        if (!child || typeof child !== "object") return child;
+        if (child.tagName === "fragment") {
+            child.children.forEach(c => { c.parentNode = this; this.children.push(c); });
+        } else {
+            child.parentNode = this;
+            this.children.push(child);
+        }
         return child;
     }
 

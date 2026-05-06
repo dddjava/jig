@@ -127,6 +127,17 @@ function setupJig() {
         const text = String(value ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
         return `"${text.replace(/"/g, "\"\"")}"`;
     };
+
+    global.Jig.dom.renderTableRows = function renderTableRows(tableId, items, buildRow, {clear = false} = {}) {
+        const tableBody = global.document.querySelector(`#${tableId} tbody`);
+        if (!tableBody) return;
+        if (clear) tableBody.innerHTML = "";
+        items.forEach(item => {
+            const row = global.document.createElement("tr");
+            buildRow(row, item);
+            tableBody.appendChild(row);
+        });
+    };
 }
 
 test.describe('list-output.js', () => {

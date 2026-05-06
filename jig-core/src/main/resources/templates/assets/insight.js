@@ -9,7 +9,7 @@ const InsightApp = (() => {
     function setInsightCount(elementId, count) {
         const element = document.getElementById(elementId);
         if (element) {
-            element.textContent = count.toString();
+            element.textContent = count;
         }
     }
 
@@ -35,11 +35,11 @@ const InsightApp = (() => {
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(packageInsight.fqn, "fqn"));
             row.appendChild(Jig.dom.createCell(Jig.glossary.getPackageTerm(packageInsight.fqn).title));
-            row.appendChild(Jig.dom.createCell(packageInsight.numberOfTypes.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(packageInsight.numberOfMethods.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(packageInsight.cyclomaticComplexity.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(packageInsight.size.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.numberOfTypes, "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.numberOfMethods, "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.numberOfUsingTypes, "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.cyclomaticComplexity, "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.size, "number"));
             tbody.appendChild(row);
         });
     }
@@ -56,13 +56,13 @@ const InsightApp = (() => {
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(typeInsight.fqn, "fqn"));
             row.appendChild(Jig.dom.createCell(Jig.glossary.getTypeTerm(typeInsight.fqn).title));
-            row.appendChild(Jig.dom.createCell(typeInsight.numberOfMethods.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.numberOfMethods, "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsingTypes, "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsedByTypes, "number"));
             row.appendChild(Jig.dom.createCell(typeInsight.instability.toFixed(2), "number"));
             row.appendChild(Jig.dom.createCell(typeInsight.lcom.toFixed(2), "number"));
-            row.appendChild(Jig.dom.createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(typeInsight.size.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.cyclomaticComplexity, "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.size, "number"));
             tbody.appendChild(row);
         });
     }
@@ -80,13 +80,13 @@ const InsightApp = (() => {
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(methodInsight.fqn, "fqn"));
             row.appendChild(Jig.dom.createCell(Jig.glossary.getMethodTerm(methodInsight.fqn).title));
-            row.appendChild(Jig.dom.createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingFields.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingOwnFields.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingOwnMethods.toString(), "number"));
-            row.appendChild(Jig.dom.createCell(methodInsight.size.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.cyclomaticComplexity, "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingTypes, "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingMethods, "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingFields, "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingOwnFields, "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingOwnMethods, "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.size, "number"));
             tbody.appendChild(row);
         });
     }

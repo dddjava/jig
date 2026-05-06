@@ -53,6 +53,7 @@ globalThis.Jig.mermaid = (() => {
                 this.subgraphs = [];
                 this.styles = [];
                 this.clicks = [];
+                this.nodeSet = new Set();
                 this.edgeSet = new Set();
                 this.clickSet = new Set();
             }
@@ -63,7 +64,8 @@ globalThis.Jig.mermaid = (() => {
 
             addNode(id, label, shape = 'class') {
                 const nodeLine = getNodeDefinition(id, label, shape);
-                if (!this.nodes.includes(nodeLine)) {
+                if (!this.nodeSet.has(nodeLine)) {
+                    this.nodeSet.add(nodeLine);
                     this.nodes.push(nodeLine);
                 }
                 return id;
@@ -114,7 +116,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             startSubgraph(id, label = id, direction = null) {
-                const subgraph = {id, label, lines: []};
+                const subgraph = {id, label, lines: [], lineSet: new Set()};
                 if (direction) {
                     const safeDirection = (direction === 'TD') ? 'TB' : direction;
                     subgraph.lines.push(`direction ${safeDirection}`);
@@ -132,7 +134,8 @@ globalThis.Jig.mermaid = (() => {
 
             addNodeToSubgraph(subgraph, id, label, shape = 'class') {
                 const nodeLine = `    ${getNodeDefinition(id, label, shape)}`;
-                if (!subgraph.lines.includes(nodeLine)) {
+                if (!subgraph.lineSet.has(nodeLine)) {
+                    subgraph.lineSet.add(nodeLine);
                     subgraph.lines.push(nodeLine);
                 }
                 return id;

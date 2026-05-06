@@ -307,34 +307,6 @@ test.describe('glossary.js', () => {
             delete globalThis.glossaryData;
         });
 
-        test('script#glossary-data から取得', () => {
-            const doc = setupDocument();
-            const script = doc.createElement('script');
-            script.id = 'glossary-data';
-            script.textContent = JSON.stringify({
-                'app.FromScript': {
-                    title: 'FromScript',
-                    simpleText: 'FromScript',
-                    kind: 'クラス',
-                    description: ''
-                }
-            });
-            doc.elementsById.set('glossary-data', script);
-
-            const result = glossary.getGlossaryData();
-            assert.equal(result[0].title, 'FromScript');
-            assert.equal(result[0].fqn, 'app.FromScript');
-        });
-
-        test('不正なJSONの場合は空配列を返す', () => {
-            const doc = setupDocument();
-            const script = doc.createElement('script');
-            script.id = 'glossary-data';
-            script.textContent = 'invalid json';
-            doc.elementsById.set('glossary-data', script);
-
-            assert.deepEqual(glossary.getGlossaryData(), []);
-        });
     });
 
     test.describe('描画', () => {

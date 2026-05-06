@@ -38,19 +38,7 @@ const GlossaryApp = (() => {
 
     function getGlossaryData() {
         const glossaryData = Jig.data.glossary.get();
-        const normalized = normalizeGlossaryData(glossaryData);
-        if (normalized) return normalized;
-
-        const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
-        if (!script) return [];
-
-        const jsonText = script.textContent || "{}";
-        try {
-            const parsed = JSON.parse(jsonText);
-            return normalizeGlossaryData(parsed) ?? [];
-        } catch (e) {
-            return [];
-        }
+        return normalizeGlossaryData(glossaryData) ?? [];
     }
 
     function buildTermAnchorId(term, index) {

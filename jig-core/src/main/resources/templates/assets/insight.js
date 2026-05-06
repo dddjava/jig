@@ -100,12 +100,11 @@ const InsightApp = (() => {
         });
     }
 
-    function cancelZoom(event) {
-        // すべてのテーブルからhidden-by-zoomクラスを削除
+    function cancelZoom(buttonEl) {
         document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
             row.classList.remove("hidden-by-zoom");
         });
-        event.target.classList.add("hidden");
+        if (buttonEl) buttonEl.classList.add("hidden");
     }
 
     function fqnStartsWith(prefix, targetRow) {
@@ -168,7 +167,8 @@ const InsightApp = (() => {
 
         Jig.dom.setupSortableTables();
         setupZoomIcons();
-        document.getElementById("cancel-zoom")?.addEventListener("click", (e) => cancelZoom(e));
+        const cancelBtn = document.getElementById("cancel-zoom");
+        cancelBtn?.addEventListener("click", () => cancelZoom(cancelBtn));
     }
 
     return {

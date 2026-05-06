@@ -193,6 +193,19 @@ const ListOutputApp = (() => {
         return [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(",")).join("\r\n");
     }
 
+    function renderTableRows(tableId, items, buildCells) {
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        if (!tableBody) return;
+        tableBody.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        items.forEach(item => {
+            const row = Jig.dom.createElement("tr");
+            buildCells(item).forEach(cell => row.appendChild(cell));
+            fragment.appendChild(row);
+        });
+        tableBody.appendChild(fragment);
+    }
+
     function buildControllerCsv(items) {
         const rows = items.map(item => [
             item.packageName ?? "",
@@ -334,215 +347,134 @@ const ListOutputApp = (() => {
     }
 
     function renderControllerTable(items) {
-        const tableBody = document.querySelector("#controller-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(item.methodSignature));
-            row.appendChild(Jig.dom.createCell(item.returnType));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingFieldTypes)));
-            row.appendChild(Jig.dom.createCell(item.cyclomaticComplexity, "number"));
-            row.appendChild(Jig.dom.createCell(item.path));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("controller-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(item.methodSignature),
+            Jig.dom.createCell(item.returnType),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(formatFieldTypes(item.usingFieldTypes)),
+            Jig.dom.createCell(item.cyclomaticComplexity, "number"),
+            Jig.dom.createCell(item.path),
+        ]);
     }
 
     function renderServiceTable(items) {
-        const tableBody = document.querySelector("#service-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(item.methodSignature));
-            row.appendChild(Jig.dom.createCell(item.returnType));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.eventHandler)));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(getMethodLabel(item)));
-            row.appendChild(Jig.dom.createCell(getReturnTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(getParameterTypeLabels(item))));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingFieldTypes)));
-            row.appendChild(Jig.dom.createCell(item.cyclomaticComplexity, "number"));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingServiceMethods)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingRepositoryMethods)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.useNull)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.useStream)));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("service-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(item.methodSignature),
+            Jig.dom.createCell(item.returnType),
+            Jig.dom.createCell(markIfTrue(item.eventHandler)),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(getMethodLabel(item)),
+            Jig.dom.createCell(getReturnTypeLabel(item)),
+            Jig.dom.createCell(formatFieldTypes(getParameterTypeLabels(item))),
+            Jig.dom.createCell(formatFieldTypes(item.usingFieldTypes)),
+            Jig.dom.createCell(item.cyclomaticComplexity, "number"),
+            Jig.dom.createCell(formatFieldTypes(item.usingServiceMethods)),
+            Jig.dom.createCell(formatFieldTypes(item.usingRepositoryMethods)),
+            Jig.dom.createCell(markIfTrue(item.useNull)),
+            Jig.dom.createCell(markIfTrue(item.useStream)),
+        ]);
     }
 
     function renderRepositoryTable(items) {
-        const tableBody = document.querySelector("#repository-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(item.methodSignature));
-            row.appendChild(Jig.dom.createCell(item.returnType));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(getReturnTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(getParameterTypeLabels(item))));
-            row.appendChild(Jig.dom.createCell(item.cyclomaticComplexity, "number"));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.insertTables)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.selectTables)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.updateTables)));
-            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.deleteTables)));
-            row.appendChild(Jig.dom.createCell(item.callerTypeCount, "number"));
-            row.appendChild(Jig.dom.createCell(item.callerMethodCount, "number"));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("repository-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(item.methodSignature),
+            Jig.dom.createCell(item.returnType),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(getReturnTypeLabel(item)),
+            Jig.dom.createCell(formatFieldTypes(getParameterTypeLabels(item))),
+            Jig.dom.createCell(item.cyclomaticComplexity, "number"),
+            Jig.dom.createCell(formatFieldTypes(item.insertTables)),
+            Jig.dom.createCell(formatFieldTypes(item.selectTables)),
+            Jig.dom.createCell(formatFieldTypes(item.updateTables)),
+            Jig.dom.createCell(formatFieldTypes(item.deleteTables)),
+            Jig.dom.createCell(item.callerTypeCount, "number"),
+            Jig.dom.createCell(item.callerMethodCount, "number"),
+        ]);
     }
 
     function renderBusinessPackageTable(items) {
-        const tableBody = document.querySelector("#business-package-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(getPackageLabel(item)));
-            row.appendChild(Jig.dom.createCell(item.classCount, "number"));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("business-package-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(getPackageLabel(item)),
+            Jig.dom.createCell(item.classCount, "number"),
+        ]);
     }
 
     function renderBusinessAllTable(items) {
-        const tableBody = document.querySelector("#business-all-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(item.businessRuleKind));
-            row.appendChild(Jig.dom.createCell(item.incomingBusinessRuleCount, "number"));
-            row.appendChild(Jig.dom.createCell(item.outgoingBusinessRuleCount, "number"));
-            row.appendChild(Jig.dom.createCell(item.incomingClassCount, "number"));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.nonPublic)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.samePackageOnly)));
-            row.appendChild(Jig.dom.createCell(item.incomingClassList));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("business-all-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(item.businessRuleKind),
+            Jig.dom.createCell(item.incomingBusinessRuleCount, "number"),
+            Jig.dom.createCell(item.outgoingBusinessRuleCount, "number"),
+            Jig.dom.createCell(item.incomingClassCount, "number"),
+            Jig.dom.createCell(markIfTrue(item.nonPublic)),
+            Jig.dom.createCell(markIfTrue(item.samePackageOnly)),
+            Jig.dom.createCell(item.incomingClassList),
+        ]);
     }
 
     function renderBusinessEnumTable(items) {
-        const tableBody = document.querySelector("#business-enum-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(item.constants));
-            row.appendChild(Jig.dom.createCell(item.fields));
-            row.appendChild(Jig.dom.createCell(item.usageCount, "number"));
-            row.appendChild(Jig.dom.createCell(item.usagePlaces));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.hasParameters)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.hasBehavior)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.isPolymorphic)));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("business-enum-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(item.constants),
+            Jig.dom.createCell(item.fields),
+            Jig.dom.createCell(item.usageCount, "number"),
+            Jig.dom.createCell(item.usagePlaces),
+            Jig.dom.createCell(markIfTrue(item.hasParameters)),
+            Jig.dom.createCell(markIfTrue(item.hasBehavior)),
+            Jig.dom.createCell(markIfTrue(item.isPolymorphic)),
+        ]);
     }
 
     function renderBusinessCollectionTable(items) {
-        const tableBody = document.querySelector("#business-collection-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(item.fieldTypes));
-            row.appendChild(Jig.dom.createCell(item.usageCount, "number"));
-            row.appendChild(Jig.dom.createCell(item.usagePlaces));
-            row.appendChild(Jig.dom.createCell(item.methodCount, "number"));
-            row.appendChild(Jig.dom.createCell(item.methods));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("business-collection-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(item.fieldTypes),
+            Jig.dom.createCell(item.usageCount, "number"),
+            Jig.dom.createCell(item.usagePlaces),
+            Jig.dom.createCell(item.methodCount, "number"),
+            Jig.dom.createCell(item.methods),
+        ]);
     }
 
     function renderBusinessValidationTable(items) {
-        const tableBody = document.querySelector("#business-validation-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(item.memberName));
-            row.appendChild(Jig.dom.createCell(item.memberType));
-            row.appendChild(Jig.dom.createCell(item.annotationType));
-            row.appendChild(Jig.dom.createCell(item.annotationDescription));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("business-validation-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(item.memberName),
+            Jig.dom.createCell(item.memberType),
+            Jig.dom.createCell(item.annotationType),
+            Jig.dom.createCell(item.annotationDescription),
+        ]);
     }
 
     function renderBusinessSmellTable(items) {
-        const tableBody = document.querySelector("#business-smell-list tbody");
-        if (!tableBody) return;
-        tableBody.innerHTML = "";
-
-        const fragment = document.createDocumentFragment();
-        items.forEach(item => {
-            const row = Jig.dom.createElement("tr");
-            row.appendChild(Jig.dom.createCell(item.packageName));
-            row.appendChild(Jig.dom.createCell(item.typeName));
-            row.appendChild(Jig.dom.createCell(item.methodSignature));
-            row.appendChild(Jig.dom.createCell(item.returnType));
-            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.notUseMember)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.primitiveInterface)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.referenceNull)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.nullDecision)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.returnsBoolean)));
-            row.appendChild(Jig.dom.createCell(markIfTrue(item.returnsVoid)));
-            fragment.appendChild(row);
-        });
-
-        tableBody.appendChild(fragment);
+        renderTableRows("business-smell-list", items, item => [
+            Jig.dom.createCell(item.packageName),
+            Jig.dom.createCell(item.typeName),
+            Jig.dom.createCell(item.methodSignature),
+            Jig.dom.createCell(item.returnType),
+            Jig.dom.createCell(getTypeLabel(item)),
+            Jig.dom.createCell(markIfTrue(item.notUseMember)),
+            Jig.dom.createCell(markIfTrue(item.primitiveInterface)),
+            Jig.dom.createCell(markIfTrue(item.referenceNull)),
+            Jig.dom.createCell(markIfTrue(item.nullDecision)),
+            Jig.dom.createCell(markIfTrue(item.returnsBoolean)),
+            Jig.dom.createCell(markIfTrue(item.returnsVoid)),
+        ]);
     }
 
     function renderTableHeader(tableElementId, headers) {

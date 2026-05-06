@@ -26,16 +26,18 @@ globalThis.Jig.glossary = (() => {
         return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
     }
 
-    function getPackageTerm(fqn) {
+    function getTermOrSimpleName(fqn) {
         const term = findTerm(fqn);
         if (term) return term;
         return {title: typeSimpleName(fqn) || fqn, description: ""};
     }
 
+    function getPackageTerm(fqn) {
+        return getTermOrSimpleName(fqn);
+    }
+
     function getTypeTerm(fqn) {
-        const term = findTerm(fqn);
-        if (term) return term;
-        return {title: typeSimpleName(fqn) || fqn, description: ""};
+        return getTermOrSimpleName(fqn);
     }
 
     function getFieldTerm(fqn) {

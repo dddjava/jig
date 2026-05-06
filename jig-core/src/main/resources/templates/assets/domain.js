@@ -674,13 +674,6 @@ const DomainApp = (() => {
         });
     }
 
-    function createFieldsList(fields, options = {}) {
-        return Jig.dom.type.fieldsList(fields, options);
-    }
-
-    function createMethodsList(kind, methods, options = {}) {
-        return Jig.dom.type.methodsList(kind, methods, options);
-    }
 
     /**
      * @param {{enumInfo: EnumInfo | undefined, fqn: string}} type
@@ -1019,9 +1012,9 @@ const DomainApp = (() => {
                 section.appendChild(createEnumSection(type));
             }
 
-            const fieldsList = createFieldsList(type.fields, {showTitle: false});
-            const methodList = createMethodsList("メソッド", type.methods, {showTitle: false});
-            const staticList = createMethodsList("staticメソッド", type.staticMethods, {showTitle: false});
+            const fieldsList = Jig.dom.type.fieldsList(type.fields, {showTitle: false});
+            const methodList = Jig.dom.type.methodsList("メソッド", type.methods, {showTitle: false});
+            const staticList = Jig.dom.type.methodsList("staticメソッド", type.staticMethods, {showTitle: false});
             const hasTypeRelation = hasTypeRelationDiagram(type, typeRelations, typesMap);
 
             appendConfiguredTabs(section, [

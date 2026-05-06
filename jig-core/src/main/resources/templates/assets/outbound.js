@@ -353,33 +353,20 @@ itemList.appendChild(operationItem);
             });
 
             const packageContainer = Jig.dom.createElement("div", {});
-            byPackage.forEach((pkgGroups, packageFqn) => {
-                const typeList = Jig.dom.createElement("ul", {
-                    className: "in-page-sidebar__links",
-                    children: pkgGroups.map(group => {
-                        const fqn = group.outboundPort.fqn;
-                        return Jig.dom.createElement("li", {
-                            className: "in-page-sidebar__item",
-                            children: [Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + Jig.util.fqnToId("port", fqn)},
-                                textContent: Jig.glossary.getTypeTerm(fqn).title
-                            })]
-                        });
-                    })
-                });
-                const packageTitle = Jig.dom.createElement("p", {
-                    className: "in-page-sidebar__title in-page-sidebar__title--collapsible in-page-sidebar__title--sub",
-                    children: [
-                        Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
-                        Jig.dom.sidebar.createToggle(typeList)
-                    ]
-                });
-                packageContainer.appendChild(Jig.dom.createElement("section", {
-                    className: "in-page-sidebar__section",
-                    children: [packageTitle, typeList]
-                }));
-            });
+            Jig.dom.sidebar.renderPackageGrouped(packageContainer, byPackage, pkgGroups =>
+                pkgGroups.map(group => {
+                    const fqn = group.outboundPort.fqn;
+                    return Jig.dom.createElement("li", {
+                        className: "in-page-sidebar__item",
+                        children: [Jig.dom.createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + Jig.util.fqnToId("port", fqn)},
+                            textContent: Jig.glossary.getTypeTerm(fqn).title
+                        })]
+                    });
+                }),
+                {titleClass: "in-page-sidebar__title--sub"}
+            );
 
             const portTitle = Jig.dom.createElement("p", {
                 className: "in-page-sidebar__title in-page-sidebar__title--collapsible",

@@ -211,6 +211,28 @@ test.describe('inbound.js', () => {
                     const section = createSidebarSection(title, items);
                     if (section) container.appendChild(section);
                 },
+                renderPackageGrouped: (container, byPackage, buildListItems, {titleClass} = {}) => {
+                    if (!container) return;
+                    const packageTitleClass = ["in-page-sidebar__title", "in-page-sidebar__title--collapsible", titleClass]
+                        .filter(Boolean).join(" ");
+                    byPackage.forEach((items, packageFqn) => {
+                        const typeList = createElement("ul", {
+                            className: "in-page-sidebar__links",
+                            children: buildListItems(items)
+                        });
+                        const packageTitle = createElement("p", {
+                            className: packageTitleClass,
+                            children: [
+                                createElement("span", {textContent: globalThis.Jig.glossary.getPackageTerm(packageFqn).title}),
+                                createElement("button", {className: "in-page-sidebar__toggle"})
+                            ]
+                        });
+                        container.appendChild(createElement("section", {
+                            className: "in-page-sidebar__section",
+                            children: [packageTitle, typeList]
+                        }));
+                    });
+                },
                 initCollapseBtn: () => {},
                 initTextFilter: (inputId, onChange) => {
                     const input = document.getElementById(inputId);

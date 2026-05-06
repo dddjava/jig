@@ -348,6 +348,28 @@ globalThis.Jig.dom = (() => {
         }
     }
 
+    function renderPackageGrouped(container, byPackage, buildListItems, {titleClass} = {}) {
+        const packageTitleClass = ["in-page-sidebar__title", "in-page-sidebar__title--collapsible", titleClass]
+            .filter(Boolean).join(" ");
+        byPackage.forEach((items, packageFqn) => {
+            const typeList = createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: buildListItems(items)
+            });
+            const packageTitle = createElement("p", {
+                className: packageTitleClass,
+                children: [
+                    createElement("span", {textContent: globalThis.Jig.glossary.getPackageTerm(packageFqn).title}),
+                    createSidebarToggle(typeList)
+                ]
+            });
+            container.appendChild(createElement("section", {
+                className: "in-page-sidebar__section",
+                children: [packageTitle, typeList]
+            }));
+        });
+    }
+
     function initSidebarTextFilter(inputId, onChange) {
         const input = document.getElementById(inputId);
         if (!input) return;
@@ -592,6 +614,7 @@ globalThis.Jig.dom = (() => {
         sidebar: {
             section: createSection,
             renderSection,
+            renderPackageGrouped,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,

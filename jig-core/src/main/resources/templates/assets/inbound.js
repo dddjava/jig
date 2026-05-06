@@ -244,36 +244,20 @@ const InboundApp = (() => {
             Jig.util.pushToMap(byPackage, pkg, adapter);
         });
 
-        byPackage.forEach((pkgAdapters, packageFqn) => {
-            const typeList = Jig.dom.createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: pkgAdapters.map(adapter =>
-                    Jig.dom.createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [
-                            Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
-                                textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
-                            })
-                        ]
-                    })
-                )
-            });
-
-            const packageTitle = Jig.dom.createElement("p", {
-                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                children: [
-                    Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
-                    Jig.dom.sidebar.createToggle(typeList)
-                ]
-            });
-
-            sidebar.appendChild(Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [packageTitle, typeList]
-            }));
-        });
+        Jig.dom.sidebar.renderPackageGrouped(sidebar, byPackage, pkgAdapters =>
+            pkgAdapters.map(adapter =>
+                Jig.dom.createElement("li", {
+                    className: "in-page-sidebar__item",
+                    children: [
+                        Jig.dom.createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
+                            textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
+                        })
+                    ]
+                })
+            )
+        );
     }
 
     function buildEntrypointItem(ep) {

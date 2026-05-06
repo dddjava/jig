@@ -531,10 +531,7 @@ const PackageApp = (() => {
         const pairPackages = typeof mutualPairLabel === 'string'
             ? mutualPairLabel.split(' <-> ').map(value => value.trim()).filter(value => value)
             : [];
-        const uniquePairPackages = [];
-        pairPackages.forEach(packageFqn => {
-            if (!uniquePairPackages.includes(packageFqn)) uniquePairPackages.push(packageFqn);
-        });
+        const uniquePairPackages = [...new Set(pairPackages)];
         const collapsedPairPackages = new Set(
             uniquePairPackages.filter(packageFqn =>
                 uniquePairPackages.some(other => other !== packageFqn && packageFqn.startsWith(`${other}.`))

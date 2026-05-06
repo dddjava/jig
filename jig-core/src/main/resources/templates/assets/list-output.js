@@ -189,8 +189,11 @@ const ListOutputApp = (() => {
         return value ? "◯" : "";
     }
 
+    function buildCsv(header, rows) {
+        return [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(",")).join("\r\n");
+    }
+
     function buildControllerCsv(items) {
-        const header = headerDefinitions.controller;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -201,12 +204,10 @@ const ListOutputApp = (() => {
             item.cyclomaticComplexity ?? "",
             item.path ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.controller, rows);
     }
 
     function buildServiceCsv(items) {
-        const header = headerDefinitions.service;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -224,12 +225,10 @@ const ListOutputApp = (() => {
             markIfTrue(item.useNull),
             markIfTrue(item.useStream),
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.service, rows);
     }
 
     function buildRepositoryCsv(items) {
-        const header = headerDefinitions.repository;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -246,23 +245,19 @@ const ListOutputApp = (() => {
             item.callerTypeCount ?? "",
             item.callerMethodCount ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.repository, rows);
     }
 
     function buildBusinessPackageCsv(items) {
-        const header = headerDefinitions.businessPackage;
         const rows = items.map(item => [
             item.packageName ?? "",
             getPackageLabel(item),
             item.classCount ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.businessPackage, rows);
     }
 
     function buildBusinessAllCsv(items) {
-        const header = headerDefinitions.businessAll;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -275,12 +270,10 @@ const ListOutputApp = (() => {
             markIfTrue(item.samePackageOnly),
             item.incomingClassList ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.businessAll, rows);
     }
 
     function buildBusinessEnumCsv(items) {
-        const header = headerDefinitions.businessEnum;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -293,12 +286,10 @@ const ListOutputApp = (() => {
             markIfTrue(item.hasBehavior),
             markIfTrue(item.isPolymorphic),
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.businessEnum, rows);
     }
 
     function buildBusinessCollectionCsv(items) {
-        const header = headerDefinitions.businessCollection;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -309,12 +300,10 @@ const ListOutputApp = (() => {
             item.methodCount ?? "",
             item.methods ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.businessCollection, rows);
     }
 
     function buildBusinessValidationCsv(items) {
-        const header = headerDefinitions.businessValidation;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -324,12 +313,10 @@ const ListOutputApp = (() => {
             item.annotationType ?? "",
             item.annotationDescription ?? "",
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.businessValidation, rows);
     }
 
     function buildBusinessSmellCsv(items) {
-        const header = headerDefinitions.businessSmell;
         const rows = items.map(item => [
             item.packageName ?? "",
             item.typeName ?? "",
@@ -343,8 +330,7 @@ const ListOutputApp = (() => {
             markIfTrue(item.returnsBoolean),
             markIfTrue(item.returnsVoid),
         ]);
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return buildCsv(headerDefinitions.businessSmell, rows);
     }
 
     function renderControllerTable(items) {

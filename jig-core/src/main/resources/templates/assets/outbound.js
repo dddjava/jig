@@ -935,9 +935,9 @@ itemList.appendChild(operationItem);
             accessor: checked("show-accessor"),
             accessorMethod: checked("show-accessor-method"),
             target: checked("show-target"),
-            externalAccessor: checked("show-accessor"),
-            externalAccessorMethod: checked("show-accessor-method"),
-            externalType: checked("show-target"),
+            externalAccessor: checked("show-accessor"),         // ポートリストと同じUI設定を共用
+            externalAccessorMethod: checked("show-accessor-method"), // 同上
+            externalType: checked("show-target"),               // 同上
             externalTypeMethod: checked("show-external-type-method"),
             crudCreate: checked("show-crud-c"),
             crudRead: checked("show-crud-r"),

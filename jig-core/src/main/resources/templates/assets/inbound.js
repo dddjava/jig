@@ -409,6 +409,7 @@ const InboundApp = (() => {
         const container = document.getElementById("inbound-list");
         if (!container) return;
         container.innerHTML = "";
+        const usecaseData = Jig.data.usecase.get();
 
         if (!adapters || adapters.length === 0) {
             container.textContent = "データなし";
@@ -446,7 +447,7 @@ const InboundApp = (() => {
 
             Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
                 const diagramGenerator = (dir, opts) => {
-                    const data = prepareDiagramData(adapter, Jig.data.usecase.get());
+                    const data = prepareDiagramData(adapter, usecaseData);
                     const builder = new Jig.mermaid.Builder();
                     buildDiagramBuilder(data, builder, opts?.showPhysicalName);
                     return builder.build(dir);

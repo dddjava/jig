@@ -472,8 +472,8 @@ globalThis.Jig.dom = (() => {
             }
 
             rows.sort(function (a, b) {
-                const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
-                const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
+                const aValue = a.cells[columnIndex]?.textContent ?? "";
+                const bValue = b.cells[columnIndex]?.textContent ?? "";
 
                 // 数値は降順、文字は昇順
                 if (type === "number") {

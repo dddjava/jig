@@ -12,13 +12,15 @@ const OutboundApp = (() => {
         crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
     };
 
-    const state = {
+    const INITIAL_STATE = {
         visibility: null,
         data: null,
         grouped: null,
         persistenceGrouped: null,
         externalGrouped: null
     };
+
+    const state = {...INITIAL_STATE};
 
     function loadData() {
         return Jig.data.outbound.get() || {
@@ -874,6 +876,7 @@ const OutboundApp = (() => {
         if (typeof document === "undefined") return;
         if (!document.body.classList.contains("outbound-interface")) return;
 
+        Object.assign(state, INITIAL_STATE);
         state.visibility = {...DEFAULT_VISIBILITY};
         state.data = loadData();
 

@@ -742,8 +742,7 @@ const PackageApp = (() => {
         syncStateToURL();
     }
 
-    function buildCollapsedSubpackageMap(selectedPackages) {
-        const tbody = dom.getExplorePackageList()?.querySelector('tbody');
+    function buildCollapsedSubpackageMap(selectedPackages, tbody) {
         if (!tbody) return new Map();
         const selectedSet = new Set(selectedPackages);
         // 最も近い祖先を優先するため長さ降順でソート
@@ -767,7 +766,10 @@ const PackageApp = (() => {
 
         const {relations} = getPackageRelationData(context);
 
-        const collapsedToParent = buildCollapsedSubpackageMap(context.exploreTargetPackages);
+        const collapsedToParent = buildCollapsedSubpackageMap(
+            context.exploreTargetPackages,
+            dom.getExplorePackageList()?.querySelector('tbody')
+        );
         const effectiveTargets = [...context.exploreTargetPackages, ...collapsedToParent.keys()];
 
         const {targetSet, callerSet, calleeSet} = collectExploreNodeSets(

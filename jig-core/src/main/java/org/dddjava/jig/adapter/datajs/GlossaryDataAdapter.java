@@ -44,7 +44,7 @@ public class GlossaryDataAdapter implements DataAdapter {
                     .and("simpleText", term.simpleText())
                     .and("kind", term.termKind().name())
                     .and("description", term.description())
-                    .and("origin", term.origin() != null ? term.origin().name() : "")
+                    .and("origin", term.origin().name())
                     .build();
             map.put(term.id().asText(), value);
         }

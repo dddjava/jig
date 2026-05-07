@@ -74,20 +74,20 @@ const InsightApp = (() => {
     }
 
     function setupZoomIcons() {
-        const zoomIcons = document.querySelectorAll("i.zoom");
+        // 行が増えても addEventListener が増えないよう tbody 単位で委譲する
+        document.querySelectorAll("table").forEach(table => {
+            const tbody = table.querySelector("tbody");
+            if (!tbody) return;
+            tbody.addEventListener("click", (event) => {
+                const icon = event.target.closest("i.zoom");
+                if (!icon) return;
 
-        zoomIcons.forEach(icon => {
-            icon.style.cursor = "pointer";
-
-            icon.addEventListener("click", (event) => {
-                const row = event.target.closest("tr");
-                const table = event.target.closest("table");
-                const tbody = table.querySelector("tbody");
-                const allRows = tbody.querySelectorAll("tr");
+                const row = icon.closest("tr");
+                if (!row) return;
                 const fqn = row.querySelector("td.fqn").textContent;
 
                 // クリックされた行以外を非表示にする
-                allRows.forEach(r => {
+                tbody.querySelectorAll("tr").forEach(r => {
                     if (r !== row && !fqnStartsWith(fqn, r)) {
                         r.classList.add("hidden-by-zoom");
                     }

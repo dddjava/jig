@@ -28,9 +28,10 @@ const DomainApp = (() => {
 
             Jig.util.pushToMap(packageTypesMap, pkgFqn, {fqn: type.fqn});
 
+            // pkgFqn から domainPackageRoots に到達するまで、空の親パッケージも Map に登録しておく
+            // （子パッケージのみを持つ中間パッケージのナビゲーションを成立させるため）
             let current = pkgFqn;
-            while (true) {
-                if (domainPackageRoots.includes(current)) break;
+            while (!domainPackageRoots.includes(current)) {
                 const parentDot = current.lastIndexOf('.');
                 if (parentDot < 0) break;
                 const parent = current.substring(0, parentDot);
@@ -65,17 +66,20 @@ const DomainApp = (() => {
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
+     * @param {Map<string, Set<string>>} [memo] - 同一描画パスでの再計算を抑止するメモ
      * @returns {Set<string>}
      */
-    function pkgKinds(pkg, childPackagesMap, typesMap) {
+    function pkgKinds(pkg, childPackagesMap, typesMap, memo) {
+        if (memo?.has(pkg.fqn)) return memo.get(pkg.fqn);
         const kinds = new Set();
         pkg.types.forEach(type => {
             const kind = typesMap?.get(type.fqn)?.kind;
             if (kind) kinds.add(kind);
         });
         getDirectChildPackages(pkg, childPackagesMap).forEach(childPkg => {
-            pkgKinds(childPkg, childPackagesMap, typesMap).forEach(k => kinds.add(k));
+            pkgKinds(childPkg, childPackagesMap, typesMap, memo).forEach(k => kinds.add(k));
         });
+        memo?.set(pkg.fqn, kinds);
         return kinds;
     }
 
@@ -86,7 +90,7 @@ const DomainApp = (() => {
      * @param {boolean} isTopLevel
      * @returns {HTMLElement}
      */
-    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false) {
+    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false, kindsMemo = new Map()) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
         const mergedNames = [Jig.glossary.getPackageTerm(pkg.fqn).title];
@@ -106,7 +110,7 @@ const DomainApp = (() => {
         // 子パッケージを表示（統合後の currentPkg の直下のみ）
         const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
         childPackages.forEach(childPkg => {
-            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap));
+            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap, false, kindsMemo));
         });
 
         // 子タイプを表示
@@ -140,7 +144,7 @@ const DomainApp = (() => {
             ]
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
-        const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap)].join(' ')};
+        const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap, kindsMemo)].join(' ')};
 
         if (isTopLevel) {
             return Jig.dom.createElement("section", {
@@ -616,9 +620,11 @@ const DomainApp = (() => {
         });
 
         // トップレベルのパッケージのみを表示（直接の親を持たないもの）
+        // pkgKinds の再帰計算結果は同一 render 中で何度も参照されるためメモ化を共有する
+        const kindsMemo = new Map();
         packages.forEach(pkg => {
             if (!childPackageFqns.has(pkg.fqn)) {
-                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true));
+                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true, kindsMemo));
             }
         });
     }

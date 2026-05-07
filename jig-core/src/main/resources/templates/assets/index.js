@@ -53,6 +53,10 @@ const IndexApp = (() => {
     }
 
     function init() {
+        if (typeof document === "undefined" || !document.body.classList.contains("index")) {
+            return;
+        }
+
         renderDocumentLinks();
 
         const packageDiagramContainer = document.getElementById("package-diagram");

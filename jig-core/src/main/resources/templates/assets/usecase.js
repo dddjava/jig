@@ -16,6 +16,9 @@ const UsecaseApp = (() => {
     const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
     const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
 
+    // 有向エッジを Set でユニーク化するためのキー。FQNには現れない区切り文字を使用する。
+    const makeEdgeKey = (from, to) => `${from} ${to}`;
+
     /**
      * @param {string} fqn
      * @returns {string}
@@ -183,7 +186,7 @@ const UsecaseApp = (() => {
         }
 
         collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
-            const edgeKey = callerFqn + '\u2192' + rootMethod.fqn;
+            const edgeKey = makeEdgeKey(callerFqn, rootMethod.fqn);
             if (!edgeSet.has(edgeKey)) {
                 edgeSet.add(edgeKey);
                 edges.push({from: callerFqn, to: rootMethod.fqn});
@@ -204,7 +207,7 @@ const UsecaseApp = (() => {
                 if (diagramContext.methodMap.has(calleeFqn)) {
                     const m = diagramContext.methodMap.get(calleeFqn);
                     if (shouldIncludeMethodNode(m.kind)) {
-                        const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
+                        const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
                         if (!edgeSet.has(edgeKey)) {
                             edgeSet.add(edgeKey);
                             edges.push({from: effectiveCallerFqn, to: calleeFqn});
@@ -223,7 +226,7 @@ const UsecaseApp = (() => {
                     }
                 } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
                     if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
+                    const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
                         edges.push({from: effectiveCallerFqn, to: calleeFqn});
@@ -250,7 +253,7 @@ const UsecaseApp = (() => {
                             if (!nodes.has(domainFqn)) {
                                 nodes.set(domainFqn, {fqn: domainFqn, kind: "domain-type"});
                             }
-                            const edgeKey = domainFqn + '\u2192' + fqn;
+                            const edgeKey = makeEdgeKey(domainFqn, fqn);
                             if (!edgeSet.has(edgeKey)) {
                                 edgeSet.add(edgeKey);
                                 edges.push({from: domainFqn, to: fqn, dotted: true});
@@ -264,7 +267,7 @@ const UsecaseApp = (() => {
                         if (!nodes.has(returnFqn)) {
                             nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
                         }
-                        const edgeKey = fqn + '\u2192' + returnFqn;
+                        const edgeKey = makeEdgeKey(fqn, returnFqn);
                         if (!edgeSet.has(edgeKey)) {
                             edgeSet.add(edgeKey);
                             edges.push({from: fqn, to: returnFqn, dotted: true});
@@ -298,7 +301,7 @@ const UsecaseApp = (() => {
 
             (method.callMethods || []).forEach(calleeFqn => {
                 if (methodFqns.has(calleeFqn)) {
-                    const edgeKey = `${method.fqn}->${calleeFqn}`;
+                    const edgeKey = makeEdgeKey(method.fqn, calleeFqn);
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
                         edges.push({from: method.fqn, to: calleeFqn});
@@ -314,7 +317,7 @@ const UsecaseApp = (() => {
                             domainNodeSet.add(domainFqn);
                             nodes.push({fqn: domainFqn, kind: "domain-type"});
                         }
-                        const edgeKey = `${domainFqn}->${method.fqn}`;
+                        const edgeKey = makeEdgeKey(domainFqn, method.fqn);
                         if (!edgeSet.has(edgeKey)) {
                             edgeSet.add(edgeKey);
                             edges.push({from: domainFqn, to: method.fqn, dotted: true});
@@ -329,7 +332,7 @@ const UsecaseApp = (() => {
                         domainNodeSet.add(returnFqn);
                         nodes.push({fqn: returnFqn, kind: "domain-type"});
                     }
-                    const edgeKey = `${method.fqn}->${returnFqn}`;
+                    const edgeKey = makeEdgeKey(method.fqn, returnFqn);
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
                         edges.push({from: method.fqn, to: returnFqn, dotted: true});
@@ -347,7 +350,7 @@ const UsecaseApp = (() => {
                     inboundNodeSet.add(callerClassFqn);
                     nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
                 }
-                const edgeKey = `${callerClassFqn}->${relation.to}`;
+                const edgeKey = makeEdgeKey(callerClassFqn, relation.to);
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
                     edges.push({from: callerClassFqn, to: relation.to});

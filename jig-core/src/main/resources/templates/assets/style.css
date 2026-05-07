@@ -1403,6 +1403,10 @@ label {
     display: none;
 }
 
+.insight table i.zoom {
+    cursor: pointer;
+}
+
 #metric-definitions {
     margin-bottom: 2em;
 }

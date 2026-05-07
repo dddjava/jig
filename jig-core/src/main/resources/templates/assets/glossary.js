@@ -92,18 +92,8 @@ const GlossaryApp = (() => {
     function getInitialChar(term) {
         const title = term.title || "";
         if (!title) return "#";
-        const first = title.charAt(0).toUpperCase();
-
-        if (/^[A-Z]$/.test(first)) return first;
-
-        // ひらがな (3040-309F) / カタカナ (30A0-30FF)
-        if (/^[\u3040-\u309F\u30A0-\u30FF]$/.test(first)) {
-            return first;
-        }
-
-        if (/^[0-9]$/.test(first)) return first;
-
-        return first;
+        // ASCII 英字は大文字に揃え、それ以外（ひらがな/カタカナ/漢字/数字等）はそのまま先頭1文字を返す
+        return title.charAt(0).toUpperCase();
     }
 
     function renderJumpBar(chars) {

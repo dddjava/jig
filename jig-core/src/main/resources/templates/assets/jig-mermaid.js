@@ -128,7 +128,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             addNodeToSubgraph(subgraph, id, label, shape = 'class') {
-                subgraph.lineSet.add(`    ${getNodeDefinition(id, label, shape)}`);
+                subgraph.lineSet.add(getNodeDefinition(id, label, shape));
                 return id;
             }
 
@@ -137,12 +137,12 @@ globalThis.Jig.mermaid = (() => {
                 this.subgraphs.forEach(sg => {
                     code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
                     sg.lineSet.forEach(line => {
-                        code += `    ${line.trim()}\n`;
+                        code += `    ${line}\n`;
                     });
                     code += `  end\n`;
                 });
                 this.nodeSet.forEach(node => {
-                    code += `  ${node.trim()}\n`;
+                    code += `  ${node}\n`;
                 });
                 this.edges.forEach(edge => {
                     code += `${edge}\n`;

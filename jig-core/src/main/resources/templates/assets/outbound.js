@@ -85,24 +85,54 @@ const OutboundApp = (() => {
 
         const accessorsByExecution = new Map();
         data.links.executionToPersistenceAccessor.forEach(link => {
-            if (!accessorsByExecution.has(link.execution)) {
-                accessorsByExecution.set(link.execution, []);
-            }
-            accessorsByExecution.get(link.execution).push(link.accessor);
+            Jig.util.pushToMap(accessorsByExecution, link.execution, link.accessor);
         });
 
         const externalAccessorByFqn = new Map();
-        data.otherExternalAccessors.forEach(a => externalAccessorByFqn.set(a.fqn, a));
+        // accessor 単位で simpleName -> operation を一度だけ計算しておく（execution ごとの再計算を避ける）
+        const externalAccessorOpByName = new Map();
+        data.otherExternalAccessors.forEach(a => {
+            externalAccessorByFqn.set(a.fqn, a);
+            const byName = new Map();
+            a.operations.forEach(m => {
+                const name = Jig.glossary.methodSimpleName(m.fqn);
+                if (name) byName.set(name, m);
+            });
+            externalAccessorOpByName.set(a.fqn, byName);
+        });
 
+        // execution -> (accessor fqn -> Set<methodName>)
         const externalAccessorsByExecution = new Map();
         data.links.executionToOtherExternalAccessor.forEach(link => {
-            if (!externalAccessorsByExecution.has(link.execution))
+            if (!externalAccessorsByExecution.has(link.execution)) {
                 externalAccessorsByExecution.set(link.execution, new Map());
-            const accessorMethods = externalAccessorsByExecution.get(link.execution);
-            if (!accessorMethods.has(link.accessor))
-                accessorMethods.set(link.accessor, new Set());
-            accessorMethods.get(link.accessor).add(link.method);
+            }
+            Jig.util.addToSetMap(externalAccessorsByExecution.get(link.execution), link.accessor, link.method);
         });
+
+        function buildExternalAccessorsForExecution(execFqn) {
+            const accessorMethodsMap = externalAccessorsByExecution.get(execFqn);
+            if (!accessorMethodsMap) return [];
+            return Array.from(accessorMethodsMap.entries()).flatMap(([fqn, methodNames]) => {
+                const accessor = externalAccessorByFqn.get(fqn);
+                if (!accessor) return [];
+                const opByName = externalAccessorOpByName.get(fqn);
+                const operations = [];
+                methodNames.forEach(name => {
+                    const op = opByName?.get(name);
+                    if (op) operations.push(op);
+                });
+                return [{...accessor, operations}];
+            });
+        }
+
+        const compareByMethodTitle = (a, b) =>
+            Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn, true).title
+                .localeCompare(Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn, true).title, "ja");
+
+        const compareByPortTypeTitle = (a, b) =>
+            Jig.glossary.getTypeTerm(a.outboundPort.fqn).title
+                .localeCompare(Jig.glossary.getTypeTerm(b.outboundPort.fqn).title, "ja");
 
         return data.outboundPorts.map(port => {
             const operations = port.operations.flatMap(op => {
@@ -111,31 +141,17 @@ const OutboundApp = (() => {
                 const execEntry = executionByFqn.get(execFqn);
                 const accessorIds = accessorsByExecution.get(execFqn) || [];
                 const persistenceAccessors = accessorIds.map(id => methodById.get(id)).filter(Boolean);
-                const executionAccessorMethods = externalAccessorsByExecution.get(execFqn) || new Map();
-                const externalAccessors = Array.from(executionAccessorMethods.entries()).flatMap(([fqn, methodNames]) => {
-                    const accessor = externalAccessorByFqn.get(fqn);
-                    if (!accessor) return [];
-                    return [{...accessor, operations: accessor.operations.filter(m => methodNames.has(m.fqn.split('#')[1]?.split('(')[0]))}];
-                });
                 return [{
                     outboundPortOperation: op,
                     outboundAdapter: execEntry?.adapter ?? null,
                     outboundAdapterExecution: execEntry?.exec ?? null,
                     persistenceAccessors,
-                    externalAccessors
+                    externalAccessors: buildExternalAccessorsForExecution(execFqn),
                 }];
-            }).sort((a, b) => {
-                const left = Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn, true).title;
-                const right = Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn, true).title;
-                return left.localeCompare(right, "ja");
-            });
+            }).sort(compareByMethodTitle);
             return {outboundPort: port, operations};
         }).filter(group => group.operations.length > 0)
-            .sort((a, b) => {
-                const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
-                const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
-                return left.localeCompare(right, "ja");
-            });
+          .sort(compareByPortTypeTitle);
     }
 
     function groupOperationsByPersistenceTarget(operations) {

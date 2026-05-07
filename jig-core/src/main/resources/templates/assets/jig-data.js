@@ -168,33 +168,22 @@ globalThis.Jig.data = (() => {
             ? location.pathname.split('/').pop()
             : '';
 
+        // 解決順は配列の順序に従う。各 entry は対象データの保有判定・型取得・遷移先ページ等を表す。
+        const resolvers = [
+            {has: domain.has, find: domain.getType, page: 'domain.html', idPrefix: 'domain', deprecatedAware: true},
+            {has: usecase.has, find: usecase.getType, page: 'usecase.html', idPrefix: 'type', deprecatedAware: true},
+            {has: glossary.has, find: glossary.getTerm, page: 'glossary.html', idPrefix: 'term', deprecatedAware: false},
+        ];
+
         return function (fqn) {
-            if (domain.has()) {
-                const domainType = domain.getType(fqn);
-                if (domainType) {
-                    const prefix = (currentPage === 'domain.html') ? '#' : 'domain.html#';
-                    return {
-                        href: prefix + globalThis.Jig.util.fqnToId("domain", fqn),
-                        className: domainType.isDeprecated ? 'deprecated' : undefined
-                    };
-                }
-            }
-            if (usecase.has()) {
-                const usecaseType = usecase.getType(fqn);
-                if (usecaseType) {
-                    const prefix = (currentPage === 'usecase.html') ? '#' : 'usecase.html#';
-                    return {
-                        href: prefix + globalThis.Jig.util.fqnToId("type", fqn),
-                        className: usecaseType.isDeprecated ? 'deprecated' : undefined
-                    };
-                }
-            }
-            if (glossary.has()) {
-                const term = glossary.getTerm(fqn);
-                if (term) {
-                    const prefix = (currentPage === 'glossary.html') ? '#' : 'glossary.html#';
-                    return {href: prefix + globalThis.Jig.util.fqnToId("term", fqn)};
-                }
+            for (const r of resolvers) {
+                if (!r.has()) continue;
+                const found = r.find(fqn);
+                if (!found) continue;
+                const prefix = (currentPage === r.page) ? '#' : `${r.page}#`;
+                const result = {href: prefix + globalThis.Jig.util.fqnToId(r.idPrefix, fqn)};
+                if (r.deprecatedAware && found.isDeprecated) result.className = 'deprecated';
+                return result;
             }
             return {
                 className: 'weak',

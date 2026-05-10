@@ -244,7 +244,8 @@
             tr.appendChild(kindTd);
 
             const samplesTd = document.createElement("td");
-            samplesTd.textContent = (group.samplePackages || []).join(", ");
+            samplesTd.style.whiteSpace = "pre-line";
+            samplesTd.textContent = (group.samplePackages || []).join("\n");
             tr.appendChild(samplesTd);
 
             tbody.appendChild(tr);

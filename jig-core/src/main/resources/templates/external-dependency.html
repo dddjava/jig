@@ -14,15 +14,15 @@
 <main>
     <div id="jig-document-description" class="hidden">
         <p>
-            解析対象パッケージから、解析対象外（外部ライブラリや Java 標準）への依存を俯瞰します。
-            外部側はあらかじめ既知ライブラリ単位（spring-web、mybatis、junit など）にグルーピングされて表示されます。
-            既知マップに該当しないパッケージは先頭から 2 階層で自動集約します。
+            解析対象パッケージから、解析対象外のライブラリ（外部ライブラリや Java 標準）への依存を俯瞰します。
+            ライブラリは既知のもの（spring-web、mybatis、junit など）でまとめて表示されます。
+            既知でないパッケージは先頭から 2 階層で自動集約します。
         </p>
         <p>
             Java 標準（java.*, javax.*）は既定で非表示です。下のチェックボックスで切り替えられます。
         </p>
         <p>
-            外部グループはノードまたは下の表の行をクリックして選択できます。選択中はその外部グループに関連する依存のみが表示されます。
+            ライブラリはノードまたは下の表の行をクリックして選択できます。選択中はそのライブラリに関連する依存のみが表示されます。
         </p>
     </div>
 
@@ -39,18 +39,18 @@
             </label>
         </div>
         <div class="control-row">
-            <button type="button" id="clear-selection-button">外部グループの選択を解除</button>
+            <button type="button" id="clear-selection-button">ライブラリの選択を解除</button>
         </div>
     </div>
 
     <pre id="external-dependency-diagram" class="mermaid"></pre>
 
     <section id="external-group-list">
-        <h2>外部グループ一覧</h2>
+        <h2>ライブラリ一覧</h2>
         <table id="external-group-table">
             <thead>
             <tr>
-                <th>グループ名</th>
+                <th>ライブラリ</th>
                 <th>含まれるパッケージ</th>
                 <th>呼び出し元クラス</th>
             </tr>

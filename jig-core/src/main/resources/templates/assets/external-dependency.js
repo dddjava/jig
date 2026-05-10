@@ -310,7 +310,6 @@
         tbody.querySelectorAll("tr").forEach(tr => {
             const isSelected = selectedGroupIds.has(tr.dataset.groupId);
             tr.classList.toggle("is-selected", isSelected);
-            tr.style.background = isSelected ? "#cfe9ff" : "";
         });
     }
 

@@ -47,8 +47,6 @@ public class ExternalDependencyDataAdapter implements DataAdapter {
         return Json.object("internalPackages", Json.array(List.copyOf(diagram.internalPackageFqns())))
                 .and("externalGroups", Json.arrayObjects(groups))
                 .and("relations", Json.arrayObjects(edges))
-                .and("mermaidTextWithJdk", diagram.mermaidText(true))
-                .and("mermaidTextWithoutJdk", diagram.mermaidText(false))
                 .build();
     }
 }

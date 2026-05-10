@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExternalDependencyDiagramTest {
@@ -31,7 +30,6 @@ class ExternalDependencyDiagramTest {
         assertEquals(1, diagram.groups().size(), "spring-web に集約される想定");
         assertEquals("spring-web", diagram.groups().get(0).id());
 
-        // エッジは (com.example.app -> spring-web) の1本に集約される
         assertEquals(1, diagram.edges().size());
         ExternalDependencyDiagram.Edge edge = diagram.edges().get(0);
         assertEquals("com.example.app", edge.from());
@@ -48,13 +46,11 @@ class ExternalDependencyDiagramTest {
 
         ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
 
-        // groups: spring-web, mybatis, jdk
         assertEquals(3, diagram.groups().size());
         assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("spring-web") && !g.isJdk()));
         assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("mybatis") && !g.isJdk()));
         assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("jdk") && g.isJdk()));
 
-        // 解析対象パッケージは com.example.web と com.example.repo の2つ
         assertEquals(2, diagram.internalPackageFqns().size());
     }
 
@@ -68,72 +64,8 @@ class ExternalDependencyDiagramTest {
 
         ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
 
-        // すべて JDK に集約され、配列由来の `[Lcom...` のような外部グループが現れないこと
         assertEquals(1, diagram.groups().size());
         assertEquals("jdk", diagram.groups().get(0).id());
         assertTrue(diagram.groups().get(0).isJdk());
-    }
-
-    @Test
-    void mermaidTextはincludeJdkでJDKグループの表示が切り替わる() {
-        TypeRelationships relations = new TypeRelationships(List.of(
-                rel("com.example.repo.UserMapper", "java.util.List"),
-                rel("com.example.repo.UserMapper", "org.apache.ibatis.annotations.Mapper")
-        ));
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
-
-        String withJdk = diagram.mermaidText(true);
-        String withoutJdk = diagram.mermaidText(false);
-
-        assertTrue(withJdk.contains("jdk"), "JDK 含む版にはJDKグループが含まれる");
-        assertFalse(withoutJdk.contains("\"jdk\""), "JDK 含まない版にはJDKラベルが含まれない");
-        assertTrue(withJdk.contains("mybatis"));
-        assertTrue(withoutJdk.contains("mybatis"));
-    }
-
-    @Test
-    void 外部グループは外部subgraphで囲まれない() {
-        TypeRelationships relations = new TypeRelationships(List.of(
-                rel("com.example.app.UserController", "org.springframework.web.bind.annotation.RestController")
-        ));
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
-
-        String text = diagram.mermaidText(false);
-        assertFalse(text.contains("\"外部\""), "外部 subgraph は廃止");
-    }
-
-    @Test
-    void 内部パッケージは階層subgraphでグルーピングされる() {
-        TypeRelationships relations = new TypeRelationships(List.of(
-                rel("com.example.app.UserController", "org.springframework.web.bind.annotation.RestController"),
-                rel("com.example.repo.UserMapper", "org.apache.ibatis.annotations.Mapper")
-        ));
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
-
-        String text = diagram.mermaidText(false);
-        // 共通親 com.example が subgraph 化される
-        assertTrue(text.contains("subgraph "), "内部パッケージの subgraph が存在する");
-        assertTrue(text.contains("\"com.example\""), "共通親 com.example がラベルに現れる");
-        // 末端は既存パッケージ図と同じ st-rect shape で出力される
-        assertTrue(text.contains("shape: st-rect"));
-        // app と repo がそれぞれ末端ラベルとして現れる
-        assertTrue(text.contains("\"app\""));
-        assertTrue(text.contains("\"repo\""));
-    }
-
-    @Test
-    void 親パッケージかつリーフのケースではFQNラベルとparentPackageクラスが付く() {
-        TypeRelationships relations = new TypeRelationships(List.of(
-                rel("com.example.RootService", "org.springframework.context.ApplicationContext"),
-                rel("com.example.app.Controller", "org.springframework.web.bind.annotation.RestController")
-        ));
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
-
-        String text = diagram.mermaidText(false);
-        // 自身ノードのラベルはパッケージ FQN そのまま
-        assertTrue(text.contains("\"com.example\""));
-        // parentPackage classDef と class 宣言が出力される
-        assertTrue(text.contains("classDef parentPackage"));
-        assertTrue(text.contains("class ") && text.contains(" parentPackage"));
     }
 }

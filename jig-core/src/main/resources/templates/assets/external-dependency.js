@@ -23,13 +23,14 @@
         const maxDepth = computeMaxDepth(data.internalPackages);
         const initialDepth = computeInitialDepth(data.internalPackages, maxDepth);
         populateDepthSelect(depthSelect, maxDepth, initialDepth);
+        updateDepthButtonStates(depthSelect, depthUp, depthDown);
 
         const groupsById = new Map((data.externalGroups || []).map(g => [g.id, g]));
 
         const renderDiagram = () => {
             if (!diagramEl) return;
             const includeJdk = !!(jdkToggle && jdkToggle.checked);
-            const depth = Number(depthSelect && depthSelect.value) || maxDepth;
+            const depth = depthSelect && depthSelect.value !== "" ? Number(depthSelect.value) : maxDepth;
             Jig.mermaid.render.renderWithControls(
                 diagramEl,
                 (direction) => buildMermaidText(data, groupsById, depth, includeJdk, selectedGroupIds, direction)
@@ -52,9 +53,13 @@
         rerender();
 
         if (jdkToggle) jdkToggle.addEventListener("change", renderDiagram);
-        if (depthSelect) depthSelect.addEventListener("change", renderDiagram);
-        if (depthUp) depthUp.addEventListener("click", () => stepDepth(depthSelect, +1, renderDiagram));
-        if (depthDown) depthDown.addEventListener("click", () => stepDepth(depthSelect, -1, renderDiagram));
+        if (depthSelect) depthSelect.addEventListener("change", () => {
+            renderDiagram();
+            updateDepthButtonStates(depthSelect, depthUp, depthDown);
+        });
+        // パッケージ関連と揃える: ▲は集約解除側（index-1）、▼は集約強化側（index+1）
+        if (depthUp) depthUp.addEventListener("click", () => stepDepthByIndex(depthSelect, -1));
+        if (depthDown) depthDown.addEventListener("click", () => stepDepthByIndex(depthSelect, +1));
         if (clearSelection) clearSelection.addEventListener("click", () => {
             selectedGroupIds.clear();
             onSelectionChanged();
@@ -84,13 +89,18 @@
 
     function populateDepthSelect(select, maxDepth, initialDepth) {
         if (!select) return;
+        select.innerHTML = "";
+        const noAgg = document.createElement("option");
+        noAgg.value = "0";
+        noAgg.textContent = "集約なし";
+        select.appendChild(noAgg);
         for (let d = 1; d <= maxDepth; d++) {
             const opt = document.createElement("option");
             opt.value = String(d);
-            opt.textContent = String(d);
+            opt.textContent = `深さ${d}`;
             select.appendChild(opt);
         }
-        select.value = String(initialDepth || maxDepth);
+        select.value = String(initialDepth != null ? initialDepth : maxDepth);
     }
 
     // 集約後の内部パッケージが複数になる最も浅い階層を選ぶ
@@ -104,15 +114,22 @@
         return maxDepth;
     }
 
-    function stepDepth(select, delta, onChange) {
+    function stepDepthByIndex(select, delta) {
         if (!select) return;
-        const current = Number(select.value) || 1;
-        const next = current + delta;
-        const min = Number(select.firstChild && select.firstChild.value) || 1;
-        const max = Number(select.lastChild && select.lastChild.value) || current;
-        if (next < min || next > max) return;
-        select.value = String(next);
-        onChange();
+        const options = Array.from(select.options);
+        const currentIndex = options.findIndex(opt => opt.value === select.value);
+        const nextIndex = currentIndex + delta;
+        if (nextIndex < 0 || nextIndex >= options.length) return;
+        select.value = options[nextIndex].value;
+        select.dispatchEvent(new Event("change"));
+    }
+
+    function updateDepthButtonStates(select, upButton, downButton) {
+        if (!select || !upButton || !downButton) return;
+        const options = Array.from(select.options);
+        const currentIndex = options.findIndex(opt => opt.value === select.value);
+        upButton.disabled = currentIndex <= 0;
+        downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
     }
 
     function buildMermaidText(data, groupsById, depth, includeJdk, selected, direction) {

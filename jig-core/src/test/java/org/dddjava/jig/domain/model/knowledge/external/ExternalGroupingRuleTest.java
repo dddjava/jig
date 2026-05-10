@@ -16,7 +16,7 @@ class ExternalGroupingRuleTest {
         ExternalGroupingRule.Group group = rule.groupOf(PackageId.valueOf("org.springframework.web.servlet"));
         assertEquals("spring-web", group.id());
         assertEquals("spring-web", group.displayName());
-        assertFalse(group.isJdk());
+        assertFalse(group.isJavaStandard());
     }
 
     @Test
@@ -37,7 +37,7 @@ class ExternalGroupingRuleTest {
         ExternalGroupingRule.Group g1 = rule.groupOf(PackageId.valueOf("com.example.foo.bar.baz"));
         assertEquals("com.example", g1.id());
         assertEquals("example", g1.displayName());
-        assertFalse(g1.isJdk());
+        assertFalse(g1.isJavaStandard());
 
         ExternalGroupingRule.Group g2 = rule.groupOf(PackageId.valueOf("io.netty.handler.codec"));
         assertEquals("io.netty", g2.id());
@@ -54,16 +54,16 @@ class ExternalGroupingRuleTest {
     }
 
     @Test
-    void JDKは単一のjdkグループに集約されisJdkがtrueになる() {
+    void Java標準は単一のjavaグループに集約されisJavaStandardがtrueになる() {
         ExternalGroupingRule.Group group = rule.groupOf(PackageId.valueOf("java.util.concurrent"));
-        assertEquals("jdk", group.id());
-        assertTrue(group.isJdk());
+        assertEquals("java", group.id());
+        assertTrue(group.isJavaStandard());
     }
 
     @Test
-    void javaxもJDKとして扱う() {
+    void javaxもJava標準として扱う() {
         ExternalGroupingRule.Group group = rule.groupOf(PackageId.valueOf("javax.annotation"));
-        assertEquals("jdk", group.id());
-        assertTrue(group.isJdk());
+        assertEquals("java", group.id());
+        assertTrue(group.isJavaStandard());
     }
 }

@@ -12,7 +12,7 @@ import java.util.TreeSet;
 
 /**
  * 解析対象パッケージから外部ライブラリパッケージグループへの依存を集約した俯瞰モデル。
- * Mermaid 描画は深さ集約や JDK 表示切替を扱うためフロント側で行う。
+ * Mermaid 描画は深さ集約や Java 標準の表示切替を扱うためフロント側で行う。
  */
 public class ExternalDependencyDiagram {
 
@@ -42,7 +42,7 @@ public class ExternalDependencyDiagram {
             PackageId toPackage = to.packageId();
             ExternalGroupingRule.Group group = rule.groupOf(toPackage);
             GroupNode node = groups.computeIfAbsent(group.id(),
-                    id -> new GroupNode(group.id(), group.displayName(), group.isJdk(), new TreeSet<>(), new TreeSet<>()));
+                    id -> new GroupNode(group.id(), group.displayName(), group.isJavaStandard(), new TreeSet<>(), new TreeSet<>()));
             node.samplePackages.add(toPackage.asText());
             node.usingClasses.add(rel.from().fqn());
             edges.add(new Edge(rel.from().packageId().asText(), group.id()));
@@ -67,7 +67,7 @@ public class ExternalDependencyDiagram {
         return set;
     }
 
-    public record GroupNode(String id, String displayName, boolean isJdk,
+    public record GroupNode(String id, String displayName, boolean isJavaStandard,
                             Set<String> samplePackages, Set<String> usingClasses) {
     }
 

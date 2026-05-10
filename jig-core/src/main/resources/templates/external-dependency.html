@@ -14,12 +14,12 @@
 <main>
     <div id="jig-document-description" class="hidden">
         <p>
-            解析対象パッケージから、解析対象外（外部ライブラリや JDK）への依存を俯瞰します。
+            解析対象パッケージから、解析対象外（外部ライブラリや Java 標準）への依存を俯瞰します。
             外部側はあらかじめ既知ライブラリ単位（spring-web、mybatis、junit など）にグルーピングされて表示されます。
             既知マップに該当しないパッケージは先頭から 2 階層で自動集約します。
         </p>
         <p>
-            JDK（java.*, javax.*）は既定で非表示です。下のチェックボックスで切り替えられます。
+            Java 標準（java.*, javax.*）は既定で非表示です。下のチェックボックスで切り替えられます。
         </p>
         <p>
             外部グループはノードまたは下の表の行をクリックして選択できます。選択中はその外部グループに関連する依存のみが表示されます。
@@ -35,7 +35,7 @@
         </div>
         <div class="control-row">
             <label class="radio-label">
-                <input type="checkbox" id="show-jdk-toggle"> JDK（java.*, javax.*）を表示
+                <input type="checkbox" id="show-java-standard-toggle"> Java 標準（java.*, javax.*）を表示
             </label>
         </div>
         <div class="control-row">

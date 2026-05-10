@@ -47,15 +47,15 @@ class ExternalDependencyDiagramTest {
         ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
 
         assertEquals(3, diagram.groups().size());
-        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("spring-web") && !g.isJdk()));
-        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("mybatis") && !g.isJdk()));
-        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("jdk") && g.isJdk()));
+        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("spring-web") && !g.isJavaStandard()));
+        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("mybatis") && !g.isJavaStandard()));
+        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("java") && g.isJavaStandard()));
 
         assertEquals(2, diagram.internalPackageFqns().size());
     }
 
     @Test
-    void 配列型は要素型に正規化されJDKグループに集約される() {
+    void 配列型は要素型に正規化されJava標準グループに集約される() {
         TypeRelationships relations = new TypeRelationships(List.of(
                 rel("com.example.app.Service", "[Ljava.lang.String;"),
                 rel("com.example.app.Service", "java.lang.String[]"),
@@ -65,7 +65,7 @@ class ExternalDependencyDiagramTest {
         ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
 
         assertEquals(1, diagram.groups().size());
-        assertEquals("jdk", diagram.groups().get(0).id());
-        assertTrue(diagram.groups().get(0).isJdk());
+        assertEquals("java", diagram.groups().get(0).id());
+        assertTrue(diagram.groups().get(0).isJavaStandard());
     }
 }

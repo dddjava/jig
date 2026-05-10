@@ -36,7 +36,7 @@ public class ExternalDependencyDataAdapter implements DataAdapter {
         var groups = diagram.groups().stream()
                 .map(group -> Json.object("id", group.id())
                         .and("displayName", group.displayName())
-                        .and("isJdk", group.isJdk())
+                        .and("isJavaStandard", group.isJavaStandard())
                         .and("samplePackages", Json.array(new ArrayList<>(group.samplePackages())))
                         .and("usingClasses", Json.array(new ArrayList<>(group.usingClasses()))))
                 .toList();

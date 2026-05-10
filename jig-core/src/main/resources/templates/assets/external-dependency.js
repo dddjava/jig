@@ -13,7 +13,7 @@
         };
 
         const diagramEl = document.getElementById("external-dependency-diagram");
-        const jdkToggle = document.getElementById("show-jdk-toggle");
+        const javaStandardToggle = document.getElementById("show-java-standard-toggle");
         const depthSelect = document.getElementById("package-depth-select");
         const depthUp = document.getElementById("depth-up-button");
         const depthDown = document.getElementById("depth-down-button");
@@ -29,11 +29,11 @@
 
         const renderDiagram = () => {
             if (!diagramEl) return;
-            const includeJdk = !!(jdkToggle && jdkToggle.checked);
+            const includeJavaStandard = !!(javaStandardToggle && javaStandardToggle.checked);
             const depth = depthSelect && depthSelect.value !== "" ? Number(depthSelect.value) : maxDepth;
             Jig.mermaid.render.renderWithControls(
                 diagramEl,
-                (direction) => buildMermaidText(data, groupsById, depth, includeJdk, selectedGroupIds, direction)
+                (direction) => buildMermaidText(data, groupsById, depth, includeJavaStandard, selectedGroupIds, direction)
             );
         };
 
@@ -52,7 +52,7 @@
 
         rerender();
 
-        if (jdkToggle) jdkToggle.addEventListener("change", renderDiagram);
+        if (javaStandardToggle) javaStandardToggle.addEventListener("change", renderDiagram);
         if (depthSelect) depthSelect.addEventListener("change", () => {
             renderDiagram();
             updateDepthButtonStates(depthSelect, depthUp, depthDown);
@@ -132,7 +132,7 @@
         downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
     }
 
-    function buildMermaidText(data, groupsById, depth, includeJdk, selected, direction) {
+    function buildMermaidText(data, groupsById, depth, includeJavaStandard, selected, direction) {
         const hasSelection = selected && selected.size > 0;
         const visibleEdges = [];
         const seen = new Set();
@@ -141,7 +141,7 @@
         (data.relations || []).forEach(rel => {
             const group = groupsById.get(rel.to);
             if (!group) return;
-            if (!includeJdk && group.isJdk) return;
+            if (!includeJavaStandard && group.isJavaStandard) return;
             if (hasSelection && !selected.has(group.id)) return;
             const aggregatedFrom = Jig.util.getAggregatedFqn(rel.from, depth) || rel.from;
             internalFqnsAggregated.add(aggregatedFrom);
@@ -159,9 +159,9 @@
         renderTreeChildren(tree, lines, 1, "", parentSelfIds);
 
         const visibleGroups = (data.externalGroups || [])
-            .filter(g => includeJdk || !g.isJdk)
+            .filter(g => includeJavaStandard || !g.isJavaStandard)
             .filter(g => !hasSelection || referencedGroupIds.has(g.id))
-            .sort((a, b) => (a.isJdk === b.isJdk) ? 0 : a.isJdk ? 1 : -1);
+            .sort((a, b) => (a.isJavaStandard === b.isJavaStandard) ? 0 : a.isJavaStandard ? 1 : -1);
         visibleGroups.forEach(g => {
             const id = nodeId(g.id);
             groupIdByNodeId.set(id, g.id);
@@ -245,7 +245,7 @@
     function renderGroupTable(tbody, groups) {
         tbody.textContent = "";
         const sorted = [...groups].sort((a, b) => {
-            if (a.isJdk !== b.isJdk) return a.isJdk ? 1 : -1;
+            if (a.isJavaStandard !== b.isJavaStandard) return a.isJavaStandard ? 1 : -1;
             return a.displayName.localeCompare(b.displayName);
         });
         sorted.forEach(group => {
@@ -259,7 +259,7 @@
             tr.appendChild(nameTd);
 
             const kindTd = document.createElement("td");
-            kindTd.textContent = group.isJdk ? "JDK" : "外部ライブラリ";
+            kindTd.textContent = group.isJavaStandard ? "Java標準" : "外部ライブラリ";
             tr.appendChild(kindTd);
 
             const samplesTd = document.createElement("td");

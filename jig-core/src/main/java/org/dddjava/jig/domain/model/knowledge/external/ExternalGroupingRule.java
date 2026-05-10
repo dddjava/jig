@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 解析対象外（外部ライブラリ・JDK 等）のパッケージをグルーピングするルール。
+ * 解析対象外（外部ライブラリ・Java 標準など）のパッケージをグルーピングするルール。
  *
  * <p>初版ではユーザー設定はサポートせず、既知ライブラリの prefix→表示名マップをハードコードする。
  * 既知マップに該当しないパッケージは先頭から{@value #DEFAULT_DEPTH}階層で自動集約する。</p>
@@ -65,10 +65,10 @@ public class ExternalGroupingRule {
     public Group groupOf(PackageId packageId) {
         String fqn = packageId.asText();
 
-        boolean isJdk = fqn.startsWith("java.") || fqn.equals("java")
+        boolean isJavaStandard = fqn.startsWith("java.") || fqn.equals("java")
                 || fqn.startsWith("javax.") || fqn.equals("javax");
-        if (isJdk) {
-            return new Group("jdk", "jdk", true);
+        if (isJavaStandard) {
+            return new Group("java", "java", true);
         }
 
         // 既知マップ：prefix の長い順にマッチ
@@ -99,10 +99,10 @@ public class ExternalGroupingRule {
     /**
      * グルーピング結果。
      *
-     * @param id          ノード ID（Mermaid 用の安定識別子）
-     * @param displayName 表示名
-     * @param isJdk       JDK（java.* / javax.*）由来か
+     * @param id              ノード ID（Mermaid 用の安定識別子）
+     * @param displayName     表示名
+     * @param isJavaStandard  Java 標準（java.* / javax.*）由来か
      */
-    public record Group(String id, String displayName, boolean isJdk) {
+    public record Group(String id, String displayName, boolean isJavaStandard) {
     }
 }

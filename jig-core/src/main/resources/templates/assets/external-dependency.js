@@ -27,14 +27,18 @@
 
         const groupsById = new Map((data.externalGroups || []).map(g => [g.id, g]));
 
-        const renderDiagram = () => {
-            if (!diagramEl) return;
+        // 向き変更ボタンで切り替えた direction を保持し、再描画時に再適用する
+        let currentDirection = null;
+        const diagramFn = (direction) => {
+            currentDirection = direction;
             const includeJavaStandard = !!(javaStandardToggle && javaStandardToggle.checked);
             const depth = depthSelect && depthSelect.value !== "" ? Number(depthSelect.value) : maxDepth;
-            Jig.mermaid.render.renderWithControls(
-                diagramEl,
-                (direction) => buildMermaidText(data, groupsById, depth, includeJavaStandard, selectedGroupIds, direction)
-            );
+            return buildMermaidText(data, groupsById, depth, includeJavaStandard, selectedGroupIds, direction);
+        };
+        const renderDiagram = () => {
+            if (!diagramEl) return;
+            const options = currentDirection ? {direction: currentDirection} : {};
+            Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, options);
         };
 
         // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。

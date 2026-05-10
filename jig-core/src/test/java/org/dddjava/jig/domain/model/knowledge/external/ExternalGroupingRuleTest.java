@@ -32,18 +32,25 @@ class ExternalGroupingRuleTest {
     }
 
     @Test
-    void 未知のパッケージは深さ2で自動集約されTLDは除外される() {
-        // com で始まるものは com を除外して以降の2階層で集約
+    void 未知のパッケージは深さ2で自動集約され表示名はTLDが除外される() {
+        // 集約のキー（id）は深さ2のまま、表示名は先頭TLDを除く
         ExternalGroupingRule.Group g1 = rule.groupOf(PackageId.valueOf("com.example.foo.bar.baz"));
-        assertEquals("example.foo", g1.id());
+        assertEquals("com.example", g1.id());
+        assertEquals("example", g1.displayName());
         assertFalse(g1.isJdk());
 
-        // io.* / org.* / net.* も同様
-        assertEquals("netty.handler", rule.groupOf(PackageId.valueOf("io.netty.handler.codec")).id());
-        assertEquals("unknownlib.module", rule.groupOf(PackageId.valueOf("org.unknownlib.module.sub")).id());
+        ExternalGroupingRule.Group g2 = rule.groupOf(PackageId.valueOf("io.netty.handler.codec"));
+        assertEquals("io.netty", g2.id());
+        assertEquals("netty", g2.displayName());
 
-        // TLDで始まらないものはそのまま深さ2
-        assertEquals("jakarta.foobar", rule.groupOf(PackageId.valueOf("jakarta.foobar.baz")).id());
+        ExternalGroupingRule.Group g3 = rule.groupOf(PackageId.valueOf("org.unknownlib.module.sub"));
+        assertEquals("org.unknownlib", g3.id());
+        assertEquals("unknownlib", g3.displayName());
+
+        // TLDで始まらないものは集約も表示名もそのまま
+        ExternalGroupingRule.Group g4 = rule.groupOf(PackageId.valueOf("jakarta.foobar.baz"));
+        assertEquals("jakarta.foobar", g4.id());
+        assertEquals("jakarta.foobar", g4.displayName());
     }
 
     @Test

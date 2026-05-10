@@ -82,16 +82,18 @@ public class ExternalGroupingRule {
         }
 
         // 未知のパッケージは先頭から DEFAULT_DEPTH 階層で集約
-        // 先頭が com/org/io 等のよく知られた TLD ならスキップして以降の階層で集約する
         String[] parts = fqn.split("\\.");
-        int start = (parts.length > 1 && COMMON_TLDS.contains(parts[0])) ? 1 : 0;
-        int end = Math.min(start + DEFAULT_DEPTH, parts.length);
-        StringBuilder sb = new StringBuilder(parts[start]);
-        for (int i = start + 1; i < end; i++) {
+        int depth = Math.min(DEFAULT_DEPTH, parts.length);
+        StringBuilder sb = new StringBuilder(parts[0]);
+        for (int i = 1; i < depth; i++) {
             sb.append('.').append(parts[i]);
         }
         String groupId = sb.toString();
-        return new Group(groupId, groupId, false);
+        // 表示名は先頭 TLD（com/org/io 等）を取り除いて識別性を高める。集約のキーは元のまま。
+        String displayName = (parts.length > 1 && COMMON_TLDS.contains(parts[0]))
+                ? groupId.substring(parts[0].length() + 1)
+                : groupId;
+        return new Group(groupId, displayName, false);
     }
 
     /**

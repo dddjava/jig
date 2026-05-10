@@ -30,8 +30,10 @@
             if (!diagramEl) return;
             const includeJdk = !!(jdkToggle && jdkToggle.checked);
             const depth = Number(depthSelect && depthSelect.value) || maxDepth;
-            const text = buildMermaidText(data, groupsById, depth, includeJdk, selectedGroupIds);
-            Jig.mermaid.render.renderWithControls(diagramEl, () => text);
+            Jig.mermaid.render.renderWithControls(
+                diagramEl,
+                (direction) => buildMermaidText(data, groupsById, depth, includeJdk, selectedGroupIds, direction)
+            );
         };
 
         // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。
@@ -113,7 +115,7 @@
         onChange();
     }
 
-    function buildMermaidText(data, groupsById, depth, includeJdk, selected) {
+    function buildMermaidText(data, groupsById, depth, includeJdk, selected, direction) {
         const hasSelection = selected && selected.size > 0;
         const visibleEdges = [];
         const seen = new Set();
@@ -134,7 +136,7 @@
             }
         });
 
-        const lines = ["flowchart LR"];
+        const lines = [`flowchart ${direction || "LR"}`];
         const parentSelfIds = [];
         const tree = buildPackageTree(internalFqnsAggregated);
         renderTreeChildren(tree, lines, 1, "", parentSelfIds);

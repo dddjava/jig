@@ -47,7 +47,12 @@ public enum JigDocument {
     /**
      * 一覧出力
      */
-    ListOutput(JigDocumentLabel.of("一覧出力", "ListOutput"), "list-output");
+    ListOutput(JigDocumentLabel.of("一覧出力", "ListOutput"), "list-output"),
+
+    /**
+     * 外部依存図
+     */
+    ExternalDependency(JigDocumentLabel.of("外部依存図", "ExternalDependency"), "external-dependency");
 
     private final JigDocumentLabel label;
     private final String documentFileName;

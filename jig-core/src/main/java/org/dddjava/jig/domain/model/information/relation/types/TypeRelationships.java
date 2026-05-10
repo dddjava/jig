@@ -36,6 +36,16 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
     }
 
+    /**
+     * 解析対象の型から、解析対象**外**（外部ライブラリ・JDK 等）の型への参照のみを返す。
+     */
+    public static TypeRelationships externalRelation(JigTypes jigTypes) {
+        return jigTypes.orderedStream()
+                .flatMap(jigType -> classifiedRelationStream(jigType)
+                        .filter(rel -> !jigTypes.contains(rel.to())))
+                .collect(collectingAndThen(toList(), TypeRelationships::new));
+    }
+
     public static TypeRelationships from(JigType jigType) {
         return new TypeRelationships(classifiedRelationStream(jigType).toList());
     }

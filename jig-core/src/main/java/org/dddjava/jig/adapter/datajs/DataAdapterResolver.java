@@ -24,7 +24,8 @@ public class DataAdapterResolver {
                 JigDocument.InboundInterface, List.of(new InboundDataAdapter(jigService), glossaryDataAdapter),
                 JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService), glossaryDataAdapter),
                 JigDocument.Usecase, List.of(new UsecaseDataAdapter(jigService), glossaryDataAdapter),
-                JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService), glossaryDataAdapter)
+                JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService), glossaryDataAdapter),
+                JigDocument.ExternalDependency, List.of(new ExternalDependencyDataAdapter(jigService), glossaryDataAdapter)
         );
     }
 

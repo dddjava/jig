@@ -44,6 +44,7 @@ class JigDocumentGeneratorAssetsTest {
         expected.remove("outbound.js");
         expected.remove("package.js");
         expected.remove("usecase.js");
+        expected.remove("external-dependency.js");
 
         assertEquals(expected, copied);
     }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>外部依存図</title>
+</head>
+<body class="external-dependency">
+<header class="top">
+    <a href="./index.html">JIG</a> / <b class="jig-page-title">外部依存図</b>
+</header>
+<main>
+    <div id="jig-document-description" class="hidden">
+        <p>
+            解析対象パッケージから、解析対象外（外部ライブラリや JDK）への依存を俯瞰します。
+            外部側はあらかじめ既知ライブラリ単位（spring-web、mybatis、junit など）にグルーピングされて表示されます。
+            既知マップに該当しないパッケージは先頭から 2 階層で自動集約します。
+        </p>
+        <p>
+            JDK（java.*, javax.*）は既定で非表示です。下のチェックボックスで切り替えられます。
+        </p>
+    </div>
+
+    <div class="controls">
+        <div class="control-row">
+            <label class="radio-label">
+                <input type="checkbox" id="show-jdk-toggle"> JDK（java.*, javax.*）を表示
+            </label>
+        </div>
+    </div>
+
+    <pre id="external-dependency-diagram" class="mermaid"></pre>
+
+    <section id="external-group-list">
+        <h2>外部グループ一覧</h2>
+        <table id="external-group-table">
+            <thead>
+            <tr>
+                <th>グループ名</th>
+                <th>種別</th>
+                <th>含まれるパッケージ</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+<script src="./assets/jig-bundle.js"></script>
+<script src="./data/navigation-data.js"></script>
+<script src="./data/external-dependency-data.js"></script>
+<script src="./data/glossary-data.js"></script>
+<script src="./assets/external-dependency.js"></script>
+</body>
+</html>

@@ -274,10 +274,6 @@
             nameTd.textContent = group.displayName;
             tr.appendChild(nameTd);
 
-            const kindTd = document.createElement("td");
-            kindTd.textContent = group.isJavaStandard ? "Java標準" : "外部ライブラリ";
-            tr.appendChild(kindTd);
-
             const samplesTd = document.createElement("td");
             samplesTd.style.whiteSpace = "pre-line";
             samplesTd.textContent = (group.samplePackages || []).join("\n");

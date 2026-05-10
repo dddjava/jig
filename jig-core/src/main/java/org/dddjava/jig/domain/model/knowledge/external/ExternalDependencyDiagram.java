@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.external;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
 import java.util.LinkedHashMap;
@@ -35,10 +36,14 @@ public class ExternalDependencyDiagram {
         Set<Edge> edges = new TreeSet<>();
 
         externalRelations.list().forEach(rel -> {
-            ExternalGroupingRule.Group group = rule.groupOf(rel.to().packageId());
+            // 配列型は要素型に正規化（`[Lcom.example.Foo;` → `com.example.Foo`）
+            TypeId to = rel.to().unarray();
+            if (to.isPrimitive() || to.isVoid()) return;
+            PackageId toPackage = to.packageId();
+            ExternalGroupingRule.Group group = rule.groupOf(toPackage);
             groups.computeIfAbsent(group.id(),
                             id -> new GroupNode(group.id(), group.displayName(), group.isJdk(), new TreeSet<>()))
-                    .samplePackages.add(rel.to().packageId().asText());
+                    .samplePackages.add(toPackage.asText());
             edges.add(new Edge(rel.from().packageId().asText(), group.id()));
         });
 

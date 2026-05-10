@@ -59,6 +59,22 @@ class ExternalDependencyDiagramTest {
     }
 
     @Test
+    void 配列型は要素型に正規化されJDKグループに集約される() {
+        TypeRelationships relations = new TypeRelationships(List.of(
+                rel("com.example.app.Service", "[Ljava.lang.String;"),
+                rel("com.example.app.Service", "java.lang.String[]"),
+                rel("com.example.app.Service", "int[]")
+        ));
+
+        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+
+        // すべて JDK に集約され、配列由来の `[Lcom...` のような外部グループが現れないこと
+        assertEquals(1, diagram.groups().size());
+        assertEquals("jdk", diagram.groups().get(0).id());
+        assertTrue(diagram.groups().get(0).isJdk());
+    }
+
+    @Test
     void mermaidTextはincludeJdkでJDKグループの表示が切り替わる() {
         TypeRelationships relations = new TypeRelationships(List.of(
                 rel("com.example.repo.UserMapper", "java.util.List"),

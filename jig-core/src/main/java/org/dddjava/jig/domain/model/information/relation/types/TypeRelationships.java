@@ -38,12 +38,20 @@ public record TypeRelationships(Collection<TypeRelationship> relationships) {
 
     /**
      * 解析対象の型から、解析対象**外**（外部ライブラリ・JDK 等）の型への参照のみを返す。
+     * 配列型（{@code [Lcom.example.Foo;} や {@code Foo[]}）は要素型に正規化してから判定する。
      */
     public static TypeRelationships externalRelation(JigTypes jigTypes) {
         return jigTypes.orderedStream()
                 .flatMap(jigType -> classifiedRelationStream(jigType)
+                        .map(TypeRelationships::unarrayTo)
                         .filter(rel -> !jigTypes.contains(rel.to())))
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
+    }
+
+    private static TypeRelationship unarrayTo(TypeRelationship rel) {
+        TypeId to = rel.to();
+        TypeId unarrayed = to.unarray();
+        return unarrayed.equals(to) ? rel : new TypeRelationship(rel.from(), unarrayed, rel.typeRelationKind());
     }
 
     public static TypeRelationships from(JigType jigType) {

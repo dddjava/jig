@@ -55,6 +55,20 @@ class ExternalDependencyDiagramTest {
     }
 
     @Test
+    void パッケージなしの型_ジェネリクス型変数等_は外部依存として扱わない() {
+        TypeRelationships relations = new TypeRelationships(List.of(
+                rel("com.example.app.Service", "T"),
+                rel("com.example.app.Service", "E"),
+                rel("com.example.app.Service", "org.springframework.web.bind.annotation.RestController")
+        ));
+
+        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+
+        assertEquals(1, diagram.groups().size());
+        assertEquals("spring-web", diagram.groups().get(0).id());
+    }
+
+    @Test
     void 配列型は要素型に正規化されJava標準グループに集約される() {
         TypeRelationships relations = new TypeRelationships(List.of(
                 rel("com.example.app.Service", "[Ljava.lang.String;"),

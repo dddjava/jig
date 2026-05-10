@@ -40,6 +40,8 @@ public class ExternalDependencyDiagram {
             TypeId to = rel.to().unarray();
             if (to.isPrimitive() || to.isVoid()) return;
             PackageId toPackage = to.packageId();
+            // パッケージなし（`T` `E` などのジェネリクス型変数や default package）は外部依存として扱わない
+            if (toPackage.equals(PackageId.defaultPackage())) return;
             ExternalGroupingRule.Group group = rule.groupOf(toPackage);
             GroupNode node = groups.computeIfAbsent(group.id(),
                     id -> new GroupNode(group.id(), group.displayName(), group.isJavaStandard(), new TreeSet<>(), new TreeSet<>()));

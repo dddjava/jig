@@ -90,4 +90,32 @@ class ExternalDependencyDiagramTest {
         assertTrue(withJdk.contains("mybatis"));
         assertTrue(withoutJdk.contains("mybatis"));
     }
+
+    @Test
+    void 外部グループは外部subgraphで囲まれない() {
+        TypeRelationships relations = new TypeRelationships(List.of(
+                rel("com.example.app.UserController", "org.springframework.web.bind.annotation.RestController")
+        ));
+        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+
+        String text = diagram.mermaidText(false);
+        assertFalse(text.contains("\"外部\""), "外部 subgraph は廃止");
+    }
+
+    @Test
+    void 内部パッケージは階層subgraphでグルーピングされる() {
+        TypeRelationships relations = new TypeRelationships(List.of(
+                rel("com.example.app.UserController", "org.springframework.web.bind.annotation.RestController"),
+                rel("com.example.repo.UserMapper", "org.apache.ibatis.annotations.Mapper")
+        ));
+        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+
+        String text = diagram.mermaidText(false);
+        // 共通親 com.example が subgraph 化される
+        assertTrue(text.contains("subgraph "), "内部パッケージの subgraph が存在する");
+        assertTrue(text.contains("\"com.example\""), "共通親 com.example がラベルに現れる");
+        // app と repo がそれぞれ末端ラベルとして現れる
+        assertTrue(text.contains("\"app\""));
+        assertTrue(text.contains("\"repo\""));
+    }
 }

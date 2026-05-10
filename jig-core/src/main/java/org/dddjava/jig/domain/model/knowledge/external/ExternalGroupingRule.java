@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 解析対象外（外部ライブラリ・JDK 等）のパッケージをグルーピングするルール。
@@ -15,6 +16,9 @@ import java.util.Map;
 public class ExternalGroupingRule {
 
     private static final int DEFAULT_DEPTH = 2;
+
+    /** 自動集約時に先頭から除外するよく知られたトップレベルドメイン。 */
+    private static final Set<String> COMMON_TLDS = Set.of("com", "org", "io", "net", "jp", "edu", "gov", "info");
 
     /** 既知ライブラリの prefix→表示名マップ。prefix の長い順に評価する。 */
     private static final Map<String, String> KNOWN_GROUPS = buildKnownGroups();
@@ -75,10 +79,12 @@ public class ExternalGroupingRule {
         }
 
         // 未知のパッケージは先頭から DEFAULT_DEPTH 階層で集約
+        // 先頭が com/org/io 等のよく知られた TLD ならスキップして以降の階層で集約する
         String[] parts = fqn.split("\\.");
-        int depth = Math.min(DEFAULT_DEPTH, parts.length);
-        StringBuilder sb = new StringBuilder(parts[0]);
-        for (int i = 1; i < depth; i++) {
+        int start = (parts.length > 1 && COMMON_TLDS.contains(parts[0])) ? 1 : 0;
+        int end = Math.min(start + DEFAULT_DEPTH, parts.length);
+        StringBuilder sb = new StringBuilder(parts[start]);
+        for (int i = start + 1; i < end; i++) {
             sb.append('.').append(parts[i]);
         }
         String groupId = sb.toString();

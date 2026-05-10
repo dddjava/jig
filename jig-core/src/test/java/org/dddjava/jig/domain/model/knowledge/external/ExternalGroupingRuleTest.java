@@ -32,10 +32,18 @@ class ExternalGroupingRuleTest {
     }
 
     @Test
-    void 未知のパッケージは深さ2で自動集約される() {
-        ExternalGroupingRule.Group group = rule.groupOf(PackageId.valueOf("com.example.foo.bar.baz"));
-        assertEquals("com.example", group.id());
-        assertFalse(group.isJdk());
+    void 未知のパッケージは深さ2で自動集約されTLDは除外される() {
+        // com で始まるものは com を除外して以降の2階層で集約
+        ExternalGroupingRule.Group g1 = rule.groupOf(PackageId.valueOf("com.example.foo.bar.baz"));
+        assertEquals("example.foo", g1.id());
+        assertFalse(g1.isJdk());
+
+        // io.* / org.* / net.* も同様
+        assertEquals("netty.handler", rule.groupOf(PackageId.valueOf("io.netty.handler.codec")).id());
+        assertEquals("unknownlib.module", rule.groupOf(PackageId.valueOf("org.unknownlib.module.sub")).id());
+
+        // TLDで始まらないものはそのまま深さ2
+        assertEquals("jakarta.foobar", rule.groupOf(PackageId.valueOf("jakarta.foobar.baz")).id());
     }
 
     @Test

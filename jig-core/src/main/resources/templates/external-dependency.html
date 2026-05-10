@@ -21,6 +21,9 @@
         <p>
             JDK（java.*, javax.*）は既定で非表示です。下のチェックボックスで切り替えられます。
         </p>
+        <p>
+            外部グループはノードまたは下の表の行をクリックして選択できます。選択中はその外部グループに関連する依存のみが表示されます。
+        </p>
     </div>
 
     <div class="controls">
@@ -34,6 +37,9 @@
             <label class="radio-label">
                 <input type="checkbox" id="show-jdk-toggle"> JDK（java.*, javax.*）を表示
             </label>
+        </div>
+        <div class="control-row">
+            <button type="button" id="clear-selection-button">外部グループの選択を解除</button>
         </div>
     </div>
 

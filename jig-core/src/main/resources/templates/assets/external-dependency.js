@@ -1,6 +1,9 @@
 (() => {
     const Jig = globalThis.Jig;
 
+    const selectedGroupIds = new Set();
+    let onSelectionChanged = () => {};
+
     function init() {
         const data = globalThis.externalDependencyData || {
             internalPackages: [],
@@ -13,6 +16,7 @@
         const depthSelect = document.getElementById("package-depth-select");
         const depthUp = document.getElementById("depth-up-button");
         const depthDown = document.getElementById("depth-down-button");
+        const clearSelection = document.getElementById("clear-selection-button");
         const tableBody = document.querySelector("#external-group-table tbody");
 
         const maxDepth = computeMaxDepth(data.internalPackages);
@@ -24,17 +28,41 @@
             if (!diagramEl) return;
             const includeJdk = !!(jdkToggle && jdkToggle.checked);
             const depth = Number(depthSelect && depthSelect.value) || maxDepth;
-            const text = buildMermaidText(data, groupsById, depth, includeJdk);
+            const text = buildMermaidText(data, groupsById, depth, includeJdk, selectedGroupIds);
             Jig.mermaid.render.renderWithControls(diagramEl, () => text);
         };
-        renderDiagram();
+
+        // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある
+        globalThis.handleExternalGroupClick = (groupId) => toggleSelection(groupId);
+
+        const rerender = () => {
+            renderDiagram();
+            highlightSelectedRows(tableBody);
+        };
+        onSelectionChanged = rerender;
+
+        rerender();
 
         if (jdkToggle) jdkToggle.addEventListener("change", renderDiagram);
         if (depthSelect) depthSelect.addEventListener("change", renderDiagram);
         if (depthUp) depthUp.addEventListener("click", () => stepDepth(depthSelect, +1, renderDiagram));
         if (depthDown) depthDown.addEventListener("click", () => stepDepth(depthSelect, -1, renderDiagram));
+        if (clearSelection) clearSelection.addEventListener("click", () => {
+            selectedGroupIds.clear();
+            onSelectionChanged();
+        });
 
-        if (tableBody) renderGroupTable(tableBody, data.externalGroups || []);
+        if (tableBody) {
+            renderGroupTable(tableBody, data.externalGroups || []);
+            highlightSelectedRows(tableBody);
+        }
+    }
+
+    function toggleSelection(groupId) {
+        if (!groupId) return;
+        if (selectedGroupIds.has(groupId)) selectedGroupIds.delete(groupId);
+        else selectedGroupIds.add(groupId);
+        onSelectionChanged();
     }
 
     function computeMaxDepth(internalPackages) {
@@ -68,16 +96,20 @@
         onChange();
     }
 
-    function buildMermaidText(data, groupsById, depth, includeJdk) {
+    function buildMermaidText(data, groupsById, depth, includeJdk, selected) {
+        const hasSelection = selected && selected.size > 0;
         const visibleEdges = [];
         const seen = new Set();
         const internalFqnsAggregated = new Set();
+        const referencedGroupIds = new Set();
         (data.relations || []).forEach(rel => {
             const group = groupsById.get(rel.to);
             if (!group) return;
             if (!includeJdk && group.isJdk) return;
+            if (hasSelection && !selected.has(group.id)) return;
             const aggregatedFrom = Jig.util.getAggregatedFqn(rel.from, depth) || rel.from;
             internalFqnsAggregated.add(aggregatedFrom);
+            referencedGroupIds.add(group.id);
             const key = `${aggregatedFrom}::${rel.to}`;
             if (!seen.has(key)) {
                 seen.add(key);
@@ -92,9 +124,11 @@
 
         const visibleGroups = (data.externalGroups || [])
             .filter(g => includeJdk || !g.isJdk)
+            .filter(g => !hasSelection || referencedGroupIds.has(g.id))
             .sort((a, b) => (a.isJdk === b.isJdk) ? 0 : a.isJdk ? 1 : -1);
         visibleGroups.forEach(g => {
             lines.push(`    ${nodeId(g.id)}([\"${escape(g.displayName)}\"])`);
+            lines.push(`    click ${nodeId(g.id)} handleExternalGroupClick \"${escape(g.displayName)}\"`);
         });
 
         visibleEdges.forEach(e => {
@@ -103,6 +137,11 @@
 
         lines.push("    classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3");
         parentSelfIds.forEach(id => lines.push(`    class ${id} parentPackage`));
+
+        lines.push("    classDef selectedGroup fill:#cfe9ff,stroke:#1769aa,stroke-width:2px,font-weight:bold");
+        visibleGroups
+            .filter(g => selected && selected.has(g.id))
+            .forEach(g => lines.push(`    class ${nodeId(g.id)} selectedGroup`));
 
         return lines.join("\n") + "\n";
     }
@@ -173,6 +212,9 @@
         });
         sorted.forEach(group => {
             const tr = document.createElement("tr");
+            tr.dataset.groupId = group.id;
+            tr.style.cursor = "pointer";
+            tr.addEventListener("click", () => toggleSelection(group.id));
 
             const nameTd = document.createElement("td");
             nameTd.textContent = group.displayName;
@@ -187,6 +229,15 @@
             tr.appendChild(samplesTd);
 
             tbody.appendChild(tr);
+        });
+    }
+
+    function highlightSelectedRows(tbody) {
+        if (!tbody) return;
+        tbody.querySelectorAll("tr").forEach(tr => {
+            const isSelected = selectedGroupIds.has(tr.dataset.groupId);
+            tr.classList.toggle("is-selected", isSelected);
+            tr.style.background = isSelected ? "#cfe9ff" : "";
         });
     }
 

@@ -249,8 +249,21 @@
             tr.appendChild(samplesTd);
 
             const classesTd = document.createElement("td");
-            classesTd.style.whiteSpace = "pre-line";
-            classesTd.textContent = (group.usingClasses || []).join("\n");
+            const classes = group.usingClasses || [];
+            if (classes.length > 0) {
+                const details = document.createElement("details");
+                // 行クリック→外部グループ選択 と干渉しないように分離
+                details.addEventListener("click", e => e.stopPropagation());
+                const summary = document.createElement("summary");
+                summary.textContent = `${classes.length} 件`;
+                summary.style.cursor = "pointer";
+                details.appendChild(summary);
+                const list = document.createElement("div");
+                list.style.whiteSpace = "pre-line";
+                list.textContent = classes.join("\n");
+                details.appendChild(list);
+                classesTd.appendChild(details);
+            }
             tr.appendChild(classesTd);
 
             tbody.appendChild(tr);

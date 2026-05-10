@@ -26,6 +26,7 @@ public class ExternalGroupingRule {
         map.put("org.springframework.web", "spring-web");
         map.put("org.springframework.data", "spring-data");
         map.put("org.springframework.security", "spring-security");
+        map.put("org.springframework.amqp", "spring-amqp");
         map.put("org.springframework", "spring");
         // MyBatis
         map.put("org.apache.ibatis", "mybatis");
@@ -42,6 +43,8 @@ public class ExternalGroupingRule {
         map.put("jakarta.servlet", "jakarta-servlet");
         // Apache POI
         map.put("org.apache.poi", "apache-poi");
+        // Apache Commons
+        map.put("org.apache.commons", "apache-commons");
         // ASM, JavaParser など JIG 内部依存（参考用）
         map.put("org.objectweb.asm", "asm");
         map.put("com.github.javaparser", "javaparser");

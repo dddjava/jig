@@ -49,6 +49,9 @@ public class ExternalGroupingRule {
         map.put("org.apache.poi", "apache-poi");
         // Apache Commons
         map.put("org.apache.commons", "apache-commons");
+        // Jackson
+        map.put("com.fasterxml.jackson", "jackson");
+        map.put("tools.jackson", "jackson");
         // ASM, JavaParser など JIG 内部依存（参考用）
         map.put("org.objectweb.asm", "asm");
         map.put("com.github.javaparser", "javaparser");

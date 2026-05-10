@@ -153,7 +153,7 @@
             }
         });
 
-        const lines = [`flowchart ${direction || "LR"}`];
+        const lines = [`flowchart ${direction || "TB"}`];
         const parentSelfIds = [];
         const tree = buildPackageTree(internalFqnsAggregated);
         renderTreeChildren(tree, lines, 1, "", parentSelfIds);

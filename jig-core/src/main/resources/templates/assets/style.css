@@ -1085,6 +1085,7 @@ label {
 
 /* パッケージ概要の表示設定 */
 .package-relation .controls,
+.external-dependency .controls,
 .package-relation details.usage {
     background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
     border: 1px solid #ccc;
@@ -1097,6 +1098,7 @@ label {
 }
 
 .package-relation .controls summary,
+.external-dependency .controls summary,
 .package-relation details.usage summary {
     list-style: none;
     cursor: pointer;
@@ -1105,19 +1107,23 @@ label {
 }
 
 .package-relation .controls > *,
+.external-dependency .controls > *,
 .package-relation details.usage > :not(summary) {
     display: block;
     margin: 8px 0;
 }
 
-.package-relation .controls .radio-label {
+.package-relation .controls .radio-label,
+.external-dependency .controls .radio-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
 .package-relation .controls input[type="text"],
-.package-relation .controls select {
+.package-relation .controls select,
+.external-dependency .controls input[type="text"],
+.external-dependency .controls select {
     padding: 6px 8px;
     border: 1px solid #bbb;
     border-radius: 6px;
@@ -1125,7 +1131,8 @@ label {
 }
 
 
-.package-relation .controls button {
+.package-relation .controls button,
+.external-dependency .controls button {
     padding: 6px 10px;
     border: 1px solid #888;
     border-radius: 6px;
@@ -1134,14 +1141,17 @@ label {
 }
 
 .package-relation .controls #depth-up-button,
-.package-relation .controls #depth-down-button {
+.package-relation .controls #depth-down-button,
+.external-dependency .controls #depth-up-button,
+.external-dependency .controls #depth-down-button {
     padding: 4px 8px;
     min-width: 32px;
     font-size: 14px;
     line-height: 1;
 }
 
-.package-relation .controls button:hover {
+.package-relation .controls button:hover,
+.external-dependency .controls button:hover {
     background-color: #e6e6e6;
 }
 
@@ -1234,7 +1244,8 @@ label {
     cursor: default;
 }
 
-.package-relation table {
+.package-relation table,
+.external-dependency table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
@@ -1242,7 +1253,8 @@ label {
     table-layout: fixed;
 }
 
-.package-relation td {
+.package-relation td,
+.external-dependency td {
     text-align: left;
     vertical-align: top;
     overflow-wrap: anywhere;
@@ -1250,16 +1262,19 @@ label {
     white-space: normal;
 }
 
-.package-relation tr:nth-child(even) {
+.package-relation tr:nth-child(even),
+.external-dependency tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
 @media (max-width: 720px) {
-    .package-relation .controls .control-row {
+    .package-relation .controls .control-row,
+    .external-dependency .controls .control-row {
         align-items: flex-start;
     }
 
-    .package-relation .controls .control-label {
+    .package-relation .controls .control-label,
+    .external-dependency .controls .control-label {
         width: 100%;
     }
 
@@ -2174,86 +2189,7 @@ p.jig-data-warning {
     width: 5em;
 }
 
-/* 外部依存図 */
-.external-dependency .controls {
-    background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 12px 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    margin: 1em auto;
-    width: 95%;
-    max-width: 980px;
-}
-
-.external-dependency .controls > * {
-    display: block;
-    margin: 8px 0;
-}
-
-.external-dependency .controls .radio-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.external-dependency .controls select {
-    padding: 6px 8px;
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    background-color: #fff;
-}
-
-.external-dependency .controls button {
-    padding: 6px 10px;
-    border: 1px solid #888;
-    border-radius: 6px;
-    background-color: #f2f2f2;
-    cursor: pointer;
-}
-
-.external-dependency .controls #depth-up-button,
-.external-dependency .controls #depth-down-button {
-    padding: 4px 8px;
-    min-width: 32px;
-    font-size: 14px;
-    line-height: 1;
-}
-
-.external-dependency .controls button:hover {
-    background-color: #e6e6e6;
-}
-
-.external-dependency .controls button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.external-dependency table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 16px;
-    table-layout: fixed;
-}
-
-.external-dependency th,
-.external-dependency td {
-    text-align: left;
-    vertical-align: top;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    white-space: normal;
-    padding: 6px 8px;
-    /* main table tr > * の四辺borderを打ち消し、横罫線だけ表示する */
-    border: none;
-    border-bottom: 1px solid #ccc;
-}
-
-.external-dependency tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
+/* 外部依存図で選択中の表行（共通の package-relation スタイルに上乗せ） */
 .external-dependency tr.is-selected {
-    background-color: #cfe9ff \!important;
+    background-color: #cfe9ff !important;
 }

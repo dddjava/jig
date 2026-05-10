@@ -20,7 +20,8 @@
         const tableBody = document.querySelector("#external-group-table tbody");
 
         const maxDepth = computeMaxDepth(data.internalPackages);
-        populateDepthSelect(depthSelect, maxDepth);
+        const initialDepth = computeInitialDepth(data.internalPackages, maxDepth);
+        populateDepthSelect(depthSelect, maxDepth, initialDepth);
 
         const groupsById = new Map((data.externalGroups || []).map(g => [g.id, g]));
 
@@ -74,7 +75,7 @@
         return max;
     }
 
-    function populateDepthSelect(select, maxDepth) {
+    function populateDepthSelect(select, maxDepth, initialDepth) {
         if (!select) return;
         for (let d = 1; d <= maxDepth; d++) {
             const opt = document.createElement("option");
@@ -82,7 +83,18 @@
             opt.textContent = String(d);
             select.appendChild(opt);
         }
-        select.value = String(maxDepth);
+        select.value = String(initialDepth || maxDepth);
+    }
+
+    // 集約後の内部パッケージが複数になる最も浅い階層を選ぶ
+    function computeInitialDepth(internalPackages, maxDepth) {
+        const fqns = internalPackages || [];
+        if (fqns.length <= 1) return maxDepth;
+        for (let d = 1; d <= maxDepth; d++) {
+            const aggregated = new Set(fqns.map(fqn => Jig.util.getAggregatedFqn(fqn, d) || fqn));
+            if (aggregated.size >= 2) return d;
+        }
+        return maxDepth;
     }
 
     function stepDepth(select, delta, onChange) {

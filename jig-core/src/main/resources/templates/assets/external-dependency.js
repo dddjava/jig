@@ -31,15 +31,16 @@
         // 初期値は TB（renderWithControls は未指定時に diagramFn("LR") を呼んで先頭から
         // direction を抽出するため、ここで明示しないと LR になってしまう）
         let currentDirection = "TB";
-        const diagramFn = (direction) => {
+        const diagramFn = (direction, opts) => {
             currentDirection = direction;
             const includeJavaStandard = !!(javaStandardToggle && javaStandardToggle.checked);
             const depth = depthSelect && depthSelect.value !== "" ? Number(depthSelect.value) : maxDepth;
-            return buildMermaidText(data, groupsById, depth, includeJavaStandard, selectedGroupIds, direction);
+            const showPhysicalName = !!(opts && opts.showPhysicalName);
+            return buildMermaidText(data, groupsById, depth, includeJavaStandard, selectedGroupIds, direction, showPhysicalName);
         };
         const renderDiagram = () => {
             if (!diagramEl) return;
-            Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, {direction: currentDirection});
+            Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, {direction: currentDirection, enableLabelToggle: true});
         };
 
         // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。
@@ -137,7 +138,7 @@
         downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
     }
 
-    function buildMermaidText(data, groupsById, depth, includeJavaStandard, selected, direction) {
+    function buildMermaidText(data, groupsById, depth, includeJavaStandard, selected, direction, showPhysicalName) {
         const hasSelection = selected && selected.size > 0;
         const visibleEdges = [];
         const seen = new Set();
@@ -161,7 +162,7 @@
         const lines = [`flowchart ${direction || "TB"}`];
         const parentSelfIds = [];
         const tree = buildPackageTree(internalFqnsAggregated);
-        renderTreeChildren(tree, lines, 1, "", parentSelfIds);
+        renderTreeChildren(tree, lines, 1, "", parentSelfIds, showPhysicalName);
 
         const visibleGroups = (data.externalGroups || [])
             .filter(g => includeJavaStandard || !g.isJavaStandard)
@@ -207,32 +208,42 @@
         return root;
     }
 
-    function renderTreeChildren(node, lines, indent, parentFqn, parentSelfIds) {
-        node.children.forEach(child => renderTreeNode(child, lines, indent, parentFqn, parentSelfIds));
+    function renderTreeChildren(node, lines, indent, parentFqn, parentSelfIds, showPhysicalName) {
+        node.children.forEach(child => renderTreeNode(child, lines, indent, parentFqn, parentSelfIds, showPhysicalName));
     }
 
-    function renderTreeNode(node, lines, indent, parentFqn, parentSelfIds) {
-        const label = (parentFqn && node.fqn.startsWith(parentFqn + '.'))
+    function renderTreeNode(node, lines, indent, parentFqn, parentSelfIds, showPhysicalName) {
+        const segmentLabel = (parentFqn && node.fqn.startsWith(parentFqn + '.'))
             ? node.fqn.substring(parentFqn.length + 1)
             : node.fqn;
+        const physicalLabel = segmentLabel;
+        const termLabel = packageTermTitle(node.fqn) || segmentLabel;
+        const label = showPhysicalName ? physicalLabel : termLabel;
         if (node.children.size === 0) {
             lines.push(`${pad(indent)}${nodeId(node.fqn)}@{shape: st-rect, label: \"${escape(label)}\"}`);
             return;
         }
         if (!node.isLeaf && node.children.size === 1) {
             const onlyChild = node.children.values().next().value;
-            renderTreeNode(onlyChild, lines, indent, parentFqn, parentSelfIds);
+            renderTreeNode(onlyChild, lines, indent, parentFqn, parentSelfIds, showPhysicalName);
             return;
         }
         const groupId = `${nodeId(node.fqn)}_grp`;
         lines.push(`${pad(indent)}subgraph ${groupId} [\"${escape(label)}\"]`);
         if (node.isLeaf) {
             const selfId = nodeId(node.fqn);
-            lines.push(`${pad(indent + 1)}${selfId}@{shape: st-rect, label: \"${escape(node.fqn)}\"}`);
+            const selfLabel = showPhysicalName ? node.fqn : (packageTermTitle(node.fqn) || node.fqn);
+            lines.push(`${pad(indent + 1)}${selfId}@{shape: st-rect, label: \"${escape(selfLabel)}\"}`);
             parentSelfIds.push(selfId);
         }
-        renderTreeChildren(node, lines, indent + 1, node.fqn, parentSelfIds);
+        renderTreeChildren(node, lines, indent + 1, node.fqn, parentSelfIds, showPhysicalName);
         lines.push(`${pad(indent)}end`);
+    }
+
+    function packageTermTitle(fqn) {
+        if (!Jig || !Jig.glossary || typeof Jig.glossary.getPackageTerm !== "function") return null;
+        const term = Jig.glossary.getPackageTerm(fqn);
+        return term && term.title ? term.title : null;
     }
 
     function nodeId(text) {

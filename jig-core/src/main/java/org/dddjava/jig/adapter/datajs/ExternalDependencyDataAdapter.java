@@ -37,7 +37,8 @@ public class ExternalDependencyDataAdapter implements DataAdapter {
                 .map(group -> Json.object("id", group.id())
                         .and("displayName", group.displayName())
                         .and("isJdk", group.isJdk())
-                        .and("samplePackages", Json.array(new ArrayList<>(group.samplePackages()))))
+                        .and("samplePackages", Json.array(new ArrayList<>(group.samplePackages())))
+                        .and("usingClasses", Json.array(new ArrayList<>(group.usingClasses()))))
                 .toList();
 
         var edges = diagram.edges().stream()

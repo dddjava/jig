@@ -41,9 +41,10 @@ public class ExternalDependencyDiagram {
             if (to.isPrimitive() || to.isVoid()) return;
             PackageId toPackage = to.packageId();
             ExternalGroupingRule.Group group = rule.groupOf(toPackage);
-            groups.computeIfAbsent(group.id(),
-                            id -> new GroupNode(group.id(), group.displayName(), group.isJdk(), new TreeSet<>()))
-                    .samplePackages.add(toPackage.asText());
+            GroupNode node = groups.computeIfAbsent(group.id(),
+                    id -> new GroupNode(group.id(), group.displayName(), group.isJdk(), new TreeSet<>(), new TreeSet<>()));
+            node.samplePackages.add(toPackage.asText());
+            node.usingClasses.add(rel.from().fqn());
             edges.add(new Edge(rel.from().packageId().asText(), group.id()));
         });
 
@@ -66,7 +67,8 @@ public class ExternalDependencyDiagram {
         return set;
     }
 
-    public record GroupNode(String id, String displayName, boolean isJdk, Set<String> samplePackages) {
+    public record GroupNode(String id, String displayName, boolean isJdk,
+                            Set<String> samplePackages, Set<String> usingClasses) {
     }
 
     public record Edge(String from, String to) implements Comparable<Edge> {

@@ -248,6 +248,11 @@
             samplesTd.textContent = (group.samplePackages || []).join("\n");
             tr.appendChild(samplesTd);
 
+            const classesTd = document.createElement("td");
+            classesTd.style.whiteSpace = "pre-line";
+            classesTd.textContent = (group.usingClasses || []).join("\n");
+            tr.appendChild(classesTd);
+
             tbody.appendChild(tr);
         });
     }

@@ -114,8 +114,26 @@ class ExternalDependencyDiagramTest {
         // 共通親 com.example が subgraph 化される
         assertTrue(text.contains("subgraph "), "内部パッケージの subgraph が存在する");
         assertTrue(text.contains("\"com.example\""), "共通親 com.example がラベルに現れる");
+        // 末端は既存パッケージ図と同じ st-rect shape で出力される
+        assertTrue(text.contains("shape: st-rect"));
         // app と repo がそれぞれ末端ラベルとして現れる
         assertTrue(text.contains("\"app\""));
         assertTrue(text.contains("\"repo\""));
+    }
+
+    @Test
+    void 親パッケージかつリーフのケースではFQNラベルとparentPackageクラスが付く() {
+        TypeRelationships relations = new TypeRelationships(List.of(
+                rel("com.example.RootService", "org.springframework.context.ApplicationContext"),
+                rel("com.example.app.Controller", "org.springframework.web.bind.annotation.RestController")
+        ));
+        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+
+        String text = diagram.mermaidText(false);
+        // 自身ノードのラベルはパッケージ FQN そのまま
+        assertTrue(text.contains("\"com.example\""));
+        // parentPackage classDef と class 宣言が出力される
+        assertTrue(text.contains("classDef parentPackage"));
+        assertTrue(text.contains("class ") && text.contains(" parentPackage"));
     }
 }

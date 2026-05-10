@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,8 @@ public class ExternalDependencyDiagram {
         sb.append("flowchart LR\n");
 
         // 内部パッケージは階層構造（共通親パッケージ）で subgraph グルーピング
-        PackageTree.of(internalPackageFqns()).render(sb, 1);
+        List<String> parentSelfNodeIds = new ArrayList<>();
+        PackageTree.of(internalPackageFqns()).render(sb, 1, parentSelfNodeIds);
 
         // 外部グループはフラットに並べる（非 JDK 先、JDK 後）
         groups.values().stream()
@@ -90,6 +92,12 @@ public class ExternalDependencyDiagram {
             if (toNode == null || (!includeJdk && toNode.isJdk)) continue;
             sb.append("    ").append(nodeId(edge.from))
                     .append(" --> ").append(nodeId(edge.to)).append("\n");
+        }
+
+        // 既存のパッケージ関連図と同じ親パッケージスタイル（破線枠）
+        sb.append("    classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3\n");
+        for (String selfId : parentSelfNodeIds) {
+            sb.append("    class ").append(selfId).append(" parentPackage\n");
         }
         return sb.toString();
     }
@@ -123,20 +131,21 @@ public class ExternalDependencyDiagram {
             return root;
         }
 
-        void render(StringBuilder sb, int indent) {
-            children.values().forEach(child -> child.renderNode(sb, indent, ""));
+        void render(StringBuilder sb, int indent, List<String> parentSelfNodeIds) {
+            children.values().forEach(child -> child.renderNode(sb, indent, "", parentSelfNodeIds));
         }
 
-        private void renderNode(StringBuilder sb, int indent, String parentFqn) {
+        private void renderNode(StringBuilder sb, int indent, String parentFqn, List<String> parentSelfNodeIds) {
             String label = displayLabel(parentFqn);
             if (children.isEmpty()) {
+                // 既存パッケージ図と同じ shape: st-rect
                 appendIndent(sb, indent).append(nodeId(fqn))
-                        .append("[\"").append(escape(label)).append("\"]\n");
+                        .append("@{shape: st-rect, label: \"").append(escape(label)).append("\"}\n");
                 return;
             }
             // 子が一つで自身が leaf でないなら subgraph を省いて子へ降りる（パス圧縮）
             if (!isLeaf && children.size() == 1) {
-                children.values().iterator().next().renderNode(sb, indent, parentFqn);
+                children.values().iterator().next().renderNode(sb, indent, parentFqn, parentSelfNodeIds);
                 return;
             }
             // subgraph ID は leaf ノード ID と衝突しないよう接尾辞を付ける
@@ -144,11 +153,14 @@ public class ExternalDependencyDiagram {
             appendIndent(sb, indent).append("subgraph ").append(groupId)
                     .append(" [\"").append(escape(label)).append("\"]\n");
             if (isLeaf) {
-                // 自身のパッケージにも直接クラスがある場合は self ノードを置く
-                appendIndent(sb, indent + 1).append(nodeId(fqn))
-                        .append("[\"(自身)\"]\n");
+                // 自身パッケージにも直接クラスがある（親かつリーフ）：パッケージ FQN をラベルにし、
+                // 既存パッケージ図と同様に parentPackage クラスで破線枠スタイルを適用
+                String selfId = nodeId(fqn);
+                appendIndent(sb, indent + 1).append(selfId)
+                        .append("@{shape: st-rect, label: \"").append(escape(fqn)).append("\"}\n");
+                parentSelfNodeIds.add(selfId);
             }
-            children.values().forEach(child -> child.renderNode(sb, indent + 1, fqn));
+            children.values().forEach(child -> child.renderNode(sb, indent + 1, fqn, parentSelfNodeIds));
             appendIndent(sb, indent).append("end\n");
         }
 

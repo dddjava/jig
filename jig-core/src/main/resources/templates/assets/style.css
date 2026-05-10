@@ -2245,7 +2245,9 @@ p.jig-data-warning {
     word-break: break-word;
     white-space: normal;
     padding: 6px 8px;
-    border-bottom: 1px solid #eee;
+    /* main table tr > * の四辺borderを打ち消し、横罫線だけ表示する */
+    border: none;
+    border-bottom: 1px solid #ccc;
 }
 
 .external-dependency tr:nth-child(even) {

@@ -27,8 +27,10 @@
 
         const groupsById = new Map((data.externalGroups || []).map(g => [g.id, g]));
 
-        // 向き変更ボタンで切り替えた direction を保持し、再描画時に再適用する
-        let currentDirection = null;
+        // 向き変更ボタンで切り替えた direction を保持し、再描画時に再適用する。
+        // 初期値は TB（renderWithControls は未指定時に diagramFn("LR") を呼んで先頭から
+        // direction を抽出するため、ここで明示しないと LR になってしまう）
+        let currentDirection = "TB";
         const diagramFn = (direction) => {
             currentDirection = direction;
             const includeJavaStandard = !!(javaStandardToggle && javaStandardToggle.checked);
@@ -37,8 +39,7 @@
         };
         const renderDiagram = () => {
             if (!diagramEl) return;
-            const options = currentDirection ? {direction: currentDirection} : {};
-            Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, options);
+            Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, {direction: currentDirection});
         };
 
         // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。

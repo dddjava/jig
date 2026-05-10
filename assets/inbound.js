@@ -10,11 +10,14 @@ const InboundApp = (() => {
         {type: 'OTHER',          label: 'その他'},
     ];
 
-    const state = {
+    const INITIAL_STATE = {
         data: null,
         sidebarFilterText: '',
         displayType: 'all',
+        simplified: false,
     };
+
+    const state = {...INITIAL_STATE};
 
     function prepareDiagramData(controller, usecaseData) {
         const entrypointFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
@@ -79,16 +82,18 @@ const InboundApp = (() => {
         };
     }
 
-    function buildDiagramBuilder(data, builder) {
+    function buildDiagramBuilder(data, builder, showPhysicalName = false) {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         builder.applyThemeClassDefs();
+        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         data.entrypointGroups.forEach((eps, typeFqn) => {
-            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));
             eps.forEach(ep => {
                 const nodeId = fqnToNodeId(ep.fqn);
-                builder.addNodeToSubgraph(subgraph, nodeId, Jig.glossary.getMethodTerm(ep.fqn, true).title, 'method');
+                builder.addNodeToSubgraph(subgraph, nodeId, mLabel(ep.fqn), 'method');
                 builder.addClass(nodeId, "inbound");
+                builder.addTooltip(nodeId, ep.fqn);
             });
         });
 
@@ -100,21 +105,22 @@ const InboundApp = (() => {
         });
 
         data.usecaseGroups.forEach((methods, typeFqn) => {
-            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));
             methods.forEach(fqn => {
                 const mId = fqnToNodeId(fqn);
-                builder.addNodeToSubgraph(subgraph, mId, Jig.glossary.getMethodTerm(fqn, true).title, 'method');
+                builder.addNodeToSubgraph(subgraph, mId, mLabel(fqn), 'method');
                 builder.addClass(mId, "usecase");
-                builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`);
+                builder.addClick(mId, Jig.mermaid.nav.usecaseMethodUrl(fqn), fqn);
             });
         });
 
         data.methodGroups.forEach((methods, typeFqn) => {
-            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), typeLabel(typeFqn));
             methods.forEach(fqn => {
                 const nodeId = fqnToNodeId(fqn);
-                builder.addNodeToSubgraph(subgraph, nodeId, Jig.glossary.getMethodTerm(fqn, true).title, 'method');
+                builder.addNodeToSubgraph(subgraph, nodeId, mLabel(fqn), 'method');
                 builder.addClass(nodeId, "inactive");
+                builder.addTooltip(nodeId, fqn);
             });
         });
 
@@ -130,9 +136,7 @@ const InboundApp = (() => {
 
     function init() {
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
-        state.data = null;
-        state.sidebarFilterText = '';
-        state.displayType = 'all';
+        Object.assign(state, INITIAL_STATE);
 
         state.data = parseInboundData();
         if (!state.data) {
@@ -146,6 +150,7 @@ const InboundApp = (() => {
         });
 
         initDisplayTypeSettings();
+        initSimplifiedSetting();
 
         render();
     }
@@ -157,20 +162,20 @@ const InboundApp = (() => {
     }
 
     function initDisplayTypeSettings() {
-        const settingsEl = document.getElementById('sidebar-settings');
         const fieldset = document.getElementById('display-type-fieldset');
-        if (!settingsEl || !fieldset) return;
+        if (!fieldset) return;
 
         const types = new Set(
             (state.data.inboundAdapters || []).flatMap(c => (c.entrypoints || []).map(ep => ep.entrypointType)).filter(Boolean)
         );
 
         if (types.size <= 1) {
-            settingsEl.style.display = 'none';
+            fieldset.style.display = 'none';
             return;
         }
 
         fieldset.innerHTML = "";
+        fieldset.appendChild(Jig.dom.createElement('legend', {textContent: '表示種別'}));
         const options = [
             {value: 'all', label: 'すべて'},
             ...TYPE_CONFIG.filter(c => types.has(c.type)).map(c => ({value: c.type, label: c.label})),
@@ -189,6 +194,29 @@ const InboundApp = (() => {
             });
             fieldset.appendChild(Jig.dom.createElement('label', {children: [radio, ' ' + label]}));
         });
+    }
+
+    function initSimplifiedSetting() {
+        const panel = document.querySelector('.sidebar-settings-panel');
+        if (!panel) return;
+
+        const existing = document.getElementById('simplified-toggle');
+        if (existing) {
+            existing.checked = false;
+            return;
+        }
+
+        const checkbox = Jig.dom.createElement('input', {
+            attributes: {type: 'checkbox', id: 'simplified-toggle'}
+        });
+        checkbox.addEventListener('change', () => {
+            state.simplified = checkbox.checked;
+            renderMain(filteredAdapters());
+        });
+        panel.appendChild(Jig.dom.createElement('label', {
+            attributes: {for: 'simplified-toggle'},
+            children: [checkbox, ' 簡略表示']
+        }));
     }
 
     function render() {
@@ -215,59 +243,48 @@ const InboundApp = (() => {
             Jig.util.pushToMap(byPackage, pkg, adapter);
         });
 
-        byPackage.forEach((pkgAdapters, packageFqn) => {
-            const typeList = Jig.dom.createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: pkgAdapters.map(adapter =>
-                    Jig.dom.createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [
-                            Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
-                                textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
-                            })
-                        ]
-                    })
-                )
-            });
-
-            const packageTitle = Jig.dom.createElement("p", {
-                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                children: [
-                    Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
-                    Jig.dom.sidebar.createToggle(typeList)
-                ]
-            });
-
-            sidebar.appendChild(Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [packageTitle, typeList]
-            }));
-        });
+        Jig.dom.sidebar.renderPackageGrouped(sidebar, byPackage, pkgAdapters =>
+            pkgAdapters.map(adapter =>
+                Jig.dom.createElement("li", {
+                    className: "in-page-sidebar__item",
+                    children: [
+                        Jig.dom.createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
+                            textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
+                        })
+                    ]
+                })
+            )
+        );
     }
 
     function buildEntrypointItem(ep) {
         const methodTerm = Jig.glossary.getMethodTerm(ep.fqn, true);
 
+        const children = [
+            Jig.dom.createElement("div", {
+                className: "entrypoint-item__header",
+                children: [
+                    Jig.dom.createElement("span", {
+                        className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
+                        textContent: methodTerm.title
+                    }),
+                    Jig.dom.createElement("span", {
+                        className: "entrypoint-item__path",
+                        textContent: ep.path || ''
+                    })
+                ]
+            })
+        ];
+
+        if (!state.simplified) {
+            children.push(Jig.dom.type.methodIOSection(ep.parameters || [], ep.returnTypeRef));
+        }
+
         return Jig.dom.createElement("div", {
             className: "entrypoint-item",
-            children: [
-                Jig.dom.createElement("div", {
-                    className: "entrypoint-item__header",
-                    children: [
-                        Jig.dom.createElement("span", {
-                            className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
-                            textContent: methodTerm.title
-                        }),
-                        Jig.dom.createElement("span", {
-                            className: "entrypoint-item__path",
-                            textContent: ep.path || ''
-                        })
-                    ]
-                }),
-                Jig.dom.type.methodIOSection(ep.parameters || [], ep.returnTypeRef)
-            ]
+            children
         });
     }
 
@@ -392,6 +409,7 @@ const InboundApp = (() => {
         const container = document.getElementById("inbound-list");
         if (!container) return;
         container.innerHTML = "";
+        const usecaseData = Jig.data.usecase.get();
 
         if (!adapters || adapters.length === 0) {
             container.textContent = "データなし";
@@ -427,14 +445,14 @@ const InboundApp = (() => {
                 jigCard.appendChild(epSection);
             }
 
-            const diagramGenerator = (dir) => {
-                const data = prepareDiagramData(adapter, Jig.data.usecase.get());
-                const builder = new Jig.mermaid.Builder();
-                buildDiagramBuilder(data, builder);
-                return builder.build(dir);
-            };
             Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
-                Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR'});
+                const diagramGenerator = (dir, opts) => {
+                    const data = prepareDiagramData(adapter, usecaseData);
+                    const builder = new Jig.mermaid.Builder();
+                    buildDiagramBuilder(data, builder, opts?.showPhysicalName);
+                    return builder.build(dir);
+                };
+                Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR', enableLabelToggle: true});
             });
 
             container.appendChild(jigCard);

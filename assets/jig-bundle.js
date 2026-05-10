@@ -340,33 +340,22 @@ globalThis.Jig.data = (() => {
             ? location.pathname.split('/').pop()
             : '';
 
+        // 解決順は配列の順序に従う。各 entry は対象データの保有判定・型取得・遷移先ページ等を表す。
+        const resolvers = [
+            {has: domain.has, find: domain.getType, page: 'domain.html', idPrefix: 'domain', deprecatedAware: true},
+            {has: usecase.has, find: usecase.getType, page: 'usecase.html', idPrefix: 'type', deprecatedAware: true},
+            {has: glossary.has, find: glossary.getTerm, page: 'glossary.html', idPrefix: 'term', deprecatedAware: false},
+        ];
+
         return function (fqn) {
-            if (domain.has()) {
-                const domainType = domain.getType(fqn);
-                if (domainType) {
-                    const prefix = (currentPage === 'domain.html') ? '#' : 'domain.html#';
-                    return {
-                        href: prefix + globalThis.Jig.util.fqnToId("domain", fqn),
-                        className: domainType.isDeprecated ? 'deprecated' : undefined
-                    };
-                }
-            }
-            if (usecase.has()) {
-                const usecaseType = usecase.getType(fqn);
-                if (usecaseType) {
-                    const prefix = (currentPage === 'usecase.html') ? '#' : 'usecase.html#';
-                    return {
-                        href: prefix + globalThis.Jig.util.fqnToId("type", fqn),
-                        className: usecaseType.isDeprecated ? 'deprecated' : undefined
-                    };
-                }
-            }
-            if (glossary.has()) {
-                const term = glossary.getTerm(fqn);
-                if (term) {
-                    const prefix = (currentPage === 'glossary.html') ? '#' : 'glossary.html#';
-                    return {href: prefix + globalThis.Jig.util.fqnToId("term", fqn)};
-                }
+            for (const r of resolvers) {
+                if (!r.has()) continue;
+                const found = r.find(fqn);
+                if (!found) continue;
+                const prefix = (currentPage === r.page) ? '#' : `${r.page}#`;
+                const result = {href: prefix + globalThis.Jig.util.fqnToId(r.idPrefix, fqn)};
+                if (r.deprecatedAware && found.isDeprecated) result.className = 'deprecated';
+                return result;
             }
             return {
                 className: 'weak',
@@ -416,16 +405,26 @@ globalThis.Jig.glossary = (() => {
         return fqn.substring(fqn.lastIndexOf('.') + 1);
     }
 
-    function getPackageTerm(fqn) {
+    function methodSimpleName(fqn) {
+        if (!fqn) return '';
+        const hashIdx = fqn.indexOf('#');
+        if (hashIdx === -1) return typeSimpleName(fqn);
+        const parenIdx = fqn.indexOf('(', hashIdx);
+        return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
+    }
+
+    function getTermOrSimpleName(fqn) {
         const term = findTerm(fqn);
         if (term) return term;
         return {title: typeSimpleName(fqn) || fqn, description: ""};
     }
 
+    function getPackageTerm(fqn) {
+        return getTermOrSimpleName(fqn);
+    }
+
     function getTypeTerm(fqn) {
-        const term = findTerm(fqn);
-        if (term) return term;
-        return {title: typeSimpleName(fqn) || fqn, description: ""};
+        return getTermOrSimpleName(fqn);
     }
 
     function getFieldTerm(fqn) {
@@ -491,6 +490,18 @@ globalThis.Jig.glossary = (() => {
         };
     }
 
+    /**
+     * @param {boolean} showPhysicalName
+     * @return {{type: (function(string): string), pkg: (function(string): string), method: (function(string): string)}}
+     */
+    function makeLabels(showPhysicalName) {
+        return {
+            type: (fqn) => !fqn ? '' : showPhysicalName ? typeSimpleName(fqn) : getTypeTerm(fqn).title,
+            pkg: (fqn) => showPhysicalName ? typeSimpleName(fqn) : getPackageTerm(fqn).title,
+            method: (fqn) => showPhysicalName ? methodSimpleName(fqn) : getMethodTerm(fqn, true).title,
+        };
+    }
+
     return {
         getPackageTerm,
         getTypeTerm,
@@ -498,6 +509,8 @@ globalThis.Jig.glossary = (() => {
         getMethodTerm,
         findTerm,
         typeSimpleName,
+        methodSimpleName,
+        makeLabels,
     };
 })();
 
@@ -552,10 +565,7 @@ globalThis.Jig.dom = (() => {
     }
 
     function createCell(text, className) {
-        return createElement("td", {
-            className: className || undefined,
-            textContent: text
-        });
+        return createElement("td", {className, textContent: text});
     }
 
     // --- Markdown ---
@@ -578,10 +588,12 @@ globalThis.Jig.dom = (() => {
     // --- CSV utility ---
 
     function escapeCsvValue(value) {
-        const text = String(value ?? "")
-            .replace(/\r\n/g, "\n")
-            .replace(/\r/g, "\n");
+        const text = String(value ?? "").replace(/\r\n|\r/g, "\n");
         return `"${text.replace(/"/g, "\"\"")}"`;
+    }
+
+    function buildCsv(header, rows) {
+        return [header, ...rows].map(row => row.map(escapeCsvValue).join(",")).join("\r\n");
     }
 
     function downloadCsv(text, filename) {
@@ -628,6 +640,7 @@ globalThis.Jig.dom = (() => {
         return typeLinkResolver;
     }
 
+    // Jig.glossary (jig-glossary.js) のロードが必要
     function createTypeLink(fqn, className = undefined) {
         // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
         const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';
@@ -734,10 +747,8 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createFieldsList(fields, options = {}) {
-        if (fields.length === 0) return null;
-
-        const items = fields.map(field => createElement("div", {
+    function createFieldItem(field) {
+        return createElement("div", {
             className: "method-item",
             children: [
                 createElement("div", {
@@ -752,11 +763,14 @@ globalThis.Jig.dom = (() => {
                     ]
                 })
             ]
-        }));
+        });
+    }
 
+    function createFieldsList(fields, options = {}) {
+        if (fields.length === 0) return null;
         const title = options.showTitle !== false ? "フィールド" : undefined;
         const card = createItemCard({title, extraClass: "methods-section fields"});
-        items.forEach(item => card.appendChild(item));
+        fields.forEach(field => card.appendChild(createFieldItem(field)));
         return card;
     }
 
@@ -860,6 +874,28 @@ globalThis.Jig.dom = (() => {
         }
     }
 
+    function renderPackageGrouped(container, byPackage, buildListItems, {titleClass} = {}) {
+        const packageTitleClass = ["in-page-sidebar__title", "in-page-sidebar__title--collapsible", titleClass]
+            .filter(Boolean).join(" ");
+        byPackage.forEach((items, packageFqn) => {
+            const typeList = createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: buildListItems(items)
+            });
+            const packageTitle = createElement("p", {
+                className: packageTitleClass,
+                children: [
+                    createElement("span", {textContent: globalThis.Jig.glossary.getPackageTerm(packageFqn).title}),
+                    createSidebarToggle(typeList)
+                ]
+            });
+            container.appendChild(createElement("section", {
+                className: "in-page-sidebar__section",
+                children: [packageTitle, typeList]
+            }));
+        });
+    }
+
     function initSidebarTextFilter(inputId, onChange) {
         const input = document.getElementById(inputId);
         if (!input) return;
@@ -906,7 +942,7 @@ globalThis.Jig.dom = (() => {
             buttons.push(btn);
             btn.addEventListener('click', () => {
                 buttons.forEach(b => b.classList.remove('active'));
-                panelEls.forEach(p => p.classList.add('hidden'));
+                Object.values(panels).forEach(p => p.classList.add('hidden'));
                 btn.classList.add('active');
                 panels[tab.id].classList.remove('hidden');
                 if (onTabChange) onTabChange(tab.id);
@@ -923,6 +959,19 @@ globalThis.Jig.dom = (() => {
     }
 
     // --- Table ---
+
+    function renderTableRows(tableId, items, buildRow, {clear = false} = {}) {
+        const tableBody = document.querySelector(`#${tableId} tbody`);
+        if (!tableBody) return;
+        if (clear) tableBody.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        items.forEach(item => {
+            const row = createElement("tr");
+            buildRow(row, item);
+            fragment.appendChild(row);
+        });
+        tableBody.appendChild(fragment);
+    }
 
     function setupSortableTables() {
         function sortTable(event) {
@@ -944,8 +993,8 @@ globalThis.Jig.dom = (() => {
             }
 
             rows.sort(function (a, b) {
-                const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
-                const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
+                const aValue = a.cells[columnIndex]?.textContent ?? "";
+                const bValue = b.cells[columnIndex]?.textContent ?? "";
 
                 // 数値は降順、文字は昇順
                 if (type === "number") {
@@ -956,7 +1005,7 @@ globalThis.Jig.dom = (() => {
                 return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
             });
 
-            rows.forEach(row => table.getElementsByTagName("tbody")[0].appendChild(row));
+            rows.forEach(row => table.querySelector("tbody").appendChild(row));
 
             headerColumn.dataset.orderFlag = (!orderFlag).toString();
         }
@@ -1077,7 +1126,9 @@ globalThis.Jig.dom = (() => {
         parseMarkdown,
         createMarkdownElement,
         escapeCsvValue,
+        buildCsv,
         downloadCsv,
+        renderTableRows,
         setupSortableTables,
         initCommonUi,
 
@@ -1096,6 +1147,7 @@ globalThis.Jig.dom = (() => {
             refElement: createElementForTypeRef,
             parameterElement: createParameterElement,
             methodIOSection: createMethodIOSection,
+            fieldItem: createFieldItem,
             fieldsList: createFieldsList,
             methodItem: createMethodItem,
             methodsList: createMethodsList,
@@ -1103,6 +1155,7 @@ globalThis.Jig.dom = (() => {
         sidebar: {
             section: createSection,
             renderSection,
+            renderPackageGrouped,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
@@ -1170,12 +1223,13 @@ globalThis.Jig.mermaid = (() => {
 // Mermaid diagram builder
         class MermaidBuilder {
             constructor() {
-                this.nodes = [];
+                this.nodeSet = new Set();
                 this.edges = [];
                 this.subgraphs = [];
                 this.styles = [];
                 this.clicks = [];
                 this.edgeSet = new Set();
+                this.clickSet = new Set();
             }
 
             sanitize(id) {
@@ -1183,10 +1237,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             addNode(id, label, shape = 'class') {
-                const nodeLine = getNodeDefinition(id, label, shape);
-                if (!this.nodes.includes(nodeLine)) {
-                    this.nodes.push(nodeLine);
-                }
+                this.nodeSet.add(getNodeDefinition(id, label, shape));
                 return id;
             }
 
@@ -1205,9 +1256,17 @@ globalThis.Jig.mermaid = (() => {
                 this.styles.push(`style ${id} ${style}`);
             }
 
-            addClick(id, url) {
-                if (!id || !url) return;
-                this.clicks.push(`click ${id} "${url}"`);
+            addClick(id, url, tooltip) {
+                if (!id || !url || this.clickSet.has(id)) return;
+                this.clickSet.add(id);
+                const tooltipPart = tooltip ? ` "${escapeMermaidText(tooltip)}"` : '';
+                this.clicks.push(`click ${id} href "${url}"${tooltipPart}`);
+            }
+
+            addTooltip(id, tooltip) {
+                if (!id || !tooltip || this.clickSet.has(id)) return;
+                this.clickSet.add(id);
+                this.clicks.push(`click ${id} _jigNoop "${escapeMermaidText(tooltip)}"`);
             }
 
             addClass(id, className) {
@@ -1227,10 +1286,10 @@ globalThis.Jig.mermaid = (() => {
             }
 
             startSubgraph(id, label = id, direction = null) {
-                const subgraph = {id, label, lines: []};
+                const subgraph = {id, label, lineSet: new Set()};
                 if (direction) {
                     const safeDirection = (direction === 'TD') ? 'TB' : direction;
-                    subgraph.lines.push(`direction ${safeDirection}`);
+                    subgraph.lineSet.add(`direction ${safeDirection}`);
                 }
                 this.subgraphs.push(subgraph);
                 return subgraph;
@@ -1244,10 +1303,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             addNodeToSubgraph(subgraph, id, label, shape = 'class') {
-                const nodeLine = `    ${getNodeDefinition(id, label, shape)}`;
-                if (!subgraph.lines.includes(nodeLine)) {
-                    subgraph.lines.push(nodeLine);
-                }
+                subgraph.lineSet.add(getNodeDefinition(id, label, shape));
                 return id;
             }
 
@@ -1255,13 +1311,13 @@ globalThis.Jig.mermaid = (() => {
                 let code = `graph ${direction}\n`;
                 this.subgraphs.forEach(sg => {
                     code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
-                    sg.lines.forEach(line => {
-                        code += `    ${line.trim()}\n`;
+                    sg.lineSet.forEach(line => {
+                        code += `    ${line}\n`;
                     });
                     code += `  end\n`;
                 });
-                this.nodes.forEach(node => {
-                    code += `  ${node.trim()}\n`;
+                this.nodeSet.forEach(node => {
+                    code += `  ${node}\n`;
                 });
                 this.edges.forEach(edge => {
                     code += `${edge}\n`;
@@ -1276,7 +1332,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             isEmpty() {
-                return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
+                return this.nodeSet.size === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
             }
         }
 
@@ -1332,7 +1388,7 @@ globalThis.Jig.mermaid = (() => {
                 "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
                 "---",
                 `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
             const subgraphNodeIds = new Map();
 
             const nodeLines = buildDiagramNodeLines(
@@ -1345,7 +1401,8 @@ globalThis.Jig.mermaid = (() => {
                     clickHandlerName,
                     nodeClickUrlCallback,
                     parentFqnsWithRelations,
-                    subgraphNodeIds
+                    subgraphNodeIds,
+                    showPhysicalName: options.showPhysicalName,
                 }
             );
             const {
@@ -1399,7 +1456,7 @@ globalThis.Jig.mermaid = (() => {
                 "    clusterBkg: '#ffffde'",
                 "---",
                 `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
             const subgraphNodeIds = new Map();
 
             const nodeLines = buildDiagramNodeLines(
@@ -1412,6 +1469,7 @@ globalThis.Jig.mermaid = (() => {
                     clickHandlerName,
                     parentFqnsWithRelations,
                     subgraphNodeIds,
+                    showPhysicalName: options.showPhysicalName,
                 }
             );
             const {edgeLines, linkStyles} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
@@ -1444,9 +1502,11 @@ globalThis.Jig.mermaid = (() => {
         /**
          * ダイアグラムで使用する各種Mapを構築する
          * @param {Set<string>} packageFqns - 対象パッケージFQNセット
+         * @param {{showPhysicalName?: boolean}} [options={}]
          * @returns {{nodeIdByFqn: Map<string, string>, nodeIdToFqn: Map<string, string>, nodeLabelById: Map<string, string>, ensureNodeId: function(string): string}} - ノードマップとノードID生成関数
          */
-        function buildDiagramNodeMaps(packageFqns) {
+        function buildDiagramNodeMaps(packageFqns, options = {}) {
+            const showPhysicalName = options.showPhysicalName ?? false;
             const nodeIdByFqn = new Map();
             const nodeIdToFqn = new Map();
             const nodeLabelById = new Map();
@@ -1456,7 +1516,7 @@ globalThis.Jig.mermaid = (() => {
                 const nodeId = `P${nodeIndex++}`;
                 nodeIdByFqn.set(fqn, nodeId);
                 nodeIdToFqn.set(nodeId, fqn);
-                const label = globalThis.Jig.glossary.getPackageTerm(fqn).title;
+                const label = showPhysicalName ? fqn.split('.').pop() : globalThis.Jig.glossary.getPackageTerm(fqn).title;
                 nodeLabelById.set(nodeId, label);
                 return nodeId;
             };
@@ -1519,7 +1579,7 @@ globalThis.Jig.mermaid = (() => {
          * @param {DiagramNodeLinesOptions} options
          */
         function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
-            const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback} = options;
+            const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback, showPhysicalName} = options;
 
             const packageFqnList = Array.from(packageFqns).sort();
             const parentFqns = buildParentFqns(packageFqns);
@@ -1535,13 +1595,14 @@ globalThis.Jig.mermaid = (() => {
                 }
                 if (nodeClickUrlCallback && fqn) {
                     const url = escapeMermaidText(nodeClickUrlCallback(fqn));
-                    lines.push(`click ${nodeId} href "${url}"`);
+                    const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
+                    lines.push(`click ${nodeId} href "${url}" "${tooltip}"`);
                 }
                 if (fqn && parentFqns.has(fqn)) {
                     lines.push(`class ${nodeId} parentPackage`);
                 }
             };
-            return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, options.subgraphNodeIds);
+            return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, options.subgraphNodeIds, showPhysicalName);
         }
 
         function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {
@@ -1552,12 +1613,10 @@ globalThis.Jig.mermaid = (() => {
             return displayLabel ?? '';
         }
 
-        function buildDiagramSubgraphLabel(subgraphFqn, parentSubgraphFqn) {
+        function buildDiagramSubgraphLabel(subgraphFqn, showPhysicalName = false) {
             if (!subgraphFqn) return '';
-            if (parentSubgraphFqn && subgraphFqn.startsWith(`${parentSubgraphFqn}.`)) {
-                return subgraphFqn.substring(parentSubgraphFqn.length + 1);
-            }
-            return subgraphFqn;
+            if (showPhysicalName) return subgraphFqn.split('.').pop();
+            return globalThis.Jig.glossary.getPackageTerm(subgraphFqn).title;
         }
 
         function buildDiagramNodeTooltip(fqn) {
@@ -1585,7 +1644,7 @@ globalThis.Jig.mermaid = (() => {
             return rootGroup;
         }
 
-        function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, subgraphNodeIds = null) {
+        function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, subgraphNodeIds = null, showPhysicalName = false) {
             const lines = [];
             let groupIndex = 0;
             const collectNodeIds = group => {
@@ -1610,7 +1669,7 @@ globalThis.Jig.mermaid = (() => {
                         return;
                     }
                     const groupId = `G${groupIndex++}`;
-                    const label = buildDiagramSubgraphLabel(child.key, parentSubgraphFqnForNodes);
+                    const label = buildDiagramSubgraphLabel(child.key, showPhysicalName);
                     if (subgraphNodeIds) {
                         subgraphNodeIds.set(groupId, new Set(collectNodeIds(child)));
                     }
@@ -2175,6 +2234,15 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
+        function ensureLabelToggleButton(container, showPhysicalName, onToggle) {
+            if (!container) return null;
+            const label = showPhysicalName ? "用語名を表示" : "物理名を表示";
+            const button = ensureMermaidControlButton(container, "mermaid-label-toggle-button", label, "T");
+            if (!button) return null;
+            button.onclick = onToggle;
+            return button;
+        }
+
         function ensureEdgeWarningPanel(container) {
             if (!container) return null;
             let panel = container.querySelector(":scope > .mermaid-edge-warning");
@@ -2271,7 +2339,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderWithControls(targetEl, diagramFn, {direction} = {}) {
+        function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle} = {}) {
             if (!targetEl) return;
 
             let diagramEl = null;
@@ -2291,13 +2359,21 @@ globalThis.Jig.mermaid = (() => {
 
             const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
+            let showPhysicalName = false;
+
             const renderDiagram = (newDirection) => {
-                const currentSource = diagramFn(newDirection) ?? "";
+                const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 ensureCopySourceButton(container, currentSource);
                 ensureDownloadButton(container);
                 if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
                     ensureDirectionButton(container, newDirection, renderDiagram);
+                }
+                if (enableLabelToggle) {
+                    ensureLabelToggleButton(container, showPhysicalName, () => {
+                        showPhysicalName = !showPhysicalName;
+                        renderDiagram(newDirection);
+                    });
                 }
 
                 if (isTooLarge(currentSource)) {
@@ -2322,7 +2398,7 @@ globalThis.Jig.mermaid = (() => {
 
             let initialDirection = direction;
             if (!initialDirection) {
-                const text = diagramFn("LR");
+                const text = diagramFn("LR", {showPhysicalName: false});
                 const graphMatch = text?.match(/^\s*(?:graph|flowchart)\s+(TB|TD|LR)\b/m);
                 const classDiagMatch = text?.match(/^\s*direction\s+(TB|LR)\b/m);
                 initialDirection = graphMatch?.[1] ?? classDiagMatch?.[1] ?? "LR";
@@ -2608,7 +2684,7 @@ globalThis.Jig.mermaid = (() => {
      * @returns {string|null}
      */
     function createPackageLevelDiagram(pkg, allPackages, allPackageRelations, options) {
-        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback, focusedPackageFqn} = options;
+        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback, focusedPackageFqn, showPhysicalName} = options;
         const {uniqueRelations, packageFqns} = builder.buildVisibleDiagramRelations(
             allPackages,
             allPackageRelations,
@@ -2624,7 +2700,7 @@ globalThis.Jig.mermaid = (() => {
 
         const {source} = builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            {diagramDirection, nodeClickUrlCallback, focusedPackageFqn}
+            {diagramDirection, nodeClickUrlCallback, focusedPackageFqn, showPhysicalName}
         );
         return source;
     }
@@ -2703,6 +2779,15 @@ globalThis.Jig.mermaid = (() => {
         }
     }
 
+    // クロスページナビゲーションURLの生成
+    const navUrl = (page, idPrefix) => (fqn) => `./${page}.html#${Jig.util.fqnToId(idPrefix, fqn)}`;
+    const nav = {
+        usecaseMethodUrl:  navUrl("usecase", "method"),
+        inboundAdapterUrl: navUrl("inbound", "adapter"),
+        outboundPortUrl:   navUrl("outbound", "port"),
+        domainTypeUrl:     navUrl("domain",   "domain"),
+    };
+
     return {
         builder,
         graph,
@@ -2712,11 +2797,15 @@ globalThis.Jig.mermaid = (() => {
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
         ClassDiagramBuilder,
+        nav,
     };
 })();
 
-if (typeof document !== "undefined") {
+if (typeof window !== "undefined") {
+    window._jigNoop = () => {};
+}
 
+if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
         globalThis.Jig.mermaid.render.initializeMermaid();
         globalThis.Jig.mermaid.render.setupLazyMermaidRender();

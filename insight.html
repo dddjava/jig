@@ -41,7 +41,13 @@
 
     <button id="cancel-zoom" class="hidden">ズーム解除</button>
 
-    <h2>パッケージ (<span id="package-count">0</span>)</h2>
+    <nav id="insight-section-nav">
+        <a href="#section-package">パッケージ</a>
+        <a href="#section-type">クラス</a>
+        <a href="#section-method">メソッド</a>
+    </nav>
+
+    <h2 id="section-package">パッケージ (<span id="package-count">0</span>)</h2>
     <table id="package-insight-list" class="zebra sortable">
         <thead>
         <tr>
@@ -58,7 +64,7 @@
         <tbody></tbody>
     </table>
 
-    <h2>クラス (<span id="type-count">0</span>)</h2>
+    <h2 id="section-type">クラス (<span id="type-count">0</span>)</h2>
     <table id="type-insight-list" class="zebra sortable">
         <thead>
         <tr>
@@ -77,7 +83,7 @@
         <tbody></tbody>
     </table>
 
-    <h2>メソッド (<span id="method-count">0</span>)</h2>
+    <h2 id="section-method">メソッド (<span id="method-count">0</span>)</h2>
     <table id="method-insight-list" class="zebra sortable">
         <thead>
         <tr>

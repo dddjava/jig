@@ -66,12 +66,12 @@ const PackageApp = (() => {
     }
 
     function getGlossaryTitle(fqn) {
-        return Jig.glossary.getTypeTerm(fqn).title;
+        return Jig.glossary.getPackageTerm(fqn).title;
     }
 
     function getMaxPackageDepth() {
-        const data = parsePackageRelationData(Jig.data.package.get() ?? {});
-        return data.packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
+        const {packages} = getPackageRelationData(hierarchyState);
+        return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
     function aggregatePackageData(packages, relations, depth) {
@@ -355,11 +355,11 @@ const PackageApp = (() => {
         const renderDiagram = () => {
             diagramContainer.innerHTML = '';
             const {fqns, relations} = buildSimulationData();
-            const generator = (dir) => Jig.mermaid.builder.buildMermaidDiagramSource(
+            const generator = (dir, opts) => Jig.mermaid.builder.buildMermaidDiagramSource(
                 fqns, relations,
-                {diagramDirection: dir}
+                {diagramDirection: dir, showPhysicalName: opts?.showPhysicalName}
             ).source;
-            Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection});
+            Jig.mermaid.render.renderWithControls(diagramContainer, generator, {direction: context.diagramDirection, enableLabelToggle: true});
         };
 
         const radioName = `sim-dir-${encodeURIComponent(item.pairLabel)}`;
@@ -519,7 +519,7 @@ const PackageApp = (() => {
             const packageFqn = Jig.util.getPackageFqnFromTypeFqn(node);
             const packageName = packageFqn === '(default)'
                 ? '(default)'
-                : Jig.glossary.typeSimpleName(packageFqn);
+                : Jig.glossary.getPackageTerm(packageFqn).title;
             if (!packages.has(packageFqn)) {
                 packages.set(packageFqn, {nodes: new Set(), name: packageName});
             }
@@ -531,10 +531,7 @@ const PackageApp = (() => {
         const pairPackages = typeof mutualPairLabel === 'string'
             ? mutualPairLabel.split(' <-> ').map(value => value.trim()).filter(value => value)
             : [];
-        const uniquePairPackages = [];
-        pairPackages.forEach(packageFqn => {
-            if (!uniquePairPackages.includes(packageFqn)) uniquePairPackages.push(packageFqn);
-        });
+        const uniquePairPackages = [...new Set(pairPackages)];
         const collapsedPairPackages = new Set(
             uniquePairPackages.filter(packageFqn =>
                 uniquePairPackages.some(other => other !== packageFqn && packageFqn.startsWith(`${other}.`))
@@ -622,11 +619,13 @@ const PackageApp = (() => {
             });
             classNodes.forEach(classFqn => current.classes.add(classFqn));
         };
-        const renderTreeNode = (targetLines, label, node, counter) => {
+        const renderTreeNode = (targetLines, segment, node, counter, parentFqn) => {
+            const fqn = parentFqn ? `${parentFqn}.${segment}` : segment;
+            const label = Jig.glossary.getPackageTerm(fqn).title;
             targetLines.push(`subgraph P${counter.value++}[${escapeLabel(label)}]`);
             appendClassNodes(targetLines, node.classes);
-            Array.from(node.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([segment, child]) => {
-                renderTreeNode(targetLines, segment, child, counter);
+            Array.from(node.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([childSegment, child]) => {
+                renderTreeNode(targetLines, childSegment, child, counter, fqn);
             });
             targetLines.push('end');
         };
@@ -642,7 +641,7 @@ const PackageApp = (() => {
             }
             const subgraphCounter = {value: 0};
             outerRoots.forEach((root, outerIndex) => {
-                const rootLabel = Jig.glossary.typeSimpleName(root);
+                const rootLabel = Jig.glossary.getPackageTerm(root).title;
                 lines.push(`subgraph O${outerIndex}[${escapeLabel(rootLabel || root)}]`);
                 const groupedPackages = groups.get(root) || [];
                 const treeRoot = createTreeNode();
@@ -663,7 +662,7 @@ const PackageApp = (() => {
                 });
                 appendClassNodes(lines, outerDirectClasses);
                 Array.from(treeRoot.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([segment, child]) => {
-                    renderTreeNode(lines, segment, child, subgraphCounter);
+                    renderTreeNode(lines, segment, child, subgraphCounter, root);
                 });
                 lines.push('end');
             });
@@ -691,11 +690,11 @@ const PackageApp = (() => {
         applyHierarchyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
-        const generator = (dir) => buildHierarchyDiagramRenderPlan(context, dir).source;
-        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+        const generator = (dir, opts) => buildHierarchyDiagramRenderPlan(context, dir, opts?.showPhysicalName).source;
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection, enableLabelToggle: true});
     }
 
-    function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection) {
+    function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection, showPhysicalName = false) {
         const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
         const {
             uniqueRelations,
@@ -711,7 +710,7 @@ const PackageApp = (() => {
         );
         const {source, nodeIdToFqn, mutualPairs} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            {diagramDirection: direction, clickHandlerName: HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME}
+            {diagramDirection: direction, clickHandlerName: HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME, showPhysicalName}
         );
         return {
             source,
@@ -740,8 +739,7 @@ const PackageApp = (() => {
         syncStateToURL();
     }
 
-    function buildCollapsedSubpackageMap(selectedPackages) {
-        const tbody = dom.getExplorePackageList()?.querySelector('tbody');
+    function buildCollapsedSubpackageMap(selectedPackages, tbody) {
         if (!tbody) return new Map();
         const selectedSet = new Set(selectedPackages);
         // 最も近い祖先を優先するため長さ降順でソート
@@ -765,7 +763,10 @@ const PackageApp = (() => {
 
         const {relations} = getPackageRelationData(context);
 
-        const collapsedToParent = buildCollapsedSubpackageMap(context.exploreTargetPackages);
+        const collapsedToParent = buildCollapsedSubpackageMap(
+            context.exploreTargetPackages,
+            dom.getExplorePackageList()?.querySelector('tbody')
+        );
         const effectiveTargets = [...context.exploreTargetPackages, ...collapsedToParent.keys()];
 
         const {targetSet, callerSet, calleeSet} = collectExploreNodeSets(
@@ -802,20 +803,21 @@ const PackageApp = (() => {
             visibleRelations.push({from, to});
         });
 
-        const exploreOptions = (dir) => ({
+        const exploreOptions = (dir, showPhysicalName = false) => ({
             targetFqns: resolvedTargetSet,
             callerFqns: resolvedCallerSet,
             calleeFqns: resolvedCalleeSet,
             diagramDirection: dir,
             clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+            showPhysicalName,
         });
 
         const renderPlan = Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(context.diagramDirection));
         setDiagramSource(diagram, renderPlan.source);
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
 
-        const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir)).source;
-        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+        const generator = (dir, opts) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir, opts?.showPhysicalName)).source;
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection, enableLabelToggle: true});
         syncStateToURL();
     }
 

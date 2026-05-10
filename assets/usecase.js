@@ -1,16 +1,23 @@
 const UsecaseApp = (() => {
     const Jig = globalThis.Jig;
 
-    const state = {
-        data: null,
-        selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
-        handlerFqns: null,       // ハンドラのみ表示時のFQN集合、nullはすべて表示
-        sidebarFilterText: '',
-    };
+    function createInitialState() {
+        return {
+            data: null,
+            selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
+            handlerFqns: null,       // ハンドラのみ表示時のFQN集合、nullはすべて表示
+            sidebarFilterText: '',
+        };
+    }
+
+    const state = createInitialState();
 
     const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
     const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
     const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
+
+    // 有向エッジを Set でユニーク化するためのキー。FQNには現れない区切り文字を使用する。
+    const makeEdgeKey = (from, to) => `${from} ${to}`;
 
     /**
      * @param {string} fqn
@@ -57,61 +64,63 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {Usecase[]} usecases
+     * @returns {Map<string, UsecaseMethod>}
+     */
+    function buildMethodMap(usecases) {
+        const map = new Map();
+        usecases.forEach(usecase => {
+            (usecase.methods || []).forEach(m => map.set(m.fqn, {...m, kind: isUsecase(m) ? "usecase" : "method"}));
+            (usecase.staticMethods || []).forEach(m => map.set(m.fqn, {...m, kind: "static-method"}));
+        });
+        return map;
+    }
+
+    /**
+     * @param {Map<string, UsecaseMethod>} methodMap
+     * @returns {Map<string, DiagramNode[]>}
+     */
+    function buildReverseCallerMap(methodMap) {
+        const map = new Map();
+        function addEntry(calleeFqn, callerNode) {
+            if (!calleeFqn || !callerNode?.fqn) return;
+            Jig.util.pushToMap(map, calleeFqn, callerNode);
+        }
+        for (const method of methodMap.values()) {
+            (method.callMethods || []).forEach(calleeFqn =>
+                addEntry(calleeFqn, {fqn: method.fqn, kind: method.kind})
+            );
+        }
+        Jig.data.inbound.getControllers().forEach(controller => {
+            (controller.relations || []).forEach(relation => {
+                if (!relation?.from || !relation?.to) return;
+                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
+                if (methodMap.has(callerClassFqn)) return;
+                addEntry(relation.to, {fqn: relation.from, kind: "inbound-method"});
+            });
+        });
+        return map;
+    }
+
+    /**
      * @param {UsecaseMethod} rootMethod
      * @param {DiagramContext} diagramContext
      * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
      */
     function buildUsecaseDiagram(rootMethod, diagramContext) {
-        /**
-         * @type {Map<string, DiagramNode>}
-         */
         const nodes = new Map();
         const edgeSet = new Set();
-        /**
-         * @type {DiagramEdge[]}
-         */
         const edges = [];
         const visited = new Set();
 
         nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
         visited.add(rootMethod.fqn);
 
-        /**
-         * @param {string} kind
-         * @returns {boolean}
-         */
         function shouldIncludeMethodNode(kind) {
             return diagramContext.showDiagramInternalMethods || kind === "usecase";
         }
 
-        /**
-         * @type {Map<string, DiagramNode[]>}
-         */
-        const reverseCallerMap = new Map();
-
-        /**
-         * @param {string} calleeFqn
-         * @param {DiagramNode} callerNode
-         */
-        function addReverseCaller(calleeFqn, callerNode) {
-            if (!calleeFqn || !callerNode?.fqn) return;
-            Jig.util.pushToMap(reverseCallerMap, calleeFqn, callerNode);
-        }
-
-        for (const method of diagramContext.methodMap.values()) {
-            (method.callMethods || []).forEach(calleeFqn => {
-                addReverseCaller(calleeFqn, {fqn: method.fqn, kind: method.kind});
-            });
-        }
-
-        Jig.data.inbound.getControllers().forEach(controller => {
-            (controller.relations || []).forEach(relation => {
-                if (!relation?.from || !relation?.to) return;
-                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
-                if (diagramContext.methodMap.has(callerClassFqn)) return;
-                addReverseCaller(relation.to, {fqn: relation.from, kind: "inbound-method"});
-            });
-        });
+        const reverseCallerMap = diagramContext.reverseCallerMap;
 
         /**
          * @param {string} rootFqn
@@ -177,7 +186,7 @@ const UsecaseApp = (() => {
         }
 
         collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
-            const edgeKey = callerFqn + '\u2192' + rootMethod.fqn;
+            const edgeKey = makeEdgeKey(callerFqn, rootMethod.fqn);
             if (!edgeSet.has(edgeKey)) {
                 edgeSet.add(edgeKey);
                 edges.push({from: callerFqn, to: rootMethod.fqn});
@@ -198,7 +207,7 @@ const UsecaseApp = (() => {
                 if (diagramContext.methodMap.has(calleeFqn)) {
                     const m = diagramContext.methodMap.get(calleeFqn);
                     if (shouldIncludeMethodNode(m.kind)) {
-                        const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
+                        const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
                         if (!edgeSet.has(edgeKey)) {
                             edgeSet.add(edgeKey);
                             edges.push({from: effectiveCallerFqn, to: calleeFqn});
@@ -217,7 +226,7 @@ const UsecaseApp = (() => {
                     }
                 } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
                     if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
+                    const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
                         edges.push({from: effectiveCallerFqn, to: calleeFqn});
@@ -244,7 +253,7 @@ const UsecaseApp = (() => {
                             if (!nodes.has(domainFqn)) {
                                 nodes.set(domainFqn, {fqn: domainFqn, kind: "domain-type"});
                             }
-                            const edgeKey = domainFqn + '\u2192' + fqn;
+                            const edgeKey = makeEdgeKey(domainFqn, fqn);
                             if (!edgeSet.has(edgeKey)) {
                                 edgeSet.add(edgeKey);
                                 edges.push({from: domainFqn, to: fqn, dotted: true});
@@ -258,7 +267,7 @@ const UsecaseApp = (() => {
                         if (!nodes.has(returnFqn)) {
                             nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
                         }
-                        const edgeKey = fqn + '\u2192' + returnFqn;
+                        const edgeKey = makeEdgeKey(fqn, returnFqn);
                         if (!edgeSet.has(edgeKey)) {
                             edgeSet.add(edgeKey);
                             edges.push({from: fqn, to: returnFqn, dotted: true});
@@ -292,7 +301,7 @@ const UsecaseApp = (() => {
 
             (method.callMethods || []).forEach(calleeFqn => {
                 if (methodFqns.has(calleeFqn)) {
-                    const edgeKey = `${method.fqn}->${calleeFqn}`;
+                    const edgeKey = makeEdgeKey(method.fqn, calleeFqn);
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
                         edges.push({from: method.fqn, to: calleeFqn});
@@ -308,7 +317,7 @@ const UsecaseApp = (() => {
                             domainNodeSet.add(domainFqn);
                             nodes.push({fqn: domainFqn, kind: "domain-type"});
                         }
-                        const edgeKey = `${domainFqn}->${method.fqn}`;
+                        const edgeKey = makeEdgeKey(domainFqn, method.fqn);
                         if (!edgeSet.has(edgeKey)) {
                             edgeSet.add(edgeKey);
                             edges.push({from: domainFqn, to: method.fqn, dotted: true});
@@ -323,7 +332,7 @@ const UsecaseApp = (() => {
                         domainNodeSet.add(returnFqn);
                         nodes.push({fqn: returnFqn, kind: "domain-type"});
                     }
-                    const edgeKey = `${method.fqn}->${returnFqn}`;
+                    const edgeKey = makeEdgeKey(method.fqn, returnFqn);
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
                         edges.push({from: method.fqn, to: returnFqn, dotted: true});
@@ -341,7 +350,7 @@ const UsecaseApp = (() => {
                     inboundNodeSet.add(callerClassFqn);
                     nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
                 }
-                const edgeKey = `${callerClassFqn}->${relation.to}`;
+                const edgeKey = makeEdgeKey(callerClassFqn, relation.to);
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
                     edges.push({from: callerClassFqn, to: relation.to});
@@ -566,6 +575,220 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * @param {UsecaseMethod} method
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {function}
+     */
+    function createUsecaseDiagramGenerator(method, buildCurrentDiagramContext) {
+        return (dir, opts) => {
+            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+            const builder = new Jig.mermaid.Builder();
+            builder.applyThemeClassDefs();
+            const classSubgraphs = new Map();
+            const ensureClassSubgraph = (fqn) => {
+                const classFqn = getClassFqnFromMethodFqn(fqn);
+                return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), typeLabel(classFqn), 'LR')};
+            };
+            currentUsecaseDiagram.nodes.forEach(node => {
+                const nodeId = fqnToNodeId(node.fqn);
+                if (node.kind === "inbound-method") {
+                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "inbound");
+                    builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(classFqn), node.fqn);
+                } else if (node.kind === "outbound-method") {
+                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "outbound");
+                    builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(classFqn), node.fqn);
+                } else if (node.kind === "domain-type") {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                    builder.addClass(nodeId, "domain");
+                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+                } else if (node.kind === "usecase") {
+                    const {subgraph} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    if (node.fqn === method.fqn) builder.addStyle(nodeId, "font-weight:bold");
+                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
+                } else {
+                    const {subgraph} = ensureClassSubgraph(node.fqn);
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "inactive");
+                    builder.addTooltip(nodeId, node.fqn);
+                }
+            });
+            currentUsecaseDiagram.edges.forEach(edge => {
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+            });
+            return builder.build(dir);
+        };
+    }
+
+    /**
+     * @param {UsecaseMethod} method
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {HTMLElement}
+     */
+    function renderMethodSection(method, buildCurrentDiagramContext) {
+        const methodTerm = Jig.glossary.getMethodTerm(method.fqn);
+        const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
+        methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
+        methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
+
+        if (methodTerm.description) {
+            methodSection.appendChild(Jig.dom.createElement("section", {
+                className: "description",
+                children: [Jig.dom.createMarkdownElement(methodTerm.description)]
+            }));
+        }
+
+        const currentContext = buildCurrentDiagramContext();
+        const usecaseDiagram = buildUsecaseDiagram(method, currentContext);
+        const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
+
+        const sequenceDiagram = SequenceDiagram.buildDiagram(method, currentContext);
+        const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
+        const hasSequenceDiagram = sequenceDiagramCode !== null;
+
+        if (hasUsecaseDiagram || hasSequenceDiagram) {
+            let usecaseTarget, sequenceTarget;
+
+            if (hasUsecaseDiagram && hasSequenceDiagram) {
+                const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
+                const {panels, section} = Jig.dom.tab.buildSection(
+                    [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
+                    {className: "jig-card-section tab-content-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
+                );
+                methodSection.appendChild(section);
+                usecaseTarget = panels['usecase'];
+                sequenceTarget = panels['sequence'];
+            } else {
+                const container = Jig.dom.createElement("div", {className: "jig-card-section diagram-container"});
+                methodSection.appendChild(container);
+                if (hasUsecaseDiagram) usecaseTarget = container;
+                else sequenceTarget = container;
+            }
+
+            if (hasUsecaseDiagram) {
+                Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
+                    mmdContainer.innerHTML = "";
+                    Jig.mermaid.render.renderWithControls(mmdContainer, createUsecaseDiagramGenerator(method, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
+                });
+            }
+
+            if (hasSequenceDiagram) {
+                Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
+                    sequenceContainer.innerHTML = "";
+                    const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
+                    const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
+                    if (currentSequenceDiagramCode) {
+                        Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
+                    }
+                });
+            }
+        }
+
+        return methodSection;
+    }
+
+    function renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext) {
+        const visibleUsecaseMethods = usecase.methods.filter(
+            method => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn))
+        );
+        if (handlerFqns && visibleUsecaseMethods.length === 0) return null;
+
+        const term = Jig.glossary.getTypeTerm(usecase.fqn);
+        const section = Jig.dom.card.type({id: fqnToTypeId(usecase.fqn), title: term.title, fqn: usecase.fqn});
+
+        if (term.description) {
+            section.appendChild(Jig.dom.createElement("section", {
+                className: "jig-card-section description",
+                children: [Jig.dom.createMarkdownElement(term.description)]
+            }));
+        }
+
+        const classGraph = buildClassGraph(usecase, handlerFqns);
+        if (classGraph.edges.length > 0) {
+            const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
+            section.appendChild(classDiagramContainer);
+            Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
+                mmdContainer.innerHTML = "";
+                Jig.mermaid.render.renderWithControls(mmdContainer, createClassDiagramGenerator(classGraph), {direction: 'LR', enableLabelToggle: true});
+            });
+        }
+
+        const fieldsList = Jig.dom.type.fieldsList(usecase.fields, {showTitle: false});
+        if (fieldsList) fieldsList.classList.add("fields");
+
+        const staticList = usecase.staticMethods.length > 0
+            ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, {showTitle: false})
+            : null;
+        if (staticList) staticList.classList.add("static-methods");
+
+        const internalMethods = usecase.methods.filter(method => !isUsecase(method));
+        const methodList = internalMethods.length > 0
+            ? Jig.dom.type.methodsList("メソッド", internalMethods, {showTitle: false})
+            : null;
+        if (methodList) methodList.classList.add("methods");
+
+        const memberTabDefs = [
+            fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
+            staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
+            methodList && {id: 'methods', label: 'メソッド', el: methodList},
+        ].filter(Boolean);
+
+        if (memberTabDefs.length > 0) {
+            const {panels, section: memberSection} = Jig.dom.tab.buildSection(memberTabDefs, {className: "jig-card-section tab-content-section tab-member-section"});
+            section.appendChild(memberSection);
+            memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
+        }
+
+        visibleUsecaseMethods.forEach(method => {
+            section.appendChild(renderMethodSection(method, buildCurrentDiagramContext));
+        });
+
+        return section;
+    }
+
+    /**
+     * @param {{nodes: DiagramNode[], edges: DiagramEdge[]}} classGraph
+     * @returns {function}
+     */
+    function createClassDiagramGenerator(classGraph) {
+        return (dir, opts) => {
+            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const builder = new Jig.mermaid.Builder();
+            builder.applyThemeClassDefs();
+            classGraph.nodes.forEach(node => {
+                const nodeId = fqnToNodeId(node.fqn);
+                if (node.kind === "inbound-class") {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                    builder.addClass(nodeId, "inbound");
+                    builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
+                } else if (node.kind === "domain-type") {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+                    builder.addClass(nodeId, "domain");
+                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+                } else if (node.kind === "usecase") {
+                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
+                } else {
+                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "inactive");
+                    builder.addTooltip(nodeId, node.fqn);
+                }
+            });
+            classGraph.edges.forEach(edge => {
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+            });
+            return builder.build(dir);
+        };
+    }
+
+    /**
      * ユースケース一覧の描画
      * @param {Usecase[]} usecases
      */
@@ -579,20 +802,14 @@ const UsecaseApp = (() => {
             return;
         }
 
-        /** @type {Map<string, UsecaseMethod>} */
-        const methodMap = new Map();
-        usecases.forEach(usecase => {
-            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, {
-                ...m,
-                kind: isUsecase(m) ? "usecase" : "method"
-            }));
-            (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: "static-method"}));
-        });
+        const methodMap = buildMethodMap(usecases);
+        const reverseCallerMap = buildReverseCallerMap(methodMap);
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
 
         const buildCurrentDiagramContext = () => ({
             methodMap,
+            reverseCallerMap,
             outboundOperationSet,
             showDiagramInternalMethods: document.getElementById('show-diagram-internal-methods').checked,
             showDiagramOutboundPorts: document.getElementById('show-diagram-outbound-ports').checked,
@@ -600,212 +817,10 @@ const UsecaseApp = (() => {
         });
 
         const handlerFqns = state.handlerFqns;
-        const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
 
         usecases.forEach(usecase => {
-            const visibleUsecaseMethods = usecase.methods.filter(isVisibleMethod);
-            if (handlerFqns && visibleUsecaseMethods.length === 0) return;
-
-            const term = Jig.glossary.getTypeTerm(usecase.fqn);
-            const section = Jig.dom.card.type({
-                id: fqnToTypeId(usecase.fqn),
-                title: term.title,
-                fqn: usecase.fqn
-            });
-
-            if (term.description) {
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "jig-card-section description",
-                    children: [Jig.dom.createMarkdownElement(term.description)]
-                }));
-            }
-
-            const classGraph = buildClassGraph(usecase, handlerFqns);
-            if (classGraph.edges.length > 0) {
-                const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
-                section.appendChild(classDiagramContainer);
-
-                Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
-                    mmdContainer.innerHTML = "";
-                    const builder = new Jig.mermaid.Builder();
-                    builder.applyThemeClassDefs();
-
-                    classGraph.nodes.forEach(node => {
-                        const nodeId = fqnToNodeId(node.fqn);
-                        if (node.kind === "inbound-class") {
-                            const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
-                            builder.addNode(nodeId, nodeLabel, 'class');
-                            builder.addClass(nodeId, "inbound");
-                            builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
-                        } else if (node.kind === "domain-type") {
-                            const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
-                            builder.addNode(nodeId, nodeLabel, 'class');
-                            builder.addClass(nodeId, "domain");
-                            builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
-                        } else {
-                            const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                            if (node.kind === "usecase") {
-                                builder.addNode(nodeId, nodeLabel, 'method');
-                                builder.addClass(nodeId, "usecase");
-                                builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
-                            } else {
-                                builder.addNode(nodeId, nodeLabel, 'method');
-                                builder.addClass(nodeId, "inactive");
-                            }
-                        }
-                    });
-
-                    classGraph.edges.forEach(edge => {
-                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
-                    });
-
-                    const generator = (dir) => builder.build(dir);
-                    Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
-                });
-            }
-
-            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, {showTitle: false});
-            if (fieldsList) fieldsList.classList.add("fields");
-
-            const staticList = usecase.staticMethods.length > 0
-                ? Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, {showTitle: false})
-                : null;
-            if (staticList) staticList.classList.add("static-methods");
-
-            const internalMethods = usecase.methods.filter(method => !isUsecase(method));
-            const methodList = internalMethods.length > 0
-                ? Jig.dom.type.methodsList("メソッド", internalMethods, {showTitle: false})
-                : null;
-            if (methodList) methodList.classList.add("methods");
-
-            const memberTabDefs = [
-                fieldsList && {id: 'fields', label: 'フィールド', el: fieldsList},
-                staticList && {id: 'static-methods', label: 'staticメソッド', el: staticList},
-                methodList && {id: 'methods', label: 'メソッド', el: methodList},
-            ].filter(Boolean);
-
-            if (memberTabDefs.length > 0) {
-                const {panels, section: memberSection} = Jig.dom.tab.buildSection(memberTabDefs, {className: "jig-card-section tab-content-section tab-member-section"});
-                section.appendChild(memberSection);
-                memberTabDefs.forEach(tab => panels[tab.id].appendChild(tab.el));
-            }
-
-            visibleUsecaseMethods.forEach(method => {
-                const methodTerm = Jig.glossary.getMethodTerm(method.fqn);
-                const methodDescription = methodTerm.description;
-
-                const methodSection = Jig.dom.card.item({id: fqnToMethodId(method.fqn), title: methodTerm.title, tagName: "article"});
-                methodSection.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: methodTerm.shortDeclaration}));
-                methodSection.appendChild(Jig.dom.type.methodIOSection(method.parameters, method.returnTypeRef));
-
-                if (methodDescription) {
-                    methodSection.appendChild(Jig.dom.createElement("section", {
-                        className: "description",
-                        children: [Jig.dom.createMarkdownElement(methodDescription)]
-                    }));
-                }
-
-                const usecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
-                const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
-
-                const sequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
-                const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
-                const hasSequenceDiagram = sequenceDiagramCode !== null;
-
-                if (hasUsecaseDiagram || hasSequenceDiagram) {
-                    let usecaseTarget, sequenceTarget;
-
-                    if (hasUsecaseDiagram && hasSequenceDiagram) {
-                        const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
-                        const {panels, section} = Jig.dom.tab.buildSection(
-                            [{id: 'usecase', label: 'ユースケース図'}, {id: 'sequence', label: 'シーケンス図'}],
-                            {className: "jig-card-section tab-content-section tab-diagram-section", initialActiveId: selectedTab, onTabChange: id => state.selectedTabs.set(method.fqn, id)}
-                        );
-                        methodSection.appendChild(section);
-                        usecaseTarget = panels['usecase'];
-                        sequenceTarget = panels['sequence'];
-                    } else {
-                        const container = Jig.dom.createElement("div", {className: "jig-card-section diagram-container"});
-                        methodSection.appendChild(container);
-                        if (hasUsecaseDiagram) usecaseTarget = container;
-                        else sequenceTarget = container;
-                    }
-
-                    if (hasUsecaseDiagram) {
-                        Jig.mermaid.diagram.createAndRegister(usecaseTarget, (mmdContainer) => {
-                            mmdContainer.innerHTML = "";
-                            const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
-
-                            const builder = new Jig.mermaid.Builder();
-                            builder.applyThemeClassDefs();
-
-                            const classSubgraphs = new Map();
-                            const ensureClassSubgraph = (fqn) => {
-                                const classFqn = getClassFqnFromMethodFqn(fqn);
-                                return {classFqn, subgraph: builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", classFqn), Jig.glossary.getTypeTerm(classFqn).title, 'LR')};
-                            };
-                            currentUsecaseDiagram.nodes.forEach(node => {
-                                const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "inbound-method") {
-                                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
-                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                    builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                    builder.addClass(nodeId, "inbound");
-                                    builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
-                                } else if (node.kind === "outbound-method") {
-                                    const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
-                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                    builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                    builder.addClass(nodeId, "outbound");
-                                    builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
-                                } else if (node.kind === "domain-type") {
-                                    const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
-                                    builder.addNode(nodeId, nodeLabel, 'class');
-                                    builder.addClass(nodeId, "domain");
-                                    builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
-                                } else {
-                                    const {subgraph} = ensureClassSubgraph(node.fqn);
-                                    if (node.kind === "usecase") {
-                                        const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                        builder.addClass(nodeId, "usecase");
-                                        if (node.fqn === method.fqn) {
-                                            builder.addStyle(nodeId, "font-weight:bold");
-                                        }
-                                        builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
-                                    } else {
-                                        const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
-                                        builder.addClass(nodeId, "inactive");
-                                    }
-                                }
-                            });
-
-                            currentUsecaseDiagram.edges.forEach(edge => {
-                                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
-                            });
-
-                            const generator = (dir) => builder.build(dir);
-                            Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
-                        });
-                    }
-
-                    if (hasSequenceDiagram) {
-                        Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
-                            sequenceContainer.innerHTML = "";
-                            const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
-                            const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
-                            if (currentSequenceDiagramCode) {
-                                Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
-                            }
-                        });
-                    }
-                }
-
-                section.appendChild(methodSection);
-            });
-
-            container.appendChild(section);
+            const card = renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext);
+            if (card) container.appendChild(card);
         });
     }
 
@@ -876,10 +891,7 @@ const UsecaseApp = (() => {
         if (!document.body.classList.contains("usecase-model")) return;
 
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう、毎回 init で state をクリア
-        state.data = null;
-        state.selectedTabs = new Map();
-        state.handlerFqns = null;
-        state.sidebarFilterText = '';
+        Object.assign(state, createInitialState());
 
         state.data = Jig.data.usecase.get();
         if (!state.data) return;
@@ -894,6 +906,7 @@ const UsecaseApp = (() => {
         init,
         state,
         buildOutboundOperationSet,
+        buildReverseCallerMap,
         buildUsecaseDiagram,
         buildClassGraph,
         SequenceDiagram,

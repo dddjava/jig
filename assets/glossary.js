@@ -1,5 +1,4 @@
 globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
 
 const GlossaryApp = (() => {
     // 文字列の比較は日本語を優先しつつ大小を無視する
@@ -38,19 +37,7 @@ const GlossaryApp = (() => {
 
     function getGlossaryData() {
         const glossaryData = Jig.data.glossary.get();
-        const normalized = normalizeGlossaryData(glossaryData);
-        if (normalized) return normalized;
-
-        const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
-        if (!script) return [];
-
-        const jsonText = script.textContent || "{}";
-        try {
-            const parsed = JSON.parse(jsonText);
-            return normalizeGlossaryData(parsed) ?? [];
-        } catch (e) {
-            return [];
-        }
+        return normalizeGlossaryData(glossaryData) ?? [];
     }
 
     function buildTermAnchorId(term, index) {
@@ -69,17 +56,16 @@ const GlossaryApp = (() => {
     }
 
     function buildGlossaryCsv(terms) {
-        const header = ["用語（英名）", "用語", "説明", "種類", "識別子"];
+        const header = ["用語（英名）", "用語", "説明", "種類", "由来", "識別子"];
         const rows = terms.map(term => [
             term.simpleText ?? "",
             term.title ?? "",
             term.description ?? "",
             term.kind ?? "",
+            term.origin ?? "",
             term.fqn ?? "",
         ]);
-
-        const lines = [header, ...rows].map(row => row.map(Jig.dom.escapeCsvValue).join(","));
-        return lines.join("\r\n");
+        return Jig.dom.buildCsv(header, rows);
     }
 
     function renderTermSidebar(terms) {
@@ -106,18 +92,8 @@ const GlossaryApp = (() => {
     function getInitialChar(term) {
         const title = term.title || "";
         if (!title) return "#";
-        const first = title.charAt(0).toUpperCase();
-
-        if (/^[A-Z]$/.test(first)) return first;
-
-        // ひらがな (3040-309F) / カタカナ (30A0-30FF)
-        if (/^[\u3040-\u309F\u30A0-\u30FF]$/.test(first)) {
-            return first;
-        }
-
-        if (/^[0-9]$/.test(first)) return first;
-
-        return first;
+        // ASCII 英字は大文字に揃え、それ以外（ひらがな/カタカナ/漢字/数字等）はそのまま先頭1文字を返す
+        return title.charAt(0).toUpperCase();
     }
 
     function renderJumpBar(chars) {
@@ -179,6 +155,7 @@ const GlossaryApp = (() => {
                 if (term.fqn) metaItems.push(createMetaItem("完全修飾名", term.fqn));
                 if (term.simpleText) metaItems.push(createMetaItem("単純名", term.simpleText));
                 if (term.kind) metaItems.push(createMetaItem("種類", term.kind));
+                if (term.origin) metaItems.push(createMetaItem("由来", term.origin));
                 if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
                     const fqn = term.fqn;
                     const isInDomain = domainRoots.length > 0 && domainRoots.some(root =>

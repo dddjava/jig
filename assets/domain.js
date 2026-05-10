@@ -28,9 +28,10 @@ const DomainApp = (() => {
 
             Jig.util.pushToMap(packageTypesMap, pkgFqn, {fqn: type.fqn});
 
+            // pkgFqn から domainPackageRoots に到達するまで、空の親パッケージも Map に登録しておく
+            // （子パッケージのみを持つ中間パッケージのナビゲーションを成立させるため）
             let current = pkgFqn;
-            while (true) {
-                if (domainPackageRoots.includes(current)) break;
+            while (!domainPackageRoots.includes(current)) {
                 const parentDot = current.lastIndexOf('.');
                 if (parentDot < 0) break;
                 const parent = current.substring(0, parentDot);
@@ -65,17 +66,20 @@ const DomainApp = (() => {
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
+     * @param {Map<string, Set<string>>} [memo] - 同一描画パスでの再計算を抑止するメモ
      * @returns {Set<string>}
      */
-    function pkgKinds(pkg, childPackagesMap, typesMap) {
+    function pkgKinds(pkg, childPackagesMap, typesMap, memo) {
+        if (memo?.has(pkg.fqn)) return memo.get(pkg.fqn);
         const kinds = new Set();
         pkg.types.forEach(type => {
             const kind = typesMap?.get(type.fqn)?.kind;
             if (kind) kinds.add(kind);
         });
         getDirectChildPackages(pkg, childPackagesMap).forEach(childPkg => {
-            pkgKinds(childPkg, childPackagesMap, typesMap).forEach(k => kinds.add(k));
+            pkgKinds(childPkg, childPackagesMap, typesMap, memo).forEach(k => kinds.add(k));
         });
+        memo?.set(pkg.fqn, kinds);
         return kinds;
     }
 
@@ -86,10 +90,10 @@ const DomainApp = (() => {
      * @param {boolean} isTopLevel
      * @returns {HTMLElement}
      */
-    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false) {
+    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false, kindsMemo = new Map()) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
-        const mergedNames = [Jig.glossary.getTypeTerm(pkg.fqn).title];
+        const mergedNames = [Jig.glossary.getPackageTerm(pkg.fqn).title];
 
         while (true) {
             const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
@@ -97,7 +101,7 @@ const DomainApp = (() => {
             if (currentPkg.types.length > 0) break;
 
             const childPkg = childPackages[0];
-            mergedNames.push(Jig.glossary.getTypeTerm(childPkg.fqn).title);
+            mergedNames.push(Jig.glossary.getPackageTerm(childPkg.fqn).title);
             currentPkg = childPkg;
         }
 
@@ -106,7 +110,7 @@ const DomainApp = (() => {
         // 子パッケージを表示（統合後の currentPkg の直下のみ）
         const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
         childPackages.forEach(childPkg => {
-            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap));
+            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap, false, kindsMemo));
         });
 
         // 子タイプを表示
@@ -140,7 +144,7 @@ const DomainApp = (() => {
             ]
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
-        const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap)].join(' ')};
+        const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap, kindsMemo)].join(' ')};
 
         if (isTopLevel) {
             return Jig.dom.createElement("section", {
@@ -176,7 +180,7 @@ const DomainApp = (() => {
      * @param {string} direction
      * @returns {string|null}
      */
-    function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection) {
+    function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false) {
         const directRelations = collectPackageDirectRelations(pkg, allPackageRelations);
         if (directRelations.length === 0) return null;
 
@@ -192,6 +196,7 @@ const DomainApp = (() => {
                 diagramDirection: direction,
                 nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
                 focusedPackageFqn: pkg.fqn,
+                showPhysicalName,
             }
         );
         return source;
@@ -213,7 +218,7 @@ const DomainApp = (() => {
      * @param {string} direction
      * @return {string|null}
      */
-    function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection) {
+    function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false) {
         const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
         if (!elements) return null;
         const {uniqueRelations, packageFqns} = elements;
@@ -223,6 +228,7 @@ const DomainApp = (() => {
             {
                 diagramDirection: direction,
                 nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
+                showPhysicalName,
             }
         );
         return source;
@@ -344,13 +350,14 @@ const DomainApp = (() => {
      * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true} = {}) {
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true, showPhysicalName = false} = {}) {
         const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+        const {type: typeLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function packageOf(fqn) {
             const idx = fqn.lastIndexOf('.');
@@ -379,10 +386,10 @@ const DomainApp = (() => {
         const builder = new Jig.mermaid.Builder();
         byPackage.forEach((fqns, pkgFqn) => {
             if (pkgFqn) {
-                const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkgFqn), Jig.glossary.getTypeTerm(pkgFqn).title);
-                fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
+                const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkgFqn), pkgLabel(pkgFqn));
+                fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
             } else {
-                fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
+                fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), typeLabel(fqn)));
             }
         });
         involvedFqns.forEach(fqn => builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`));
@@ -409,7 +416,8 @@ const DomainApp = (() => {
     function createTypeClassDiagramSource(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {
         showOutgoing = true, showIncoming = true,
         showFields = true, showMethods = true,
-        maxVisibility = 'PRIVATE'
+        maxVisibility = 'PRIVATE',
+        showPhysicalName = false
     } = {}) {
         const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
         if (!result) return null;
@@ -417,6 +425,7 @@ const DomainApp = (() => {
 
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function edgeTypeFromKinds(kinds) {
             if (!kinds) return 'dependency';
@@ -433,7 +442,7 @@ const DomainApp = (() => {
 
         involvedFqns.forEach(fqn => {
             const nodeId = fqnToNodeId(fqn);
-            builder.addClass(nodeId, Jig.glossary.typeSimpleName(fqn));
+            builder.addClass(nodeId, typeLabel(fqn));
 
             const domainType = typesMap?.get(fqn);
             if (showFields) {
@@ -500,7 +509,8 @@ const DomainApp = (() => {
     function createRelationDiagram(pkg, typeRelations, typesMap, {
         showExternalOutgoing = true,
         showExternalIncoming = true,
-        direction = domainSettings.diagramDirection
+        direction = domainSettings.diagramDirection,
+        showPhysicalName = false
     } = {}) {
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
@@ -573,10 +583,12 @@ const DomainApp = (() => {
             edges: edges
         });
 
+        const {type: typeLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(showPhysicalName);
+
         const builder = new Jig.mermaid.Builder();
-        const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), Jig.glossary.getTypeTerm(pkg.fqn).title, direction);
-        internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
-        externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title, 'package'));
+        const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
+        internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
+        externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), pkgLabel(fqn), 'package'));
         [...internalFqns, ...externalPkgFqns].forEach(fqn =>
             builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)
         );
@@ -608,9 +620,11 @@ const DomainApp = (() => {
         });
 
         // トップレベルのパッケージのみを表示（直接の親を持たないもの）
+        // pkgKinds の再帰計算結果は同一 render 中で何度も参照されるためメモ化を共有する
+        const kindsMemo = new Map();
         packages.forEach(pkg => {
             if (!childPackageFqns.has(pkg.fqn)) {
-                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true));
+                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true, kindsMemo));
             }
         });
     }
@@ -629,7 +643,7 @@ const DomainApp = (() => {
             ...childPackages.map(childPkg => ({
                 isPackage: true,
                 fqn: childPkg.fqn,
-                title: Jig.glossary.getTypeTerm(childPkg.fqn).title
+                title: Jig.glossary.getPackageTerm(childPkg.fqn).title
             })),
             ...types.map(type => ({
                 isPackage: false,
@@ -666,13 +680,6 @@ const DomainApp = (() => {
         });
     }
 
-    function createFieldsList(fields, options = {}) {
-        return Jig.dom.type.fieldsList(fields, options);
-    }
-
-    function createMethodsList(kind, methods, options = {}) {
-        return Jig.dom.type.methodsList(kind, methods, options);
-    }
 
     /**
      * @param {{enumInfo: EnumInfo | undefined, fqn: string}} type
@@ -902,15 +909,16 @@ const DomainApp = (() => {
         const allPackages = Jig.data.domain.getPackages();
 
         packages.forEach(pkg => {
+            const pkgTerm = Jig.glossary.getPackageTerm(pkg.fqn);
             const section = Jig.dom.card.type({
                 id: Jig.util.fqnToId("domain", pkg.fqn),
-                title: Jig.glossary.getTypeTerm(pkg.fqn).title,
+                title: pkgTerm.title,
                 fqn: pkg.fqn,
                 kind: "パッケージ",
                 attributes: {"data-kind-children": [...pkgKinds(pkg, childPackagesMap, typesMap)].join(' ')}
             });
 
-            const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
+            const pkgDescription = pkgTerm.description;
             if (pkgDescription) {
                 section.appendChild(Jig.dom.createElement("section", {
                     className: "jig-card-section description",
@@ -1010,9 +1018,9 @@ const DomainApp = (() => {
                 section.appendChild(createEnumSection(type));
             }
 
-            const fieldsList = createFieldsList(type.fields, {showTitle: false});
-            const methodList = createMethodsList("メソッド", type.methods, {showTitle: false});
-            const staticList = createMethodsList("staticメソッド", type.staticMethods, {showTitle: false});
+            const fieldsList = Jig.dom.type.fieldsList(type.fields, {showTitle: false});
+            const methodList = Jig.dom.type.methodsList("メソッド", type.methods, {showTitle: false});
+            const staticList = Jig.dom.type.methodsList("staticメソッド", type.staticMethods, {showTitle: false});
             const hasTypeRelation = hasTypeRelationDiagram(type, typeRelations, typesMap);
 
             appendConfiguredTabs(section, [
@@ -1068,32 +1076,42 @@ const DomainApp = (() => {
 
         container.innerHTML = "";
 
-        const renderIfNonNull = (generator) => {
+        const renderIfNonNull = (generator, renderOptions = {}) => {
             if (generator(domainSettings.diagramDirection)) {
-                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection, ...renderOptions});
             }
         };
 
         if (diagramType === 'packageDirect') {
-            renderIfNonNull((dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir));
+            renderIfNonNull(
+                (dir, opts) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir, opts?.showPhysicalName),
+                {enableLabelToggle: true}
+            );
         } else if (diagramType === 'package') {
-            renderIfNonNull((dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir));
+            renderIfNonNull(
+                (dir, opts) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir, opts?.showPhysicalName),
+                {enableLabelToggle: true}
+            );
         } else if (diagramType === 'classDirect') {
-            renderIfNonNull((dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming}));
+            renderIfNonNull(
+                (dir, opts) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showPhysicalName: opts?.showPhysicalName}),
+                {enableLabelToggle: true}
+            );
         } else if (diagramType === 'classDefinition') {
-            renderIfNonNull((dir) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility}));
-        } else {
-            // テスト環境など closest が使えない場合に対応
+            renderIfNonNull(
+                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName}),
+                {enableLabelToggle: true}
+            );
+        } else if (diagramType === 'type') {
             const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
             const outgoing = panel?.querySelector('.class-relation-external-outgoing');
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
             const showExternalIncoming = incoming ? incoming.checked : true;
-            renderIfNonNull((dir) => createRelationDiagram(pkg, typeRelations, typesMap, {
-                showExternalOutgoing,
-                showExternalIncoming,
-                direction: dir
-            }));
+            renderIfNonNull(
+                (dir, opts) => createRelationDiagram(pkg, typeRelations, typesMap, {showExternalOutgoing, showExternalIncoming, direction: dir, showPhysicalName: opts?.showPhysicalName}),
+                {enableLabelToggle: true}
+            );
         }
     }
 

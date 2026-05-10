@@ -5,20 +5,22 @@ const OutboundApp = (() => {
         callerUsecase: true,
         port: true, operation: true,
         adapter: false, execution: true,
-        accessor: false, accessorMethod: false,
+        accessor: false, accessorMethod: true,
         target: true,
         externalAccessor: false, externalAccessorMethod: false,
         externalType: true, externalTypeMethod: true,
         crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
     };
 
-    const state = {
+    const INITIAL_STATE = {
         visibility: null,
         data: null,
         grouped: null,
         persistenceGrouped: null,
         externalGrouped: null
     };
+
+    const state = {...INITIAL_STATE};
 
     function loadData() {
         return Jig.data.outbound.get() || {
@@ -83,24 +85,54 @@ const OutboundApp = (() => {
 
         const accessorsByExecution = new Map();
         data.links.executionToPersistenceAccessor.forEach(link => {
-            if (!accessorsByExecution.has(link.execution)) {
-                accessorsByExecution.set(link.execution, []);
-            }
-            accessorsByExecution.get(link.execution).push(link.accessor);
+            Jig.util.pushToMap(accessorsByExecution, link.execution, link.accessor);
         });
 
         const externalAccessorByFqn = new Map();
-        data.otherExternalAccessors.forEach(a => externalAccessorByFqn.set(a.fqn, a));
+        // accessor 単位で simpleName -> operation を一度だけ計算しておく（execution ごとの再計算を避ける）
+        const externalAccessorOpByName = new Map();
+        data.otherExternalAccessors.forEach(a => {
+            externalAccessorByFqn.set(a.fqn, a);
+            const byName = new Map();
+            a.operations.forEach(m => {
+                const name = Jig.glossary.methodSimpleName(m.fqn);
+                if (name) byName.set(name, m);
+            });
+            externalAccessorOpByName.set(a.fqn, byName);
+        });
 
+        // execution -> (accessor fqn -> Set<methodName>)
         const externalAccessorsByExecution = new Map();
         data.links.executionToOtherExternalAccessor.forEach(link => {
-            if (!externalAccessorsByExecution.has(link.execution))
+            if (!externalAccessorsByExecution.has(link.execution)) {
                 externalAccessorsByExecution.set(link.execution, new Map());
-            const accessorMethods = externalAccessorsByExecution.get(link.execution);
-            if (!accessorMethods.has(link.accessor))
-                accessorMethods.set(link.accessor, new Set());
-            accessorMethods.get(link.accessor).add(link.method);
+            }
+            Jig.util.addToSetMap(externalAccessorsByExecution.get(link.execution), link.accessor, link.method);
         });
+
+        function buildExternalAccessorsForExecution(execFqn) {
+            const accessorMethodsMap = externalAccessorsByExecution.get(execFqn);
+            if (!accessorMethodsMap) return [];
+            return Array.from(accessorMethodsMap.entries()).flatMap(([fqn, methodNames]) => {
+                const accessor = externalAccessorByFqn.get(fqn);
+                if (!accessor) return [];
+                const opByName = externalAccessorOpByName.get(fqn);
+                const operations = [];
+                methodNames.forEach(name => {
+                    const op = opByName?.get(name);
+                    if (op) operations.push(op);
+                });
+                return [{...accessor, operations}];
+            });
+        }
+
+        const compareByMethodTitle = (a, b) =>
+            Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn, true).title
+                .localeCompare(Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn, true).title, "ja");
+
+        const compareByPortTypeTitle = (a, b) =>
+            Jig.glossary.getTypeTerm(a.outboundPort.fqn).title
+                .localeCompare(Jig.glossary.getTypeTerm(b.outboundPort.fqn).title, "ja");
 
         return data.outboundPorts.map(port => {
             const operations = port.operations.flatMap(op => {
@@ -109,31 +141,17 @@ const OutboundApp = (() => {
                 const execEntry = executionByFqn.get(execFqn);
                 const accessorIds = accessorsByExecution.get(execFqn) || [];
                 const persistenceAccessors = accessorIds.map(id => methodById.get(id)).filter(Boolean);
-                const executionAccessorMethods = externalAccessorsByExecution.get(execFqn) || new Map();
-                const externalAccessors = Array.from(executionAccessorMethods.entries()).flatMap(([fqn, methodNames]) => {
-                    const accessor = externalAccessorByFqn.get(fqn);
-                    if (!accessor) return [];
-                    return [{...accessor, operations: accessor.operations.filter(m => methodNames.has(m.fqn.split('#')[1]?.split('(')[0]))}];
-                });
                 return [{
                     outboundPortOperation: op,
                     outboundAdapter: execEntry?.adapter ?? null,
                     outboundAdapterExecution: execEntry?.exec ?? null,
                     persistenceAccessors,
-                    externalAccessors
+                    externalAccessors: buildExternalAccessorsForExecution(execFqn),
                 }];
-            }).sort((a, b) => {
-                const left = Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn, true).title;
-                const right = Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn, true).title;
-                return left.localeCompare(right, "ja");
-            });
+            }).sort(compareByMethodTitle);
             return {outboundPort: port, operations};
         }).filter(group => group.operations.length > 0)
-            .sort((a, b) => {
-                const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
-                const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
-                return left.localeCompare(right, "ja");
-            });
+          .sort(compareByPortTypeTitle);
     }
 
     function groupOperationsByPersistenceTarget(operations) {
@@ -144,23 +162,20 @@ const OutboundApp = (() => {
                     if (!map.has(persistenceTarget)) {
                         map.set(persistenceTarget, {
                             persistenceTarget: persistenceTarget,
-                            operations: [],
+                            operationSet: new Set(),
                         });
                     }
-                    const group = map.get(persistenceTarget);
-                    if (!group.operations.includes(operation)) {
-                        group.operations.push(operation);
-                    }
+                    map.get(persistenceTarget).operationSet.add(operation);
                 });
             });
         });
         return Array.from(map.values()).map(group => {
-            group.operations.sort((a, b) => {
+            const operations = Array.from(group.operationSet).sort((a, b) => {
                 const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
                 const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
                 return left.localeCompare(right, "ja");
             });
-            return group;
+            return {persistenceTarget: group.persistenceTarget, operations};
         }).sort((a, b) => {
             return a.persistenceTarget.localeCompare(b.persistenceTarget, "ja");
         });
@@ -172,33 +187,32 @@ const OutboundApp = (() => {
             operation.externalAccessors.forEach(accessor => {
                 accessor.operations.forEach(accMethod => {
                     accMethod.externals.forEach(ext => {
-                        if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn}, operations: []});
-                        const group = map.get(ext.fqn);
-                        if (!group.operations.includes(operation)) group.operations.push(operation);
+                        if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn}, operationSet: new Set()});
+                        map.get(ext.fqn).operationSet.add(operation);
                     });
                 });
             });
         });
         return Array.from(map.values())
+            .map(group => ({externalType: group.externalType, operations: Array.from(group.operationSet)}))
             .sort((a, b) => Jig.glossary.getTypeTerm(a.externalType.fqn).title.localeCompare(Jig.glossary.getTypeTerm(b.externalType.fqn).title, "ja"));
     }
 
     function groupDirectExternalAccessors(data) {
-        const map = new Map();
+        const extMap = new Map();
         data.otherExternalAccessors.forEach(accessor => {
             accessor.operations.forEach(method => {
                 method.externals.forEach(ext => {
-                    if (!map.has(ext.fqn)) {
-                        map.set(ext.fqn, {externalType: {fqn: ext.fqn}, directAccessors: []});
+                    if (!extMap.has(ext.fqn)) {
+                        extMap.set(ext.fqn, {externalType: {fqn: ext.fqn}, accessorMap: new Map()});
                     }
-                    const group = map.get(ext.fqn);
-                    let existing = group.directAccessors.find(a => a.fqn === accessor.fqn);
-                    if (!existing) {
-                        existing = {fqn: accessor.fqn, operations: []};
-                        group.directAccessors.push(existing);
+                    const group = extMap.get(ext.fqn);
+                    if (!group.accessorMap.has(accessor.fqn)) {
+                        group.accessorMap.set(accessor.fqn, {fqn: accessor.fqn, operationMap: new Map()});
                     }
-                    if (!existing.operations.find(m => m.fqn === method.fqn)) {
-                        existing.operations.push({
+                    const accessorEntry = group.accessorMap.get(accessor.fqn);
+                    if (!accessorEntry.operationMap.has(method.fqn)) {
+                        accessorEntry.operationMap.set(method.fqn, {
                             ...method,
                             externals: method.externals.filter(e => e.fqn === ext.fqn)
                         });
@@ -206,20 +220,13 @@ const OutboundApp = (() => {
                 });
             });
         });
-        return Array.from(map.values());
-    }
-
-    function formatPersistenceAccessors(persistenceAccessors) {
-        if (!Array.isArray(persistenceAccessors) || persistenceAccessors.length === 0) {
-            return ["なし"];
-        }
-        return persistenceAccessors
-            .map(operation => {
-                const operationTypes = Object.entries(operation.targetOperationTypes)
-                    .map(([persistenceTarget, operationType]) => `${operationType}:${persistenceTarget}`)
-                    .join(", ")
-                return `${operation.id} [${operationTypes}]`.trim();
-            });
+        return Array.from(extMap.values()).map(group => ({
+            externalType: group.externalType,
+            directAccessors: Array.from(group.accessorMap.values()).map(a => ({
+                fqn: a.fqn,
+                operations: Array.from(a.operationMap.values())
+            }))
+        }));
     }
 
     function toCrudChar(operationType) {
@@ -320,9 +327,9 @@ const OutboundApp = (() => {
 
             Jig.mermaid.diagram.createAndRegister(portCard, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir) => generatePortMermaidCode(group, {...currentVisibility, direction: dir});
+                const generator = (dir, opts) => generatePortMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
-                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
             }, {className: "mermaid-diagram"});
 
@@ -330,20 +337,18 @@ const OutboundApp = (() => {
             group.operations.forEach(operation => {
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
 
-                const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item"});
-                operationItem.appendChild(Jig.dom.type.methodItem(operation.outboundPortOperation));
+                const op = operation.outboundPortOperation;
+                const opTerm = Jig.glossary.getMethodTerm(op.fqn);
+                const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item", id: Jig.util.fqnToId("portOp", op.fqn), title: opTerm.title});
+                operationItem.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: opTerm.shortDeclaration}));
+                operationItem.appendChild(Jig.dom.type.methodIOSection(op.parameters, op.returnTypeRef));
                 Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
                     const currentVisibility = readVisibility();
-                    const generator = (dir) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir});
+                    const generator = (dir, opts) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                     if (generator('LR')) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                     }
                 });
-                operationItem.appendChild(Jig.dom.createElement("p", {className: "outbound-persistence-detail-title", textContent: "永続化操作"}));
-                operationItem.appendChild(Jig.dom.createElement("ul", {
-                    className: "outbound-persistence-detail-list",
-                    children: formatPersistenceAccessors(operation.persistenceAccessors).map(text => Jig.dom.createElement("li", {textContent: text}))
-                }));
                 itemList.appendChild(operationItem);
             });
             const itemListDetails = Jig.dom.createElement("details", {});
@@ -368,33 +373,20 @@ const OutboundApp = (() => {
             });
 
             const packageContainer = Jig.dom.createElement("div", {});
-            byPackage.forEach((pkgGroups, packageFqn) => {
-                const typeList = Jig.dom.createElement("ul", {
-                    className: "in-page-sidebar__links",
-                    children: pkgGroups.map(group => {
-                        const fqn = group.outboundPort.fqn;
-                        return Jig.dom.createElement("li", {
-                            className: "in-page-sidebar__item",
-                            children: [Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + Jig.util.fqnToId("port", fqn)},
-                                textContent: Jig.glossary.getTypeTerm(fqn).title
-                            })]
-                        });
-                    })
-                });
-                const packageTitle = Jig.dom.createElement("p", {
-                    className: "in-page-sidebar__title in-page-sidebar__title--collapsible in-page-sidebar__title--sub",
-                    children: [
-                        Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
-                        Jig.dom.sidebar.createToggle(typeList)
-                    ]
-                });
-                packageContainer.appendChild(Jig.dom.createElement("section", {
-                    className: "in-page-sidebar__section",
-                    children: [packageTitle, typeList]
-                }));
-            });
+            Jig.dom.sidebar.renderPackageGrouped(packageContainer, byPackage, pkgGroups =>
+                pkgGroups.map(group => {
+                    const fqn = group.outboundPort.fqn;
+                    return Jig.dom.createElement("li", {
+                        className: "in-page-sidebar__item",
+                        children: [Jig.dom.createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + Jig.util.fqnToId("port", fqn)},
+                            textContent: Jig.glossary.getTypeTerm(fqn).title
+                        })]
+                    });
+                }),
+                {titleClass: "in-page-sidebar__title--sub"}
+            );
 
             const portTitle = Jig.dom.createElement("p", {
                 className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
@@ -430,9 +422,9 @@ const OutboundApp = (() => {
             });
             Jig.mermaid.diagram.createAndRegister(persistenceCard, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir});
+                const generator = (dir, opts) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
-                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
             });
             container.appendChild(persistenceCard);
@@ -467,9 +459,9 @@ const OutboundApp = (() => {
             });
             Jig.mermaid.diagram.createAndRegister(externalCard, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir});
+                const generator = (dir, opts) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
-                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
             });
             container.appendChild(externalCard);
@@ -585,8 +577,10 @@ const OutboundApp = (() => {
     function generatePortMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
+        const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
         const portFqn = group.outboundPort.fqn;
-        const portLabel = Jig.glossary.getTypeTerm(portFqn).title;
+        const portLabel = typeLabel(portFqn);
 
         const contexts = {
             portSubgraphs: new Map(),
@@ -599,21 +593,22 @@ const OutboundApp = (() => {
             extTypeNodes: new Map(),
             usecaseSubgraphs: new Map(),
             usecaseNodes: new Map(),
-            usecaseEdges: new Set()
+            usecaseEdges: new Set(),
+            methodFqnToNodeId: new Map()
         };
 
         group.operations.forEach((operation) => {
-            const portOpName = Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title;
-            const portOpFqn = operation.outboundPortOperation.fqn;
-
-            const adapterFqn = operation.outboundAdapter?.fqn;
-            const adapterLabel = Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title;
-            const executionName = Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title;
-            const executionFqn = operation.outboundAdapterExecution?.fqn;
+            const props = extractOperationProps({...operation, outboundPort: group.outboundPort}, showPhysicalName);
+            const portOpFqn = props.portOpFqn;
+            const portOpName = props.portOpName;
+            const adapterFqn = props.adapterFqn;
+            const adapterLabel = props.adapterLabel;
+            const executionName = props.executionName;
+            const executionFqn = props.executionFqn;
 
             let lastNodeId = addPortNode(builder, contexts.portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
             addCallerUsecaseNodes(builder, lastNodeId, portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-            lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, contexts.adapterSubgraphs);
+            lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, contexts.adapterSubgraphs, contexts.methodFqnToNodeId);
 
             operation.persistenceAccessors.forEach(op => {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, contexts.accessorSubgraphs, contexts.accessorNodes);
@@ -623,7 +618,7 @@ const OutboundApp = (() => {
             });
 
             operation.externalAccessors.forEach(accessor => {
-                addExternalAccessorNode(builder, lastNodeId, accessor, visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+                addExternalAccessorNode(builder, lastNodeId, accessor, visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
             });
         });
 
@@ -638,6 +633,7 @@ const OutboundApp = (() => {
     function generatePersistenceMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         const persistenceTarget = group.persistenceTarget;
 
         const contexts = {
@@ -648,7 +644,7 @@ const OutboundApp = (() => {
         };
 
         group.operations.forEach((operation) => {
-            const props = extractOperationProps(operation);
+            const props = extractOperationProps(operation, showPhysicalName);
             operation.persistenceAccessors
                 .filter(op => persistenceTarget in op.targetOperationTypes)
                 .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
@@ -673,13 +669,15 @@ const OutboundApp = (() => {
     function generateExternalTypeMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
+        const showPhysicalName = visibility.showPhysicalName ?? false;
         const externalType = group.externalType;
 
         const contexts = {
             portSubgraphs: new Map(), adapterSubgraphs: new Map(),
             extAccessorNodes: new Map(), extAccessorSubgraphs: new Map(),
             extTypeNodes: new Map(),
-            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set()
+            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set(),
+            methodFqnToNodeId: new Map()
         };
 
         const filterToExternalType = accessor => ({
@@ -693,39 +691,42 @@ const OutboundApp = (() => {
             const relevantAccessors = operation.externalAccessors.filter(accessor =>
                 accessor.operations.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
 
-            const props = extractOperationProps(operation);
+            const props = extractOperationProps(operation, showPhysicalName);
 
             relevantAccessors.forEach(accessor => {
                 let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
                 addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-                currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs);
-                addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+                currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs, contexts.methodFqnToNodeId);
+                addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
             });
         });
 
         (group.directAccessors || []).forEach(accessor => {
-            addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes);
+            addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
         });
 
         if (builder.isEmpty()) return null;
         return builder.build(visibility.direction);
     }
 
-    function extractOperationProps(operation) {
+    function extractOperationProps(operation, showPhysicalName = false) {
+        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
         return {
             portFqn: operation.outboundPort.fqn,
-            portLabel: Jig.glossary.getTypeTerm(operation.outboundPort.fqn).title,
-            portOpName: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn, true).title,
+            portLabel: typeLabel(operation.outboundPort.fqn),
+            portOpName: mLabel(operation.outboundPortOperation.fqn),
             portOpFqn: operation.outboundPortOperation.fqn,
             adapterFqn: operation.outboundAdapter?.fqn,
-            adapterLabel: Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title,
-            executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn, true).title,
+            adapterLabel: typeLabel(operation.outboundAdapter?.fqn),
+            executionName: mLabel(operation.outboundAdapterExecution?.fqn),
             executionFqn: operation.outboundAdapterExecution?.fqn,
         };
     }
 
     function addCallerUsecaseNodes(builder, portOpNodeId, portOpFqn, callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges) {
         if (!visibility.callerUsecase || !portOpNodeId || !callerUsecases?.length) return;
+        const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
         callerUsecases.forEach(usecaseFqn => {
             const edgeKey = usecaseFqn + '->' + portOpFqn;
             if (usecaseEdges.has(edgeKey)) return;
@@ -734,10 +735,10 @@ const OutboundApp = (() => {
                 const nodeId = Jig.util.fqnToId("usecase", usecaseFqn);
                 const hashIdx = usecaseFqn.indexOf('#');
                 const classFqn = hashIdx !== -1 ? usecaseFqn.slice(0, hashIdx) : usecaseFqn;
-                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, Jig.glossary.getTypeTerm(classFqn).title);
-                builder.addNodeToSubgraph(sg, nodeId, Jig.glossary.getMethodTerm(usecaseFqn, true).title, 'method');
+                const sg = builder.ensureSubgraph(usecaseSubgraphs, classFqn, typeLabel(classFqn));
+                builder.addNodeToSubgraph(sg, nodeId, mLabel(usecaseFqn), 'method');
                 builder.addClass(nodeId, "usecase");
-                builder.addClick(nodeId, `./usecase.html#${Jig.util.fqnToId("method", usecaseFqn)}`);
+                builder.addClick(nodeId, Jig.mermaid.nav.usecaseMethodUrl(usecaseFqn), usecaseFqn);
                 usecaseNodes.set(usecaseFqn, nodeId);
             }
             builder.addEdge(usecaseNodes.get(usecaseFqn), portOpNodeId);
@@ -746,26 +747,31 @@ const OutboundApp = (() => {
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
         if (!visibility.port) return null;
+        const portCardId = Jig.util.fqnToId("port", portFqn);
         if (visibility.operation) {
             const portOpId = Jig.util.fqnToId("portOp", portOpFqn);
             builder.addNodeToSubgraph(builder.ensureSubgraph(portSubgraphs, portFqn, portLabel), portOpId, portOpName, 'method');
             builder.addClass(portOpId, "outbound");
+            builder.addClick(portFqn, `#${portCardId}`, portFqn);
+            builder.addClick(portOpId, `#${portOpId}`, portOpFqn);
             return portOpId;
         } else {
-            const portNodeId = Jig.util.fqnToId("port", portFqn);
-            builder.addNode(portNodeId, portLabel, 'class');
-            builder.addClass(portNodeId, "outbound");
-            return portNodeId;
+            builder.addNode(portCardId, portLabel, 'class');
+            builder.addClass(portCardId, "outbound");
+            builder.addClick(portCardId, `#${portCardId}`, portFqn);
+            return portCardId;
         }
     }
 
-    function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs) {
+    function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs, methodFqnToNodeId = null) {
         if (!visibility.adapter) return sourceNodeId;
         if (visibility.execution) {
             const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
             const executionId = Jig.util.fqnToId("exec", executionFqn);
             builder.addNodeToSubgraph(sg, executionId, executionName, 'method');
+            builder.addTooltip(executionId, executionFqn);
             if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
+            methodFqnToNodeId?.set(executionFqn, executionId);
             return executionId;
         } else {
             const adapterNodeId = Jig.util.fqnToId("adapter", adapterFqn);
@@ -779,10 +785,13 @@ const OutboundApp = (() => {
         const groupId = op.group;
         if (!visibility.accessor || !groupId) return sourceNodeId;
 
-        const groupLabel = Jig.glossary.getTypeTerm(groupId).title;
+        const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
+        const groupLabel = typeLabel(groupId);
         if (visibility.accessorMethod) {
             const opNodeId = Jig.util.fqnToId("op", op.id);
             builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
+            builder.addTooltip(opNodeId, op.id);
             if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
             return opNodeId;
         } else {
@@ -801,19 +810,24 @@ const OutboundApp = (() => {
             if (!isCrudVisible(operationType, visibility)) return;
             if (!persistenceTargetNodes.has(persistenceTarget)) {
                 persistenceTargetNodes.set(persistenceTarget, `Target_${persistenceTargetNodes.size}`);
-                builder.addNode(persistenceTargetNodes.get(persistenceTarget), persistenceTarget, 'database');
+                const nodeId = persistenceTargetNodes.get(persistenceTarget);
+                builder.addNode(nodeId, persistenceTarget, 'database');
+                builder.addClick(nodeId, `#${Jig.util.fqnToId("persistence", persistenceTarget)}`);
             }
             const edgeLabel = visibility.externalTypeMethod ? operationType : undefined;
             if (sourceNodeId) builder.addEdge(sourceNodeId, persistenceTargetNodes.get(persistenceTarget), edgeLabel);
         });
     }
 
-    function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes) {
+    function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, methodFqnToNodeId = null) {
+        const showPhysicalName = visibility.showPhysicalName ?? false;
+        const {type: typeLabel, method: methodLabel} = Jig.glossary.makeLabels(showPhysicalName);
         const addExternal = (fromNodeId, ext) => {
             if (!visibility.externalType) return;
             if (!extTypeNodes.has(ext.fqn)) {
                 extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-                builder.addNode(extTypeNodes.get(ext.fqn), Jig.glossary.getTypeTerm(ext.fqn).title, 'external');
+                const extLabel = typeLabel(ext.fqn);
+                builder.addNode(extTypeNodes.get(ext.fqn), extLabel, 'external');
             }
             const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
             if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
@@ -828,13 +842,22 @@ const OutboundApp = (() => {
             return sourceNodeId;
         }
 
-        const accessorLabel = Jig.glossary.getTypeTerm(accessor.fqn).title;
+        const accessorLabel = typeLabel(accessor.fqn);
         if (visibility.externalAccessorMethod) {
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.operations.forEach(accMethod => {
+                const existingNodeId = methodFqnToNodeId?.get(accMethod.fqn);
+                if (existingNodeId !== undefined) {
+                    if (sourceNodeId && sourceNodeId !== existingNodeId) builder.addEdge(sourceNodeId, existingNodeId);
+                    accMethod.externals.forEach(ext => addExternal(existingNodeId, ext));
+                    return;
+                }
                 const accMethodNodeId = Jig.util.fqnToId("accMethod", accMethod.fqn);
-                builder.addNodeToSubgraph(sg, accMethodNodeId, Jig.glossary.getMethodTerm(accMethod.fqn, true).title, 'method');
+                const accMLabel = methodLabel(accMethod.fqn);
+                builder.addNodeToSubgraph(sg, accMethodNodeId, accMLabel, 'method');
+                builder.addTooltip(accMethodNodeId, accMethod.fqn);
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
+                methodFqnToNodeId?.set(accMethod.fqn, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
             });
             return null;
@@ -865,6 +888,7 @@ const OutboundApp = (() => {
         if (typeof document === "undefined") return;
         if (!document.body.classList.contains("outbound-interface")) return;
 
+        Object.assign(state, INITIAL_STATE);
         state.visibility = {...DEFAULT_VISIBILITY};
         state.data = loadData();
 
@@ -926,9 +950,9 @@ const OutboundApp = (() => {
             accessor: checked("show-accessor"),
             accessorMethod: checked("show-accessor-method"),
             target: checked("show-target"),
-            externalAccessor: checked("show-accessor"),
-            externalAccessorMethod: checked("show-accessor-method"),
-            externalType: checked("show-target"),
+            externalAccessor: checked("show-accessor"),         // ポートリストと同じUI設定を共用
+            externalAccessorMethod: checked("show-accessor-method"), // 同上
+            externalType: checked("show-target"),               // 同上
             externalTypeMethod: checked("show-external-type-method"),
             crudCreate: checked("show-crud-c"),
             crudRead: checked("show-crud-r"),
@@ -943,7 +967,6 @@ const OutboundApp = (() => {
         groupOperationsByPersistenceTarget,
         groupOperationsByExternalType,
         groupDirectExternalAccessors,
-        formatPersistenceAccessors,
         toCrudChar,
         renderOutboundList,
         renderPersistenceList,

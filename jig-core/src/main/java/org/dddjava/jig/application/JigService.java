@@ -15,8 +15,8 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
-import org.dddjava.jig.domain.model.knowledge.external.ExternalDependencyDiagram;
-import org.dddjava.jig.domain.model.knowledge.external.ExternalGroupingRule;
+import org.dddjava.jig.domain.model.knowledge.library.LibraryDependencyDiagram;
+import org.dddjava.jig.domain.model.knowledge.library.LibraryGroupingRule;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
@@ -124,11 +124,11 @@ public class JigService {
         return PackageRelations.from(TypeRelationships.internalRelation(jigTypes));
     }
 
-    public ExternalDependencyDiagram externalDependencyDiagram(JigRepository jigRepository) {
+    public LibraryDependencyDiagram libraryDependencyDiagram(JigRepository jigRepository) {
         var jigTypes = jigTypes(jigRepository);
-        return ExternalDependencyDiagram.from(
+        return LibraryDependencyDiagram.from(
                 TypeRelationships.externalRelation(jigTypes),
-                ExternalGroupingRule.defaultRule());
+                LibraryGroupingRule.defaultRule());
     }
 
     public TypeRelationships typeRelationships(JigRepository jigRepository) {

@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./assets/style.css" rel="stylesheet">
     <link rel="icon" href="./assets/favicon.ico">
-    <title>外部依存図</title>
+    <title>ライブラリ依存図</title>
 </head>
-<body class="external-dependency">
+<body class="library-dependency">
 <header class="top">
-    <a href="./index.html">JIG</a> / <b class="jig-page-title">外部依存図</b>
+    <a href="./index.html">JIG</a> / <b class="jig-page-title">ライブラリ依存図</b>
 </header>
 <main>
     <div id="jig-document-description" class="hidden">
@@ -43,11 +43,11 @@
         </div>
     </div>
 
-    <pre id="external-dependency-diagram" class="mermaid"></pre>
+    <pre id="library-dependency-diagram" class="mermaid"></pre>
 
-    <section id="external-group-list">
+    <section id="library-list">
         <h2>ライブラリ一覧</h2>
-        <table id="external-group-table">
+        <table id="library-table">
             <thead>
             <tr>
                 <th>ライブラリ</th>
@@ -64,8 +64,8 @@
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
 <script src="./assets/jig-bundle.js"></script>
 <script src="./data/navigation-data.js"></script>
-<script src="./data/external-dependency-data.js"></script>
+<script src="./data/library-dependency-data.js"></script>
 <script src="./data/glossary-data.js"></script>
-<script src="./assets/external-dependency.js"></script>
+<script src="./assets/library-dependency.js"></script>
 </body>
 </html>

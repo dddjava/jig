@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.external;
+package org.dddjava.jig.domain.model.knowledge.library;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
@@ -11,27 +11,27 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExternalDependencyDiagramTest {
+class LibraryDependencyDiagramTest {
 
     private static TypeRelationship rel(String from, String to) {
         return new TypeRelationship(TypeId.valueOf(from), TypeId.valueOf(to), TypeRelationKind.使用アノテーション);
     }
 
     @Test
-    void 同一外部グループへの複数参照が一意化される() {
+    void 同一ライブラリへの複数参照が一意化される() {
         TypeRelationships relations = new TypeRelationships(List.of(
                 rel("com.example.app.UserController", "org.springframework.web.bind.annotation.RestController"),
                 rel("com.example.app.UserController", "org.springframework.web.servlet.ModelAndView"),
                 rel("com.example.app.OrderController", "org.springframework.web.bind.annotation.GetMapping")
         ));
 
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+        LibraryDependencyDiagram diagram = LibraryDependencyDiagram.from(relations, LibraryGroupingRule.defaultRule());
 
-        assertEquals(1, diagram.groups().size(), "spring-web に集約される想定");
-        assertEquals("spring-web", diagram.groups().get(0).id());
+        assertEquals(1, diagram.libraries().size(), "spring-web に集約される想定");
+        assertEquals("spring-web", diagram.libraries().get(0).id());
 
         assertEquals(1, diagram.edges().size());
-        ExternalDependencyDiagram.Edge edge = diagram.edges().get(0);
+        LibraryDependencyDiagram.Edge edge = diagram.edges().get(0);
         assertEquals("com.example.app", edge.from());
         assertEquals("spring-web", edge.to());
     }
@@ -44,12 +44,12 @@ class ExternalDependencyDiagramTest {
                 rel("com.example.repo.UserMapper", "java.util.List")
         ));
 
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+        LibraryDependencyDiagram diagram = LibraryDependencyDiagram.from(relations, LibraryGroupingRule.defaultRule());
 
-        assertEquals(3, diagram.groups().size());
-        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("spring-web") && !g.isJavaStandard()));
-        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("mybatis") && !g.isJavaStandard()));
-        assertTrue(diagram.groups().stream().anyMatch(g -> g.id().equals("java") && g.isJavaStandard()));
+        assertEquals(3, diagram.libraries().size());
+        assertTrue(diagram.libraries().stream().anyMatch(g -> g.id().equals("spring-web") && !g.isJavaStandard()));
+        assertTrue(diagram.libraries().stream().anyMatch(g -> g.id().equals("mybatis") && !g.isJavaStandard()));
+        assertTrue(diagram.libraries().stream().anyMatch(g -> g.id().equals("java") && g.isJavaStandard()));
 
         assertEquals(2, diagram.internalPackageFqns().size());
     }
@@ -62,24 +62,24 @@ class ExternalDependencyDiagramTest {
                 rel("com.example.app.Service", "org.springframework.web.bind.annotation.RestController")
         ));
 
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+        LibraryDependencyDiagram diagram = LibraryDependencyDiagram.from(relations, LibraryGroupingRule.defaultRule());
 
-        assertEquals(1, diagram.groups().size());
-        assertEquals("spring-web", diagram.groups().get(0).id());
+        assertEquals(1, diagram.libraries().size());
+        assertEquals("spring-web", diagram.libraries().get(0).id());
     }
 
     @Test
-    void 配列型は要素型に正規化されJava標準グループに集約される() {
+    void 配列型は要素型に正規化されJava標準に集約される() {
         TypeRelationships relations = new TypeRelationships(List.of(
                 rel("com.example.app.Service", "[Ljava.lang.String;"),
                 rel("com.example.app.Service", "java.lang.String[]"),
                 rel("com.example.app.Service", "int[]")
         ));
 
-        ExternalDependencyDiagram diagram = ExternalDependencyDiagram.from(relations, ExternalGroupingRule.defaultRule());
+        LibraryDependencyDiagram diagram = LibraryDependencyDiagram.from(relations, LibraryGroupingRule.defaultRule());
 
-        assertEquals(1, diagram.groups().size());
-        assertEquals("java", diagram.groups().get(0).id());
-        assertTrue(diagram.groups().get(0).isJavaStandard());
+        assertEquals(1, diagram.libraries().size());
+        assertEquals("java", diagram.libraries().get(0).id());
+        assertTrue(diagram.libraries().get(0).isJavaStandard());
     }
 }

@@ -1,31 +1,31 @@
 (() => {
     const Jig = globalThis.Jig;
 
-    const selectedGroupIds = new Set();
-    const groupIdByNodeId = new Map();
+    const selectedLibraryIds = new Set();
+    const libraryIdByNodeId = new Map();
     let onSelectionChanged = () => {};
 
     function init() {
-        const data = globalThis.externalDependencyData || {
+        const data = globalThis.libraryDependencyData || {
             internalPackages: [],
-            externalGroups: [],
+            libraries: [],
             relations: []
         };
 
-        const diagramEl = document.getElementById("external-dependency-diagram");
+        const diagramEl = document.getElementById("library-dependency-diagram");
         const javaStandardToggle = document.getElementById("show-java-standard-toggle");
         const depthSelect = document.getElementById("package-depth-select");
         const depthUp = document.getElementById("depth-up-button");
         const depthDown = document.getElementById("depth-down-button");
         const clearSelection = document.getElementById("clear-selection-button");
-        const tableBody = document.querySelector("#external-group-table tbody");
+        const tableBody = document.querySelector("#library-table tbody");
 
         const maxDepth = computeMaxDepth(data.internalPackages);
         const initialDepth = computeInitialDepth(data.internalPackages, maxDepth);
         populateDepthSelect(depthSelect, maxDepth, initialDepth);
         updateDepthButtonStates(depthSelect, depthUp, depthDown);
 
-        const groupsById = new Map((data.externalGroups || []).map(g => [g.id, g]));
+        const librariesById = new Map((data.libraries || []).map(g => [g.id, g]));
 
         // 向き変更ボタンで切り替えた direction を保持し、再描画時に再適用する。
         // 初期値は TB（renderWithControls は未指定時に diagramFn("LR") を呼んで先頭から
@@ -36,7 +36,7 @@
             const includeJavaStandard = !!(javaStandardToggle && javaStandardToggle.checked);
             const depth = depthSelect && depthSelect.value !== "" ? Number(depthSelect.value) : maxDepth;
             const showPhysicalName = !!(opts && opts.showPhysicalName);
-            return buildMermaidText(data, groupsById, depth, includeJavaStandard, selectedGroupIds, direction, showPhysicalName);
+            return buildMermaidText(data, librariesById, depth, includeJavaStandard, selectedLibraryIds, direction, showPhysicalName);
         };
         const renderDiagram = () => {
             if (!diagramEl) return;
@@ -45,8 +45,8 @@
 
         // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。
         // 引数は sanitize 済みのノード ID なので、元の group.id へ逆引きする。
-        globalThis.handleExternalGroupClick = (nodeIdArg) => {
-            const groupId = groupIdByNodeId.get(nodeIdArg);
+        globalThis.handleLibraryClick = (nodeIdArg) => {
+            const groupId = libraryIdByNodeId.get(nodeIdArg);
             if (groupId) toggleSelection(groupId);
         };
 
@@ -67,20 +67,20 @@
         if (depthUp) depthUp.addEventListener("click", () => stepDepthByIndex(depthSelect, -1));
         if (depthDown) depthDown.addEventListener("click", () => stepDepthByIndex(depthSelect, +1));
         if (clearSelection) clearSelection.addEventListener("click", () => {
-            selectedGroupIds.clear();
+            selectedLibraryIds.clear();
             onSelectionChanged();
         });
 
         if (tableBody) {
-            renderGroupTable(tableBody, data.externalGroups || []);
+            renderLibraryTable(tableBody, data.libraries || []);
             highlightSelectedRows(tableBody);
         }
     }
 
     function toggleSelection(groupId) {
         if (!groupId) return;
-        if (selectedGroupIds.has(groupId)) selectedGroupIds.delete(groupId);
-        else selectedGroupIds.add(groupId);
+        if (selectedLibraryIds.has(groupId)) selectedLibraryIds.delete(groupId);
+        else selectedLibraryIds.add(groupId);
         onSelectionChanged();
     }
 
@@ -138,20 +138,20 @@
         downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
     }
 
-    function buildMermaidText(data, groupsById, depth, includeJavaStandard, selected, direction, showPhysicalName) {
+    function buildMermaidText(data, librariesById, depth, includeJavaStandard, selected, direction, showPhysicalName) {
         const hasSelection = selected && selected.size > 0;
         const visibleEdges = [];
         const seen = new Set();
         const internalFqnsAggregated = new Set();
-        const referencedGroupIds = new Set();
+        const referencedLibraryIds = new Set();
         (data.relations || []).forEach(rel => {
-            const group = groupsById.get(rel.to);
+            const group = librariesById.get(rel.to);
             if (!group) return;
             if (!includeJavaStandard && group.isJavaStandard) return;
             if (hasSelection && !selected.has(group.id)) return;
             const aggregatedFrom = Jig.util.getAggregatedFqn(rel.from, depth) || rel.from;
             internalFqnsAggregated.add(aggregatedFrom);
-            referencedGroupIds.add(group.id);
+            referencedLibraryIds.add(group.id);
             const key = `${aggregatedFrom}::${rel.to}`;
             if (!seen.has(key)) {
                 seen.add(key);
@@ -164,15 +164,15 @@
         const tree = buildPackageTree(internalFqnsAggregated);
         renderTreeChildren(tree, lines, 1, "", parentSelfIds, showPhysicalName);
 
-        const visibleGroups = (data.externalGroups || [])
+        const visibleLibraries = (data.libraries || [])
             .filter(g => includeJavaStandard || !g.isJavaStandard)
-            .filter(g => !hasSelection || referencedGroupIds.has(g.id))
+            .filter(g => !hasSelection || referencedLibraryIds.has(g.id))
             .sort((a, b) => (a.isJavaStandard === b.isJavaStandard) ? 0 : a.isJavaStandard ? 1 : -1);
-        visibleGroups.forEach(g => {
+        visibleLibraries.forEach(g => {
             const id = nodeId(g.id);
-            groupIdByNodeId.set(id, g.id);
+            libraryIdByNodeId.set(id, g.id);
             lines.push(`    ${id}@{shape: doc, label: \"${escape(g.displayName)}\"}`);
-            lines.push(`    click ${id} handleExternalGroupClick \"${escape(g.displayName)}\"`);
+            lines.push(`    click ${id} handleLibraryClick \"${escape(g.displayName)}\"`);
         });
 
         visibleEdges.forEach(e => {
@@ -182,10 +182,10 @@
         lines.push("    classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3");
         parentSelfIds.forEach(id => lines.push(`    class ${id} parentPackage`));
 
-        lines.push("    classDef selectedGroup fill:#cfe9ff,stroke:#1769aa,stroke-width:2px,font-weight:bold");
-        visibleGroups
+        lines.push("    classDef selectedLibrary fill:#cfe9ff,stroke:#1769aa,stroke-width:2px,font-weight:bold");
+        visibleLibraries
             .filter(g => selected && selected.has(g.id))
-            .forEach(g => lines.push(`    class ${nodeId(g.id)} selectedGroup`));
+            .forEach(g => lines.push(`    class ${nodeId(g.id)} selectedLibrary`));
 
         return lines.join("\n") + "\n";
     }
@@ -258,7 +258,7 @@
         return "    ".repeat(level);
     }
 
-    function renderGroupTable(tbody, groups) {
+    function renderLibraryTable(tbody, groups) {
         tbody.textContent = "";
         const sorted = [...groups].sort((a, b) => {
             if (a.isJavaStandard !== b.isJavaStandard) return a.isJavaStandard ? 1 : -1;
@@ -266,7 +266,7 @@
         });
         sorted.forEach(group => {
             const tr = document.createElement("tr");
-            tr.dataset.groupId = group.id;
+            tr.dataset.libraryId = group.id;
             tr.style.cursor = "pointer";
             tr.addEventListener("click", () => toggleSelection(group.id));
 
@@ -304,7 +304,7 @@
     function highlightSelectedRows(tbody) {
         if (!tbody) return;
         tbody.querySelectorAll("tr").forEach(tr => {
-            const isSelected = selectedGroupIds.has(tr.dataset.groupId);
+            const isSelected = selectedLibraryIds.has(tr.dataset.libraryId);
             tr.classList.toggle("is-selected", isSelected);
         });
     }

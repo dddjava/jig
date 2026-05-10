@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.external;
+package org.dddjava.jig.domain.model.knowledge.library;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
@@ -11,16 +11,16 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * 解析対象パッケージから外部ライブラリパッケージグループへの依存を集約した俯瞰モデル。
+ * 解析対象パッケージから外部ライブラリへの依存を集約した俯瞰モデル。
  * Mermaid 描画は深さ集約や Java 標準の表示切替を扱うためフロント側で行う。
  */
-public class ExternalDependencyDiagram {
+public class LibraryDependencyDiagram {
 
-    private final Map<String, GroupNode> groups;
+    private final Map<String, LibraryNode> libraries;
     private final Set<Edge> edges;
 
-    private ExternalDependencyDiagram(Map<String, GroupNode> groups, Set<Edge> edges) {
-        this.groups = groups;
+    private LibraryDependencyDiagram(Map<String, LibraryNode> libraries, Set<Edge> edges) {
+        this.libraries = libraries;
         this.edges = edges;
     }
 
@@ -28,11 +28,11 @@ public class ExternalDependencyDiagram {
      * 解析対象から外部への参照を集約してインスタンスを構築する。
      *
      * @param externalRelations {@link TypeRelationships#externalRelation} の戻り値（解析対象→解析対象外の参照）
-     * @param rule              グルーピングルール
+     * @param rule              ライブラリ識別ルール
      */
-    public static ExternalDependencyDiagram from(TypeRelationships externalRelations, ExternalGroupingRule rule) {
-        // groups: 出現順を保つために LinkedHashMap、edges: ソート済みかつ重複排除のため TreeSet
-        Map<String, GroupNode> groups = new LinkedHashMap<>();
+    public static LibraryDependencyDiagram from(TypeRelationships externalRelations, LibraryGroupingRule rule) {
+        // libraries: 出現順を保つために LinkedHashMap、edges: ソート済みかつ重複排除のため TreeSet
+        Map<String, LibraryNode> libraries = new LinkedHashMap<>();
         Set<Edge> edges = new TreeSet<>();
 
         externalRelations.list().forEach(rel -> {
@@ -42,19 +42,19 @@ public class ExternalDependencyDiagram {
             PackageId toPackage = to.packageId();
             // パッケージなし（`T` `E` などのジェネリクス型変数や default package）は外部依存として扱わない
             if (toPackage.equals(PackageId.defaultPackage())) return;
-            ExternalGroupingRule.Group group = rule.groupOf(toPackage);
-            GroupNode node = groups.computeIfAbsent(group.id(),
-                    id -> new GroupNode(group.id(), group.displayName(), group.isJavaStandard(), new TreeSet<>(), new TreeSet<>()));
+            LibraryGroupingRule.Library library = rule.libraryOf(toPackage);
+            LibraryNode node = libraries.computeIfAbsent(library.id(),
+                    id -> new LibraryNode(library.id(), library.displayName(), library.isJavaStandard(), new TreeSet<>(), new TreeSet<>()));
             node.samplePackages.add(toPackage.asText());
             node.usingClasses.add(rel.from().fqn());
-            edges.add(new Edge(rel.from().packageId().asText(), group.id()));
+            edges.add(new Edge(rel.from().packageId().asText(), library.id()));
         });
 
-        return new ExternalDependencyDiagram(groups, edges);
+        return new LibraryDependencyDiagram(libraries, edges);
     }
 
-    public List<GroupNode> groups() {
-        return List.copyOf(groups.values());
+    public List<LibraryNode> libraries() {
+        return List.copyOf(libraries.values());
     }
 
     public List<Edge> edges() {
@@ -69,8 +69,8 @@ public class ExternalDependencyDiagram {
         return set;
     }
 
-    public record GroupNode(String id, String displayName, boolean isJavaStandard,
-                            Set<String> samplePackages, Set<String> usingClasses) {
+    public record LibraryNode(String id, String displayName, boolean isJavaStandard,
+                              Set<String> samplePackages, Set<String> usingClasses) {
     }
 
     public record Edge(String from, String to) implements Comparable<Edge> {

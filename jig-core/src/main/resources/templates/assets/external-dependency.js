@@ -2,6 +2,7 @@
     const Jig = globalThis.Jig;
 
     const selectedGroupIds = new Set();
+    const groupIdByNodeId = new Map();
     let onSelectionChanged = () => {};
 
     function init() {
@@ -33,8 +34,12 @@
             Jig.mermaid.render.renderWithControls(diagramEl, () => text);
         };
 
-        // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある
-        globalThis.handleExternalGroupClick = (groupId) => toggleSelection(groupId);
+        // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。
+        // 引数は sanitize 済みのノード ID なので、元の group.id へ逆引きする。
+        globalThis.handleExternalGroupClick = (nodeIdArg) => {
+            const groupId = groupIdByNodeId.get(nodeIdArg);
+            if (groupId) toggleSelection(groupId);
+        };
 
         const rerender = () => {
             renderDiagram();
@@ -139,8 +144,10 @@
             .filter(g => !hasSelection || referencedGroupIds.has(g.id))
             .sort((a, b) => (a.isJdk === b.isJdk) ? 0 : a.isJdk ? 1 : -1);
         visibleGroups.forEach(g => {
-            lines.push(`    ${nodeId(g.id)}([\"${escape(g.displayName)}\"])`);
-            lines.push(`    click ${nodeId(g.id)} handleExternalGroupClick \"${escape(g.displayName)}\"`);
+            const id = nodeId(g.id);
+            groupIdByNodeId.set(id, g.id);
+            lines.push(`    ${id}([\"${escape(g.displayName)}\"])`);
+            lines.push(`    click ${id} handleExternalGroupClick \"${escape(g.displayName)}\"`);
         });
 
         visibleEdges.forEach(e => {

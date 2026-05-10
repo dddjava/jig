@@ -146,7 +146,7 @@
         visibleGroups.forEach(g => {
             const id = nodeId(g.id);
             groupIdByNodeId.set(id, g.id);
-            lines.push(`    ${id}([\"${escape(g.displayName)}\"])`);
+            lines.push(`    ${id}@{shape: doc, label: \"${escape(g.displayName)}\"}`);
             lines.push(`    click ${id} handleExternalGroupClick \"${escape(g.displayName)}\"`);
         });
 

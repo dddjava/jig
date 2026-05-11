@@ -3,8 +3,10 @@ package org.dddjava.jig.adapter.datajs;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
 
@@ -67,21 +69,24 @@ public class GlossaryDataAdapter implements DataAdapter {
     }
 
     private static Function<Term, Optional<String>> sourcePathResolver(TypeSourcePaths typeSourcePaths, Optional<Path> repositoryRoot) {
-        if (repositoryRoot.isEmpty() || typeSourcePaths.map().isEmpty()) {
+        if (repositoryRoot.isEmpty()) {
             return term -> Optional.empty();
         }
         Path root = repositoryRoot.get();
-        return term -> typeIdFor(term).flatMap(typeSourcePaths::find)
+        return term -> resolvePath(term, typeSourcePaths)
                 .map(root::relativize)
                 .map(Path::toString)
                 .map(s -> s.replace('\\', '/'));
     }
 
-    private static Optional<TypeId> typeIdFor(Term term) {
+    private static Optional<Path> resolvePath(Term term, TypeSourcePaths typeSourcePaths) {
+        if (term.termKind() == TermKind.パッケージ) {
+            return typeSourcePaths.find(PackageId.valueOf(term.id().asText()));
+        }
         String value = term.id().asText();
         int hash = value.indexOf('#');
         String typeFqn = (hash < 0) ? value : value.substring(0, hash);
         if (typeFqn.isEmpty()) return Optional.empty();
-        return Optional.of(TypeId.valueOf(typeFqn));
+        return typeSourcePaths.find(TypeId.valueOf(typeFqn));
     }
 }

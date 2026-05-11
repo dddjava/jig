@@ -66,31 +66,32 @@ public class JavaparserReader {
         }
     }
 
-    public void loadPackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
+    public Optional<PackageId> loadPackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
 
-            loadPackageInfoJavaFile(cu, glossaryRepository);
+            return loadPackageInfoJavaFile(cu, glossaryRepository);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
+            return Optional.empty();
         }
     }
 
-    void loadPackageInfoJavaFile(CompilationUnit cu, GlossaryRepository glossaryRepository) {
+    Optional<PackageId> loadPackageInfoJavaFile(CompilationUnit cu, GlossaryRepository glossaryRepository) {
         // packageIdがPackageCommentで必要になるのでここはネストにしておく
-        cu.getPackageDeclaration()
+        Optional<PackageId> packageIdOpt = cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
-                .map(PackageId::valueOf)
-                .flatMap(packageId -> {
-                    TermId termId = glossaryRepository.fromPackageId(packageId);
-                    return getJavadoc(cu)
-                            .map(Javadoc::getDescription)
-                            .map(JavadocDescription::toText)
-                            .filter(text -> !text.isBlank())
-                            .map(javadocText -> TermFactory.fromPackage(termId, javadocText));
-                })
-                .ifPresent(glossaryRepository::register);
+                .map(PackageId::valueOf);
+        packageIdOpt.flatMap(packageId -> {
+            TermId termId = glossaryRepository.fromPackageId(packageId);
+            return getJavadoc(cu)
+                    .map(Javadoc::getDescription)
+                    .map(JavadocDescription::toText)
+                    .filter(text -> !text.isBlank())
+                    .map(javadocText -> TermFactory.fromPackage(termId, javadocText));
+        }).ifPresent(glossaryRepository::register);
+        return packageIdOpt;
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

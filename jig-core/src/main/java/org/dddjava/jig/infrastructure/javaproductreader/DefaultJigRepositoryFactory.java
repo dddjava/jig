@@ -7,6 +7,7 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -111,9 +112,11 @@ public class DefaultJigRepositoryFactory {
         return Objects.requireNonNull(Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
+            Map<PackageId, Path> packageSourcePathMap = new HashMap<>();
             Metrics.timer(metricName, "phase", "package_info_parsing").record(() ->
-                    javaFilePaths.packageInfoPaths().forEach(
-                            path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
+                    javaFilePaths.packageInfoPaths().forEach(path ->
+                            javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository)
+                                    .ifPresent(packageId -> packageSourcePathMap.put(packageId, path)))
             );
 
             Map<TypeId, Path> typeSourcePathMap = new HashMap<>();
@@ -124,7 +127,7 @@ public class DefaultJigRepositoryFactory {
                             .map(JavaparserReader.ParseResult::sourceModel)
                             .reduce(JavaSourceModel::merge)
                             .orElseGet(JavaSourceModel::empty)));
-            TypeSourcePaths typeSourcePaths = new TypeSourcePaths(Map.copyOf(typeSourcePathMap));
+            TypeSourcePaths typeSourcePaths = new TypeSourcePaths(Map.copyOf(typeSourcePathMap), Map.copyOf(packageSourcePathMap));
 
             Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(
                     Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->

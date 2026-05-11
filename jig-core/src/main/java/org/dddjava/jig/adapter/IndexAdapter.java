@@ -1,6 +1,7 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
 
@@ -18,20 +19,23 @@ import java.util.*;
 public class IndexAdapter {
     static final String INDEX_FILE_NAME = "index.html";
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
+    static final String SUMMARY_DATA_JS = "summary-data.js";
 
     public void render(List<HandleResult> handleResultList, Path outputDirectory) {
-        render(handleResultList, outputDirectory, GitRepositoryInfo.empty());
+        render(handleResultList, outputDirectory, GitRepositoryInfo.empty(), JigResult.JigSummary.empty());
     }
 
-    public void render(List<HandleResult> handleResultList, Path outputDirectory, GitRepositoryInfo gitRepositoryInfo) {
+    public void render(List<HandleResult> handleResultList, Path outputDirectory,
+                       GitRepositoryInfo gitRepositoryInfo, JigResult.JigSummary jigSummary) {
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 documentLinks.put(handleResult.jigDocument(), handleResult.outputFileNames().get(0));
             }
         }
-        write(documentLinks, outputDirectory, gitRepositoryInfo);
+        write(documentLinks, outputDirectory);
         writeNavigationData(documentLinks, outputDirectory);
+        writeSummaryData(gitRepositoryInfo, jigSummary, outputDirectory);
     }
 
     private String resolveJigVersion() {
@@ -39,7 +43,7 @@ public class IndexAdapter {
         return Objects.requireNonNullElse(implementationVersion, "unknown");
     }
 
-    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory, GitRepositoryInfo gitRepositoryInfo) {
+    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory) {
         String title = "JIG";
         String jigVersion = resolveJigVersion();
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -61,7 +65,8 @@ public class IndexAdapter {
         html.append("    <p>出力日時: <span id=\"jig-timestamp\" data-jig-timestamp=\"").append(timestampText).append("\">").append(timestampText).append("</span>");
         html.append(" Version: ").append(jigVersion);
         html.append("</p>\n");
-        appendGitInfo(html, gitRepositoryInfo);
+        html.append("    <p id=\"jig-source\"></p>\n");
+        html.append("    <p id=\"jig-stats\"></p>\n");
         html.append("</header>\n");
         html.append("\n");
         html.append("<main>\n");
@@ -83,6 +88,7 @@ public class IndexAdapter {
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js\"></script>\n");
         html.append("    <script src=\"./assets/jig-bundle.js\"></script>\n");
         html.append("    <script src=\"./data/navigation-data.js\"></script>\n");
+        html.append("    <script src=\"./data/summary-data.js\"></script>\n");
         html.append("    <script src=\"./data/package-data.js\"></script>\n");
         html.append("    <script src=\"./data/glossary-data.js\"></script>\n");
         html.append("    <script src=\"./assets/index.js\"></script>\n");
@@ -96,38 +102,6 @@ public class IndexAdapter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    private void appendGitInfo(StringBuilder html, GitRepositoryInfo gitRepositoryInfo) {
-        if (!gitRepositoryInfo.isPresent()) return;
-
-        StringBuilder line = new StringBuilder("Source: ");
-        gitRepositoryInfo.remoteUrl().ifPresent(remote ->
-                line.append(remote.knownHost()
-                        .map(known -> "<a href=\"" + escapeHtmlAttr(known.baseUrl()) + "\">" + escapeHtml(known.displayName()) + "</a>")
-                        .orElseGet(() -> "<code>" + escapeHtml(remote.rawUrl()) + "</code>")));
-
-        gitRepositoryInfo.shortHash().ifPresent(hash -> {
-            if (gitRepositoryInfo.remoteUrl().isPresent()) line.append(" @ ");
-            String hashHtml = "<code>" + escapeHtml(hash) + "</code>";
-            line.append(gitRepositoryInfo.remoteUrl()
-                    .flatMap(r -> r.commitUrl(hash))
-                    .map(url -> "<a href=\"" + escapeHtmlAttr(url) + "\">" + hashHtml + "</a>")
-                    .orElse(hashHtml));
-        });
-
-        html.append("    <p>").append(line).append("</p>\n");
-    }
-
-    private static String escapeHtml(String input) {
-        return input
-                .replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
-    }
-
-    private static String escapeHtmlAttr(String input) {
-        return escapeHtml(input).replace("\"", "&quot;");
     }
 
     private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory) {
@@ -157,6 +131,53 @@ public class IndexAdapter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private void writeSummaryData(GitRepositoryInfo gitRepositoryInfo, JigResult.JigSummary jigSummary, Path outputDirectory) {
+        try {
+            Path dataDirectory = outputDirectory.resolve("data");
+            Files.createDirectories(dataDirectory);
+
+            StringBuilder js = new StringBuilder();
+            js.append("globalThis.summaryData = {");
+            js.append("\"git\":").append(gitJson(gitRepositoryInfo));
+            js.append(",\"stats\":").append(statsJson(jigSummary));
+            js.append("};\n");
+
+            Files.writeString(dataDirectory.resolve(SUMMARY_DATA_JS), js.toString(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private String gitJson(GitRepositoryInfo gitRepositoryInfo) {
+        if (!gitRepositoryInfo.isPresent()) return "null";
+        StringBuilder json = new StringBuilder("{");
+        gitRepositoryInfo.shortHash().ifPresent(hash ->
+                json.append("\"shortHash\":\"").append(escapeJson(hash)).append("\""));
+        gitRepositoryInfo.remoteUrl().ifPresent(remote -> {
+            if (json.length() > 1) json.append(",");
+            json.append("\"remote\":{");
+            json.append("\"rawUrl\":\"").append(escapeJson(remote.rawUrl())).append("\"");
+            remote.knownHost().ifPresent(known -> {
+                json.append(",\"baseUrl\":\"").append(escapeJson(known.baseUrl())).append("\"");
+                json.append(",\"displayName\":\"").append(escapeJson(known.displayName())).append("\"");
+                remote.commitUrl(gitRepositoryInfo.shortHash().orElse(""))
+                        .filter(url -> gitRepositoryInfo.shortHash().isPresent())
+                        .ifPresent(url -> json.append(",\"commitUrl\":\"").append(escapeJson(url)).append("\""));
+            });
+            json.append("}");
+        });
+        json.append("}");
+        return json.toString();
+    }
+
+    private String statsJson(JigResult.JigSummary jigSummary) {
+        return "{"
+                + "\"packageCount\":" + jigSummary.numberOfPackages()
+                + ",\"classCount\":" + jigSummary.numberOfClasses()
+                + ",\"methodCount\":" + jigSummary.numberOfMethods()
+                + "}";
     }
 
     private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key) {

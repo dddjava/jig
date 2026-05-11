@@ -30,6 +30,50 @@ const IndexApp = (() => {
         }
     }
 
+    function renderSummary() {
+        const sourceEl = document.getElementById("jig-source");
+        if (sourceEl) {
+            const git = Jig.data.summary.getGit();
+            sourceEl.replaceChildren();
+            if (git) {
+                sourceEl.appendChild(document.createTextNode("Source: "));
+                if (git.remote) {
+                    const remote = git.remote;
+                    if (remote.baseUrl) {
+                        sourceEl.appendChild(Jig.dom.createElement("a", {
+                            attributes: {href: remote.baseUrl},
+                            textContent: remote.displayName || remote.baseUrl
+                        }));
+                    } else {
+                        sourceEl.appendChild(Jig.dom.createElement("code", {textContent: remote.rawUrl}));
+                    }
+                }
+                if (git.shortHash) {
+                    if (git.remote) sourceEl.appendChild(document.createTextNode(" @ "));
+                    const codeEl = Jig.dom.createElement("code", {textContent: git.shortHash});
+                    const commitUrl = git.remote && git.remote.commitUrl;
+                    if (commitUrl) {
+                        sourceEl.appendChild(Jig.dom.createElement("a", {
+                            attributes: {href: commitUrl},
+                            children: [codeEl]
+                        }));
+                    } else {
+                        sourceEl.appendChild(codeEl);
+                    }
+                }
+            }
+        }
+
+        const statsEl = document.getElementById("jig-stats");
+        if (statsEl) {
+            const stats = Jig.data.summary.getStats();
+            statsEl.replaceChildren();
+            if (stats) {
+                statsEl.textContent = `パッケージ数: ${stats.packageCount} / クラス数: ${stats.classCount} / メソッド数: ${stats.methodCount}`;
+            }
+        }
+    }
+
     function renderDocumentLinks() {
         const container = document.getElementById("document-links");
         if (!container) return;
@@ -57,6 +101,7 @@ const IndexApp = (() => {
             return;
         }
 
+        renderSummary();
         renderDocumentLinks();
 
         const packageDiagramContainer = document.getElementById("package-diagram");

@@ -133,6 +133,18 @@ globalThis.Jig.data = (() => {
         },
     };
 
+    const summary = {
+        get() {
+            return globalThis.summaryData;
+        },
+        getGit() {
+            return globalThis.summaryData?.git ?? null;
+        },
+        getStats() {
+            return globalThis.summaryData?.stats ?? null;
+        },
+    };
+
     const typeRelations = {
         get() {
             return globalThis.typeRelationsData;
@@ -202,6 +214,7 @@ globalThis.Jig.data = (() => {
         insight,
         list,
         navigation,
+        summary,
         typeRelations,
         resetCache,
         createTypeLinkResolver,

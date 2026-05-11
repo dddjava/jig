@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.JigDocument;
+import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,13 +20,17 @@ public class IndexAdapter {
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
 
     public void render(List<HandleResult> handleResultList, Path outputDirectory) {
+        render(handleResultList, outputDirectory, GitRepositoryInfo.empty());
+    }
+
+    public void render(List<HandleResult> handleResultList, Path outputDirectory, GitRepositoryInfo gitRepositoryInfo) {
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 documentLinks.put(handleResult.jigDocument(), handleResult.outputFileNames().get(0));
             }
         }
-        write(documentLinks, outputDirectory);
+        write(documentLinks, outputDirectory, gitRepositoryInfo);
         writeNavigationData(documentLinks, outputDirectory);
     }
 
@@ -34,7 +39,7 @@ public class IndexAdapter {
         return Objects.requireNonNullElse(implementationVersion, "unknown");
     }
 
-    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory) {
+    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory, GitRepositoryInfo gitRepositoryInfo) {
         String title = "JIG";
         String jigVersion = resolveJigVersion();
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -56,6 +61,7 @@ public class IndexAdapter {
         html.append("    <p>出力日時: <span id=\"jig-timestamp\" data-jig-timestamp=\"").append(timestampText).append("\">").append(timestampText).append("</span>");
         html.append(" Version: ").append(jigVersion);
         html.append("</p>\n");
+        appendGitInfo(html, gitRepositoryInfo);
         html.append("</header>\n");
         html.append("\n");
         html.append("<main>\n");
@@ -90,6 +96,38 @@ public class IndexAdapter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private void appendGitInfo(StringBuilder html, GitRepositoryInfo gitRepositoryInfo) {
+        if (!gitRepositoryInfo.isPresent()) return;
+
+        StringBuilder line = new StringBuilder("Source: ");
+        gitRepositoryInfo.remoteUrl().ifPresent(remote ->
+                line.append(remote.knownHost()
+                        .map(known -> "<a href=\"" + escapeHtmlAttr(known.baseUrl()) + "\">" + escapeHtml(known.displayName()) + "</a>")
+                        .orElseGet(() -> "<code>" + escapeHtml(remote.rawUrl()) + "</code>")));
+
+        gitRepositoryInfo.shortHash().ifPresent(hash -> {
+            if (gitRepositoryInfo.remoteUrl().isPresent()) line.append(" @ ");
+            String hashHtml = "<code>" + escapeHtml(hash) + "</code>";
+            line.append(gitRepositoryInfo.remoteUrl()
+                    .flatMap(r -> r.commitUrl(hash))
+                    .map(url -> "<a href=\"" + escapeHtmlAttr(url) + "\">" + hashHtml + "</a>")
+                    .orElse(hashHtml));
+        });
+
+        html.append("    <p>").append(line).append("</p>\n");
+    }
+
+    private static String escapeHtml(String input) {
+        return input
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+    }
+
+    private static String escapeHtmlAttr(String input) {
+        return escapeHtml(input).replace("\"", "&quot;");
     }
 
     private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory) {

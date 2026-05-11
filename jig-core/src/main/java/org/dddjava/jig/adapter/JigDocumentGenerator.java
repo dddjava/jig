@@ -7,6 +7,7 @@ import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
+import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -24,12 +25,12 @@ public class JigDocumentGenerator {
         this.dataAdapterResolver = new DataAdapterResolver(jigService);
     }
 
-    public JigResult generate(JigRepository jigRepository) {
+    public JigResult generate(JigRepository jigRepository, GitRepositoryInfo gitRepositoryInfo) {
         JigDocumentWriter.prepareOutputDirectory(outputDirectory);
 
         var handleResults = generateDocuments(jigRepository);
 
-        generateIndex(handleResults);
+        generateIndex(handleResults, gitRepositoryInfo);
         generateDebugHtml();
         generateSharedAssets();
         return new JigResultData(handleResults, IndexAdapter.indexFilePath(outputDirectory));
@@ -56,9 +57,9 @@ public class JigDocumentGenerator {
                 });
     }
 
-    private void generateIndex(List<HandleResult> results) {
+    private void generateIndex(List<HandleResult> results, GitRepositoryInfo gitRepositoryInfo) {
         IndexAdapter indexAdapter = new IndexAdapter();
-        indexAdapter.render(results, outputDirectory);
+        indexAdapter.render(results, outputDirectory, gitRepositoryInfo);
     }
 
     private void generateDebugHtml() {

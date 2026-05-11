@@ -5,6 +5,8 @@ import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigMetrics;
+import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
+import org.dddjava.jig.infrastructure.git.GitRepositoryReader;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +38,12 @@ public class JigExecutor {
             DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
             JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths);
 
+            // 解析対象プロジェクトのgit情報をbest-effortで取得する
+            GitRepositoryInfo gitRepositoryInfo = GitRepositoryReader.read(sourceBasePaths);
+
             // JigRepositoryを参照してJIGドキュメントを生成する
             JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
-            return jigDocumentGenerator.generate(jigRepository);
+            return jigDocumentGenerator.generate(jigRepository, gitRepositoryInfo);
         } finally {
             configuration.jigEventRepository().notifyWithLogger();
             logger.info("[JIG] all JIG documents completed: {} ms", System.currentTimeMillis() - startTime);

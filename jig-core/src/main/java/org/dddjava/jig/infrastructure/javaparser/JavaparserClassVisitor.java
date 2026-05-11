@@ -26,6 +26,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     private final String packageName;
     private final List<EnumModel> enumModels = new ArrayList<>();
+    private final List<TypeId> declaredTypeIds = new ArrayList<>();
 
     public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
@@ -85,6 +86,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
      */
     private TypeId visitTypeDeclaration(TypeDeclaration<?> node, GlossaryRepository glossaryRepository) {
         var typeId = TypeId.valueOf(resolveFqn(node));
+        declaredTypeIds.add(typeId);
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
@@ -110,5 +112,9 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     public JavaSourceModel javaSourceModel() {
         return JavaSourceModel.from(enumModels);
+    }
+
+    public List<TypeId> declaredTypeIds() {
+        return declaredTypeIds;
     }
 }

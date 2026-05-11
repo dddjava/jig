@@ -155,6 +155,10 @@ public class IndexAdapter {
         StringBuilder json = new StringBuilder("{");
         gitRepositoryInfo.shortHash().ifPresent(hash ->
                 json.append("\"shortHash\":\"").append(escapeJson(hash)).append("\""));
+        gitRepositoryInfo.blobUrlPrefix().ifPresent(prefix -> {
+            if (json.length() > 1) json.append(",");
+            json.append("\"blobUrlPrefix\":\"").append(escapeJson(prefix)).append("\"");
+        });
         gitRepositoryInfo.remoteUrl().ifPresent(remote -> {
             if (json.length() > 1) json.append(",");
             json.append("\"remote\":{");

@@ -35,11 +35,11 @@ public class JigExecutor {
             // 現状はローカルのJava/Classファイルを読む形なので固定実装だが雰囲気分けておく。
             // JARなどを読み取る場合やJavaファイルのみなどはSourceBasePathsの形も変わる想定。いつやるかは未定。
             // このフェーズで source -> data の変換を終え、以降は source は触らない。
-            DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
-            JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths);
-
             // 解析対象プロジェクトのgit情報をbest-effortで取得する
             GitRepositoryInfo gitRepositoryInfo = GitRepositoryReader.read(sourceBasePaths);
+
+            DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
+            JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths, gitRepositoryInfo.repositoryRoot());
 
             // JigRepositoryを参照してJIGドキュメントを生成する
             JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();

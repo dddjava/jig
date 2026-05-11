@@ -26,6 +26,7 @@ import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
 import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
+import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
@@ -37,8 +38,11 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,6 +79,10 @@ public class DefaultJigRepositoryFactory {
     }
 
     public JigRepository createJigRepository(SourceBasePaths sourceBasePaths) {
+        return createJigRepository(sourceBasePaths, Optional.empty());
+    }
+
+    public JigRepository createJigRepository(SourceBasePaths sourceBasePaths, Optional<Path> repositoryRoot) {
         Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
         try {
             FilesystemSources sources = sourceCollector.collectSources(sourceBasePaths);
@@ -86,7 +94,7 @@ public class DefaultJigRepositoryFactory {
                 return JigRepository.empty();
             }
 
-            return analyze(sources);
+            return analyze(sources, repositoryRoot);
         } finally {
             sample.stop(Timer.builder("jig.analysis.time")
                     .description("Time taken for code analysis")
@@ -98,7 +106,7 @@ public class DefaultJigRepositoryFactory {
     /**
      * プロジェクト情報を読み取る
      */
-    private JigRepository analyze(FilesystemSources sources) {
+    private JigRepository analyze(FilesystemSources sources, Optional<Path> repositoryRoot) {
         var metricName = "jig.analysis.time";
         return Objects.requireNonNull(Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
@@ -108,11 +116,15 @@ public class DefaultJigRepositoryFactory {
                             path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
             );
 
+            Map<TypeId, Path> typeSourcePathMap = new HashMap<>();
             JavaSourceModel javaSourceModel = Objects.requireNonNull(Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
+                            .peek(result -> result.declaredTypeIds().forEach(typeId -> typeSourcePathMap.put(typeId, result.sourcePath())))
+                            .map(JavaparserReader.ParseResult::sourceModel)
                             .reduce(JavaSourceModel::merge)
                             .orElseGet(JavaSourceModel::empty)));
+            TypeSourcePaths typeSourcePaths = new TypeSourcePaths(Map.copyOf(typeSourcePathMap));
 
             Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(
                     Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
@@ -183,6 +195,16 @@ public class DefaultJigRepositoryFactory {
                     @Override
                     public ExternalAccessorRepositories externalAccessorRepositories() {
                         return externalAccessorRepositories;
+                    }
+
+                    @Override
+                    public TypeSourcePaths typeSourcePaths() {
+                        return typeSourcePaths;
+                    }
+
+                    @Override
+                    public Optional<Path> repositoryRoot() {
+                        return repositoryRoot;
                     }
                 };
             });

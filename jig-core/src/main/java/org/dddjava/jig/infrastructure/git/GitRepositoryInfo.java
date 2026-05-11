@@ -1,18 +1,30 @@
 package org.dddjava.jig.infrastructure.git;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
  * 解析対象プロジェクトのgit情報
  */
-public record GitRepositoryInfo(Optional<String> shortHash, Optional<RemoteUrl> remoteUrl) {
+public record GitRepositoryInfo(Optional<Path> repositoryRoot,
+                                Optional<String> shortHash,
+                                Optional<RemoteUrl> remoteUrl) {
 
     public static GitRepositoryInfo empty() {
-        return new GitRepositoryInfo(Optional.empty(), Optional.empty());
+        return new GitRepositoryInfo(Optional.empty(), Optional.empty(), Optional.empty());
     }
 
     public boolean isPresent() {
         return shortHash.isPresent() || remoteUrl.isPresent();
+    }
+
+    /**
+     * blob URLのプレフィックス（例: https://github.com/foo/bar/blob/abc1234）。
+     * 既知ホストかつshortHashがある場合のみ返す。
+     */
+    public Optional<String> blobUrlPrefix() {
+        return remoteUrl.flatMap(remote -> remote.knownHost()
+                .flatMap(known -> shortHash.map(hash -> known.baseUrl() + "/blob/" + hash)));
     }
 
     /**

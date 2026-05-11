@@ -29,9 +29,10 @@ public class GitRepositoryReader {
         if (gitDir.isEmpty()) {
             return GitRepositoryInfo.empty();
         }
+        Optional<Path> repositoryRoot = gitDir.map(Path::getParent);
         Optional<String> shortHash = readShortHash(gitDir.get());
         Optional<GitRepositoryInfo.RemoteUrl> remoteUrl = readRemoteUrl(gitDir.get());
-        return new GitRepositoryInfo(shortHash, remoteUrl);
+        return new GitRepositoryInfo(repositoryRoot, shortHash, remoteUrl);
     }
 
     private static Optional<Path> findGitDir(SourceBasePaths sourceBasePaths) {

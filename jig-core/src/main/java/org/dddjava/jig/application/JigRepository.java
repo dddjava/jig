@@ -7,8 +7,11 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 public interface JigRepository {
 
@@ -38,6 +41,16 @@ public interface JigRepository {
             public ExternalAccessorRepositories externalAccessorRepositories() {
                 return new ExternalAccessorRepositories(PersistenceAccessorRepository.empty(), OtherExternalAccessorRepository.empty());
             }
+
+            @Override
+            public TypeSourcePaths typeSourcePaths() {
+                return TypeSourcePaths.empty();
+            }
+
+            @Override
+            public Optional<Path> repositoryRoot() {
+                return Optional.empty();
+            }
         };
     }
 
@@ -54,4 +67,12 @@ public interface JigRepository {
     JigResult.JigSummary summary();
 
     ExternalAccessorRepositories externalAccessorRepositories();
+
+    TypeSourcePaths typeSourcePaths();
+
+    /**
+     * 解析対象プロジェクトのリポジトリルート（.gitの親ディレクトリ）。
+     * git管理外の場合はempty。
+     */
+    Optional<Path> repositoryRoot();
 }

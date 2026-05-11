@@ -11,11 +11,13 @@ import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.TermId;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,7 +39,7 @@ public class JavaparserReader {
         // configuration.setCharacterEncoding(properties.inputEncoding());
     }
 
-    public JavaSourceModel parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
+    public ParseResult parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
@@ -48,10 +50,19 @@ public class JavaparserReader {
                     .orElse("");
             JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
             cu.accept(classVisitor, glossaryRepository);
-            return classVisitor.javaSourceModel();
+            return new ParseResult(classVisitor.javaSourceModel(), classVisitor.declaredTypeIds(), path);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。このエラーはローカルenumが存在する場合などに発生します。処理は続行します。", path, e);
-            return JavaSourceModel.empty();
+            return ParseResult.empty(path);
+        }
+    }
+
+    /**
+     * 1つのJavaファイルのパース結果
+     */
+    public record ParseResult(JavaSourceModel sourceModel, List<TypeId> declaredTypeIds, Path sourcePath) {
+        public static ParseResult empty(Path sourcePath) {
+            return new ParseResult(JavaSourceModel.empty(), List.of(), sourcePath);
         }
     }
 

@@ -3,7 +3,6 @@ package org.dddjava.jig.adapter.json;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.SequencedCollection;
 import java.util.stream.Collectors;
 
 /**
@@ -69,17 +68,16 @@ public final class Json {
 
     /**
      * JSONオブジェクトビルダーのコレクションをJSON配列としてそのまま挿入する。
-     * 順序ありコレクション（{@link SequencedCollection}）はその順序を保ち、
-     * それ以外は組み立てたJSON文字列の自然順序でソートして安定したJSON出力にする。
      * {@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
      *
      * @param builders JSONオブジェクトビルダー
      * @return JSON配列として挿入するための値（例: [{"a":1},{"b":2}]）
      */
     public static Object arrayObjects(Collection<JsonObjectBuilder> builders) {
-        var built = builders.stream().map(JsonObjectBuilder::build);
-        var ordered = builders instanceof SequencedCollection<JsonObjectBuilder> ? built : built.sorted();
-        return new JsonRaw(ordered.collect(Collectors.joining(",", "[", "]")));
+        String json = builders.stream()
+                .map(JsonObjectBuilder::build)
+                .collect(Collectors.joining(",", "[", "]"));
+        return new JsonRaw(json);
     }
 
     /**

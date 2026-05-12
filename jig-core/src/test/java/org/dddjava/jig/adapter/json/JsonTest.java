@@ -72,18 +72,4 @@ class JsonTest {
         assertEquals("{\"v\":[\"a\",\"b\",\"c\"]}", Json.object("v", Json.array(values)).build());
     }
 
-    @Test
-    void arrayObjects_順序ありコレクションは順序を保つ() {
-        var builders = List.of(Json.object("k", "c"), Json.object("k", "a"), Json.object("k", "b"));
-        assertEquals("[{\"k\":\"c\"},{\"k\":\"a\"},{\"k\":\"b\"}]",
-                ((JsonRaw) Json.arrayObjects(builders)).get());
-    }
-
-    @Test
-    void arrayObjects_順序なしコレクションはJSON文字列でソートする() {
-        Set<JsonObjectBuilder> builders = new HashSet<>(List.of(
-                Json.object("k", "c"), Json.object("k", "a"), Json.object("k", "b")));
-        assertEquals("[{\"k\":\"a\"},{\"k\":\"b\"},{\"k\":\"c\"}]",
-                ((JsonRaw) Json.arrayObjects(builders)).get());
-    }
 }

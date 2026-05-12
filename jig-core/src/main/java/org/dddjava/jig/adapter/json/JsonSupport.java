@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.SequencedCollection;
 import java.util.stream.Collectors;
 
 /**
@@ -35,12 +36,15 @@ public final class JsonSupport {
 
     /**
      * 文字列コレクションをJSON配列文字列に変換する。
+     * 順序ありコレクション（{@link SequencedCollection}）はその順序を保ち、
+     * それ以外（HashSet等の順序なしコレクション）は自然順序でソートして安定したJSON出力にする。
      *
      * @param values 文字列のコレクション
      * @return JSON配列形式の文字列（例: ["a","b"]）
      */
     public static String toJsonStringList(Collection<String> values) {
-        return values.stream()
+        var stream = values instanceof SequencedCollection<String> ? values.stream() : values.stream().sorted();
+        return stream
                 .map(JsonSupport::escape)
                 .map(value -> "\"" + value + "\"")
                 .collect(Collectors.joining(",", "[", "]"));

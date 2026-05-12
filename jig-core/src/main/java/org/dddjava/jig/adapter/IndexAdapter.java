@@ -21,10 +21,6 @@ public class IndexAdapter {
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
     static final String SUMMARY_DATA_JS = "summary-data.js";
 
-    public void render(List<HandleResult> handleResultList, Path outputDirectory) {
-        render(handleResultList, outputDirectory, GitRepositoryInfo.empty(), JigResult.JigSummary.empty());
-    }
-
     public void render(List<HandleResult> handleResultList, Path outputDirectory,
                        GitRepositoryInfo gitRepositoryInfo, JigResult.JigSummary jigSummary) {
         Map<JigDocument, String> documentLinks = new HashMap<>();

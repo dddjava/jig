@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.json;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,12 +46,12 @@ public final class Json {
     }
 
     /**
-     * 文字列リストをJSON配列に変換する。{@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
+     * 文字列コレクションをJSON配列に変換する。{@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
      *
-     * @param values 文字列のリスト
+     * @param values 文字列のコレクション
      * @return JSON配列として挿入するための値（例: ["a","b"]）
      */
-    public static Object array(List<String> values) {
+    public static Object array(Collection<String> values) {
         return new JsonRaw(JsonSupport.toJsonStringList(values));
     }
 
@@ -72,7 +73,7 @@ public final class Json {
      * @param builders JSONオブジェクトビルダー
      * @return JSON配列として挿入するための値（例: [{"a":1},{"b":2}]）
      */
-    public static Object arrayObjects(List<JsonObjectBuilder> builders) {
+    public static Object arrayObjects(Collection<JsonObjectBuilder> builders) {
         String json = builders.stream()
                 .map(JsonObjectBuilder::build)
                 .collect(Collectors.joining(",", "[", "]"));

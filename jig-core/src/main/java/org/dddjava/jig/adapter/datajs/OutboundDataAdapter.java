@@ -94,7 +94,7 @@ public class OutboundDataAdapter implements DataAdapter {
                 outboundPort.operationStream().forEach(portOperation -> {
                     String portOperationFqn = portOperation.jigMethod().fqn();
                     portOperations.add(JsonSupport.buildMethodJson(portOperation.jigMethod())
-                            .and("callerUsecases", Json.array(new ArrayList<>(portOperationToCallerUsecases.getOrDefault(portOperationFqn, new LinkedHashSet<>())))));
+                            .and("callerUsecases", Json.array(portOperationToCallerUsecases.getOrDefault(portOperationFqn, new LinkedHashSet<>()))));
 
                     outboundAdapter.findExecution(portOperation).ifPresent(adapterExecution -> {
                         String adapterExecutionFqn = adapterExecution.jigMethod().fqn();
@@ -137,11 +137,11 @@ public class OutboundDataAdapter implements DataAdapter {
                 .and("executionToPersistenceAccessor", Json.arrayObjects(executionToAccessor))
                 .and("executionToOtherExternalAccessor", Json.arrayObjects(executionToExternalAccessor));
 
-        return Json.object("outboundPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
-                .and("outboundAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
+        return Json.object("outboundPorts", Json.arrayObjects(portsMap.values()))
+                .and("outboundAdapters", Json.arrayObjects(adaptersMap.values()))
                 .and("persistenceAccessors", persistenceAccessors(externalAccessorRepositories.persistenceAccessorRepository()))
                 .and("otherExternalAccessors", externalAccessors(externalAccessorRepositories.otherExternalAccessorRepository()))
-                .and("targets", Json.array(new ArrayList<>(targetsSet)))
+                .and("targets", Json.array(targetsSet))
                 .and("links", links)
                 .build();
     }

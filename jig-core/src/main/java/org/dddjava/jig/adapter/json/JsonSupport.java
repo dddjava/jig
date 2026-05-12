@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -34,12 +34,12 @@ public final class JsonSupport {
     }
 
     /**
-     * 文字列リストをJSON配列文字列に変換する。
+     * 文字列コレクションをJSON配列文字列に変換する。
      *
-     * @param values 文字列のリスト
+     * @param values 文字列のコレクション
      * @return JSON配列形式の文字列（例: ["a","b"]）
      */
-    public static String toJsonStringList(List<String> values) {
+    public static String toJsonStringList(Collection<String> values) {
         return values.stream()
                 .map(JsonSupport::escape)
                 .map(value -> "\"" + value + "\"")

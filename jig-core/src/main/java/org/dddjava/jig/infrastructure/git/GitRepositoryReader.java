@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.git;
 
+import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 
 import java.io.IOException;

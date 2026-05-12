@@ -7,7 +7,7 @@ import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
-import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
+import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 
 import java.nio.file.Path;
 import java.util.List;

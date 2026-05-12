@@ -3,7 +3,7 @@ package org.dddjava.jig.adapter;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
+import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

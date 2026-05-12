@@ -5,7 +5,7 @@ import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigMetrics;
-import org.dddjava.jig.infrastructure.git.GitRepositoryInfo;
+import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 import org.dddjava.jig.infrastructure.git.GitRepositoryReader;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.slf4j.Logger;

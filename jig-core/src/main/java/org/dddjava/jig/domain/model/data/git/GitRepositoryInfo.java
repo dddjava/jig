@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.git;
+package org.dddjava.jig.domain.model.data.git;
 
 import java.nio.file.Path;
 import java.util.Optional;

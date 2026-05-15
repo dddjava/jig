@@ -34,6 +34,7 @@ class JigDocumentGeneratorAssetsTest {
         expected.remove("jig-glossary.js");
         expected.remove("jig-mermaid.js");
         expected.remove("jig-util.js");
+        expected.remove("jig-bootstrap.js");
 
         // 各ドキュメント用のファイルは generateDocuments でコピーされるため、generateSharedAssets のテストでは除外する
         expected.remove("domain.js");

@@ -3,7 +3,7 @@
 [libraries]
 spring-boot-plugin = "org.springframework.boot:spring-boot-gradle-plugin:4.0.6"
 
-asm = "org.ow2.asm:asm:9.9.1"
+asm = "org.ow2.asm:asm:9.10"
 javaparser = "com.github.javaparser:javaparser-core:3.28.1"
 mybatis = "org.mybatis:mybatis:3.5.19"
 

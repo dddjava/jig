@@ -91,7 +91,8 @@ def bundleJsTask = tasks.register("bundleJs") {
             'src/main/resources/templates/assets/jig-data.js',
             'src/main/resources/templates/assets/jig-glossary.js',
             'src/main/resources/templates/assets/jig-dom.js',
-            'src/main/resources/templates/assets/jig-mermaid.js'
+            'src/main/resources/templates/assets/jig-mermaid.js',
+            'src/main/resources/templates/assets/jig-bootstrap.js'
     )
     def outputFile = bundleJsOutputDir.map { it.file("templates/assets/jig-bundle.js") }
 

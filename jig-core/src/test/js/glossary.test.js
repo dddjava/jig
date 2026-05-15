@@ -22,6 +22,7 @@ require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-dom.js');
+require('../../main/resources/templates/assets/jig-bootstrap.js');
 
 const glossary = require('../../main/resources/templates/assets/glossary.js');
 

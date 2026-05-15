@@ -104,7 +104,9 @@ globalThis.Jig.util = (() => {
      * @return {string}
      */
     function fqnToId(prefix, fqn) {
-        // マルチバイト文字をハッシュ化して一意なIDを生成
+        // DJB2 系の 32bit ハッシュ。衝突した場合は同一画面内で別の FQN が同じ ID を持ち、
+        // ページ内アンカー (`#id`) や Mermaid のクリック先が混線する。FQN は通常重複しないため
+        // 実害は出ていないが、衝突が観測されたらハッシュ幅拡張または完全な FQN を ID 化に切替える。
         let hash = 0;
         for (let i = 0; i < fqn.length; i++) {
             const char = fqn.charCodeAt(i);

@@ -6,7 +6,7 @@
     let onSelectionChanged = () => {};
 
     function init() {
-        const data = globalThis.libraryDependencyData || {
+        const data = Jig.data.library.get() || {
             internalPackages: [],
             libraries: [],
             relations: []
@@ -309,7 +309,5 @@
         });
     }
 
-    if (typeof document !== "undefined") {
-        document.addEventListener("DOMContentLoaded", init);
-    }
+    Jig.bootstrap.register("library-dependency", init);
 })();

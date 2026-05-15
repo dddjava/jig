@@ -594,8 +594,15 @@ globalThis.Jig.mermaid = (() => {
             return parentFqns;
         }
 
+        function createBuilder() {
+            const builder = new MermaidBuilder();
+            builder.applyThemeClassDefs();
+            return builder;
+        }
+
         return {
             MermaidBuilder,
+            createBuilder,
             nodeStyleDefs,
             nodeShapes,
             escapeId,
@@ -1621,6 +1628,7 @@ globalThis.Jig.mermaid = (() => {
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
+        createBuilder: builder.createBuilder,
         ClassDiagramBuilder,
         nav,
     };

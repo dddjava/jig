@@ -15,6 +15,7 @@ require("../../main/resources/templates/assets/jig-data.js");
 require("../../main/resources/templates/assets/jig-glossary.js");
 require("../../main/resources/templates/assets/jig-mermaid.js");
 require("../../main/resources/templates/assets/jig-dom.js");
+require("../../main/resources/templates/assets/jig-bootstrap.js");
 
 const OutboundApp = require("../../main/resources/templates/assets/outbound.js");
 

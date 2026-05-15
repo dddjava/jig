@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
+require('../../main/resources/templates/assets/jig-bootstrap.js');
 const ListOutputApp = require('../../main/resources/templates/assets/list-output.js');
 
 globalThis.Jig.dom ??= {};

@@ -8,6 +8,7 @@ require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
+require('../../main/resources/templates/assets/jig-bootstrap.js');
 const UsecaseApp = require('../../main/resources/templates/assets/usecase.js');
 
 // ネストしたdescribeブロック内での require() 呼び出しに使用

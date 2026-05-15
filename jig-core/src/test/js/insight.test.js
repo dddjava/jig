@@ -14,6 +14,7 @@ require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-dom.js');
+require('../../main/resources/templates/assets/jig-bootstrap.js');
 
 const insight = require('../../main/resources/templates/assets/insight.js');
 

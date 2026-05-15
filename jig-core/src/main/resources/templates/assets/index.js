@@ -12,7 +12,6 @@ const IndexApp = (() => {
         const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
-        domainPackageDiagram.innerHTML = "";
         const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,
@@ -97,10 +96,6 @@ const IndexApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("index")) {
-            return;
-        }
-
         renderSummary();
         renderDocumentLinks();
 
@@ -170,8 +165,4 @@ const IndexApp = (() => {
     };
 })();
 
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        IndexApp.init();
-    });
-}
+Jig.bootstrap.register("index", IndexApp.init);

@@ -271,9 +271,6 @@ const ListOutputApp = (() => {
     ];
 
     function init() {
-        if (typeof document === "undefined") return;
-        if (!document.body.classList.contains("list-output")) return;
-
         TABLE_BINDINGS.forEach(b => renderTableHeader(b.tableId, headerDefinitions[b.name]));
 
         const data = getListData();
@@ -322,11 +319,7 @@ const ListOutputApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => {
-        ListOutputApp.init()
-    });
-}
+Jig.bootstrap.register("list-output", ListOutputApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = ListOutputApp;

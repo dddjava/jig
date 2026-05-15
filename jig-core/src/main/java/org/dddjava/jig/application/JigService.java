@@ -121,7 +121,9 @@ public class JigService {
 
     public PackageRelations packageRelations(JigRepository jigRepository) {
         var jigTypes = jigTypes(jigRepository);
-        return PackageRelations.from(TypeRelationships.internalRelation(jigTypes));
+        return PackageRelations.from(
+                TypeRelationships.internalRelation(jigTypes),
+                typeId -> jigTypes.resolveJigType(typeId).map(JigType::isDeprecated).orElse(false));
     }
 
     public LibraryDependencyDiagram libraryDependencyDiagram(JigRepository jigRepository) {

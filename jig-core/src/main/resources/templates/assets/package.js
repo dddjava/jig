@@ -13,6 +13,7 @@ const PackageApp = (() => {
         diagramDirection: 'TB',
         mutualDependencyDiagramDirection: 'LR',
         transitiveReductionEnabled: true,
+        excludeDeprecatedOnly: false,
     };
 
     const exploreState = {
@@ -22,6 +23,7 @@ const PackageApp = (() => {
         exploreCalleeMode: '1',      // '0':なし, '1':直接, '-1':すべて
         diagramNodeIdToFqn: new Map(),
         diagramDirection: 'TB',
+        excludeDeprecatedOnly: false,
     };
 
     const HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
@@ -45,8 +47,15 @@ const PackageApp = (() => {
         getExploreClearSelectionButton: () => document.getElementById('explore-clear-selection'),
         getExploreCallerModeRadios: () => document.querySelectorAll('input[name="explore-caller-mode"]'),
         getExploreCalleeModeRadios: () => document.querySelectorAll('input[name="explore-callee-mode"]'),
+        getHierarchyExcludeDeprecatedOnlyToggle: () => document.getElementById('hierarchy-exclude-deprecated-only'),
+        getExploreExcludeDeprecatedOnlyToggle: () => document.getElementById('explore-exclude-deprecated-only'),
         getDocumentBody: () => document.body,
     };
+
+    function filterRelationsByDeprecatedSetting(relations, excludeDeprecatedOnly) {
+        if (!excludeDeprecatedOnly) return relations;
+        return relations.filter(r => !r.deprecatedOnly);
+    }
 
     function getPackageRelationData(context) {
         if (context.packageRelationCache) return context.packageRelationCache;
@@ -57,9 +66,10 @@ const PackageApp = (() => {
 
     function parsePackageRelationData(packageData) {
         const isArrayFormat = Array.isArray(packageData);
+        const rawRelations = isArrayFormat ? [] : (packageData?.relations ?? []);
         return {
             packages: isArrayFormat ? packageData : (packageData?.packages ?? []),
-            relations: isArrayFormat ? [] : (packageData?.relations ?? []),
+            relations: rawRelations.map(r => ({from: r.from, to: r.to, deprecatedOnly: r.deprecatedOnly === true})),
             causeRelationEvidence: Jig.data.typeRelations.getRelations(),
             domainPackageRoots: isArrayFormat ? [] : (packageData?.domainPackageRoots ?? []),
         };
@@ -696,13 +706,14 @@ const PackageApp = (() => {
 
     function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection, showPhysicalName = false) {
         const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
+        const filteredRelations = filterRelationsByDeprecatedSetting(relations, context.excludeDeprecatedOnly);
         const {
             uniqueRelations,
             packageFqns,
             filteredCauseRelationEvidence
         } = buildVisibleDiagramElements(
             packages,
-            relations,
+            filteredRelations,
             causeRelationEvidence,
             context.packageFilterFqn,
             context.aggregationDepth,
@@ -761,7 +772,8 @@ const PackageApp = (() => {
             return;
         }
 
-        const {relations} = getPackageRelationData(context);
+        const {relations: rawRelations} = getPackageRelationData(context);
+        const relations = filterRelationsByDeprecatedSetting(rawRelations, context.excludeDeprecatedOnly);
 
         const collapsedToParent = buildCollapsedSubpackageMap(
             context.exploreTargetPackages,
@@ -845,7 +857,8 @@ const PackageApp = (() => {
             return;
         }
 
-        const {packages, relations, domainPackageRoots} = getPackageRelationData(hierarchyState);
+        const {packages, relations: rawRelations, domainPackageRoots} = getPackageRelationData(hierarchyState);
+        const relations = filterRelationsByDeprecatedSetting(rawRelations, config.getContext().excludeDeprecatedOnly);
         // domainPackageRoots に含まれるが packages にないものを追加する
         const packageFqnSet = new Set(packages.map(p => p.fqn));
         const allPackages = [
@@ -980,6 +993,7 @@ const PackageApp = (() => {
 
     function buildHierarchyListConfig(context) {
         const config = {
+            getContext: () => context,
             getContainer: () => dom.getHierarchyPackageList(),
             getFilterInput: () => dom.getHierarchyListFilter(),
             getCollapsedPackages: () => context.hierarchyCollapsedPackages,
@@ -1006,6 +1020,7 @@ const PackageApp = (() => {
 
     function buildExploreListConfig(context) {
         const config = {
+            getContext: () => context,
             getContainer: () => dom.getExplorePackageList(),
             getFilterInput: () => dom.getExploreListFilter(),
             getCollapsedPackages: () => context.exploreCollapsedPackages,
@@ -1185,6 +1200,31 @@ const PackageApp = (() => {
         });
     }
 
+    function setupHierarchyExcludeDeprecatedOnlyControl(context) {
+        const checkbox = dom.getHierarchyExcludeDeprecatedOnlyToggle();
+        if (!checkbox) return;
+        checkbox.checked = context.excludeDeprecatedOnly;
+        checkbox.addEventListener('change', () => {
+            context.excludeDeprecatedOnly = checkbox.checked;
+            const tbody = dom.getHierarchyPackageList()?.querySelector('tbody');
+            if (tbody) tbody.remove();
+            renderHierarchyDiagramAndTable(context);
+        });
+    }
+
+    function setupExploreExcludeDeprecatedOnlyControl(context) {
+        const checkbox = dom.getExploreExcludeDeprecatedOnlyToggle();
+        if (!checkbox) return;
+        checkbox.checked = context.excludeDeprecatedOnly;
+        checkbox.addEventListener('change', () => {
+            context.excludeDeprecatedOnly = checkbox.checked;
+            const tbody = dom.getExplorePackageList()?.querySelector('tbody');
+            if (tbody) tbody.remove();
+            renderExplorePackageList(context);
+            renderExploreDiagram(context);
+        });
+    }
+
     function setupExploreControl(context) {
         const clearButton = dom.getExploreClearSelectionButton();
         const callerRadios = dom.getExploreCallerModeRadios();
@@ -1281,11 +1321,13 @@ const PackageApp = (() => {
             exploreState.exploreCollapsedPackages.forEach(p => params.append('collapsed', p));
             if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
             if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
+            if (exploreState.excludeDeprecatedOnly) params.set('excludeDeprecated', 'true');
         } else {
             if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
             hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
             hierarchyState.hierarchyCollapsedPackages.forEach(p => params.append('hcollapsed', p));
             if (!hierarchyState.transitiveReductionEnabled) params.set('reduction', 'false');
+            if (hierarchyState.excludeDeprecatedOnly) params.set('excludeDeprecated', 'true');
         }
 
         const queryString = params.toString();
@@ -1310,6 +1352,12 @@ const PackageApp = (() => {
 
         const reduction = params.get('reduction');
         if (reduction === 'false') hierarchyState.transitiveReductionEnabled = false;
+
+        const excludeDeprecated = params.get('excludeDeprecated');
+        if (excludeDeprecated === 'true') {
+            hierarchyState.excludeDeprecatedOnly = true;
+            exploreState.excludeDeprecatedOnly = true;
+        }
 
         const targets = params.getAll('target');
         if (targets.length > 0) exploreState.exploreTargetPackages = targets;
@@ -1347,12 +1395,14 @@ const PackageApp = (() => {
 
         // 関連探索の初期化（loadStateFromURL より前に行い、タブクリック時の描画を可能にする）
         setupExploreControl(exploreState);
+        setupExploreExcludeDeprecatedOnlyControl(exploreState);
         registerExploreDiagramClickHandler(exploreState);
 
         loadStateFromURL();
 
         setupAggregationDepthControl(hierarchyState);
         setupTransitiveReductionControl(hierarchyState);
+        setupHierarchyExcludeDeprecatedOnlyControl(hierarchyState);
         registerHierarchyDiagramClickHandler(hierarchyState);
 
         if (hierarchyState.packageFilterFqn.length === 0) {

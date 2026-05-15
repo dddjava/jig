@@ -44,7 +44,8 @@ public class PackageDataAdapter implements DataAdapter {
                         .toList()))
                 .and("relations", Json.arrayObjects(packageRelations.listUnique().stream()
                         .map(relation -> Json.object("from", relation.from().asText())
-                                .and("to", relation.to().asText()))
+                                .and("to", relation.to().asText())
+                                .and("deprecatedOnly", relation.deprecatedOnly()))
                         .toList()))
                 .and("domainPackageRoots", Json.array(domainPackageRoots))
                 .build();

@@ -84,7 +84,6 @@ const InboundApp = (() => {
 
     function buildDiagramBuilder(data, builder, showPhysicalName = false) {
         const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
-        builder.applyThemeClassDefs();
         const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         data.entrypointGroups.forEach((eps, typeFqn) => {
@@ -448,7 +447,7 @@ const InboundApp = (() => {
             Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
                 const diagramGenerator = (dir, opts) => {
                     const data = prepareDiagramData(adapter, usecaseData);
-                    const builder = new Jig.mermaid.Builder();
+                    const builder = Jig.mermaid.createBuilder();
                     buildDiagramBuilder(data, builder, opts?.showPhysicalName);
                     return builder.build(dir);
                 };

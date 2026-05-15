@@ -579,8 +579,7 @@ const OutboundApp = (() => {
      * populate(builder, showPhysicalName) でダイアグラム固有のノード/エッジを追加する。
      */
     function buildOutboundMermaid(visibility, populate) {
-        const builder = new Jig.mermaid.Builder();
-        builder.applyThemeClassDefs();
+        const builder = Jig.mermaid.createBuilder();
         const showPhysicalName = visibility.showPhysicalName ?? false;
         populate(builder, showPhysicalName);
         if (builder.isEmpty()) return null;

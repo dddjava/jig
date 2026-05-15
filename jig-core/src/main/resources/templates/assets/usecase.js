@@ -583,8 +583,7 @@ const UsecaseApp = (() => {
         return (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
             const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
-            const builder = new Jig.mermaid.Builder();
-            builder.applyThemeClassDefs();
+            const builder = Jig.mermaid.createBuilder();
             const classSubgraphs = new Map();
             const ensureClassSubgraph = (fqn) => {
                 const classFqn = getClassFqnFromMethodFqn(fqn);
@@ -759,8 +758,7 @@ const UsecaseApp = (() => {
     function createClassDiagramGenerator(classGraph) {
         return (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const builder = new Jig.mermaid.Builder();
-            builder.applyThemeClassDefs();
+            const builder = Jig.mermaid.createBuilder();
             classGraph.nodes.forEach(node => {
                 const nodeId = fqnToNodeId(node.fqn);
                 if (node.kind === "inbound-class") {

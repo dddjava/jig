@@ -887,9 +887,6 @@ const UsecaseApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined") return;
-        if (!document.body.classList.contains("usecase-model")) return;
-
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう、毎回 init で state をクリア
         Object.assign(state, createInitialState());
 
@@ -916,11 +913,7 @@ const UsecaseApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => {
-        UsecaseApp.init();
-    });
-}
+Jig.bootstrap.register("usecase-model", UsecaseApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = UsecaseApp;

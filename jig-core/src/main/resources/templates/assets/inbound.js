@@ -469,11 +469,7 @@ const InboundApp = (() => {
     };
 })();
 
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        InboundApp.init();
-    });
-}
+Jig.bootstrap.register("inbound-interface", InboundApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = InboundApp;

@@ -1379,7 +1379,6 @@ const PackageApp = (() => {
     }
 
     function init() {
-        if (typeof document === 'undefined' || !document.body.classList.contains("package-relation")) return;
         Jig.dom.setupSortableTables();
         const renderedTabs = new Set();
         setupTabControl(tabName => {
@@ -1470,11 +1469,7 @@ const PackageApp = (() => {
     };
 })();
 
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        PackageApp.init();
-    });
-}
+Jig.bootstrap.register("package-relation", PackageApp.init);
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = PackageApp;

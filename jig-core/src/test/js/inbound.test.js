@@ -131,6 +131,7 @@ test.describe('inbound.js', () => {
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-mermaid.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-bootstrap.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/inbound.js')];
 
         doc = new DocumentStub();
@@ -172,6 +173,7 @@ test.describe('inbound.js', () => {
         require('../../main/resources/templates/assets/jig-data.js');
         require('../../main/resources/templates/assets/jig-glossary.js');
         require('../../main/resources/templates/assets/jig-mermaid.js');
+        require('../../main/resources/templates/assets/jig-bootstrap.js');
         globalThis.Jig.dom = {
             createElement,
             createCell: (text, className) => createElement('td', {className: className || undefined, textContent: text}),

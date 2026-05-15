@@ -1228,8 +1228,6 @@ const DomainApp = (() => {
      * @returns {void}
      */
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("domain-model")) return;
-
         Jig.data.resetCache();
 
         const data = Jig.data.domain.get();
@@ -1314,11 +1312,7 @@ const DomainApp = (() => {
     };
 })();
 
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        DomainApp.init();
-    });
-}
+Jig.bootstrap.register("domain-model", DomainApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = DomainApp;

@@ -97,10 +97,6 @@ const IndexApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("index")) {
-            return;
-        }
-
         renderSummary();
         renderDocumentLinks();
 
@@ -170,8 +166,4 @@ const IndexApp = (() => {
     };
 })();
 
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        IndexApp.init();
-    });
-}
+Jig.bootstrap.register("index", IndexApp.init);

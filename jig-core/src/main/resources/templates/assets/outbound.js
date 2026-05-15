@@ -885,9 +885,6 @@ const OutboundApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined") return;
-        if (!document.body.classList.contains("outbound-interface")) return;
-
         Object.assign(state, INITIAL_STATE);
         state.visibility = {...DEFAULT_VISIBILITY};
         state.data = loadData();
@@ -979,9 +976,7 @@ const OutboundApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => OutboundApp.init());
-}
+Jig.bootstrap.register("outbound-interface", OutboundApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = OutboundApp;

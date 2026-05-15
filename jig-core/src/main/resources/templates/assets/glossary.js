@@ -251,10 +251,6 @@ const GlossaryApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("glossary")) {
-            return;
-        }
-
         const terms = getGlossaryData();
 
         const controls = {
@@ -344,11 +340,7 @@ const GlossaryApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => {
-        GlossaryApp.init();
-    });
-}
+Jig.bootstrap.register("glossary", GlossaryApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = GlossaryApp;

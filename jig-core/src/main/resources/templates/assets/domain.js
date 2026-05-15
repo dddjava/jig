@@ -15,45 +15,6 @@ const DomainApp = (() => {
     // ----- パッケージ・型データの構築 / 関連の集計 -----
 
     /**
-     * domainPackageRoots と types からパッケージ一覧を構築する
-     * @param {string[]} domainPackageRoots
-     * @param {{fqn: string}[]} types
-     * @returns {PackageType[]}
-     */
-    function buildPackages(domainPackageRoots, types) {
-        const packageTypesMap = new Map();
-
-        for (const type of types) {
-            const lastDot = type.fqn.lastIndexOf('.');
-            if (lastDot < 0) continue;
-            const pkgFqn = type.fqn.substring(0, lastDot);
-
-            Jig.util.pushToMap(packageTypesMap, pkgFqn, {fqn: type.fqn});
-
-            // pkgFqn から domainPackageRoots に到達するまで、空の親パッケージも Map に登録しておく
-            // （子パッケージのみを持つ中間パッケージのナビゲーションを成立させるため）
-            let current = pkgFqn;
-            while (!domainPackageRoots.includes(current)) {
-                const parentDot = current.lastIndexOf('.');
-                if (parentDot < 0) break;
-                const parent = current.substring(0, parentDot);
-                const isUnderRoot = domainPackageRoots.some(
-                    root => parent === root || parent.startsWith(root + '.'));
-                if (!isUnderRoot) break;
-                if (!packageTypesMap.has(parent)) packageTypesMap.set(parent, []);
-                current = parent;
-            }
-        }
-
-        return Array.from(packageTypesMap.entries())
-            .map(([fqn, pkgTypes]) => ({
-                fqn,
-                types: pkgTypes.sort((a, b) => a.fqn.localeCompare(b.fqn))
-            }))
-            .sort((a, b) => a.fqn.localeCompare(b.fqn));
-    }
-
-    /**
      * パッケージの直下の子パッケージを取得する
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
@@ -1252,31 +1213,13 @@ const DomainApp = (() => {
 
         initSettings();
 
-        // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）
-        // Jig.data.domain 内部のメモ化に保持する
         const typesMap = Jig.data.domain.getTypesMap();
+        const packages = Jig.data.domain.getPackages();
+        const childPackagesMap = Jig.data.domain.getChildPackagesMap();
 
-        // domainPackageRoots と types からパッケージを構築
-        const packages = buildPackages(data.domainPackageRoots, data.types);
-        Jig.data.domain.setPackages(packages);
-
-        // packages の直下の子を事前計算（O(n) → O(1) 取得）
-        const childrenMap = new Map(packages.map(p => [p.fqn, []]));
-        packages.forEach(p => {
-            const parentFqn = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
-            if (childrenMap.has(parentFqn)) {
-                childrenMap.get(parentFqn).push(p);
-            }
-        });
-        Jig.data.domain.setChildPackagesMap(childrenMap);
-
-        // typeRelations を一度解決（以降は引数経由で渡す）
         const rawRelations = Jig.data.typeRelations.getRelations();
         const typeRelations = rawRelations.filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
         const allPackageRelations = derivePackageRelations(typeRelations, typesMap);
-
-        const childPackagesMap = Jig.data.domain.getChildPackagesMap();
-
 
         renderSidebar(packages, childPackagesMap, typesMap);
 
@@ -1315,7 +1258,6 @@ const DomainApp = (() => {
         createTypeClassDiagramSource,
         createPackageRelationDiagram,
         createPackageDirectRelationDiagram,
-        buildPackages,
         derivePackageRelations
     };
 })();

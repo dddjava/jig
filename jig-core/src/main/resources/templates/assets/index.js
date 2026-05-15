@@ -12,7 +12,6 @@ const IndexApp = (() => {
         const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
-        domainPackageDiagram.innerHTML = "";
         const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,

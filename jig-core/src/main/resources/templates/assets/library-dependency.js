@@ -6,7 +6,7 @@
     let onSelectionChanged = () => {};
 
     function init() {
-        const data = globalThis.libraryDependencyData || {
+        const data = Jig.data.library.get() || {
             internalPackages: [],
             libraries: [],
             relations: []

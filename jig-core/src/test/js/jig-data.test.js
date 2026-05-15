@@ -59,32 +59,39 @@ test.describe('jig-data.js', () => {
             assert.equal(set.has('c.C'), false);
         });
 
-        test('setPackages / getPackages でパッケージ一覧をストアできる', () => {
-            const packages = [{fqn: 'a'}, {fqn: 'a.b'}];
-            jigData.domain.setPackages(packages);
+        test('getPackages() は domainData から lazy 構築する', () => {
+            globalThis.domainData = {
+                domainPackageRoots: ['com.example'],
+                types: [{fqn: 'com.example.Foo'}, {fqn: 'com.example.sub.Bar'}]
+            };
+            const packages = jigData.domain.getPackages();
+            assert.deepEqual(packages.map(p => p.fqn), ['com.example', 'com.example.sub']);
+            // 再呼び出しでキャッシュされた同じインスタンスを返す
             assert.strictEqual(jigData.domain.getPackages(), packages);
         });
 
-        test('setChildPackagesMap / getChildPackagesMap', () => {
-            const map = new Map([['a', []]]);
-            jigData.domain.setChildPackagesMap(map);
-            assert.strictEqual(jigData.domain.getChildPackagesMap(), map);
+        test('getChildPackagesMap() は getPackages() から lazy 構築する', () => {
+            globalThis.domainData = {
+                domainPackageRoots: ['com.example'],
+                types: [{fqn: 'com.example.Foo'}, {fqn: 'com.example.sub.Bar'}]
+            };
+            const map = jigData.domain.getChildPackagesMap();
+            assert.deepEqual(map.get('com.example').map(p => p.fqn), ['com.example.sub']);
         });
 
         test('resetCache() で typesMap/fqnSet/packages がクリアされる', () => {
-            globalThis.domainData = {types: [{fqn: 'a.A'}]};
+            globalThis.domainData = {domainPackageRoots: [], types: [{fqn: 'a.A'}]};
             const map1 = jigData.domain.getTypesMap();
-            jigData.domain.setPackages([{fqn: 'a'}]);
+            const packages1 = jigData.domain.getPackages();
 
             jigData.resetCache();
 
-            // データを差し替え
-            globalThis.domainData = {types: [{fqn: 'b.B'}]};
+            globalThis.domainData = {domainPackageRoots: [], types: [{fqn: 'b.B'}]};
             const map2 = jigData.domain.getTypesMap();
             assert.notStrictEqual(map1, map2);
             assert.equal(map2.has('b.B'), true);
             assert.equal(map2.has('a.A'), false);
-            assert.equal(jigData.domain.getPackages(), null);
+            assert.notStrictEqual(jigData.domain.getPackages(), packages1);
         });
     });
 

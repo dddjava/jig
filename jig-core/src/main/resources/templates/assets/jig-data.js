@@ -20,6 +20,48 @@ globalThis.Jig.data = (() => {
     /** @type {Map<string, object>|null} */
     let usecaseTypesMap = null;
 
+    function buildDomainPackages(domainPackageRoots, types) {
+        const packageTypesMap = new Map();
+
+        for (const type of types) {
+            const lastDot = type.fqn.lastIndexOf('.');
+            if (lastDot < 0) continue;
+            const pkgFqn = type.fqn.substring(0, lastDot);
+
+            globalThis.Jig.util.pushToMap(packageTypesMap, pkgFqn, {fqn: type.fqn});
+
+            // 子パッケージのみを持つ中間パッケージのナビゲーションを成立させるため、
+            // pkgFqn から domainPackageRoots に到達するまで空の親パッケージも Map に登録する
+            let current = pkgFqn;
+            while (!domainPackageRoots.includes(current)) {
+                const parentDot = current.lastIndexOf('.');
+                if (parentDot < 0) break;
+                const parent = current.substring(0, parentDot);
+                const isUnderRoot = domainPackageRoots.some(
+                    root => parent === root || parent.startsWith(root + '.'));
+                if (!isUnderRoot) break;
+                if (!packageTypesMap.has(parent)) packageTypesMap.set(parent, []);
+                current = parent;
+            }
+        }
+
+        return Array.from(packageTypesMap.entries())
+            .map(([fqn, pkgTypes]) => ({
+                fqn,
+                types: pkgTypes.sort((a, b) => a.fqn.localeCompare(b.fqn))
+            }))
+            .sort((a, b) => a.fqn.localeCompare(b.fqn));
+    }
+
+    function buildChildPackagesMap(packages) {
+        const map = new Map(packages.map(p => [p.fqn, []]));
+        packages.forEach(p => {
+            const parentFqn = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
+            if (map.has(parentFqn)) map.get(parentFqn).push(p);
+        });
+        return map;
+    }
+
     const domain = {
         get() {
             return globalThis.domainData;
@@ -46,16 +88,17 @@ globalThis.Jig.data = (() => {
             return domainFqnSet;
         },
         getPackages() {
+            if (!domainPackages) {
+                const data = globalThis.domainData;
+                domainPackages = data ? buildDomainPackages(data.domainPackageRoots, data.types) : [];
+            }
             return domainPackages;
         },
-        setPackages(packages) {
-            domainPackages = packages;
-        },
         getChildPackagesMap() {
+            if (!domainChildPackagesMap) {
+                domainChildPackagesMap = buildChildPackagesMap(domain.getPackages());
+            }
             return domainChildPackagesMap;
-        },
-        setChildPackagesMap(map) {
-            domainChildPackagesMap = map;
         },
     };
 
@@ -121,6 +164,12 @@ globalThis.Jig.data = (() => {
     const list = {
         get() {
             return globalThis.listData;
+        },
+    };
+
+    const library = {
+        get() {
+            return globalThis.libraryDependencyData;
         },
     };
 
@@ -213,6 +262,7 @@ globalThis.Jig.data = (() => {
         package: pkg,
         insight,
         list,
+        library,
         navigation,
         summary,
         typeRelations,

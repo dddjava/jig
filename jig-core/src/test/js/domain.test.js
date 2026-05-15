@@ -13,19 +13,11 @@ require('../../main/resources/templates/assets/jig-bootstrap.js');
 const Jig = globalThis.Jig;
 
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
-const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createTypeClassDiagramSource, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
+const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createTypeClassDiagramSource, createPackageRelationDiagram, createPackageDirectRelationDiagram} = DomainApp;
 
 function setupDomainData(domainPackageRoots, types) {
     globalThis.domainData = {domainPackageRoots, types};
     Jig.data.resetCache();
-    const packages = buildPackages(domainPackageRoots, types);
-    Jig.data.domain.setPackages(packages);
-    const childrenMap = new Map(packages.map(p => [p.fqn, []]));
-    packages.forEach(p => {
-        const parent = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
-        if (childrenMap.has(parent)) childrenMap.get(parent).push(p);
-    });
-    Jig.data.domain.setChildPackagesMap(childrenMap);
 }
 
 test.describe('domain.js', () => {

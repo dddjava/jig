@@ -32,7 +32,7 @@ public class LibraryDependencyDiagram {
      */
     public static LibraryDependencyDiagram from(TypeRelationships externalRelations, LibraryGroupingRule rule) {
         // libraries: 出現順を保つために LinkedHashMap、edges: ソート済みかつ重複排除のため TreeSet
-        Map<String, LibraryNode> libraries = new LinkedHashMap<>();
+        Map<String, LibraryNodeBuilder> builders = new LinkedHashMap<>();
         Set<Edge> edges = new TreeSet<>();
 
         externalRelations.list().forEach(rel -> {
@@ -43,14 +43,30 @@ public class LibraryDependencyDiagram {
             // パッケージなし（`T` `E` などのジェネリクス型変数や default package）は外部依存として扱わない
             if (toPackage.equals(PackageId.defaultPackage())) return;
             LibraryGroupingRule.Library library = rule.libraryOf(toPackage);
-            LibraryNode node = libraries.computeIfAbsent(library.id(),
-                    id -> new LibraryNode(library.id(), library.displayName(), library.isJavaStandard(), new TreeSet<>(), new TreeSet<>()));
-            node.samplePackages.add(toPackage.asText());
-            node.usingClasses.add(rel.from().fqn());
+            LibraryNodeBuilder builder = builders.computeIfAbsent(library.id(), id -> new LibraryNodeBuilder(library));
+            builder.samplePackages.add(toPackage.asText());
+            builder.usingClasses.add(rel.from().fqn());
             edges.add(new Edge(rel.from().packageId().asText(), library.id()));
         });
 
+        Map<String, LibraryNode> libraries = new LinkedHashMap<>();
+        builders.forEach((id, builder) -> libraries.put(id, builder.build()));
         return new LibraryDependencyDiagram(libraries, edges);
+    }
+
+    private static final class LibraryNodeBuilder {
+        private final LibraryGroupingRule.Library library;
+        private final Set<String> samplePackages = new TreeSet<>();
+        private final Set<String> usingClasses = new TreeSet<>();
+
+        LibraryNodeBuilder(LibraryGroupingRule.Library library) {
+            this.library = library;
+        }
+
+        LibraryNode build() {
+            return new LibraryNode(library.id(), library.displayName(), library.isJavaStandard(),
+                    List.copyOf(samplePackages), List.copyOf(usingClasses));
+        }
     }
 
     public List<LibraryNode> libraries() {
@@ -70,7 +86,7 @@ public class LibraryDependencyDiagram {
     }
 
     public record LibraryNode(String id, String displayName, boolean isJavaStandard,
-                              Set<String> samplePackages, Set<String> usingClasses) {
+                              List<String> samplePackages, List<String> usingClasses) {
     }
 
     public record Edge(String from, String to) implements Comparable<Edge> {

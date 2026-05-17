@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Service
 public class JigService {
@@ -121,9 +122,11 @@ public class JigService {
 
     public PackageRelations packageRelations(JigRepository jigRepository) {
         var jigTypes = jigTypes(jigRepository);
-        return PackageRelations.from(
-                TypeRelationships.internalRelation(jigTypes),
-                typeId -> jigTypes.resolveJigType(typeId).map(JigType::isDeprecated).orElse(false));
+        var deprecatedTypeIds = jigTypes.stream()
+                .filter(JigType::isDeprecated)
+                .map(JigType::id)
+                .collect(toUnmodifiableSet());
+        return PackageRelations.from(TypeRelationships.internalRelation(jigTypes), deprecatedTypeIds::contains);
     }
 
     public LibraryDependencyDiagram libraryDependencyDiagram(JigRepository jigRepository) {

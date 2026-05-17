@@ -119,14 +119,20 @@ public class DefaultJigRepositoryFactory {
                                     .ifPresent(packageId -> packageSourcePathMap.put(packageId, path)))
             );
 
-            Map<TypeId, Path> typeSourcePathMap = new HashMap<>();
-            JavaSourceModel javaSourceModel = Objects.requireNonNull(Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
+            List<JavaparserReader.ParseResult> parseResults = Objects.requireNonNull(Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
-                            .peek(result -> result.declaredTypeIds().forEach(typeId -> typeSourcePathMap.put(typeId, result.sourcePath())))
-                            .map(JavaparserReader.ParseResult::sourceModel)
-                            .reduce(JavaSourceModel::merge)
-                            .orElseGet(JavaSourceModel::empty)));
+                            .toList()));
+            JavaSourceModel javaSourceModel = parseResults.stream()
+                    .map(JavaparserReader.ParseResult::sourceModel)
+                    .reduce(JavaSourceModel::merge)
+                    .orElseGet(JavaSourceModel::empty);
+            Map<TypeId, Path> typeSourcePathMap = new HashMap<>();
+            for (var result : parseResults) {
+                for (var typeId : result.declaredTypeIds()) {
+                    typeSourcePathMap.put(typeId, result.sourcePath());
+                }
+            }
             TypeSourcePaths typeSourcePaths = new TypeSourcePaths(Map.copyOf(typeSourcePathMap), Map.copyOf(packageSourcePathMap));
 
             Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(

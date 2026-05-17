@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ class IndexAdapterTest {
     void 出力対象がない場合は一覧セクションを出力しない() throws IOException {
         var sut = new IndexAdapter();
 
-        sut.render(List.of(), tempDir, GitRepositoryInfo.empty(), JigResult.JigSummary.empty());
+        sut.render(List.of(), tempDir, GitRepositoryInfo.empty());
 
         String actual = readIndex();
         assertFalse(actual.contains("<h2>設計情報: HTML</h2>"));
@@ -44,7 +43,7 @@ class IndexAdapterTest {
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html")))
         );
 
-        sut.render(results, tempDir, GitRepositoryInfo.empty(), JigResult.JigSummary.empty());
+        sut.render(results, tempDir, GitRepositoryInfo.empty());
 
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("\"href\":\"package.html\""));

@@ -30,7 +30,7 @@ public class JigDocumentGenerator {
 
         var handleResults = generateDocuments(jigRepository);
 
-        generateIndex(handleResults, gitRepositoryInfo, jigRepository.summary());
+        generateIndex(handleResults, gitRepositoryInfo);
         generateDebugHtml();
         generateSharedAssets();
         return new JigResultData(handleResults, IndexAdapter.indexFilePath(outputDirectory));
@@ -57,9 +57,9 @@ public class JigDocumentGenerator {
                 });
     }
 
-    private void generateIndex(List<HandleResult> results, GitRepositoryInfo gitRepositoryInfo, JigResult.JigSummary jigSummary) {
+    private void generateIndex(List<HandleResult> results, GitRepositoryInfo gitRepositoryInfo) {
         IndexAdapter indexAdapter = new IndexAdapter();
-        indexAdapter.render(results, outputDirectory, gitRepositoryInfo, jigSummary);
+        indexAdapter.render(results, outputDirectory, gitRepositoryInfo);
     }
 
     private void generateDebugHtml() {

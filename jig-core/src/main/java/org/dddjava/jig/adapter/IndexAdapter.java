@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 
@@ -22,7 +21,7 @@ public class IndexAdapter {
     static final String SUMMARY_DATA_JS = "summary-data.js";
 
     public void render(List<HandleResult> handleResultList, Path outputDirectory,
-                       GitRepositoryInfo gitRepositoryInfo, JigResult.JigSummary jigSummary) {
+                       GitRepositoryInfo gitRepositoryInfo) {
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
@@ -31,7 +30,7 @@ public class IndexAdapter {
         }
         write(documentLinks, outputDirectory);
         writeNavigationData(documentLinks, outputDirectory);
-        writeSummaryData(gitRepositoryInfo, jigSummary, outputDirectory);
+        writeSummaryData(gitRepositoryInfo, outputDirectory);
     }
 
     private String resolveJigVersion() {
@@ -62,7 +61,6 @@ public class IndexAdapter {
         html.append(" Version: ").append(jigVersion);
         html.append("</p>\n");
         html.append("    <p id=\"jig-source\"></p>\n");
-        html.append("    <p id=\"jig-stats\"></p>\n");
         html.append("</header>\n");
         html.append("\n");
         html.append("<main>\n");
@@ -129,7 +127,7 @@ public class IndexAdapter {
         }
     }
 
-    private void writeSummaryData(GitRepositoryInfo gitRepositoryInfo, JigResult.JigSummary jigSummary, Path outputDirectory) {
+    private void writeSummaryData(GitRepositoryInfo gitRepositoryInfo, Path outputDirectory) {
         try {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
@@ -137,7 +135,6 @@ public class IndexAdapter {
             StringBuilder js = new StringBuilder();
             js.append("globalThis.summaryData = {");
             js.append("\"git\":").append(gitJson(gitRepositoryInfo));
-            js.append(",\"stats\":").append(statsJson(jigSummary));
             js.append("};\n");
 
             Files.writeString(dataDirectory.resolve(SUMMARY_DATA_JS), js.toString(), StandardCharsets.UTF_8);
@@ -170,14 +167,6 @@ public class IndexAdapter {
         });
         json.append("}");
         return json.toString();
-    }
-
-    private String statsJson(JigResult.JigSummary jigSummary) {
-        return "{"
-                + "\"packageCount\":" + jigSummary.numberOfPackages()
-                + ",\"classCount\":" + jigSummary.numberOfClasses()
-                + ",\"methodCount\":" + jigSummary.numberOfMethods()
-                + "}";
     }
 
     private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key) {

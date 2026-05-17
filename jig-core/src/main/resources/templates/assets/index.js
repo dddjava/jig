@@ -63,14 +63,6 @@ const IndexApp = (() => {
             }
         }
 
-        const statsEl = document.getElementById("jig-stats");
-        if (statsEl) {
-            const stats = Jig.data.summary.getStats();
-            statsEl.replaceChildren();
-            if (stats) {
-                statsEl.textContent = `パッケージ数: ${stats.packageCount} / クラス数: ${stats.classCount} / メソッド数: ${stats.methodCount}`;
-            }
-        }
     }
 
     function renderDocumentLinks() {

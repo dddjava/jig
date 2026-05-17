@@ -189,9 +189,6 @@ globalThis.Jig.data = (() => {
         getGit() {
             return globalThis.summaryData?.git ?? null;
         },
-        getStats() {
-            return globalThis.summaryData?.stats ?? null;
-        },
     };
 
     const typeRelations = {

@@ -1,6 +1,8 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.adapter.json.Json;
+import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 
@@ -132,41 +134,32 @@ public class IndexAdapter {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
-            StringBuilder js = new StringBuilder();
-            js.append("globalThis.summaryData = {");
-            js.append("\"git\":").append(gitJson(gitRepositoryInfo));
-            js.append("};\n");
+            String json = Json.object("git", gitJson(gitRepositoryInfo)).build();
+            String js = "globalThis.summaryData = " + json + ";\n";
 
-            Files.writeString(dataDirectory.resolve(SUMMARY_DATA_JS), js.toString(), StandardCharsets.UTF_8);
+            Files.writeString(dataDirectory.resolve(SUMMARY_DATA_JS), js, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private String gitJson(GitRepositoryInfo gitRepositoryInfo) {
-        if (!gitRepositoryInfo.isPresent()) return "null";
-        StringBuilder json = new StringBuilder("{");
-        gitRepositoryInfo.shortHash().ifPresent(hash ->
-                json.append("\"shortHash\":\"").append(escapeJson(hash)).append("\""));
-        gitRepositoryInfo.blobUrlPrefix().ifPresent(prefix -> {
-            if (json.length() > 1) json.append(",");
-            json.append("\"blobUrlPrefix\":\"").append(escapeJson(prefix)).append("\"");
+    private Object gitJson(GitRepositoryInfo gitRepositoryInfo) {
+        if (!gitRepositoryInfo.isPresent()) return Json.raw("null");
+        JsonObjectBuilder builder = Json.object();
+        gitRepositoryInfo.shortHash().ifPresent(hash -> builder.and("shortHash", hash));
+        gitRepositoryInfo.blobUrlPrefix().ifPresent(prefix -> builder.and("blobUrlPrefix", prefix));
+        gitRepositoryInfo.remoteUrl().ifPresent(remote -> builder.and("remote", remoteJson(remote, gitRepositoryInfo.shortHash())));
+        return builder;
+    }
+
+    private JsonObjectBuilder remoteJson(GitRepositoryInfo.RemoteUrl remote, Optional<String> shortHash) {
+        JsonObjectBuilder builder = Json.object("rawUrl", remote.rawUrl());
+        remote.knownHost().ifPresent(known -> {
+            builder.and("baseUrl", known.baseUrl());
+            builder.and("displayName", known.displayName());
+            shortHash.flatMap(remote::commitUrl).ifPresent(url -> builder.and("commitUrl", url));
         });
-        gitRepositoryInfo.remoteUrl().ifPresent(remote -> {
-            if (json.length() > 1) json.append(",");
-            json.append("\"remote\":{");
-            json.append("\"rawUrl\":\"").append(escapeJson(remote.rawUrl())).append("\"");
-            remote.knownHost().ifPresent(known -> {
-                json.append(",\"baseUrl\":\"").append(escapeJson(known.baseUrl())).append("\"");
-                json.append(",\"displayName\":\"").append(escapeJson(known.displayName())).append("\"");
-                remote.commitUrl(gitRepositoryInfo.shortHash().orElse(""))
-                        .filter(url -> gitRepositoryInfo.shortHash().isPresent())
-                        .ifPresent(url -> json.append(",\"commitUrl\":\"").append(escapeJson(url)).append("\""));
-            });
-            json.append("}");
-        });
-        json.append("}");
-        return json.toString();
+        return builder;
     }
 
     private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key) {

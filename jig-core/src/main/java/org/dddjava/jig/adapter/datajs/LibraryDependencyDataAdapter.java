@@ -6,7 +6,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.knowledge.library.LibraryDependencyDiagram;
 
 /**
- * ライブラリ依存図（library-dependency-data.js）
+ * ライブラリ依存情報（library-dependency-data.js）
  */
 public class LibraryDependencyDataAdapter implements DataAdapter {
 

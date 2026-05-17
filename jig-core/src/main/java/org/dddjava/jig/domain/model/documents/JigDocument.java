@@ -50,9 +50,9 @@ public enum JigDocument {
     ListOutput(JigDocumentLabel.of("一覧出力", "ListOutput"), "list-output"),
 
     /**
-     * ライブラリ依存図
+     * ライブラリ依存情報
      */
-    LibraryDependency(JigDocumentLabel.of("ライブラリ依存図", "LibraryDependency"), "library-dependency");
+    LibraryDependency(JigDocumentLabel.of("ライブラリ依存情報", "LibraryDependency"), "library-dependency");
 
     private final JigDocumentLabel label;
     private final String documentFileName;

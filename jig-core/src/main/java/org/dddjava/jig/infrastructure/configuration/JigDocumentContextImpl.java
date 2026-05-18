@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 
 public class JigDocumentContextImpl implements JigDocumentContext {
 
@@ -22,5 +23,10 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     @Override
     public List<JigDocument> jigDocuments() {
         return properties.jigDocuments;
+    }
+
+    @Override
+    public Locale locale() {
+        return properties.locale();
     }
 }

@@ -7,6 +7,7 @@ public enum JigProperty {
     OUTPUT_DIRECTORY,
     PATTERN_DOMAIN,
     DOCUMENT_TYPES,
+    LOCALE,
     ;
 
     public static String defaultOutputDirectory() {

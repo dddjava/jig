@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -30,14 +31,29 @@ public class JigProperties {
      */
     List<JigDocument> jigDocuments;
 
+    /**
+     * 出力時の表示言語。
+     * 実行環境の {@link Locale#getDefault()} に左右されないよう JIG 設定として明示する。
+     */
+    Locale locale;
+
     public JigProperties(List<JigDocument> jigDocuments, Optional<String> domainPattern, Path outputDirectory) {
+        this(jigDocuments, domainPattern, outputDirectory, Locale.JAPANESE);
+    }
+
+    public JigProperties(List<JigDocument> jigDocuments, Optional<String> domainPattern, Path outputDirectory, Locale locale) {
         this.jigDocuments = jigDocuments;
         this.domainPattern = domainPattern;
         this.outputDirectory = outputDirectory;
+        this.locale = locale;
     }
 
     static JigProperties defaultInstance() {
-        return new JigProperties(JigDocument.canonical(), Optional.empty(), Paths.get(JigProperty.defaultOutputDirectory()));
+        return new JigProperties(JigDocument.canonical(), Optional.empty(), Paths.get(JigProperty.defaultOutputDirectory()), Locale.JAPANESE);
+    }
+
+    public Locale locale() {
+        return locale;
     }
 
     public Optional<String> getDomainPattern() {
@@ -62,6 +78,11 @@ public class JigProperties {
                 && !overrideProperties.jigDocuments.equals(this.jigDocuments)) {
             logger.info("configure jigDocuments from {} to {}", this.jigDocuments, overrideProperties.jigDocuments);
             this.jigDocuments = overrideProperties.jigDocuments;
+        }
+        if (overrideProperties.locale != null
+                && !overrideProperties.locale.equals(this.locale)) {
+            logger.info("configure locale from {} to {}", this.locale, overrideProperties.locale);
+            this.locale = overrideProperties.locale;
         }
     }
 

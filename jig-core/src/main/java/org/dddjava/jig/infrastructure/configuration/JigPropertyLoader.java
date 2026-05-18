@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -92,6 +93,9 @@ public class JigPropertyLoader {
                 break;
             case DOCUMENT_TYPES:
                 jigProperties.jigDocuments = JigDocument.resolve(value);
+                break;
+            case LOCALE:
+                jigProperties.locale = Locale.forLanguageTag(value);
                 break;
         }
     }

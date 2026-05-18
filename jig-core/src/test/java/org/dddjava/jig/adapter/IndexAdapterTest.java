@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +25,7 @@ class IndexAdapterTest {
     void 出力対象がない場合は一覧セクションを出力しない() throws IOException {
         var sut = new IndexAdapter();
 
-        sut.render(List.of(), tempDir, GitRepositoryInfo.empty());
+        sut.render(List.of(), tempDir, GitRepositoryInfo.empty(), Locale.JAPANESE);
 
         String actual = readIndex();
         assertFalse(actual.contains("<h2>設計情報: HTML</h2>"));
@@ -43,7 +44,7 @@ class IndexAdapterTest {
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html")))
         );
 
-        sut.render(results, tempDir, GitRepositoryInfo.empty());
+        sut.render(results, tempDir, GitRepositoryInfo.empty(), Locale.JAPANESE);
 
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("\"href\":\"package.html\""));

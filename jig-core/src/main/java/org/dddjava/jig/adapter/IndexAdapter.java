@@ -23,15 +23,15 @@ public class IndexAdapter {
     static final String SUMMARY_DATA_JS = "summary-data.js";
 
     public void render(List<HandleResult> handleResultList, Path outputDirectory,
-                       GitRepositoryInfo gitRepositoryInfo) {
+                       GitRepositoryInfo gitRepositoryInfo, Locale locale) {
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 documentLinks.put(handleResult.jigDocument(), handleResult.outputFileNames().get(0));
             }
         }
-        write(documentLinks, outputDirectory);
-        writeNavigationData(documentLinks, outputDirectory);
+        write(documentLinks, outputDirectory, locale);
+        writeNavigationData(documentLinks, outputDirectory, locale);
         writeSummaryData(gitRepositoryInfo, outputDirectory);
     }
 
@@ -40,7 +40,7 @@ public class IndexAdapter {
         return Objects.requireNonNullElse(implementationVersion, "unknown");
     }
 
-    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory) {
+    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
         String title = "JIG";
         String jigVersion = resolveJigVersion();
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -48,7 +48,7 @@ public class IndexAdapter {
 
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n");
-        html.append("<html lang=\"ja\">\n");
+        html.append("<html lang=\"").append(locale.getLanguage()).append("\">\n");
         html.append("<head>\n");
         html.append("    <meta charset=\"UTF-8\"/>\n");
         html.append("    <link href=\"./assets/style.css\" rel=\"stylesheet\">\n");
@@ -100,14 +100,14 @@ public class IndexAdapter {
         }
     }
 
-    private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory) {
+    private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
         try {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
             List<NavigationLink> links = new ArrayList<>();
             for (JigDocument doc : JigDocument.values()) {
-                addNavigationLinkIfPresent(links, documentLinks, doc);
+                addNavigationLinkIfPresent(links, documentLinks, doc, locale);
             }
 
             StringBuilder js = new StringBuilder();
@@ -162,10 +162,10 @@ public class IndexAdapter {
         return builder;
     }
 
-    private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key) {
+    private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key, Locale locale) {
         String href = documentLinks.get(key);
         if (href != null) {
-            links.add(new NavigationLink(href, key.label()));
+            links.add(new NavigationLink(href, key.label(locale)));
         }
     }
 

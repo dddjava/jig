@@ -78,7 +78,7 @@ public enum JigDocument {
                 .toList();
     }
 
-    public String label() {
-        return label.labelFor(Locale.getDefault());
+    public String label(Locale locale) {
+        return label.labelFor(locale);
     }
 }

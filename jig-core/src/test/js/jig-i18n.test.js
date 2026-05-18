@@ -5,11 +5,17 @@ const {JSDOM} = require('jsdom');
 test.describe('jig-i18n.js', () => {
     let Jig;
 
-    function setupDom(htmlBody, lang = 'ja') {
-        const dom = new JSDOM(`<!DOCTYPE html><html lang="${lang}"><head><title>インサイト</title></head><body>${htmlBody}</body></html>`);
+    function setupDom(bodyHtml, {lang = 'ja', titleHtml = '<title data-i18n>インサイト</title>'} = {}) {
+        const dom = new JSDOM(`<!DOCTYPE html><html lang="${lang}"><head>${titleHtml}</head><body>${bodyHtml}</body></html>`);
         global.window = dom.window;
         global.document = dom.window.document;
         global.NodeFilter = dom.window.NodeFilter;
+    }
+
+    function loadI18n() {
+        require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-data.js');
+        return require('../../main/resources/templates/assets/jig-i18n.js');
     }
 
     test.beforeEach(() => {
@@ -27,10 +33,8 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('locale=ja のときは翻訳しない', () => {
-        setupDom('<h1>インサイト</h1>', 'ja');
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        Jig = require('../../main/resources/templates/assets/jig-i18n.js');
+        setupDom('<h1 data-i18n>インサイト</h1>');
+        Jig = loadI18n();
         globalThis.navigationData = {locale: 'ja', links: []};
 
         Jig.apply();
@@ -39,53 +43,37 @@ test.describe('jig-i18n.js', () => {
         assert.equal(document.title, 'インサイト');
     });
 
-    test('locale=en のときは UI chrome タグの辞書ヒット箇所を翻訳する', () => {
-        setupDom('<h1>インサイト</h1><button>入力</button>', 'ja');
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        Jig = require('../../main/resources/templates/assets/jig-i18n.js');
+    test('data-i18n を持つ要素のみ翻訳する', () => {
+        setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>');
+        Jig = loadI18n();
         globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
         assert.equal(document.querySelector('h1').textContent, 'Insight');
-        assert.equal(document.querySelector('button').textContent, 'Input');
+        assert.equal(document.querySelector('p').textContent, 'インサイト');
         assert.equal(document.title, 'Insight');
         assert.equal(document.documentElement.lang, 'en');
     });
 
-    test('p/li/dd など説明文を含むタグは翻訳しない', () => {
-        setupDom('<p>入力</p><li>出力</li><dd>フィールド</dd>', 'ja');
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        Jig = require('../../main/resources/templates/assets/jig-i18n.js');
+    test('data-i18n="key" で明示キーを指定できる', () => {
+        Jig = (() => {
+            // dictionaries に明示キーを追加して試す
+            setupDom('<button data-i18n="custom.label">なにか</button>');
+            const i18n = loadI18n();
+            i18n.dictionaries.en['custom.label'] = 'Custom Label';
+            return i18n;
+        })();
         globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
-        assert.equal(document.querySelector('p').textContent, '入力');
-        assert.equal(document.querySelector('li').textContent, '出力');
-        assert.equal(document.querySelector('dd').textContent, 'フィールド');
+        assert.equal(document.querySelector('button').textContent, 'Custom Label');
     });
 
-    test('script/style 配下のテキストは翻訳しない', () => {
-        setupDom('<script>const x = "インサイト";</script><h1>インサイト</h1>', 'ja');
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        Jig = require('../../main/resources/templates/assets/jig-i18n.js');
-        globalThis.navigationData = {locale: 'en', links: []};
-
-        Jig.apply();
-
-        assert.match(document.querySelector('script').textContent, /インサイト/);
-        assert.equal(document.querySelector('h1').textContent, 'Insight');
-    });
-
-    test('辞書に無い文字列はそのまま', () => {
-        setupDom('<h1>未知の単語</h1>', 'ja');
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        Jig = require('../../main/resources/templates/assets/jig-i18n.js');
+    test('辞書に無いキーはそのまま', () => {
+        setupDom('<h1 data-i18n>未知の単語</h1>');
+        Jig = loadI18n();
         globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
@@ -94,14 +82,23 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('locale 未指定なら <html lang> をフォールバックに使う', () => {
-        setupDom('<h1>インサイト</h1>', 'en');
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        Jig = require('../../main/resources/templates/assets/jig-i18n.js');
-        // navigationData なし
+        setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'en'});
+        Jig = loadI18n();
 
         Jig.apply();
 
         assert.equal(document.querySelector('h1').textContent, 'Insight');
+    });
+
+    test('data-i18n のない要素は同じ語でも放置する', () => {
+        setupDom('<p>入力</p><li>出力</li><dd>フィールド</dd>');
+        Jig = loadI18n();
+        globalThis.navigationData = {locale: 'en', links: []};
+
+        Jig.apply();
+
+        assert.equal(document.querySelector('p').textContent, '入力');
+        assert.equal(document.querySelector('li').textContent, '出力');
+        assert.equal(document.querySelector('dd').textContent, 'フィールド');
     });
 });

@@ -29,39 +29,17 @@ globalThis.Jig.i18n = (() => {
         return tag || document.documentElement.lang || "ja";
     }
 
-    // UI chrome として翻訳対象にするタグのみホワイトリスト化する。
-    // <p>/<li>/<dd> など説明文を含む可能性のあるタグは含めない。
-    const TRANSLATE_TAGS = new Set([
-        "TITLE", "H1", "H2", "H3", "H4", "H5", "H6",
-        "TH", "BUTTON", "LABEL", "SUMMARY", "CAPTION", "LEGEND"
-    ]);
-
-    function isTranslatableNode(node) {
-        const parent = node.parentNode;
-        if (!parent || !parent.nodeName) return false;
-        if (!TRANSLATE_TAGS.has(parent.nodeName)) return false;
-        // 翻訳対象タグ内に他のブロック要素が混じる場合を考慮し、祖先に翻訳禁止タグがあれば除外
-        for (let el = parent; el; el = el.parentNode) {
-            const tag = el.nodeName;
-            if (tag === "SCRIPT" || tag === "STYLE" || tag === "CODE" || tag === "PRE") return false;
-        }
-        return true;
-    }
-
-    function translateInto(root, dict) {
-        if (!root) return;
-        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-        const targets = [];
-        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-            if (!isTranslatableNode(node)) continue;
-            const trimmed = node.nodeValue.trim();
-            if (trimmed && dict[trimmed]) {
-                targets.push(node);
+    // [data-i18n] を持つ要素のみ翻訳する。マーカーが無ければ何もしない。
+    // data-i18n="key" のように明示キーがあればそれを、無ければ textContent.trim() を辞書キーにする。
+    function translateMarkedElements(root, dict) {
+        if (!root || typeof root.querySelectorAll !== "function") return;
+        root.querySelectorAll("[data-i18n]").forEach(el => {
+            const explicitKey = el.getAttribute("data-i18n");
+            const key = (explicitKey && explicitKey.length > 0) ? explicitKey : el.textContent.trim();
+            const translation = dict[key];
+            if (translation) {
+                el.textContent = translation;
             }
-        }
-        targets.forEach(node => {
-            const trimmed = node.nodeValue.trim();
-            node.nodeValue = node.nodeValue.replace(trimmed, dict[trimmed]);
         });
     }
 
@@ -72,13 +50,16 @@ globalThis.Jig.i18n = (() => {
         if (lang === "ja") return;
         const dict = dictionaries[lang];
         if (!dict) return;
-        if (document.title && dict[document.title.trim()]) {
-            document.title = dict[document.title.trim()];
+        const titleEl = document.querySelector("title[data-i18n]");
+        if (titleEl) {
+            const explicitKey = titleEl.getAttribute("data-i18n");
+            const key = (explicitKey && explicitKey.length > 0) ? explicitKey : titleEl.textContent.trim();
+            if (dict[key]) document.title = dict[key];
         }
-        translateInto(document.body, dict);
+        translateMarkedElements(document.body, dict);
     }
 
-    return {apply, translateInto, dictionaries};
+    return {apply, translateMarkedElements, dictionaries};
 })();
 
 if (typeof document !== "undefined") {

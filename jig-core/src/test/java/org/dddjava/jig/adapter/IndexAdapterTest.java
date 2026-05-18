@@ -37,6 +37,20 @@ class IndexAdapterTest {
     }
 
     @Test
+    void ローカルアセット参照にはキャッシュバスティングのクエリを付ける() throws IOException {
+        var sut = new IndexAdapter();
+
+        sut.render(List.of(), tempDir, GitRepositoryInfo.empty(), Locale.JAPANESE);
+
+        String actual = readIndex();
+        assertTrue(actual.contains("./assets/style.css?v="));
+        assertTrue(actual.contains("./assets/jig-bundle.js?v="));
+        assertTrue(actual.contains("./data/navigation-data.js?v="));
+        // CDN にはクエリを付けない
+        assertTrue(actual.contains("https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js\""));
+    }
+
+    @Test
     void 出力対象がある場合は対応する一覧セクションを出力する() throws IOException {
         var sut = new IndexAdapter();
         var results = List.of(

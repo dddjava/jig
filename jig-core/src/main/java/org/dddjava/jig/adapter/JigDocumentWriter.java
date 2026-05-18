@@ -9,9 +9,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.regex.Pattern;
 
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
+
+    private static final String ASSET_VERSION = Long.toString(System.currentTimeMillis());
+    private static final Pattern LOCAL_ASSET_REFERENCE = Pattern.compile("(href|src)=\"(\\./(?:assets|data)/[^\"?]+)\"");
+
+    static String assetVersion() {
+        return ASSET_VERSION;
+    }
 
     public static void copyAssetsResource(String fileName, Path outputDirectory) {
         copyResourceTo("templates/assets/", fileName, outputDirectory.resolve("assets"));
@@ -43,11 +51,20 @@ public class JigDocumentWriter {
         Path outputPath = outputDir.resolve(fileName);
         try (InputStream is = getResourceAsStream(resourcePath)) {
             Files.createDirectories(outputPath.getParent());
-            Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
+            if (fileName.endsWith(".html")) {
+                String html = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                Files.writeString(outputPath, applyAssetVersion(html), StandardCharsets.UTF_8);
+            } else {
+                Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
             logger.error("リソースのコピーに失敗したため、ドキュメントの一部もしくはすべてが欠落します。" +
                     "通常は起こらない例外なので環境を確認してみてください。(from:{} to:{})", resourcePath, outputPath, e);
         }
+    }
+
+    static String applyAssetVersion(String html) {
+        return LOCAL_ASSET_REFERENCE.matcher(html).replaceAll("$1=\"$2?v=" + ASSET_VERSION + "\"");
     }
 
     public static InputStream getResourceAsStream(String absolutePath) {

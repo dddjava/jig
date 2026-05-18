@@ -94,7 +94,7 @@ public class IndexAdapter {
 
         Path outputFilePath = indexFilePath(outputDirectory);
         try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8)) {
-            writer.write(html.toString());
+            writer.write(JigDocumentWriter.applyAssetVersion(html.toString()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

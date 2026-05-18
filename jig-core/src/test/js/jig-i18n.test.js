@@ -46,7 +46,7 @@ test.describe('jig-i18n.js', () => {
     test('data-i18n を持つ要素のみ翻訳する', () => {
         setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: []};
+        globalThis.navigationData = {locale: 'en', links: [], translations: {'インサイト': 'Insight'}};
 
         Jig.apply();
 
@@ -57,13 +57,9 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('data-i18n="key" で明示キーを指定できる', () => {
-        Jig = (() => {
-            // dictionaries に明示キーを追加して試す
-            setupDom('<button data-i18n="custom.label">なにか</button>');
-            const i18n = loadI18n();
-            i18n.dictionaries.en['custom.label'] = 'Custom Label';
-            return i18n;
-        })();
+        setupDom('<button data-i18n="custom.label">なにか</button>');
+        Jig = loadI18n();
+        Jig.builtinDictionaries.en['custom.label'] = 'Custom Label';
         globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
@@ -84,6 +80,7 @@ test.describe('jig-i18n.js', () => {
     test('locale 未指定なら <html lang> をフォールバックに使う', () => {
         setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'en'});
         Jig = loadI18n();
+        globalThis.navigationData = {translations: {'インサイト': 'Insight'}};
 
         Jig.apply();
 
@@ -100,5 +97,18 @@ test.describe('jig-i18n.js', () => {
         assert.equal(document.querySelector('p').textContent, '入力');
         assert.equal(document.querySelector('li').textContent, '出力');
         assert.equal(document.querySelector('dd').textContent, 'フィールド');
+    });
+
+    test('builtin と server の翻訳がマージされる', () => {
+        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
+        Jig = loadI18n();
+        globalThis.navigationData = {locale: 'en', links: [], translations: {'インサイト': 'Insight'}};
+
+        Jig.apply();
+
+        // server 由来
+        assert.equal(document.querySelector('h1').textContent, 'Insight');
+        // builtin 由来
+        assert.equal(document.querySelector('button').textContent, 'Input');
     });
 });

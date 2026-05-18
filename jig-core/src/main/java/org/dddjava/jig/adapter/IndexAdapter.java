@@ -113,6 +113,7 @@ public class IndexAdapter {
 
             String json = Json.object("locale", locale.toLanguageTag())
                     .and("links", Json.arrayObjects(linkObjects))
+                    .and("translations", documentLabelTranslations(locale))
                     .build();
 
             Files.writeString(dataDirectory.resolve(NAVIGATION_DATA_JS),
@@ -152,6 +153,19 @@ public class IndexAdapter {
             builder.and("displayName", known.displayName());
             shortHash.flatMap(remote::commitUrl).ifPresent(url -> builder.and("commitUrl", url));
         });
+        return builder;
+    }
+
+    /**
+     * JigDocument ラベルの日本語キー→指定 locale 値の翻訳マップを返す。
+     * JS 側の i18n 辞書と重複定義しないため、サーバ側を唯一のソースにする。
+     */
+    private JsonObjectBuilder documentLabelTranslations(Locale locale) {
+        JsonObjectBuilder builder = Json.object();
+        if (locale.getLanguage().equals("ja")) return builder;
+        for (JigDocument doc : JigDocument.values()) {
+            builder.and(doc.label(Locale.JAPANESE), doc.label(locale));
+        }
         return builder;
     }
 

@@ -3,18 +3,10 @@ globalThis.Jig ??= {};
 globalThis.Jig.i18n = (() => {
 
     // テンプレート HTML に [data-i18n] マーカー付きで埋め込まれた静的テキストの翻訳辞書。
-    // 辞書キーは data-i18n 属性値（明示キー）または要素の textContent.trim()。
-    const dictionaries = {
+    // JigDocument のラベルはサーバ側を唯一のソースとし navigation-data.translations から取り込む。
+    // ここで持つのはテンプレート HTML/JS にのみ現れる UI 文言。
+    const builtinDictionaries = {
         en: {
-            "用語集": "Glossary",
-            "パッケージ関連": "PackageRelation",
-            "ドメインモデル": "DomainModel",
-            "ユースケース": "Usecase",
-            "入力インタフェース": "InboundInterface",
-            "出力インタフェース": "OutboundInterface",
-            "インサイト": "Insight",
-            "一覧出力": "ListOutput",
-            "ライブラリ依存情報": "LibraryDependency",
             "入力": "Input",
             "出力": "Output",
             "フィールド": "Fields",
@@ -22,6 +14,13 @@ globalThis.Jig.i18n = (() => {
             "展開": "Expand",
         },
     };
+
+    function resolveDictionary(lang) {
+        const builtin = builtinDictionaries[lang];
+        if (!builtin) return null;
+        const serverTranslations = globalThis.Jig?.data?.navigation?.get?.()?.translations;
+        return serverTranslations ? {...builtin, ...serverTranslations} : builtin;
+    }
 
     function resolveLanguage() {
         const tag = globalThis.Jig?.data?.navigation?.get?.()?.locale
@@ -49,13 +48,13 @@ globalThis.Jig.i18n = (() => {
         const lang = resolveLanguage();
         document.documentElement.lang = lang;
         if (lang === "ja") return;
-        const dict = dictionaries[lang];
+        const dict = resolveDictionary(lang);
         if (!dict) return;
         // <title data-i18n> も document 全体のクエリで一緒に処理される
         translate(document, dict);
     }
 
-    return {apply, translate, dictionaries};
+    return {apply, translate, resolveDictionary, builtinDictionaries};
 })();
 
 if (typeof document !== "undefined") {

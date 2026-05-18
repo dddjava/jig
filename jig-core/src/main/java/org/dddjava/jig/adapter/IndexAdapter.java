@@ -111,7 +111,9 @@ public class IndexAdapter {
             }
 
             StringBuilder js = new StringBuilder();
-            js.append("globalThis.navigationData = {\"links\": [");
+            js.append("globalThis.navigationData = {\"locale\":\"")
+                    .append(escapeJson(locale.toLanguageTag()))
+                    .append("\",\"links\": [");
             for (int i = 0; i < links.size(); i++) {
                 NavigationLink link = links.get(i);
                 if (i > 0) js.append(",");

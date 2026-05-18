@@ -527,9 +527,18 @@ globalThis.Jig.dom = (() => {
         const currentFileName = (location.pathname.split("/").pop() || "");
         const normalizedCurrent = normalizeNavigationHref(currentFileName);
 
+        // ナビゲーションデータの当該リンクのラベルが locale 対応済みなのでそれを使う。
+        // 該当が見つからない場合はテンプレート静的テキストにフォールバック。
+        const currentLink = navigationData.links.find(
+            link => link && normalizeNavigationHref(link.href) === normalizedCurrent
+        );
+        const triggerLabel = (currentLink && currentLink.label != null)
+            ? String(currentLink.label)
+            : pageTitleEl.textContent;
+
         const trigger = createElement("span", {
             className: "jig-header-nav__trigger",
-            textContent: pageTitleEl.textContent
+            textContent: triggerLabel
         });
 
         const dropdown = createElement("ul", {

@@ -29,13 +29,23 @@ globalThis.Jig.i18n = (() => {
         return tag || document.documentElement.lang || "ja";
     }
 
-    function shouldSkipNode(node) {
-        for (let el = node.parentNode; el; el = el.parentNode) {
-            if (!el.nodeName) return true;
+    // UI chrome として翻訳対象にするタグのみホワイトリスト化する。
+    // <p>/<li>/<dd> など説明文を含む可能性のあるタグは含めない。
+    const TRANSLATE_TAGS = new Set([
+        "TITLE", "H1", "H2", "H3", "H4", "H5", "H6",
+        "TH", "BUTTON", "LABEL", "SUMMARY", "CAPTION", "LEGEND"
+    ]);
+
+    function isTranslatableNode(node) {
+        const parent = node.parentNode;
+        if (!parent || !parent.nodeName) return false;
+        if (!TRANSLATE_TAGS.has(parent.nodeName)) return false;
+        // 翻訳対象タグ内に他のブロック要素が混じる場合を考慮し、祖先に翻訳禁止タグがあれば除外
+        for (let el = parent; el; el = el.parentNode) {
             const tag = el.nodeName;
-            if (tag === "SCRIPT" || tag === "STYLE" || tag === "CODE" || tag === "PRE") return true;
+            if (tag === "SCRIPT" || tag === "STYLE" || tag === "CODE" || tag === "PRE") return false;
         }
-        return false;
+        return true;
     }
 
     function translateInto(root, dict) {
@@ -43,7 +53,7 @@ globalThis.Jig.i18n = (() => {
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
         const targets = [];
         for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-            if (shouldSkipNode(node)) continue;
+            if (!isTranslatableNode(node)) continue;
             const trimmed = node.nodeValue.trim();
             if (trimmed && dict[trimmed]) {
                 targets.push(node);

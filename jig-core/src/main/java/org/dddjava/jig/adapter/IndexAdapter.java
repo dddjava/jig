@@ -105,27 +105,18 @@ public class IndexAdapter {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
-            List<NavigationLink> links = new ArrayList<>();
-            for (JigDocument doc : JigDocument.values()) {
-                addNavigationLinkIfPresent(links, documentLinks, doc, locale);
-            }
+            List<JsonObjectBuilder> linkObjects = Arrays.stream(JigDocument.values())
+                    .map(doc -> Optional.ofNullable(documentLinks.get(doc))
+                            .map(href -> Json.object("href", href).and("label", doc.label(locale))))
+                    .flatMap(Optional::stream)
+                    .toList();
 
-            StringBuilder js = new StringBuilder();
-            js.append("globalThis.navigationData = {\"locale\":\"")
-                    .append(escapeJson(locale.toLanguageTag()))
-                    .append("\",\"links\": [");
-            for (int i = 0; i < links.size(); i++) {
-                NavigationLink link = links.get(i);
-                if (i > 0) js.append(",");
-                js.append("{\"href\":\"")
-                        .append(escapeJson(link.href()))
-                        .append("\",\"label\":\"")
-                        .append(escapeJson(link.label()))
-                        .append("\"}");
-            }
-            js.append("]};\n");
+            String json = Json.object("locale", locale.toLanguageTag())
+                    .and("links", Json.arrayObjects(linkObjects))
+                    .build();
 
-            Files.writeString(dataDirectory.resolve(NAVIGATION_DATA_JS), js.toString(), StandardCharsets.UTF_8);
+            Files.writeString(dataDirectory.resolve(NAVIGATION_DATA_JS),
+                    "globalThis.navigationData = " + json + ";\n", StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -162,24 +153,6 @@ public class IndexAdapter {
             shortHash.flatMap(remote::commitUrl).ifPresent(url -> builder.and("commitUrl", url));
         });
         return builder;
-    }
-
-    private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key, Locale locale) {
-        String href = documentLinks.get(key);
-        if (href != null) {
-            links.add(new NavigationLink(href, key.label(locale)));
-        }
-    }
-
-    private String escapeJson(String input) {
-        return input
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\r", "\\r")
-                .replace("\n", "\\n");
-    }
-
-    record NavigationLink(String href, String label) {
     }
 
     public static Path indexFilePath(Path outputDirectory) {

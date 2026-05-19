@@ -2,69 +2,35 @@ package org.dddjava.jig.domain.model.documents;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * 取り扱うドキュメントの種類
+ * <p>
+ * ラベルは日本語をカノニカルキーとし、他言語への翻訳はクライアントサイド i18n
+ * （{@code jig-i18n.js} の builtinDictionaries）に集約する。
  */
 public enum JigDocument {
 
-    /**
-     * 用語集
-     */
-    Glossary(JigDocumentLabel.of("用語集", "Glossary"), "glossary"),
+    Glossary("用語集", "glossary"),
+    PackageRelation("パッケージ関連", "package"),
+    DomainModel("ドメインモデル", "domain"),
+    Usecase("ユースケース", "usecase"),
+    InboundInterface("入力インタフェース", "inbound"),
+    OutboundInterface("出力インタフェース", "outbound"),
+    Insight("インサイト", "insight"),
+    ListOutput("一覧出力", "list-output"),
+    LibraryDependency("ライブラリ依存情報", "library-dependency");
 
-    /**
-     * パッケージ関連
-     */
-    PackageRelation(JigDocumentLabel.of("パッケージ関連", "PackageRelation"), "package"),
-
-    /**
-     * ドメインモデル
-     */
-    DomainModel(JigDocumentLabel.of("ドメインモデル", "DomainModel"), "domain"),
-
-    /**
-     * ユースケース
-     */
-    Usecase(JigDocumentLabel.of("ユースケース", "Usecase"), "usecase"),
-
-    /**
-     * 入力インタフェース
-     */
-    InboundInterface(JigDocumentLabel.of("入力インタフェース", "InboundInterface"), "inbound"),
-
-    /**
-     * 出力インタフェース
-     */
-    OutboundInterface(JigDocumentLabel.of("出力インタフェース", "OutboundInterface"), "outbound"),
-
-    /**
-     * インサイト
-     */
-    Insight(JigDocumentLabel.of("インサイト", "Insight"), "insight"),
-
-    /**
-     * 一覧出力
-     */
-    ListOutput(JigDocumentLabel.of("一覧出力", "ListOutput"), "list-output"),
-
-    /**
-     * ライブラリ依存情報
-     */
-    LibraryDependency(JigDocumentLabel.of("ライブラリ依存情報", "LibraryDependency"), "library-dependency");
-
-    private final JigDocumentLabel label;
+    private final String label;
     private final String documentFileName;
 
-    JigDocument(JigDocumentLabel label, String documentFileName) {
+    JigDocument(String label, String documentFileName) {
         this.label = label;
         this.documentFileName = documentFileName;
     }
 
     public static List<JigDocument> canonical() {
-        return Arrays.stream(values())
-                .toList();
+        return Arrays.stream(values()).toList();
     }
 
     public String fileName() {
@@ -73,12 +39,15 @@ public enum JigDocument {
 
     public static List<JigDocument> resolve(String diagramTypes) {
         return Arrays.stream(diagramTypes.split(","))
-                .map(
-                        JigDocument::valueOf)
+                .map(JigDocument::valueOf)
                 .toList();
     }
 
-    public String label(Locale locale) {
-        return label.labelFor(locale);
+    /**
+     * 日本語ラベル（カノニカルキー）を返す。
+     * 表示用の翻訳はクライアント i18n が担う。
+     */
+    public String label() {
+        return label;
     }
 }

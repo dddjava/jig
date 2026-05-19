@@ -2,11 +2,19 @@ globalThis.Jig ??= {};
 
 globalThis.Jig.i18n = (() => {
 
-    // テンプレート HTML に [data-i18n] マーカー付きで埋め込まれた静的テキストの翻訳辞書。
-    // JigDocument のラベルはサーバ側を唯一のソースとし navigation-data.translations.<lang> から取り込む。
-    // ここで持つのはテンプレート HTML/JS にのみ現れる UI 文言。
+    // [data-i18n] マーカー付き要素の翻訳辞書（日本語キー→対象言語値）。
+    // JigDocument のラベル（用語集 等）も UI 文言と区別せずここに集約する。
     const builtinDictionaries = {
         en: {
+            // JigDocument ラベル（Java 側 JigDocument enum のキーと対応）
+            "用語集": "Glossary",
+            "パッケージ関連": "Package relations",
+            "ユースケース": "Usecase",
+            "入力インタフェース": "Inbound interface",
+            "インサイト": "Insight",
+            "一覧出力": "List output",
+            "ライブラリ依存情報": "Library dependencies",
+            // UI 文言
             "入力": "Input",
             "出力": "Output",
             "フィールド": "Fields",

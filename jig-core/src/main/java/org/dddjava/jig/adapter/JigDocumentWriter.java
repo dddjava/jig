@@ -9,13 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.regex.Pattern;
 
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     private static final String ASSET_VERSION = Long.toString(System.currentTimeMillis());
-    private static final Pattern LOCAL_ASSET_REFERENCE = Pattern.compile("(href|src)=\"(\\./(?:assets|data)/[^\"?]+)\"");
 
     static String assetVersion() {
         return ASSET_VERSION;
@@ -63,8 +61,12 @@ public class JigDocumentWriter {
         }
     }
 
+    /**
+     * テンプレート HTML 中の {@code {{assetVersion}}} プレースホルダを現在のバージョン値で置換する。
+     * 各テンプレートはローカルアセット参照に明示的に {@code ?v={{assetVersion}}} を書いておく。
+     */
     static String applyAssetVersion(String html) {
-        return LOCAL_ASSET_REFERENCE.matcher(html).replaceAll("$1=\"$2?v=" + ASSET_VERSION + "\"");
+        return html.replace("{{assetVersion}}", ASSET_VERSION);
     }
 
     public static InputStream getResourceAsStream(String absolutePath) {

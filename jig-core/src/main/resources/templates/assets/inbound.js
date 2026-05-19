@@ -195,7 +195,6 @@ const InboundApp = (() => {
                 children: [radio, document.createTextNode(' '), Jig.dom.createElement('span', {textContent: label, i18n: true})]
             }));
         });
-        Jig.i18n?.apply?.();
     }
 
     function initSimplifiedSetting() {
@@ -219,7 +218,6 @@ const InboundApp = (() => {
             attributes: {for: 'simplified-toggle'},
             children: [checkbox, document.createTextNode(' '), Jig.dom.createElement('span', {textContent: '簡略表示', i18n: true})]
         }));
-        Jig.i18n?.apply?.();
     }
 
     function render() {

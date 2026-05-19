@@ -41,7 +41,6 @@ globalThis.Jig.i18n = (() => {
             "説明": "Description",
             "メンバ": "Members",
             "ハンドラのみ": "Handlers only",
-            "定義名": "Declared name",
             "入力・出力": "Input/Output",
             "内部メソッド": "Internal methods",
             "出力インタフェース": "Outbound interface",
@@ -144,8 +143,6 @@ globalThis.Jig.i18n = (() => {
 
     // セッション中のみ保持する現在言語（永続化しない）。
     let currentLang = null;
-    // apply() 実行中フラグ。MutationObserver による無限ループを避けるため。
-    let applying = false;
 
     function resolveDictionary(lang) {
         const builtin = builtinDictionaries[lang];
@@ -212,36 +209,28 @@ globalThis.Jig.i18n = (() => {
             const key = resolveKey(el);
             setTranslatedText(el, (dict && dict[key]) || key);
         });
-        // 属性翻訳: data-i18n-placeholder 等が指定された要素の対応属性を翻訳する
-        // 値は "属性名" もしくは "属性名:キー" で指定。キー省略時は現在の属性値を ja キーとして使う。
+        // 属性翻訳: data-i18n-attr="属性名" を持つ要素の対応属性を翻訳する
+        // （現在の属性値を ja キーとして使う）。
         root.querySelectorAll("[data-i18n-attr]").forEach(el => translateAttribute(el, dict));
     }
 
     function translateAttribute(el, dict) {
-        const spec = el.getAttribute("data-i18n-attr");
-        if (!spec) return;
-        const [attrName, explicitKey] = spec.split(":");
+        const attrName = el.getAttribute("data-i18n-attr");
         if (!attrName) return;
-        const originalKey = `i18nAttrOrig_${attrName}`;
-        if (el.dataset[originalKey] == null) {
-            el.dataset[originalKey] = explicitKey || el.getAttribute(attrName) || "";
+        const datasetKey = `i18nAttrOrig_${attrName}`;
+        if (el.dataset[datasetKey] == null) {
+            el.dataset[datasetKey] = el.getAttribute(attrName) || "";
         }
-        const key = el.dataset[originalKey];
+        const key = el.dataset[datasetKey];
         el.setAttribute(attrName, (dict && dict[key]) || key);
     }
 
     function apply() {
-        if (applying) return;
-        applying = true;
-        try {
-            const lang = resolveLanguage();
-            document.documentElement.lang = lang;
-            const dict = lang === "ja" ? null : resolveDictionary(lang);
-            // <title data-i18n> も document 全体のクエリで一緒に処理される
-            translate(document, dict);
-        } finally {
-            applying = false;
-        }
+        const lang = resolveLanguage();
+        document.documentElement.lang = lang;
+        const dict = lang === "ja" ? null : resolveDictionary(lang);
+        // <title data-i18n> も document 全体のクエリで一緒に処理される
+        translate(document, dict);
     }
 
     function currentLanguage() {

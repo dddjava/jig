@@ -675,8 +675,7 @@ globalThis.Jig.dom = (() => {
         if (globalThis.Jig?.data?.createTypeLinkResolver) {
             setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
         }
-        // 動的に挿入した data-i18n 要素（nav の trigger/dropdown など）を初期ロード時の locale に追従させる
-        globalThis.Jig?.i18n?.apply?.();
+        // 動的挿入された data-i18n 要素は jig-i18n.js の MutationObserver が初期 locale に追従させる
     }
 
     return {

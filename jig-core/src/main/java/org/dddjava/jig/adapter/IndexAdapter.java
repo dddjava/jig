@@ -6,8 +6,8 @@ import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,61 +40,36 @@ public class IndexAdapter {
         return Objects.requireNonNullElse(implementationVersion, "unknown");
     }
 
+    private static final String DIAGRAMS_SECTION = """
+                <section id="diagrams">
+                    <h2 data-i18n>主要パッケージ関連図</h2>
+                    <div id="package-diagram"></div>
+                </section>""";
+
     private void write(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
-        String title = "JIG";
-        String jigVersion = resolveJigVersion();
-        ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        String timestampText = now.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String timestampText = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS)
+                .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        String diagramsSection = documentLinks.containsKey(JigDocument.PackageRelation)
+                ? DIAGRAMS_SECTION
+                : "";
 
-        StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html>\n");
-        html.append("<html lang=\"").append(locale.getLanguage()).append("\">\n");
-        html.append("<head>\n");
-        html.append("    <meta charset=\"UTF-8\"/>\n");
-        html.append("    <link href=\"./assets/style.css\" rel=\"stylesheet\">\n");
-        html.append("    <link rel=\"icon\" href=\"./assets/favicon.ico\">\n");
-        html.append("    <title>").append(title).append("</title>\n");
-        html.append("</head>\n");
-        html.append("<body class=\"index\">\n");
-        html.append("\n");
-        html.append("<header>\n");
-        html.append("    <h1>").append(title).append("</h1>\n");
-        html.append("    <p><span data-i18n>出力日時</span>: <span id=\"jig-timestamp\" data-jig-timestamp=\"").append(timestampText).append("\">").append(timestampText).append("</span>");
-        html.append(" Version: ").append(jigVersion);
-        html.append("</p>\n");
-        html.append("    <p id=\"jig-source\"></p>\n");
-        html.append("</header>\n");
-        html.append("\n");
-        html.append("<main>\n");
+        String html = loadIndexTemplate()
+                .replace("{{lang}}", locale.getLanguage())
+                .replace("{{timestamp}}", timestampText)
+                .replace("{{version}}", resolveJigVersion())
+                .replace("{{diagrams_section}}", diagramsSection);
 
-        html.append("    <section id=\"document-links\">\n");
-        html.append("        <ul></ul>\n");
-        html.append("    </section>\n");
-
-        if (documentLinks.containsKey(JigDocument.PackageRelation)) {
-            html.append("    <section id=\"diagrams\">\n");
-            html.append("        <h2 data-i18n>主要パッケージ関連図</h2>\n");
-            html.append("        <div id=\"package-diagram\"></div>\n");
-            html.append("    </section>\n");
+        try {
+            Files.writeString(indexFilePath(outputDirectory),
+                    JigDocumentWriter.applyAssetVersion(html), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
+    }
 
-        html.append("</main>\n");
-        html.append("\n");
-        html.append("    <script src=\"https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js\"></script>\n");
-        html.append("    <script src=\"https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js\"></script>\n");
-        html.append("    <script src=\"./assets/jig-bundle.js\"></script>\n");
-        html.append("    <script src=\"./data/navigation-data.js\"></script>\n");
-        html.append("    <script src=\"./data/summary-data.js\"></script>\n");
-        html.append("    <script src=\"./data/package-data.js\"></script>\n");
-        html.append("    <script src=\"./data/glossary-data.js\"></script>\n");
-        html.append("    <script src=\"./assets/index.js\"></script>\n");
-        html.append("\n");
-        html.append("</body>\n");
-        html.append("</html>\n");
-
-        Path outputFilePath = indexFilePath(outputDirectory);
-        try (BufferedWriter writer = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8)) {
-            writer.write(JigDocumentWriter.applyAssetVersion(html.toString()));
+    private String loadIndexTemplate() {
+        try (InputStream is = JigDocumentWriter.getResourceAsStream("templates/index.html")) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

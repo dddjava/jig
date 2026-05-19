@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>JIG</title>
+</head>
+<body class="index">
+
+<header>
+    <h1>JIG</h1>
+    <p><span data-i18n>出力日時</span>: <span id="jig-timestamp" data-jig-timestamp="{{timestamp}}">{{timestamp}}</span> Version: {{version}}</p>
+    <p id="jig-source"></p>
+</header>
+
+<main>
+    <section id="document-links">
+        <ul></ul>
+    </section>
+{{diagrams_section}}
+</main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+    <script src="./assets/jig-bundle.js"></script>
+    <script src="./data/navigation-data.js"></script>
+    <script src="./data/summary-data.js"></script>
+    <script src="./data/package-data.js"></script>
+    <script src="./data/glossary-data.js"></script>
+    <script src="./assets/index.js"></script>
+
+</body>
+</html>

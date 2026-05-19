@@ -28,25 +28,25 @@
 
     <div class="controls">
         <div class="control-row">
-            <label class="control-label" for="package-depth-select">階層集約:</label>
+            <label class="control-label" for="package-depth-select" data-i18n>階層集約:</label>
             <select id="package-depth-select"></select>
             <button type="button" id="depth-up-button">▲</button>
             <button type="button" id="depth-down-button">▼</button>
         </div>
         <div class="control-row">
-            <label class="radio-label">
+            <label class="radio-label" data-i18n>
                 <input type="checkbox" id="show-java-standard-toggle"> Java 標準（java.*, javax.*）を表示
             </label>
         </div>
         <div class="control-row">
-            <button type="button" id="clear-selection-button">ライブラリの選択を解除</button>
+            <button type="button" id="clear-selection-button" data-i18n>ライブラリの選択を解除</button>
         </div>
     </div>
 
     <pre id="library-dependency-diagram" class="mermaid"></pre>
 
     <section id="library-list">
-        <h2>ライブラリ一覧</h2>
+        <h2 data-i18n>ライブラリ一覧</h2>
         <table id="library-table">
             <thead>
             <tr>

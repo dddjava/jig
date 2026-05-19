@@ -114,6 +114,11 @@ globalThis.Jig.i18n = (() => {
             "由来": "Origin",
             "関連ドキュメント": "Related document",
             "ソースコード": "Source code",
+            // library-dependency controls
+            "階層集約:": "Aggregation level:",
+            "Java 標準（java.*, javax.*）を表示": "Show Java standard (java.*, javax.*)",
+            "ライブラリの選択を解除": "Clear library selection",
+            "ライブラリ一覧": "Library list",
             // 他のサイドバー section タイトル
             "永続化操作対象": "Persistence targets",
             "外部型": "External types",

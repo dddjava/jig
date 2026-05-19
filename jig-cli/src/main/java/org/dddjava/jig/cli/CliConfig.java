@@ -16,7 +16,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 @Component
 class CliConfig {
@@ -38,12 +37,8 @@ class CliConfig {
     @Value("${directory.sources:}")
     String directorySources;
 
-    @Value("${mode:default}")
-    List<Mode> mode = List.of(Mode.DEFAULT);
-
     public String propertiesText() {
         return """
-                mode=%s
                 jig.document.types=%s
                 jig.pattern.domain=%s
                 jig.output.directory=%s
@@ -51,7 +46,6 @@ class CliConfig {
                 directory.classes=%s
                 directory.resources=%s
                 directory.sources=%s""".formatted(
-                mode,
                 documentTypeText,
                 modelPattern,
                 outputDirectory,
@@ -62,12 +56,6 @@ class CliConfig {
     }
 
     Configuration configuration() {
-        // modeを適用
-        if (mode.contains(Mode.LIGHT)) {
-            documentTypeText = "PackageRelation";
-            modelPattern = ".*";
-        }
-
         PartialJigSettings explicit = PartialJigSettings.builder()
                 .outputDirectory(outputDirectory.isEmpty() ? null : Path.of(outputDirectory))
                 .domainPattern(modelPattern)

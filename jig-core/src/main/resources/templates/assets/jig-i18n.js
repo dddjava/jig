@@ -108,6 +108,12 @@ globalThis.Jig.i18n = (() => {
             "エントリーポイント": "Entry point",
             "出力ポート / 操作": "Outbound port / operation",
             "列挙値": "Enum values",
+            // glossary attribute meta
+            "属性情報": "Attributes",
+            "単純名": "Simple name",
+            "由来": "Origin",
+            "関連ドキュメント": "Related document",
+            "ソースコード": "Source code",
             // 他のサイドバー section タイトル
             "永続化操作対象": "Persistence targets",
             "外部型": "External types",

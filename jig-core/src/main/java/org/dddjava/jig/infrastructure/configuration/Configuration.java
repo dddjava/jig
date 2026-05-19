@@ -21,7 +21,7 @@ public record Configuration(
     public static Configuration from(JigProperties jigProperties) {
         JigProperties properties = new JigPropertyLoader(jigProperties).load();
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
-        JigEventRepository jigEventRepository = new JigEventRepository();
+        JigEventRepository jigEventRepository = new JigEventRepository(properties.locale());
 
         CoreDomainCondition architecture = new CoreDomainCondition(properties.getDomainPattern());
         JigService jigService = new JigService(architecture, jigEventRepository);

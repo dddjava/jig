@@ -1,37 +1,37 @@
 package org.dddjava.jig.domain.model.sources;
 
+import org.dddjava.jig.domain.model.documents.LocalizedMessage;
+
 import java.util.Locale;
 
 /**
  * 読み取り結果
  */
 public enum ReadStatus {
-    テキストソースなし(
+    テキストソースなし(new LocalizedMessage(
             "テキストソース(*.javaなど)が見つかりませんでした。ソースディレクトリの指定を確認してください。このメッセージが出る場合、テキストソース由来の情報が出力できません。",
-            "Text Source file(*.java, etc) was not found. Check the specification of the source directory. If this message appears, alias can not be output."),
-    バイナリソースなし(
+            "Text Source file(*.java, etc) was not found. Check the specification of the source directory. If this message appears, alias can not be output.")),
+    バイナリソースなし(new LocalizedMessage(
             "バイナリソース(*.class)が見つかりませんでした。出力ディレクトリの指定を確認してください。",
-            "Binary Source file(*.class) was not found. Check the output directory specification."),
-    SQLなし(
+            "Binary Source file(*.class) was not found. Check the output directory specification.")),
+    SQLなし(new LocalizedMessage(
             "SQLが見つかりませんでした。SQLを実装していない場合やMyBatis・Spring Data JDBCを使用していない場合は正常です。CRUDに関わる情報が出力されません。",
-            "SQL was not found. It is normal if you do not implement SQL or if you are not using MyBatis/Spring Data JDBC. If this message appears, CRUD is not output in the data source list."),
-    SQL読み込み一部失敗(
+            "SQL was not found. It is normal if you do not implement SQL or if you are not using MyBatis/Spring Data JDBC. If this message appears, CRUD is not output in the data source list.")),
+    SQL読み込み一部失敗(new LocalizedMessage(
             "SQLの読み込みに一部失敗しました。CRUDの出力に欠落が存在します。",
-            "Partial loading of SQL failed. There is a missing in the output of CRUD."),
-    SQL読み込み失敗(
+            "Partial loading of SQL failed. There is a missing in the output of CRUD.")),
+    SQL読み込み失敗(new LocalizedMessage(
             "SQLの読み込みに失敗しました。CRUDは出力されません。",
-            "SQL reading failed. CRUD is not output.");
+            "SQL reading failed. CRUD is not output."));
 
-    private final String message;
+    private final LocalizedMessage message;
 
-    ReadStatus(String... messages) {
-        Locale locale = Locale.getDefault();
-        boolean isEnglish = locale.getLanguage().equals("en");
-        this.message = isEnglish ? messages[1] : messages[0];
+    ReadStatus(LocalizedMessage message) {
+        this.message = message;
     }
 
-    public String localizedMessage() {
-        return message;
+    public String localizedMessage(Locale locale) {
+        return message.forLocale(locale);
     }
 
     public boolean isError() {

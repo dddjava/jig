@@ -24,7 +24,7 @@ class LocalFileFilesystemSourcesFactoryTest {
                 new SourceBasePath(Collections.singletonList(invalidJavaPath))
         );
 
-        var jigEventRepository = Mockito.spy(new JigEventRepository());
+        var jigEventRepository = Mockito.spy(new JigEventRepository(java.util.Locale.JAPANESE));
         ClassOrJavaSourceCollector sut = new ClassOrJavaSourceCollector(jigEventRepository);
         FilesystemSources source = sut.collectSources(sourceBasePaths);
 

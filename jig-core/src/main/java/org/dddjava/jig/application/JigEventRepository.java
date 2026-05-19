@@ -1,6 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Repository;
+import org.dddjava.jig.domain.model.documents.LocalizedMessage;
 import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,11 @@ public class JigEventRepository {
 
     private final Collection<ReadStatus> readStatuses = EnumSet.noneOf(ReadStatus.class);
     private final Set<Warning> warnings = new HashSet<>();
+    private final Locale locale;
+
+    public JigEventRepository(Locale locale) {
+        this.locale = locale;
+    }
 
     public void registerコアドメインが見つからない() {
         warnings.add(Warning.ビジネスルールが見つからないので出力されない通知);
@@ -35,12 +41,12 @@ public class JigEventRepository {
     }
 
     public void notifyWithLogger() {
-        warnings.stream().map(Warning::localizedMessage).forEach(logger::warn);
+        warnings.stream().map(w -> w.localizedMessage(locale)).forEach(logger::warn);
     }
 
     public void recordEvent(ReadStatus readStatus) {
         readStatuses.add(readStatus);
-        var message = readStatus.localizedMessage();
+        var message = readStatus.localizedMessage(locale);
         if (readStatus.isError()) {
             logger.error(message);
         } else {
@@ -66,30 +72,28 @@ public class JigEventRepository {
      * ユーザーへの警告
      */
     private enum Warning {
-        ハンドラメソッドが見つからないので出力されない通知(
+        ハンドラメソッドが見つからないので出力されない通知(new LocalizedMessage(
                 "リクエストハンドラメソッドが見つからないため、コントローラーに関わる情報は出力されません。@Controllerや@RestControllerがない場合は正常です。",
-                "Request handler method cannot be found. Request handler method requires class annotated by @Controller or @RestController, and method annotated by @RequestMapping."),
-        サービスメソッドが見つからないので出力されない通知(
+                "Request handler method cannot be found. Request handler method requires class annotated by @Controller or @RestController, and method annotated by @RequestMapping.")),
+        サービスメソッドが見つからないので出力されない通知(new LocalizedMessage(
                 "サービスメソッドが見つからないため、サービスに関わる情報は出力されません。@Serviceがない場合は正常です。",
-                "Service method cannot be found. Service method requires class annotated by @Service."),
-        ビジネスルールが見つからないので出力されない通知(
+                "Service method cannot be found. Service method requires class annotated by @Service.")),
+        ビジネスルールが見つからないので出力されない通知(new LocalizedMessage(
                 "ビジネスルールが識別できないため、パッケージ関連図を出力できません。パッケージ構成を確認してください。",
-                "Business Rule cannot be found. Please check the package layout."),
-        リポジトリが見つからないので出力されない通知(
+                "Business Rule cannot be found. Please check the package layout.")),
+        リポジトリが見つからないので出力されない通知(new LocalizedMessage(
                 "Repositoryのメソッドが見つからないため、データソースに関わる情報は出力されません。@Repositoryがない場合は正常です。",
-                "Repository method cannot be found."),
+                "Repository method cannot be found.")),
         ;
 
-        private final String message;
+        private final LocalizedMessage message;
 
-        Warning(String japaneseMessage, String englishMessage) {
-            Locale locale = Locale.getDefault();
-            boolean isEnglish = locale.getLanguage().equals("en");
-            this.message = isEnglish ? englishMessage : japaneseMessage;
+        Warning(LocalizedMessage message) {
+            this.message = message;
         }
 
-        public String localizedMessage() {
-            return message;
+        public String localizedMessage(Locale locale) {
+            return message.forLocale(locale);
         }
     }
 }

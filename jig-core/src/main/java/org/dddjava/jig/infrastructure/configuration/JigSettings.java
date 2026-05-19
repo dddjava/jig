@@ -22,4 +22,16 @@ public record JigSettings(
         List<JigDocument> documentTypes,
         Locale locale
 ) {
+
+    /**
+     * jig-core が持つフィールド既定値の集まり。{@link JigSettingsLoader} の最低優先度層として使われる。
+     *
+     * 出力先は jig-core の関心ではないため含めない（呼び出し側で必ず供給する）。
+     */
+    public static PartialJigSettings defaults() {
+        return PartialJigSettings.builder()
+                .documentTypes(JigDocument.canonical())
+                .locale(Locale.JAPANESE)
+                .build();
+    }
 }

@@ -1,8 +1,8 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,7 +23,7 @@ class IndexAdapterTest {
 
     @Test
     void 出力対象がない場合は一覧セクションを出力しない() throws IOException {
-        var sut = new IndexAdapter(new JigDocumentWriter(tempDir));
+        var sut = new IndexAdapter(new JigDocumentWriter(tempDir, Locale.JAPANESE));
 
         sut.render(List.of(), GitRepositoryInfo.empty(), Locale.JAPANESE);
 
@@ -38,7 +38,7 @@ class IndexAdapterTest {
 
     @Test
     void ローカルアセット参照にはキャッシュバスティングのクエリを付ける() throws IOException {
-        var sut = new IndexAdapter(new JigDocumentWriter(tempDir));
+        var sut = new IndexAdapter(new JigDocumentWriter(tempDir, Locale.JAPANESE));
 
         sut.render(List.of(), GitRepositoryInfo.empty(), Locale.JAPANESE);
 
@@ -52,7 +52,7 @@ class IndexAdapterTest {
 
     @Test
     void 出力対象がある場合は対応する一覧セクションを出力する() throws IOException {
-        var sut = new IndexAdapter(new JigDocumentWriter(tempDir));
+        var sut = new IndexAdapter(new JigDocumentWriter(tempDir, Locale.JAPANESE));
         var results = List.of(
                 HandleResult.withOutput(JigDocument.PackageRelation, List.of(Path.of("package.html"))),
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html")))

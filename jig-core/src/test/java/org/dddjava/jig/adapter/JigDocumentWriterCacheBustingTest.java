@@ -7,10 +7,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JigDocumentWriterCacheBustingTest {
 
@@ -19,7 +18,7 @@ class JigDocumentWriterCacheBustingTest {
 
     @Test
     void HTMLコピー時にローカルアセット参照へバージョンクエリを付与する() throws IOException {
-        JigDocumentWriter sut = new JigDocumentWriter(tempDir);
+        JigDocumentWriter sut = new JigDocumentWriter(tempDir, Locale.JAPANESE);
         sut.copyResourceTo("templates/", "glossary.html", tempDir);
 
         String html = Files.readString(tempDir.resolve("glossary.html"), StandardCharsets.UTF_8);
@@ -35,17 +34,17 @@ class JigDocumentWriterCacheBustingTest {
 
     @Test
     void インスタンスごとにassetVersionが異なる() throws Exception {
-        String first = new JigDocumentWriter(tempDir).assetVersion();
+        String first = new JigDocumentWriter(tempDir, Locale.JAPANESE).assetVersion();
         // System.currentTimeMillis() の解像度より十分長く待つ
         Thread.sleep(5);
-        String second = new JigDocumentWriter(tempDir).assetVersion();
+        String second = new JigDocumentWriter(tempDir, Locale.JAPANESE).assetVersion();
 
         assertNotEquals(first, second, "assetVersion はインスタンスごとに変わる必要がある");
     }
 
     @Test
     void 非HTMLリソースはバイトコピーのまま変更しない() throws IOException {
-        new JigDocumentWriter(tempDir).copyResourceTo("templates/assets/", "style.css", tempDir);
+        new JigDocumentWriter(tempDir, Locale.JAPANESE).copyResourceTo("templates/assets/", "style.css", tempDir);
 
         byte[] copied = Files.readAllBytes(tempDir.resolve("style.css"));
         byte[] original;

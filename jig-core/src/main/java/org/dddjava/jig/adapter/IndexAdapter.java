@@ -3,8 +3,8 @@ package org.dddjava.jig.adapter;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
-import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class IndexAdapter {
                 documentLinks.put(handleResult.jigDocument(), handleResult.outputFileNames().get(0));
             }
         }
-        write(documentLinks, outputDirectory, locale);
+        write(documentLinks, outputDirectory);
         writeNavigationData(documentLinks, outputDirectory, locale);
         writeSummaryData(gitRepositoryInfo, outputDirectory);
     }
@@ -48,12 +48,12 @@ public class IndexAdapter {
     }
 
     private static final String DIAGRAMS_SECTION = """
-                <section id="diagrams">
-                    <h2 data-i18n>主要パッケージ関連図</h2>
-                    <div id="package-diagram"></div>
-                </section>""";
+            <section id="diagrams">
+                <h2 data-i18n>主要パッケージ関連図</h2>
+                <div id="package-diagram"></div>
+            </section>""";
 
-    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
+    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory) {
         String timestampText = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS)
                 .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         String diagramsSection = documentLinks.containsKey(JigDocument.PackageRelation)
@@ -61,14 +61,13 @@ public class IndexAdapter {
                 : "";
 
         String html = loadIndexTemplate()
-                .replace("{{lang}}", locale.getLanguage())
                 .replace("{{timestamp}}", timestampText)
                 .replace("{{version}}", resolveJigVersion())
                 .replace("{{diagrams_section}}", diagramsSection);
 
         try {
             Files.writeString(indexFilePath(outputDirectory),
-                    writer.applyAssetVersion(html), StandardCharsets.UTF_8);
+                    writer.resolvePlaceholders(html), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

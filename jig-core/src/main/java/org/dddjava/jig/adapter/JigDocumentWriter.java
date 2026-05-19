@@ -9,15 +9,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Locale;
 
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     private final Path outputDirectory;
+    private final Locale locale;
     private final String assetVersion;
 
-    public JigDocumentWriter(Path outputDirectory) {
+    public JigDocumentWriter(Path outputDirectory, Locale locale) {
         this.outputDirectory = outputDirectory;
+        this.locale = locale;
         this.assetVersion = Long.toString(System.currentTimeMillis());
     }
 
@@ -57,7 +60,7 @@ public class JigDocumentWriter {
             Files.createDirectories(outputPath.getParent());
             if (fileName.endsWith(".html")) {
                 String html = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-                Files.writeString(outputPath, applyAssetVersion(html), StandardCharsets.UTF_8);
+                Files.writeString(outputPath, resolvePlaceholders(html), StandardCharsets.UTF_8);
             } else {
                 Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -68,11 +71,14 @@ public class JigDocumentWriter {
     }
 
     /**
+     * テンプレートのプレースホルダー処理
+     *
      * テンプレート HTML 中の {@code {{assetVersion}}} プレースホルダを現在のバージョン値で置換する。
      * 各テンプレートはローカルアセット参照に明示的に {@code ?v={{assetVersion}}} を書いておく。
      */
-    String applyAssetVersion(String html) {
-        return html.replace("{{assetVersion}}", assetVersion);
+    String resolvePlaceholders(String html) {
+        return html.replace("{{lang}}", locale.getLanguage())
+                .replace("{{assetVersion}}", assetVersion);
     }
 
     public static InputStream getResourceAsStream(String absolutePath) {

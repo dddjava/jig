@@ -5,9 +5,9 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.datajs.DataAdapterResolver;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
-import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -27,7 +27,7 @@ public class JigDocumentGenerator {
         this.outputDirectory = jigDocumentContext.outputDirectory();
         this.locale = jigDocumentContext.locale();
         this.dataAdapterResolver = new DataAdapterResolver(jigService);
-        this.writer = new JigDocumentWriter(outputDirectory);
+        this.writer = new JigDocumentWriter(outputDirectory, jigDocumentContext.locale());
     }
 
     public JigResult generate(JigRepository jigRepository, GitRepositoryInfo gitRepositoryInfo) {

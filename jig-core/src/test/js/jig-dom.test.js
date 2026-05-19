@@ -2,16 +2,23 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {JSDOM} = require('jsdom');
 
+// bundle に含まれる順で並べる。reloadJigModules で require.cache クリア → 再 require する。
+const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-glossary.js', 'jig-i18n.js', 'jig-dom.js'];
+
+function modulePath(name) {
+    return require.resolve(`../../main/resources/templates/assets/${name}`);
+}
+
+function reloadJigModules() {
+    ASSET_MODULES.forEach(m => delete require.cache[modulePath(m)]);
+    delete globalThis.Jig;
+    ASSET_MODULES.forEach(m => require(modulePath(m)));
+}
+
 test.describe('jig-dom.js', () => {
     let Jig;
 
     test.beforeEach(() => {
-        // 前のテストの require キャッシュをクリア
-        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
-        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
-        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
-        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
-
         // jsdom でブラウザ環境をセットアップ
         const dom = new JSDOM(`
             <!DOCTYPE html>
@@ -30,21 +37,12 @@ test.describe('jig-dom.js', () => {
         global.document = dom.window.document;
         global.location = dom.window.location;
 
-        // モック設定
         global.marked = {
             parse: (text) => `<p>${text}</p>`
         };
         global.navigationData = undefined;
 
-        // グローバルデータをクリア（テスト間での汚染防止）
-        delete globalThis.Jig;
-
-        // jig-glossary.js の Jig オブジェクト初期化
-        require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        require('../../main/resources/templates/assets/jig-glossary.js');
-        require('../../main/resources/templates/assets/jig-dom.js');
-
+        reloadJigModules();
         Jig = global.Jig;
     });
 
@@ -680,12 +678,6 @@ test.describe('jig-dom.js', () => {
 
     test.describe('initCommonUi - setupHeaderNavigation', () => {
         test('navigationData.links からナビゲーションドロップダウンを生成', () => {
-            // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
-
             const dom = new JSDOM(`
                 <!DOCTYPE html>
                 <html>
@@ -700,6 +692,7 @@ test.describe('jig-dom.js', () => {
             global.window = dom.window;
             global.document = dom.window.document;
             global.location = dom.window.location;
+            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 links: [
                     {href: 'glossary.html', label: 'Glossary'},
@@ -707,13 +700,8 @@ test.describe('jig-dom.js', () => {
                     {href: 'insight.html', label: 'Insight'}
                 ]
             };
-            delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        require('../../main/resources/templates/assets/jig-glossary.js');
-            require('../../main/resources/templates/assets/jig-dom.js');
-
+            reloadJigModules();
             global.Jig.dom.initCommonUi();
 
             const nav = document.querySelector('.jig-header-nav');
@@ -724,12 +712,6 @@ test.describe('jig-dom.js', () => {
         });
 
         test('body.index クラスがある場合、ナビは生成されない', () => {
-            // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
-
             const dom = new JSDOM(`
                 <!DOCTYPE html>
                 <html>
@@ -744,29 +726,19 @@ test.describe('jig-dom.js', () => {
             global.window = dom.window;
             global.document = dom.window.document;
             global.location = dom.window.location;
+            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 links: [{href: 'index.html', label: 'Index'}]
             };
-            delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        require('../../main/resources/templates/assets/jig-glossary.js');
-            require('../../main/resources/templates/assets/jig-dom.js');
-
+            reloadJigModules();
             global.Jig.dom.initCommonUi();
 
-            const nav = document.querySelector('.jig-header-nav');
+            const nav = document.querySelector('.jig-header-nav:not(.jig-lang-switcher)');
             assert.equal(nav, null);
         });
 
         test('navigationData がない場合、ナビは生成されない', () => {
-            // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
-
             const dom = new JSDOM(`
                 <!DOCTYPE html>
                 <html>
@@ -781,27 +753,17 @@ test.describe('jig-dom.js', () => {
             global.window = dom.window;
             global.document = dom.window.document;
             global.location = dom.window.location;
+            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = undefined;
-            delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-util.js');
-        require('../../main/resources/templates/assets/jig-data.js');
-        require('../../main/resources/templates/assets/jig-glossary.js');
-            require('../../main/resources/templates/assets/jig-dom.js');
-
+            reloadJigModules();
             global.Jig.dom.initCommonUi();
 
-            const nav = document.querySelector('.jig-header-nav');
+            const nav = document.querySelector('.jig-header-nav:not(.jig-lang-switcher)');
             assert.equal(nav, null);
         });
 
         test('nav の trigger とリンクに data-i18n が付与される', () => {
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-i18n.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
-
             const dom = new JSDOM(`
                 <!DOCTYPE html>
                 <html>
@@ -824,14 +786,8 @@ test.describe('jig-dom.js', () => {
                     {href: 'domain.html', label: 'ドメインモデル'}
                 ]
             };
-            delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-util.js');
-            require('../../main/resources/templates/assets/jig-data.js');
-            require('../../main/resources/templates/assets/jig-glossary.js');
-            require('../../main/resources/templates/assets/jig-i18n.js');
-            require('../../main/resources/templates/assets/jig-dom.js');
-
+            reloadJigModules();
             global.Jig.dom.initCommonUi();
 
             const trigger = document.querySelector('.jig-header-nav__trigger');
@@ -846,20 +802,6 @@ test.describe('jig-dom.js', () => {
     });
 
     test.describe('initCommonUi - setupLanguageSwitcher', () => {
-        function loadAll() {
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-i18n.js')];
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
-            delete globalThis.Jig;
-            require('../../main/resources/templates/assets/jig-util.js');
-            require('../../main/resources/templates/assets/jig-data.js');
-            require('../../main/resources/templates/assets/jig-glossary.js');
-            require('../../main/resources/templates/assets/jig-i18n.js');
-            require('../../main/resources/templates/assets/jig-dom.js');
-        }
-
         test('ヘッダ右上に言語スイッチャーが生成される', () => {
             const dom = new JSDOM(`
                 <!DOCTYPE html>
@@ -877,7 +819,7 @@ test.describe('jig-dom.js', () => {
             global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {locale: 'ja', links: []};
 
-            loadAll();
+            reloadJigModules();
             global.Jig.dom.initCommonUi();
 
             const switcher = document.querySelector('.jig-lang-switcher');
@@ -907,7 +849,7 @@ test.describe('jig-dom.js', () => {
                 links: [],
             };
 
-            loadAll();
+            reloadJigModules();
             global.Jig.dom.initCommonUi();
 
             const switcher = document.querySelector('.jig-lang-switcher');

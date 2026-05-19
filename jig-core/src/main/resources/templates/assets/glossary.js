@@ -47,7 +47,7 @@ const GlossaryApp = (() => {
     function createMetaItem(label, value) {
         return Jig.dom.createElement("div", {
             children: [
-                Jig.dom.createElement("span", {className: "meta-label", textContent: label, i18n: true}),
+                Jig.dom.i18nText("span", label, {className: "meta-label"}),
                 typeof value === "string"
                     ? Jig.dom.createElement("span", {className: "meta-value", textContent: value})
                     : value,
@@ -162,11 +162,9 @@ const GlossaryApp = (() => {
                         fqn === root || fqn.startsWith(root + ".")
                     );
                     if (isInDomain) {
-                        metaItems.push(createMetaItem("関連ドキュメント", Jig.dom.createElement("a", {
+                        metaItems.push(createMetaItem("関連ドキュメント", Jig.dom.i18nText("a", "ドメインモデル", {
                             className: "meta-value",
                             attributes: {href: "domain.html#" + Jig.util.fqnToId("domain", fqn)},
-                            textContent: "ドメインモデル",
-                            i18n: true,
                         })));
                     }
                 }
@@ -185,7 +183,7 @@ const GlossaryApp = (() => {
                     metaItems.forEach(item => metaCard.appendChild(item));
                     const details = Jig.dom.createElement("details", {
                         children: [
-                            Jig.dom.createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報", i18n: true}),
+                            Jig.dom.i18nText("summary", "属性情報", {className: "term-attributes-toggle"}),
                             metaCard
                         ]
                     });

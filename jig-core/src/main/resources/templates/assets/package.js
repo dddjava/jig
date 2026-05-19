@@ -441,7 +441,7 @@ const PackageApp = (() => {
                             tabSection.panels['diagram'].appendChild(Jig.dom.createElement('fieldset', {
                                 className: 'diagram-panel-options',
                                 children: [
-                                    Jig.dom.createElement('legend', {textContent: '表示する関連', i18n: true}),
+                                    Jig.dom.i18nText('legend', '表示する関連'),
                                     Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardCheckbox, `${item.titles[0]} → ${item.titles[1]} (${item.causesForward.length}件)`]}),
                                     Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardCheckbox, `${item.titles[0]} ← ${item.titles[1]} (${item.causesBackward.length}件)`]}),
                                 ],
@@ -480,9 +480,9 @@ const PackageApp = (() => {
                 className: 'mutual-dependency-stats',
                 children: [
                     Jig.dom.createElement('thead', {children: [Jig.dom.createElement('tr', {children: [
-                        Jig.dom.createElement('th', {textContent: 'パッケージ', i18n: true}),
-                        Jig.dom.createElement('th', {textContent: 'クラス', i18n: true}),
-                        Jig.dom.createElement('th', {textContent: '関連', i18n: true}),
+                        Jig.dom.i18nText('th', 'パッケージ'),
+                        Jig.dom.i18nText('th', 'クラス'),
+                        Jig.dom.i18nText('th', '関連'),
                     ]})]}),
                     Jig.dom.createElement('tbody', {children: item.titles.map((title, i) =>
                         Jig.dom.createElement('tr', {children: [
@@ -504,7 +504,7 @@ const PackageApp = (() => {
             return tabSection.section;
         });
         const details = Jig.dom.createElement('details', {className: 'jig-card jig-card--type'});
-        details.appendChild(Jig.dom.createElement('summary', {textContent: '相互依存分析', i18n: true}));
+        details.appendChild(Jig.dom.i18nText('summary', '相互依存分析'));
         sections.forEach(section => details.appendChild(section));
         container.innerHTML = '';
         container.appendChild(details);
@@ -1409,7 +1409,7 @@ const PackageApp = (() => {
                             children: [document.createTextNode(key + ' '), input]
                         });
                     }
-                    return Jig.dom.createElement('th', {textContent: key, i18n: true});
+                    return Jig.dom.i18nText('th', key);
                 })
             });
             table.prepend(colgroup, Jig.dom.createElement('thead', {children: [tr]}));

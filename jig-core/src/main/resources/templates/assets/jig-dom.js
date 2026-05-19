@@ -51,6 +51,15 @@ globalThis.Jig.dom = (() => {
         return createElement("td", {className, textContent: text});
     }
 
+    /**
+     * textContent を i18n キー（日本語）として翻訳対象にする要素を生成する高レベル API。
+     * createElement(tag, {textContent: key, i18n: true, ...options}) のショートカット。
+     * children を伴う複合要素や label の mixed content では createElement に i18n: true を直接渡す。
+     */
+    function i18nText(tagName, key, options = {}) {
+        return createElement(tagName, {...options, textContent: key, i18n: true});
+    }
+
     // --- Markdown ---
 
     function parseMarkdown(markdown) {
@@ -222,9 +231,9 @@ globalThis.Jig.dom = (() => {
         return createElement("dl", {
             className: "entrypoint-item__io",
             children: [
-                createElement("dt", {textContent: "入力", i18n: true}),
+                i18nText("dt", "入力"),
                 inputDd,
-                createElement("dt", {textContent: "出力", i18n: true}),
+                i18nText("dt", "出力"),
                 createElement("dd", {children: [createElementForTypeRef(returnTypeRef)]})
             ]
         });
@@ -272,7 +281,7 @@ globalThis.Jig.dom = (() => {
         return createElement(tagName, {
             id,
             className: ["jig-card", "jig-card--item", extraClass].filter(Boolean).join(" "),
-            children: title !== undefined ? [createElement("h4", {textContent: title, i18n: true})] : []
+            children: title !== undefined ? [i18nText("h4", title)] : []
         });
     }
 
@@ -318,7 +327,7 @@ globalThis.Jig.dom = (() => {
     function buildCollapsibleTitle(title, links) {
         return createElement("p", {
             className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-            children: [createElement("span", {textContent: title, i18n: true}), createSidebarToggle(links)]
+            children: [i18nText("span", title), createSidebarToggle(links)]
         });
     }
 
@@ -341,7 +350,7 @@ globalThis.Jig.dom = (() => {
 
         const titleEl = !title ? null
             : collapsible ? buildCollapsibleTitle(title, links)
-            : createElement("p", {className: "in-page-sidebar__title", textContent: title, i18n: true});
+            : i18nText("p", title, {className: "in-page-sidebar__title"});
 
         return createElement("section", {
             className: "in-page-sidebar__section",
@@ -418,10 +427,8 @@ globalThis.Jig.dom = (() => {
             panels[tab.id] = createElement("div", {
                 className: ["jig-tab-panel", tab.id !== activeId ? "hidden" : null].filter(Boolean).join(" ")
             });
-            const btn = createElement("button", {
+            const btn = i18nText("button", tab.label, {
                 className: ["jig-tab", tab.id === activeId ? "active" : null].filter(Boolean).join(" "),
-                textContent: tab.label,
-                i18n: true,
             });
             buttons.push(btn);
             btn.addEventListener('click', () => {
@@ -569,11 +576,7 @@ globalThis.Jig.dom = (() => {
             : pageTitleEl.textContent;
 
         // ラベルは日本語キー（textContent）で描画し i18n マーカーで翻訳対象にする
-        const trigger = createElement("span", {
-            className: "jig-header-nav__trigger",
-            textContent: triggerLabel,
-            i18n: true
-        });
+        const trigger = i18nText("span", triggerLabel, {className: "jig-header-nav__trigger"});
         const {wrapper, dropdown} = createDropdownNav(trigger);
 
         navigationData.links.forEach(link => {
@@ -584,8 +587,8 @@ globalThis.Jig.dom = (() => {
 
             const isCurrent = (href === normalizedCurrent);
             const child = isCurrent
-                ? createElement("span", {textContent: label, i18n: true})
-                : createElement("a", {textContent: label, attributes: {href}, i18n: true});
+                ? i18nText("span", label)
+                : i18nText("a", label, {attributes: {href}});
             appendDropdownItem(dropdown, child, isCurrent);
         });
 
@@ -688,6 +691,7 @@ globalThis.Jig.dom = (() => {
     return {
         createElement,
         createCell,
+        i18nText,
         parseMarkdown,
         createMarkdownElement,
         escapeCsvValue,

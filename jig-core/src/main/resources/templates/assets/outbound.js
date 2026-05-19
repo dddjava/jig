@@ -504,7 +504,7 @@ const OutboundApp = (() => {
 
         const headerRow = Jig.dom.createElement("tr", {
             children: [
-                Jig.dom.createElement("th", {textContent: "出力ポート / 操作", i18n: true}),
+                Jig.dom.i18nText("th", "出力ポート / 操作"),
                 ...allPersistenceTargets.map(persistenceTarget => Jig.dom.createElement("th", {
                     id: `crud-target-${persistenceTarget}`,
                     textContent: persistenceTarget

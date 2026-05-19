@@ -236,7 +236,7 @@ const ListOutputApp = (() => {
         const thead = Jig.dom.createElement("thead");
         const tr = Jig.dom.createElement("tr");
         headers.forEach(headerText => {
-            const th = Jig.dom.createElement("th", {textContent: headerText, i18n: true});
+            const th = Jig.dom.i18nText("th", headerText);
             tr.appendChild(th);
         });
         thead.appendChild(tr);

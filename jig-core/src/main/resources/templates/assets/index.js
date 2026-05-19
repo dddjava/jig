@@ -26,7 +26,7 @@ const IndexApp = (() => {
             // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
             const heading = Jig.dom.createElement("h3", {
                 children: [
-                    Jig.dom.createElement("span", {textContent: titleLabelKey, i18n: true}),
+                    Jig.dom.i18nText("span", titleLabelKey),
                     document.createTextNode(": " + packageRoot)
                 ]
             });
@@ -83,11 +83,7 @@ const IndexApp = (() => {
         links.forEach(link => {
             const li = Jig.dom.createElement("li", {
                 children: [
-                    Jig.dom.createElement("a", {
-                        attributes: {href: link.href},
-                        textContent: link.label,
-                        i18n: true
-                    })
+                    Jig.dom.i18nText("a", link.label, {attributes: {href: link.href}})
                 ]
             });
             ul.appendChild(li);

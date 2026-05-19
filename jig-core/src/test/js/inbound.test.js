@@ -177,6 +177,7 @@ test.describe('inbound.js', () => {
         globalThis.Jig.dom = {
             createElement,
             createCell: (text, className) => createElement('td', {className: className || undefined, textContent: text}),
+            i18nText: (tag, key, options = {}) => createElement(tag, {...options, textContent: key}),
             parseMarkdown: (markdown) => String(markdown ?? ''),
             createMarkdownElement: (markdown) => createElement('div', {
                 className: 'markdown',

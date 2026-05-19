@@ -29,10 +29,10 @@ class CliRunner {
 
     void run() {
         Configuration configuration = cliConfig.configuration();
-        logger.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
-
         long startTime = System.currentTimeMillis();
         SourceBasePaths sourceBasePaths = cliConfig.rawSourceLocations();
+        logger.info("-- configuration -------------------------------------------\nsettings: {}\nsources: {}\n------------------------------------------------------------",
+                configuration.settings(), sourceBasePaths);
 
         JigResult jigResult = JigExecutor.standard(configuration, sourceBasePaths);
         List<HandleResult> handleResultList = jigResult.listResult();

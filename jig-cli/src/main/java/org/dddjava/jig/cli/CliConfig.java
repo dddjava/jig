@@ -37,24 +37,6 @@ class CliConfig {
     @Value("${directory.sources:}")
     String directorySources;
 
-    public String propertiesText() {
-        return """
-                jig.document.types=%s
-                jig.pattern.domain=%s
-                jig.output.directory=%s
-                project.path=%s
-                directory.classes=%s
-                directory.resources=%s
-                directory.sources=%s""".formatted(
-                documentTypeText,
-                modelPattern,
-                outputDirectory,
-                projectPath,
-                directoryClasses,
-                directoryResources,
-                directorySources);
-    }
-
     Configuration configuration() {
         PartialJigSettings explicit = PartialJigSettings.builder()
                 .outputDirectory(outputDirectory.isEmpty() ? null : Path.of(outputDirectory))

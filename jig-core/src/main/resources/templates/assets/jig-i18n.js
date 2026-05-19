@@ -66,6 +66,48 @@ globalThis.Jig.i18n = (() => {
             "CSV出力": "Export CSV",
             "用語一覧": "Terms",
             "絞り込み": "Filter",
+            // タブ見出し
+            "パッケージ関連図": "Package relations",
+            "パッケージ内パッケージ関連図": "Inner package relations",
+            "パッケージ内クラス関連図": "Inner class relations",
+            "クラス関連図": "Class relations",
+            "クラス図": "Class diagram",
+            "概要": "Overview",
+            "テキスト": "Text",
+            "シミュレーション": "Simulation",
+            "ユースケース図": "Usecase diagram",
+            "シーケンス図": "Sequence diagram",
+            "staticメソッド": "Static methods",
+            // テーブルヘッダ
+            "名前": "Name",
+            "名称": "Name",
+            "完全修飾名": "FQN",
+            "クラス数": "Classes",
+            "メソッド数": "Methods",
+            "使用クラス数": "Used classes",
+            "使用クラス数(Ce)": "Used classes (Ce)",
+            "被使用クラス数(Ca)": "Used by (Ca)",
+            "不安定性(I)": "Instability (I)",
+            "凝集度欠如(LCOM)": "LCOM",
+            "循環的複雑度": "Cyclomatic complexity",
+            "循環的複雑度合計": "Total cyclomatic complexity",
+            "規模": "Size",
+            "規模合計": "Total size",
+            "使用メソッド数": "Used methods",
+            "使用フィールド数": "Used fields",
+            "自クラスフィールド使用数": "Own field uses",
+            "自クラスメソッド呼び出し数": "Own method calls",
+            "関連数（依存元）": "Dependents (in)",
+            "関連数（依存先）": "Dependencies (out)",
+            "定義名": "Declaration",
+            "ライブラリ": "Library",
+            "含まれるパッケージ": "Packages",
+            "呼び出し元クラス": "Caller classes",
+            "列挙定数名": "Enum constant",
+            "パス": "Path",
+            "エントリーポイント": "Entry point",
+            "出力ポート / 操作": "Outbound port / operation",
+            "列挙値": "Enum values",
             // 他のサイドバー section タイトル
             "永続化操作対象": "Persistence targets",
             "外部型": "External types",
@@ -75,6 +117,8 @@ globalThis.Jig.i18n = (() => {
 
     // セッション中のみ保持する現在言語（永続化しない）。
     let currentLang = null;
+    // apply() 実行中フラグ。MutationObserver による無限ループを避けるため。
+    let applying = false;
 
     function resolveDictionary(lang) {
         const builtin = builtinDictionaries[lang];
@@ -160,11 +204,17 @@ globalThis.Jig.i18n = (() => {
     }
 
     function apply() {
-        const lang = resolveLanguage();
-        document.documentElement.lang = lang;
-        const dict = lang === "ja" ? null : resolveDictionary(lang);
-        // <title data-i18n> も document 全体のクエリで一緒に処理される
-        translate(document, dict);
+        if (applying) return;
+        applying = true;
+        try {
+            const lang = resolveLanguage();
+            document.documentElement.lang = lang;
+            const dict = lang === "ja" ? null : resolveDictionary(lang);
+            // <title data-i18n> も document 全体のクエリで一緒に処理される
+            translate(document, dict);
+        } finally {
+            applying = false;
+        }
     }
 
     function currentLanguage() {
@@ -191,6 +241,22 @@ globalThis.Jig.i18n = (() => {
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
         globalThis.Jig.i18n.apply();
+        // 動的に挿入された data-i18n / data-i18n-attr 要素も翻訳する。
+        // 要素ノード追加に限定することで apply 自身が起こす text node 差し替えのループを避ける。
+        if (typeof MutationObserver !== "undefined") {
+            let scheduled = false;
+            const observer = new MutationObserver(mutations => {
+                const elementAdded = mutations.some(m =>
+                    Array.from(m.addedNodes).some(n => n.nodeType === 1));
+                if (!elementAdded || scheduled) return;
+                scheduled = true;
+                queueMicrotask(() => {
+                    scheduled = false;
+                    globalThis.Jig.i18n.apply();
+                });
+            });
+            observer.observe(document.body, {childList: true, subtree: true});
+        }
     });
 }
 

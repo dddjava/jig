@@ -421,6 +421,7 @@ globalThis.Jig.dom = (() => {
             const btn = createElement("button", {
                 className: ["jig-tab", tab.id === activeId ? "active" : null].filter(Boolean).join(" "),
                 textContent: tab.label,
+                i18n: true,
             });
             buttons.push(btn);
             btn.addEventListener('click', () => {

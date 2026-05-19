@@ -606,7 +606,7 @@ const DomainApp = (() => {
         return Jig.dom.createElement("table", {
             children: [
                 Jig.dom.createElement("thead", {
-                    children: [Jig.dom.createElement("tr", {children: [Jig.dom.createElement("th", {textContent: "名前"})]})]
+                    children: [Jig.dom.createElement("tr", {children: [Jig.dom.createElement("th", {textContent: "名前", i18n: true})]})]
                 }),
                 tbody
             ]
@@ -642,7 +642,7 @@ const DomainApp = (() => {
             const thead = Jig.dom.createElement("thead", {
                 children: [Jig.dom.createElement("tr", {
                     children: [
-                        Jig.dom.createElement("th", {textContent: "列挙定数名"}),
+                        Jig.dom.createElement("th", {textContent: "列挙定数名", i18n: true}),
                         ...parameterNames.map(name => Jig.dom.createElement("th", {textContent: name}))
                     ]
                 })]

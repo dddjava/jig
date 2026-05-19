@@ -319,7 +319,7 @@ const InboundApp = (() => {
             children: [
                 Jig.dom.createElement("thead", {
                     children: [Jig.dom.createElement("tr", {
-                        children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
+                        children: headers.map(h => Jig.dom.createElement("th", {textContent: h, i18n: true}))
                     })]
                 }),
                 Jig.dom.createElement("tbody", {
@@ -354,7 +354,7 @@ const InboundApp = (() => {
             children: [
                 Jig.dom.createElement("thead", {
                     children: [Jig.dom.createElement("tr", {
-                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.createElement("th", {textContent: h}))
+                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.createElement("th", {textContent: h, i18n: true}))
                     })]
                 }),
                 tbody

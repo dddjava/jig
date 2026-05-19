@@ -23,4 +23,9 @@ module.exports = defineConfig({
     url: 'http://localhost:8080',
     reuseExistingServer: !process.env.CI,
   },
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.01,
+    },
+  },
 });

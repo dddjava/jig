@@ -78,13 +78,15 @@ const IndexApp = (() => {
             const li = Jig.dom.createElement("li", {
                 children: [
                     Jig.dom.createElement("a", {
-                        attributes: {href: link.href},
+                        attributes: {href: link.href, "data-i18n": ""},
                         textContent: link.label
                     })
                 ]
             });
             ul.appendChild(li);
         });
+        // 動的に挿入した data-i18n 要素を初期ロード時の locale に追従させる
+        Jig.i18n?.apply?.();
     }
 
     function init() {

@@ -31,6 +31,10 @@ globalThis.Jig.dom = (() => {
                 element.setAttribute(key, value);
             }
         }
+        // i18n: true で data-i18n マーカーを付与（textContent をキーとして翻訳対象にする）
+        if (options.i18n) {
+            element.setAttribute("data-i18n", options.i18n === true ? "" : String(options.i18n));
+        }
         if (options.style) {
             Object.assign(element.style, options.style);
         }
@@ -536,12 +540,11 @@ globalThis.Jig.dom = (() => {
             ? String(currentLink.label)
             : pageTitleEl.textContent;
 
-        // ラベルは日本語キーで描画し data-i18n を付与する。
-        // ラベル文字列自体が翻訳対象キーになるため、属性値は空（""）にして textContent をキーとして使う。
+        // ラベルは日本語キー（textContent）で描画し i18n マーカーで翻訳対象にする
         const trigger = createElement("span", {
             className: "jig-header-nav__trigger",
             textContent: triggerLabel,
-            attributes: {"data-i18n": ""}
+            i18n: true
         });
 
         const dropdown = createElement("ul", {
@@ -557,8 +560,8 @@ globalThis.Jig.dom = (() => {
 
             const isCurrent = (href === normalizedCurrent);
             const child = isCurrent
-                ? createElement("span", {textContent: label, attributes: {"data-i18n": ""}})
-                : createElement("a", {textContent: label, attributes: {href, "data-i18n": ""}});
+                ? createElement("span", {textContent: label, i18n: true})
+                : createElement("a", {textContent: label, attributes: {href}, i18n: true});
             dropdown.appendChild(createElement("li", {
                 className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
                 children: [child]

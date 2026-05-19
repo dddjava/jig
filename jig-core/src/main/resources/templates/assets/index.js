@@ -78,8 +78,9 @@ const IndexApp = (() => {
             const li = Jig.dom.createElement("li", {
                 children: [
                     Jig.dom.createElement("a", {
-                        attributes: {href: link.href, "data-i18n": ""},
-                        textContent: link.label
+                        attributes: {href: link.href},
+                        textContent: link.label,
+                        i18n: true
                     })
                 ]
             });

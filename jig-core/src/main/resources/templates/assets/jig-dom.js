@@ -222,9 +222,9 @@ globalThis.Jig.dom = (() => {
         return createElement("dl", {
             className: "entrypoint-item__io",
             children: [
-                createElement("dt", {textContent: "入力"}),
+                createElement("dt", {textContent: "入力", i18n: true}),
                 inputDd,
-                createElement("dt", {textContent: "出力"}),
+                createElement("dt", {textContent: "出力", i18n: true}),
                 createElement("dd", {children: [createElementForTypeRef(returnTypeRef)]})
             ]
         });
@@ -272,7 +272,7 @@ globalThis.Jig.dom = (() => {
         return createElement(tagName, {
             id,
             className: ["jig-card", "jig-card--item", extraClass].filter(Boolean).join(" "),
-            children: title !== undefined ? [createElement("h4", {textContent: title})] : []
+            children: title !== undefined ? [createElement("h4", {textContent: title, i18n: true})] : []
         });
     }
 

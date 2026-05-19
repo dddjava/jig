@@ -11,14 +11,49 @@ import java.util.List;
  */
 public enum JigDocument {
 
+    /**
+     * 用語集
+     */
     Glossary("用語集", "glossary"),
+
+    /**
+     * パッケージ関連
+     */
     PackageRelation("パッケージ関連", "package"),
+
+    /**
+     * ドメインモデル
+     */
     DomainModel("ドメインモデル", "domain"),
+
+    /**
+     * ユースケース
+     */
     Usecase("ユースケース", "usecase"),
+
+    /**
+     * 入力インタフェース
+     */
     InboundInterface("入力インタフェース", "inbound"),
+
+    /**
+     * 出力インタフェース
+     */
     OutboundInterface("出力インタフェース", "outbound"),
+
+    /**
+     * インサイト
+     */
     Insight("インサイト", "insight"),
+
+    /**
+     * 一覧出力
+     */
     ListOutput("一覧出力", "list-output"),
+
+    /**
+     * ライブラリ依存情報
+     */
     LibraryDependency("ライブラリ依存情報", "library-dependency");
 
     private final String label;

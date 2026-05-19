@@ -115,7 +115,7 @@ test.describe('jig-i18n.js', () => {
     test('setLanguage で切り替えられ、ja に戻すと原文が復元する', () => {
         setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
+        globalThis.navigationData = {locale: 'ja', links: []};
 
         Jig.apply();
         assert.equal(document.querySelector('h1').textContent, 'インサイト');
@@ -136,7 +136,7 @@ test.describe('jig-i18n.js', () => {
     test('setLanguage は jig:locale-change イベントを発火する', () => {
         setupDom('<h1 data-i18n>インサイト</h1>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
+        globalThis.navigationData = {locale: 'ja', links: []};
 
         const received = [];
         document.addEventListener('jig:locale-change', e => received.push(e.detail?.lang));
@@ -147,15 +147,7 @@ test.describe('jig-i18n.js', () => {
         assert.deepEqual(received, ['en', 'ja']);
     });
 
-    test('availableLanguages は navigationData.availableLocales を返す', () => {
-        setupDom('');
-        Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
-
-        assert.deepEqual(Jig.availableLanguages(), ['ja', 'en']);
-    });
-
-    test('availableLanguages: navigationData 未設定なら builtin と ja から導出', () => {
+    test('availableLanguages は ja と builtinDictionaries のキーから導出する', () => {
         setupDom('');
         Jig = loadI18n();
 

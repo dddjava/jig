@@ -100,29 +100,20 @@ public class IndexAdapter {
         }
     }
 
-    /**
-     * クライアントで切り替えられるサポート言語。
-     */
-    private static final List<Locale> SUPPORTED_LOCALES = List.of(Locale.JAPANESE, Locale.ENGLISH);
-
     private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
         try {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
             // links のラベルは日本語（カノニカルキー）で出力し、クライアント i18n が翻訳する。
+            // サポート言語は JS 側 builtinDictionaries に集約しているため、ここでは出力しない。
             List<JsonObjectBuilder> linkObjects = Arrays.stream(JigDocument.values())
                     .map(doc -> Optional.ofNullable(documentLinks.get(doc))
                             .map(href -> Json.object("href", href).and("label", doc.label())))
                     .flatMap(Optional::stream)
                     .toList();
 
-            List<String> availableLocales = SUPPORTED_LOCALES.stream()
-                    .map(Locale::toLanguageTag)
-                    .toList();
-
             String json = Json.object("locale", locale.toLanguageTag())
-                    .and("availableLocales", Json.array(availableLocales))
                     .and("links", Json.arrayObjects(linkObjects))
                     .build();
 

@@ -169,12 +169,8 @@ globalThis.Jig.i18n = (() => {
         return toLangCode(tag);
     }
 
+    // サポート言語は ja（カノニカルキー）と builtinDictionaries のキー集合から導出する。
     function availableLanguages() {
-        const fromData = globalThis.Jig?.data?.navigation?.get?.()?.availableLocales;
-        if (Array.isArray(fromData) && fromData.length > 0) {
-            return fromData.map(toLangCode);
-        }
-        // navigation-data 未提供時のフォールバック（主にテスト経路）。
         return ["ja", ...Object.keys(builtinDictionaries)];
     }
 

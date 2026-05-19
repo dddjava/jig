@@ -819,7 +819,6 @@ test.describe('jig-dom.js', () => {
             global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 locale: 'ja',
-                availableLocales: ['ja', 'en'],
                 links: [
                     {href: 'glossary.html', label: '用語集'},
                     {href: 'domain.html', label: 'ドメインモデル'}
@@ -876,7 +875,7 @@ test.describe('jig-dom.js', () => {
             global.document = dom.window.document;
             global.location = dom.window.location;
             global.CustomEvent = dom.window.CustomEvent;
-            global.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
+            global.navigationData = {locale: 'ja', links: []};
 
             loadAll();
             global.Jig.dom.initCommonUi();
@@ -905,7 +904,6 @@ test.describe('jig-dom.js', () => {
             global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 locale: 'ja',
-                availableLocales: ['ja', 'en'],
                 links: [],
             };
 

@@ -3,7 +3,9 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.dddjava.jig.infrastructure.configuration.JigSettings;
+import org.dddjava.jig.infrastructure.configuration.JigSettingsLoader;
+import org.dddjava.jig.infrastructure.configuration.PartialJigSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 class CliConfig {
@@ -25,7 +26,7 @@ class CliConfig {
     String documentTypeText;
     @Value("${jig.pattern.domain:}")
     String modelPattern;
-    @Value("${jig.output.directory}")
+    @Value("${jig.output.directory:}")
     String outputDirectory;
 
     @Value("${project.path}")
@@ -60,12 +61,6 @@ class CliConfig {
                 directorySources);
     }
 
-    List<JigDocument> jigDocuments() {
-        return documentTypeText.isEmpty()
-                ? JigDocument.canonical()
-                : JigDocument.resolve(documentTypeText);
-    }
-
     Configuration configuration() {
         // modeを適用
         if (mode.contains(Mode.LIGHT)) {
@@ -73,12 +68,14 @@ class CliConfig {
             modelPattern = ".*";
         }
 
-        return Configuration.from(
-                new JigProperties(
-                        jigDocuments(),
-                        Optional.ofNullable(modelPattern).filter(s -> !s.isEmpty()),
-                        Paths.get(this.outputDirectory)
-                ));
+        PartialJigSettings.Builder explicit = PartialJigSettings.builder()
+                .outputDirectoryFromString(outputDirectory)
+                .domainPattern(modelPattern);
+        if (!documentTypeText.isEmpty()) {
+            explicit.documentTypes(JigDocument.resolve(documentTypeText));
+        }
+        JigSettings settings = JigSettingsLoader.loadStandard(explicit.build());
+        return Configuration.from(settings);
     }
 
     SourceBasePaths rawSourceLocations() {

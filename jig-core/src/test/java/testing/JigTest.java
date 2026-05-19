@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.dddjava.jig.infrastructure.configuration.JigSettings;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.junit.jupiter.api.extension.*;
 
@@ -19,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,8 +39,12 @@ public @interface JigTest {
 
         public JigTestExtension() throws Exception {
             Path tempDir = Files.createTempDirectory("jig");
-            Configuration configuration = Configuration.from(
-                    new JigProperties(JigDocument.canonical(), Optional.of("stub.domain.model.+"), tempDir));
+            JigSettings settings = new JigSettings(
+                    tempDir,
+                    Optional.of("stub.domain.model.+"),
+                    JigDocument.canonical(),
+                    Locale.JAPANESE);
+            Configuration configuration = Configuration.from(settings);
             parameterTypeSupplierMap = Map.of(
                     Configuration.class, () -> configuration,
                     SourceBasePaths.class, () -> TestSupport.getRawSourceLocations(),
@@ -49,7 +54,7 @@ public @interface JigTest {
                     },
                     GlossaryRepository.class, () -> configuration.glossaryRepository(),
                     JigEventRepository.class, () -> configuration.jigEventRepository(),
-                    JigProperties.class, () -> configuration.properties(),
+                    JigSettings.class, () -> configuration.settings(),
                     JigDocumentGenerator.class, () -> configuration.jigDocumentGenerator(),
                     JigService.class, () -> configuration.jigService(),
                     JigDocumentContext.class, () -> configuration.jigDocumentContext()

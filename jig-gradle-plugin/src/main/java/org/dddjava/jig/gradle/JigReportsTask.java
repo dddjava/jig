@@ -7,7 +7,9 @@ import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.dddjava.jig.infrastructure.configuration.JigSettings;
+import org.dddjava.jig.infrastructure.configuration.JigSettingsLoader;
+import org.dddjava.jig.infrastructure.configuration.PartialJigSettings;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DirectoryProperty;
@@ -19,7 +21,6 @@ import org.gradle.work.DisableCachingByDefault;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
@@ -60,16 +61,16 @@ public abstract class JigReportsTask extends DefaultTask {
         List<JigDocument> documentTypes = resolveDocumentTypes();
         Path outputDirectory = getOutputDirectory().getAsFile().get().toPath();
 
-        JigProperties jigProperties = new JigProperties(
-                documentTypes,
-                Optional.ofNullable(getModelPattern().getOrNull()).filter(s -> !s.isEmpty()),
-                outputDirectory
-        );
-
-        Configuration configuration = Configuration.from(jigProperties);
+        PartialJigSettings explicit = PartialJigSettings.builder()
+                .outputDirectory(outputDirectory)
+                .domainPattern(getModelPattern().getOrNull())
+                .documentTypes(documentTypes)
+                .build();
+        JigSettings settings = JigSettingsLoader.loadStandard(explicit);
+        Configuration configuration = Configuration.from(settings);
 
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------",
-                jigProperties);
+                settings);
 
         long startTime = System.currentTimeMillis();
 

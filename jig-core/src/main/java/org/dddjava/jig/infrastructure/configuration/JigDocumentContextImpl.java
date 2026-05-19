@@ -9,24 +9,24 @@ import java.util.Locale;
 
 public class JigDocumentContextImpl implements JigDocumentContext {
 
-    private final JigProperties properties;
+    private final JigSettings settings;
 
-    public JigDocumentContextImpl(JigProperties properties) {
-        this.properties = properties;
+    public JigDocumentContextImpl(JigSettings settings) {
+        this.settings = settings;
     }
 
     @Override
     public Path outputDirectory() {
-        return properties.outputDirectory;
+        return settings.outputDirectory();
     }
 
     @Override
     public List<JigDocument> jigDocuments() {
-        return properties.jigDocuments;
+        return settings.documentTypes();
     }
 
     @Override
     public Locale locale() {
-        return properties.locale();
+        return settings.locale();
     }
 }

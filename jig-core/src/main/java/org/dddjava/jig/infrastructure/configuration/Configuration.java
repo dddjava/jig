@@ -12,27 +12,26 @@ import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryReposit
 public record Configuration(
         GlossaryRepository glossaryRepository,
         JigEventRepository jigEventRepository,
-        JigProperties properties,
+        JigSettings settings,
         JigDocumentGenerator jigDocumentGenerator,
         JigService jigService,
         JigDocumentContext jigDocumentContext
 ) {
 
-    public static Configuration from(JigProperties jigProperties) {
-        JigProperties properties = new JigPropertyLoader(jigProperties).load();
+    public static Configuration from(JigSettings settings) {
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
-        JigEventRepository jigEventRepository = new JigEventRepository(properties.locale());
+        JigEventRepository jigEventRepository = new JigEventRepository(settings.locale());
 
-        CoreDomainCondition architecture = new CoreDomainCondition(properties.getDomainPattern());
+        CoreDomainCondition architecture = new CoreDomainCondition(settings.domainPattern());
         JigService jigService = new JigService(architecture, jigEventRepository);
 
-        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(properties);
+        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(settings);
         JigDocumentGenerator jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
 
         return new Configuration(
                 glossaryRepository,
                 jigEventRepository,
-                properties,
+                settings,
                 jigDocumentGenerator,
                 jigService,
                 jigDocumentContext

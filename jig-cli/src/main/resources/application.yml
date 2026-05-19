@@ -3,15 +3,8 @@ logging:
     root: WARN
     org.dddjava.jig: INFO
 
-jig:
-  # Output targets (multiple specifications with commas)
-  #document:
-  #  types: PackageRelation,ListOutput
-  output:
-    directory: ./build/jig
-  # Domain class pattern (regular expression)
-  #pattern:
-  #  domain: .+\.domain\.(model|type)\..+
+# JIG 自身の設定（jig.*）はコード内デフォルト・jig.properties・CLI 引数で指定する。
+# 優先順位: CLI 引数 > {user.dir}/jig.properties > {user.home}/.jig/jig.properties > コード内デフォルト
 
 # Root directory to read information
 project:

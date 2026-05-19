@@ -907,7 +907,6 @@ test.describe('jig-dom.js', () => {
                 locale: 'ja',
                 availableLocales: ['ja', 'en'],
                 links: [],
-                translations: {en: {'インサイト': 'Insight'}}
             };
 
             loadAll();

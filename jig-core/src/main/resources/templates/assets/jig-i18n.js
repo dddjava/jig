@@ -153,11 +153,7 @@ globalThis.Jig.i18n = (() => {
     let currentLang = null;
 
     function resolveDictionary(lang) {
-        const builtin = builtinDictionaries[lang];
-        if (!builtin) return null;
-        const serverAll = globalThis.Jig?.data?.navigation?.get?.()?.translations;
-        const serverForLang = serverAll && typeof serverAll === "object" ? serverAll[lang] : null;
-        return serverForLang ? {...builtin, ...serverForLang} : builtin;
+        return builtinDictionaries[lang] || null;
     }
 
     function resolveLanguage() {

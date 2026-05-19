@@ -48,7 +48,7 @@ test.describe('jig-i18n.js', () => {
     test('data-i18n を持つ要素のみ翻訳する', () => {
         setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: [], translations: {en: {'インサイト': 'Insight'}}};
+        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
@@ -82,7 +82,7 @@ test.describe('jig-i18n.js', () => {
     test('locale 未指定なら <html lang> をフォールバックに使う', () => {
         setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'en'});
         Jig = loadI18n();
-        globalThis.navigationData = {translations: {en: {'インサイト': 'Insight'}}};
+        globalThis.navigationData = {};
 
         Jig.apply();
 
@@ -101,23 +101,21 @@ test.describe('jig-i18n.js', () => {
         assert.equal(document.querySelector('dd').textContent, 'フィールド');
     });
 
-    test('builtin と server の翻訳がマージされる', () => {
+    test('複数の data-i18n 要素が辞書から翻訳される', () => {
         setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: [], translations: {en: {'インサイト': 'Insight'}}};
+        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
-        // server 由来
         assert.equal(document.querySelector('h1').textContent, 'Insight');
-        // builtin 由来
         assert.equal(document.querySelector('button').textContent, 'Input');
     });
 
     test('setLanguage で切り替えられ、ja に戻すと原文が復元する', () => {
         setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: [], translations: {en: {'インサイト': 'Insight'}}};
+        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
 
         Jig.apply();
         assert.equal(document.querySelector('h1').textContent, 'インサイト');
@@ -138,7 +136,7 @@ test.describe('jig-i18n.js', () => {
     test('setLanguage は jig:locale-change イベントを発火する', () => {
         setupDom('<h1 data-i18n>インサイト</h1>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: [], translations: {en: {'インサイト': 'Insight'}}};
+        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
 
         const received = [];
         document.addEventListener('jig:locale-change', e => received.push(e.detail?.lang));

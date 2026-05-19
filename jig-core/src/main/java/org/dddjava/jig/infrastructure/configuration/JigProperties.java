@@ -38,7 +38,8 @@ public class JigProperties {
     Locale locale;
 
     public JigProperties(List<JigDocument> jigDocuments, Optional<String> domainPattern, Path outputDirectory) {
-        this(jigDocuments, domainPattern, outputDirectory, Locale.JAPANESE);
+        // locale 未指定。override は null をスキップするため、設定ファイル側の指定が活きる。
+        this(jigDocuments, domainPattern, outputDirectory, null);
     }
 
     public JigProperties(List<JigDocument> jigDocuments, Optional<String> domainPattern, Path outputDirectory, Locale locale) {
@@ -53,7 +54,7 @@ public class JigProperties {
     }
 
     public Locale locale() {
-        return locale;
+        return locale != null ? locale : Locale.JAPANESE;
     }
 
     public Optional<String> getDomainPattern() {

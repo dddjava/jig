@@ -95,7 +95,14 @@ public class JigPropertyLoader {
                 jigProperties.jigDocuments = JigDocument.resolve(value);
                 break;
             case LOCALE:
-                jigProperties.locale = Locale.forLanguageTag(value);
+                Locale parsedLocale = Locale.forLanguageTag(value);
+                if (parsedLocale.getLanguage().isEmpty()) {
+                    // forLanguageTag は空文字や不正タグに対して Locale.ROOT を返す。
+                    // 言語コード未設定のまま採用すると <html lang=""> 出力や辞書引きの不整合を招くため拒否する。
+                    logger.warn("jig.locale=\"{}\" は不正な言語タグです。設定を無視します。", value);
+                } else {
+                    jigProperties.locale = parsedLocale;
+                }
                 break;
         }
     }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -106,6 +107,30 @@ class JigPropertyLoaderTest {
         assertEquals(defaultProperties.getDomainPattern(), loadedProperties.getDomainPattern());
         assertEquals(defaultProperties.jigDocuments, loadedProperties.jigDocuments);
         assertEquals(defaultProperties.outputDirectory, loadedProperties.outputDirectory);
+    }
+
+    @Test
+    void 設定ファイルでlocaleに有効な言語タグを指定すると反映される() throws IOException {
+        Path homeConfigDir = tempDir.resolve(".jig");
+        Files.createDirectory(homeConfigDir);
+        Files.writeString(homeConfigDir.resolve("jig.properties"), "jig.locale=en-US\n");
+
+        var 何も指定しない = new JigProperties(List.of(), Optional.empty(), Path.of(""));
+        JigProperties loaded = new JigPropertyLoader(何も指定しない).load();
+
+        assertEquals(Locale.forLanguageTag("en-US"), loaded.locale());
+    }
+
+    @Test
+    void 設定ファイルでlocaleに空文字を指定すると無視されデフォルトが残る() throws IOException {
+        Path homeConfigDir = tempDir.resolve(".jig");
+        Files.createDirectory(homeConfigDir);
+        Files.writeString(homeConfigDir.resolve("jig.properties"), "jig.locale=\n");
+
+        var 何も指定しない = new JigProperties(List.of(), Optional.empty(), Path.of(""));
+        JigProperties loaded = new JigPropertyLoader(何も指定しない).load();
+
+        assertEquals(Locale.JAPANESE, loaded.locale(), "不正なタグはデフォルト Locale.JAPANESE を維持する");
     }
 
     @Test

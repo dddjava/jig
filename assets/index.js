@@ -12,7 +12,6 @@ const IndexApp = (() => {
         const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
-        domainPackageDiagram.innerHTML = "";
         const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,
@@ -28,6 +27,42 @@ const IndexApp = (() => {
             packageDiagramContainer.insertBefore(Jig.dom.createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
             Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
         }
+    }
+
+    function renderSummary() {
+        const sourceEl = document.getElementById("jig-source");
+        if (sourceEl) {
+            const git = Jig.data.summary.getGit();
+            sourceEl.replaceChildren();
+            if (git) {
+                sourceEl.appendChild(document.createTextNode("Source: "));
+                if (git.remote) {
+                    const remote = git.remote;
+                    if (remote.baseUrl) {
+                        sourceEl.appendChild(Jig.dom.createElement("a", {
+                            attributes: {href: remote.baseUrl},
+                            textContent: remote.displayName || remote.baseUrl
+                        }));
+                    } else {
+                        sourceEl.appendChild(Jig.dom.createElement("code", {textContent: remote.rawUrl}));
+                    }
+                }
+                if (git.shortHash) {
+                    if (git.remote) sourceEl.appendChild(document.createTextNode(" @ "));
+                    const codeEl = Jig.dom.createElement("code", {textContent: git.shortHash});
+                    const commitUrl = git.remote && git.remote.commitUrl;
+                    if (commitUrl) {
+                        sourceEl.appendChild(Jig.dom.createElement("a", {
+                            attributes: {href: commitUrl},
+                            children: [codeEl]
+                        }));
+                    } else {
+                        sourceEl.appendChild(codeEl);
+                    }
+                }
+            }
+        }
+
     }
 
     function renderDocumentLinks() {
@@ -53,10 +88,7 @@ const IndexApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("index")) {
-            return;
-        }
-
+        renderSummary();
         renderDocumentLinks();
 
         const packageDiagramContainer = document.getElementById("package-diagram");
@@ -125,8 +157,4 @@ const IndexApp = (() => {
     };
 })();
 
-if (typeof document !== 'undefined') {
-    document.addEventListener("DOMContentLoaded", () => {
-        IndexApp.init();
-    });
-}
+Jig.bootstrap.register("index", IndexApp.init);

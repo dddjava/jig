@@ -574,56 +574,55 @@ const OutboundApp = (() => {
         container.appendChild(Jig.dom.createElement("p", {className: "weak", textContent: "データなし"}));
     }
 
-    function generatePortMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
-        const builder = new Jig.mermaid.Builder();
-        builder.applyThemeClassDefs();
+    /**
+     * builder の生成・テーマ適用・空チェック・build を共通化する。
+     * populate(builder, showPhysicalName) でダイアグラム固有のノード/エッジを追加する。
+     */
+    function buildOutboundMermaid(visibility, populate) {
+        const builder = Jig.mermaid.createBuilder();
         const showPhysicalName = visibility.showPhysicalName ?? false;
-        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
-        const portFqn = group.outboundPort.fqn;
-        const portLabel = typeLabel(portFqn);
-
-        const contexts = {
-            portSubgraphs: new Map(),
-            adapterSubgraphs: new Map(),
-            accessorSubgraphs: new Map(),
-            accessorNodes: new Map(),
-            persistenceTargetNodes: new Map(),
-            extAccessorNodes: new Map(),
-            extAccessorSubgraphs: new Map(),
-            extTypeNodes: new Map(),
-            usecaseSubgraphs: new Map(),
-            usecaseNodes: new Map(),
-            usecaseEdges: new Set(),
-            methodFqnToNodeId: new Map()
-        };
-
-        group.operations.forEach((operation) => {
-            const props = extractOperationProps({...operation, outboundPort: group.outboundPort}, showPhysicalName);
-            const portOpFqn = props.portOpFqn;
-            const portOpName = props.portOpName;
-            const adapterFqn = props.adapterFqn;
-            const adapterLabel = props.adapterLabel;
-            const executionName = props.executionName;
-            const executionFqn = props.executionFqn;
-
-            let lastNodeId = addPortNode(builder, contexts.portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
-            addCallerUsecaseNodes(builder, lastNodeId, portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-            lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, contexts.adapterSubgraphs, contexts.methodFqnToNodeId);
-
-            operation.persistenceAccessors.forEach(op => {
-                const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, contexts.accessorSubgraphs, contexts.accessorNodes);
-                if (visibility.target) {
-                    addPersistenceTargetEdges(builder, currentNode, op, contexts.persistenceTargetNodes, visibility);
-                }
-            });
-
-            operation.externalAccessors.forEach(accessor => {
-                addExternalAccessorNode(builder, lastNodeId, accessor, visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
-            });
-        });
-
+        populate(builder, showPhysicalName);
         if (builder.isEmpty()) return null;
         return builder.build(visibility.direction);
+    }
+
+    function generatePortMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
+        return buildOutboundMermaid(visibility, (builder, showPhysicalName) => {
+            const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
+            const portFqn = group.outboundPort.fqn;
+            const portLabel = typeLabel(portFqn);
+
+            const portSubgraphs = new Map();
+            const adapterSubgraphs = new Map();
+            const accessorSubgraphs = new Map();
+            const accessorNodes = new Map();
+            const persistenceTargetNodes = new Map();
+            const extAccessorNodes = new Map();
+            const extAccessorSubgraphs = new Map();
+            const extTypeNodes = new Map();
+            const usecaseSubgraphs = new Map();
+            const usecaseNodes = new Map();
+            const usecaseEdges = new Set();
+            const methodFqnToNodeId = new Map();
+
+            group.operations.forEach((operation) => {
+                const props = extractOperationProps({...operation, outboundPort: group.outboundPort}, showPhysicalName);
+                let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, props.portOpFqn, props.portOpName, visibility);
+                addCallerUsecaseNodes(builder, lastNodeId, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges);
+                lastNodeId = addAdapterNode(builder, lastNodeId, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, adapterSubgraphs, methodFqnToNodeId);
+
+                operation.persistenceAccessors.forEach(op => {
+                    const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
+                    if (visibility.target) {
+                        addPersistenceTargetEdges(builder, currentNode, op, persistenceTargetNodes, visibility);
+                    }
+                });
+
+                operation.externalAccessors.forEach(accessor => {
+                    addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, methodFqnToNodeId);
+                });
+            });
+        });
     }
 
     function generateOperationMermaidCode(operation, visibility = state.visibility || DEFAULT_VISIBILITY) {
@@ -631,82 +630,78 @@ const OutboundApp = (() => {
     }
 
     function generatePersistenceMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
-        const builder = new Jig.mermaid.Builder();
-        builder.applyThemeClassDefs();
-        const showPhysicalName = visibility.showPhysicalName ?? false;
-        const persistenceTarget = group.persistenceTarget;
+        return buildOutboundMermaid(visibility, (builder, showPhysicalName) => {
+            const persistenceTarget = group.persistenceTarget;
 
-        const contexts = {
-            portSubgraphs: new Map(), adapterSubgraphs: new Map(),
-            accessorSubgraphs: new Map(), accessorNodes: new Map(),
-            persistenceTargetNodes: new Map(),
-            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set()
-        };
+            const portSubgraphs = new Map();
+            const adapterSubgraphs = new Map();
+            const accessorSubgraphs = new Map();
+            const accessorNodes = new Map();
+            const persistenceTargetNodes = new Map();
+            const usecaseSubgraphs = new Map();
+            const usecaseNodes = new Map();
+            const usecaseEdges = new Set();
 
-        group.operations.forEach((operation) => {
-            const props = extractOperationProps(operation, showPhysicalName);
-            operation.persistenceAccessors
-                .filter(op => persistenceTarget in op.targetOperationTypes)
-                .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
-                .forEach(op => {
-                    let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
-                    addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-                    currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs);
-                    currentNode = addAccessorNode(builder, currentNode, op, visibility, contexts.accessorSubgraphs, contexts.accessorNodes);
+            group.operations.forEach((operation) => {
+                const props = extractOperationProps(operation, showPhysicalName);
+                operation.persistenceAccessors
+                    .filter(op => persistenceTarget in op.targetOperationTypes)
+                    .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
+                    .forEach(op => {
+                        let currentNode = addPortNode(builder, portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
+                        addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges);
+                        currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, adapterSubgraphs);
+                        currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
-                    if (visibility.target) {
-                        addPersistenceTargetEdges(builder, currentNode, {
-                            targetOperationTypes: {[persistenceTarget]: op.targetOperationTypes[persistenceTarget]}
-                        }, contexts.persistenceTargetNodes, visibility);
-                    }
-                });
+                        if (visibility.target) {
+                            addPersistenceTargetEdges(builder, currentNode, {
+                                targetOperationTypes: {[persistenceTarget]: op.targetOperationTypes[persistenceTarget]}
+                            }, persistenceTargetNodes, visibility);
+                        }
+                    });
+            });
         });
-
-        if (builder.isEmpty()) return null;
-        return builder.build(visibility.direction);
     }
 
     function generateExternalTypeMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
-        const builder = new Jig.mermaid.Builder();
-        builder.applyThemeClassDefs();
-        const showPhysicalName = visibility.showPhysicalName ?? false;
-        const externalType = group.externalType;
+        return buildOutboundMermaid(visibility, (builder, showPhysicalName) => {
+            const externalType = group.externalType;
 
-        const contexts = {
-            portSubgraphs: new Map(), adapterSubgraphs: new Map(),
-            extAccessorNodes: new Map(), extAccessorSubgraphs: new Map(),
-            extTypeNodes: new Map(),
-            usecaseSubgraphs: new Map(), usecaseNodes: new Map(), usecaseEdges: new Set(),
-            methodFqnToNodeId: new Map()
-        };
+            const portSubgraphs = new Map();
+            const adapterSubgraphs = new Map();
+            const extAccessorNodes = new Map();
+            const extAccessorSubgraphs = new Map();
+            const extTypeNodes = new Map();
+            const usecaseSubgraphs = new Map();
+            const usecaseNodes = new Map();
+            const usecaseEdges = new Set();
+            const methodFqnToNodeId = new Map();
 
-        const filterToExternalType = accessor => ({
-            ...accessor,
-            operations: accessor.operations
-                .map(m => ({...m, externals: m.externals.filter(ext => ext.fqn === externalType.fqn)}))
-                .filter(m => m.externals.length > 0)
-        });
+            const filterToExternalType = accessor => ({
+                ...accessor,
+                operations: accessor.operations
+                    .map(m => ({...m, externals: m.externals.filter(ext => ext.fqn === externalType.fqn)}))
+                    .filter(m => m.externals.length > 0)
+            });
 
-        group.operations.forEach(operation => {
-            const relevantAccessors = operation.externalAccessors.filter(accessor =>
-                accessor.operations.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
+            group.operations.forEach(operation => {
+                const relevantAccessors = operation.externalAccessors.filter(accessor =>
+                    accessor.operations.some(accMethod => accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
 
-            const props = extractOperationProps(operation, showPhysicalName);
+                const props = extractOperationProps(operation, showPhysicalName);
 
-            relevantAccessors.forEach(accessor => {
-                let currentNode = addPortNode(builder, contexts.portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
-                addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, contexts.usecaseSubgraphs, contexts.usecaseNodes, contexts.usecaseEdges);
-                currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, contexts.adapterSubgraphs, contexts.methodFqnToNodeId);
-                addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
+                relevantAccessors.forEach(accessor => {
+                    let currentNode = addPortNode(builder, portSubgraphs, props.portFqn, props.portLabel, props.portOpFqn, props.portOpName, visibility);
+                    addCallerUsecaseNodes(builder, currentNode, props.portOpFqn, operation.outboundPortOperation.callerUsecases, visibility, usecaseSubgraphs, usecaseNodes, usecaseEdges);
+                    currentNode = addAdapterNode(builder, currentNode, props.adapterFqn, props.adapterLabel, props.executionFqn, props.executionName, visibility, adapterSubgraphs, methodFqnToNodeId);
+                    addExternalAccessorNode(builder, currentNode, filterToExternalType(accessor), visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, methodFqnToNodeId);
+                });
+            });
+
+            (group.directAccessors || []).forEach(accessor => {
+                addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, methodFqnToNodeId);
             });
         });
-
-        (group.directAccessors || []).forEach(accessor => {
-            addExternalAccessorNode(builder, null, filterToExternalType(accessor), visibility, contexts.extAccessorNodes, contexts.extAccessorSubgraphs, contexts.extTypeNodes, contexts.methodFqnToNodeId);
-        });
-
-        if (builder.isEmpty()) return null;
-        return builder.build(visibility.direction);
     }
 
     function extractOperationProps(operation, showPhysicalName = false) {
@@ -885,9 +880,6 @@ const OutboundApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined") return;
-        if (!document.body.classList.contains("outbound-interface")) return;
-
         Object.assign(state, INITIAL_STATE);
         state.visibility = {...DEFAULT_VISIBILITY};
         state.data = loadData();
@@ -979,9 +971,7 @@ const OutboundApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => OutboundApp.init());
-}
+Jig.bootstrap.register("outbound-interface", OutboundApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = OutboundApp;

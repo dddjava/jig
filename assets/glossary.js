@@ -169,6 +169,16 @@ const GlossaryApp = (() => {
                         })));
                     }
                 }
+                if (term.sourcePath) {
+                    const blobUrlPrefix = Jig.data.summary.getGit()?.blobUrlPrefix;
+                    if (blobUrlPrefix) {
+                        metaItems.push(createMetaItem("ソースコード", Jig.dom.createElement("a", {
+                            className: "meta-value",
+                            attributes: {href: `${blobUrlPrefix}/${term.sourcePath}`, target: "_blank", rel: "noopener"},
+                            textContent: term.sourcePath,
+                        })));
+                    }
+                }
                 if (metaItems.length > 0) {
                     const metaCard = Jig.dom.card.item({extraClass: "weak"});
                     metaItems.forEach(item => metaCard.appendChild(item));
@@ -241,10 +251,6 @@ const GlossaryApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("glossary")) {
-            return;
-        }
-
         const terms = getGlossaryData();
 
         const controls = {
@@ -334,11 +340,7 @@ const GlossaryApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => {
-        GlossaryApp.init();
-    });
-}
+Jig.bootstrap.register("glossary", GlossaryApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = GlossaryApp;

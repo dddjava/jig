@@ -151,10 +151,6 @@ const InsightApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined" || !document.body.classList.contains("insight")) {
-            return;
-        }
-
         const insightData = parseInsightData();
         if (insightData) {
             renderPackageInsights(insightData.packages || []);
@@ -184,11 +180,7 @@ const InsightApp = (() => {
     }
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => {
-        InsightApp.init();
-    });
-}
+Jig.bootstrap.register("insight", InsightApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = InsightApp;

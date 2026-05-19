@@ -1,0 +1,1 @@
+globalThis.summaryData = {"git":{"shortHash":"1efe7a0","blobUrlPrefix":"https://github.com/dddjava/jig/blob/1efe7a0","remote":{"rawUrl":"https://github.com/dddjava/jig","baseUrl":"https://github.com/dddjava/jig","displayName":"dddjava/jig","commitUrl":"https://github.com/dddjava/jig/commit/1efe7a0"}}};

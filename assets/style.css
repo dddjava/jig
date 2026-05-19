@@ -46,7 +46,7 @@ header.top {
     color: #FFF;
 }
 
-header a {
+header.top a {
     color: #FFF;
     font-size: 0.8em;
 }
@@ -1085,6 +1085,7 @@ label {
 
 /* パッケージ概要の表示設定 */
 .package-relation .controls,
+.library-dependency .controls,
 .package-relation details.usage {
     background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
     border: 1px solid #ccc;
@@ -1097,6 +1098,7 @@ label {
 }
 
 .package-relation .controls summary,
+.library-dependency .controls summary,
 .package-relation details.usage summary {
     list-style: none;
     cursor: pointer;
@@ -1105,19 +1107,23 @@ label {
 }
 
 .package-relation .controls > *,
+.library-dependency .controls > *,
 .package-relation details.usage > :not(summary) {
     display: block;
     margin: 8px 0;
 }
 
-.package-relation .controls .radio-label {
+.package-relation .controls .radio-label,
+.library-dependency .controls .radio-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
 .package-relation .controls input[type="text"],
-.package-relation .controls select {
+.package-relation .controls select,
+.library-dependency .controls input[type="text"],
+.library-dependency .controls select {
     padding: 6px 8px;
     border: 1px solid #bbb;
     border-radius: 6px;
@@ -1125,7 +1131,8 @@ label {
 }
 
 
-.package-relation .controls button {
+.package-relation .controls button,
+.library-dependency .controls button {
     padding: 6px 10px;
     border: 1px solid #888;
     border-radius: 6px;
@@ -1134,14 +1141,17 @@ label {
 }
 
 .package-relation .controls #depth-up-button,
-.package-relation .controls #depth-down-button {
+.package-relation .controls #depth-down-button,
+.library-dependency .controls #depth-up-button,
+.library-dependency .controls #depth-down-button {
     padding: 4px 8px;
     min-width: 32px;
     font-size: 14px;
     line-height: 1;
 }
 
-.package-relation .controls button:hover {
+.package-relation .controls button:hover,
+.library-dependency .controls button:hover {
     background-color: #e6e6e6;
 }
 
@@ -1234,7 +1244,8 @@ label {
     cursor: default;
 }
 
-.package-relation table {
+.package-relation table,
+.library-dependency table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
@@ -1242,7 +1253,8 @@ label {
     table-layout: fixed;
 }
 
-.package-relation td {
+.package-relation td,
+.library-dependency td {
     text-align: left;
     vertical-align: top;
     overflow-wrap: anywhere;
@@ -1250,16 +1262,19 @@ label {
     white-space: normal;
 }
 
-.package-relation tr:nth-child(even) {
+.package-relation tr:nth-child(even),
+.library-dependency tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
 @media (max-width: 720px) {
-    .package-relation .controls .control-row {
+    .package-relation .controls .control-row,
+    .library-dependency .controls .control-row {
         align-items: flex-start;
     }
 
-    .package-relation .controls .control-label {
+    .package-relation .controls .control-label,
+    .library-dependency .controls .control-label {
         width: 100%;
     }
 
@@ -2172,4 +2187,9 @@ p.jig-data-warning {
 .entrypoint-summary--http th:nth-child(2),
 .entrypoint-summary--http td:nth-child(2) {
     width: 5em;
+}
+
+/* 外部依存図で選択中の表行（共通の package-relation スタイルに上乗せ） */
+.library-dependency tr.is-selected {
+    background-color: #cfe9ff !important;
 }

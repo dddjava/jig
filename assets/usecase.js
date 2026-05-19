@@ -583,8 +583,7 @@ const UsecaseApp = (() => {
         return (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
             const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
-            const builder = new Jig.mermaid.Builder();
-            builder.applyThemeClassDefs();
+            const builder = Jig.mermaid.createBuilder();
             const classSubgraphs = new Map();
             const ensureClassSubgraph = (fqn) => {
                 const classFqn = getClassFqnFromMethodFqn(fqn);
@@ -759,8 +758,7 @@ const UsecaseApp = (() => {
     function createClassDiagramGenerator(classGraph) {
         return (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const builder = new Jig.mermaid.Builder();
-            builder.applyThemeClassDefs();
+            const builder = Jig.mermaid.createBuilder();
             classGraph.nodes.forEach(node => {
                 const nodeId = fqnToNodeId(node.fqn);
                 if (node.kind === "inbound-class") {
@@ -887,9 +885,6 @@ const UsecaseApp = (() => {
     }
 
     function init() {
-        if (typeof document === "undefined") return;
-        if (!document.body.classList.contains("usecase-model")) return;
-
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう、毎回 init で state をクリア
         Object.assign(state, createInitialState());
 
@@ -916,11 +911,7 @@ const UsecaseApp = (() => {
     };
 })();
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => {
-        UsecaseApp.init();
-    });
-}
+Jig.bootstrap.register("usecase-model", UsecaseApp.init);
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = UsecaseApp;

@@ -43,7 +43,11 @@ class CliConfig {
                 .domainPattern(modelPattern)
                 .documentTypes(documentTypeText.isEmpty() ? null : JigDocument.resolve(documentTypeText))
                 .build();
-        return Configuration.from(JigSettingsLoader.loadStandard(explicit));
+        // jig.properties 等で上書きされない場合の最終的な既定値（CLI ランタイム固有）。
+        PartialJigSettings cliDefaults = PartialJigSettings.builder()
+                .outputDirectory(Path.of("./build/jig"))
+                .build();
+        return Configuration.from(JigSettingsLoader.loadStandard(explicit, cliDefaults));
     }
 
     SourceBasePaths rawSourceLocations() {

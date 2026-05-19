@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JigSettingsLoaderTest {
@@ -22,34 +23,43 @@ class JigSettingsLoaderTest {
     Path userDirDir;
 
     private JigSettings loadFromLayers(PartialJigSettings explicit) {
+        return loadFromLayers(explicit, PartialJigSettings.EMPTY);
+    }
+
+    private JigSettings loadFromLayers(PartialJigSettings explicit, PartialJigSettings fallback) {
         return JigSettingsLoader.load(List.of(
                 explicit,
                 new PropertiesFileSource(userDirDir).read(),
-                new PropertiesFileSource(userHomeDir.resolve(".jig")).read()
+                new PropertiesFileSource(userHomeDir.resolve(".jig")).read(),
+                fallback
         ));
     }
 
-    @Test
-    void デフォルト値() {
-        JigSettings defaults = JigSettings.defaults();
-
-        assertTrue(defaults.domainPattern().isEmpty());
-        assertEquals(JigDocument.canonical(), defaults.documentTypes());
-        assertEquals(Locale.JAPANESE, defaults.locale());
-        // outputDirectory は user.dir/.jig（システムプロパティ依存）
-        assertEquals(Path.of(System.getProperty("user.dir")).resolve(".jig").toAbsolutePath(),
-                defaults.outputDirectory());
+    private PartialJigSettings outputFallback() {
+        return PartialJigSettings.builder()
+                .outputDirectory(userDirDir.resolve("fallback_out"))
+                .build();
     }
 
     @Test
-    void 全層emptyならデフォルトが採用される() {
-        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+    void 出力先未指定ならば例外() {
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> loadFromLayers(PartialJigSettings.EMPTY));
+        assertTrue(e.getMessage().contains("出力先ディレクトリ"));
+    }
 
-        JigSettings defaults = JigSettings.defaults();
-        assertEquals(defaults.outputDirectory(), loaded.outputDirectory());
-        assertEquals(defaults.domainPattern(), loaded.domainPattern());
-        assertEquals(defaults.documentTypes(), loaded.documentTypes());
-        assertEquals(defaults.locale(), loaded.locale());
+    @Test
+    void 出力先のみexplicit指定で他はjig_coreデフォルト() {
+        PartialJigSettings explicit = PartialJigSettings.builder()
+                .outputDirectory(userDirDir.resolve("out"))
+                .build();
+
+        JigSettings loaded = loadFromLayers(explicit);
+
+        assertEquals(userDirDir.resolve("out"), loaded.outputDirectory());
+        assertTrue(loaded.domainPattern().isEmpty());
+        assertEquals(JigDocument.canonical(), loaded.documentTypes());
+        assertEquals(Locale.JAPANESE, loaded.locale());
     }
 
     @Test
@@ -151,21 +161,21 @@ class JigSettingsLoaderTest {
         @Test
         void 有効な言語タグは反映される() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=en-US\n");
-            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
             assertEquals(Locale.forLanguageTag("en-US"), loaded.locale());
         }
 
         @Test
         void 空文字は無視されデフォルトが残る() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=\n");
-            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
             assertEquals(Locale.JAPANESE, loaded.locale());
         }
 
         @Test
         void 不正タグは無視されデフォルトが残る() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=!!!\n");
-            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
             assertEquals(Locale.JAPANESE, loaded.locale());
         }
 
@@ -173,7 +183,7 @@ class JigSettingsLoaderTest {
         void 不正タグでも下位層の値があれば下位層が活きる() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=!!!\n");
             writeJigProperties(userHomeDir.resolve(".jig"), "jig.locale=en-US\n");
-            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
             assertEquals(Locale.forLanguageTag("en-US"), loaded.locale());
         }
     }
@@ -181,8 +191,22 @@ class JigSettingsLoaderTest {
     @Test
     void documentTypesに未知の値が含まれていれば当該キーは無視される() throws IOException {
         writeJigProperties(userDirDir, "jig.document.types=UnknownDoc,DomainModel\n");
-        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
         assertEquals(JigDocument.canonical(), loaded.documentTypes());
+    }
+
+    @Test
+    void fallback層は最低優先度として出力先を埋める() {
+        // jig.properties も explicit も outputDirectory を指定していない場合に fallback が効く
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
+        assertEquals(userDirDir.resolve("fallback_out"), loaded.outputDirectory());
+    }
+
+    @Test
+    void fallback層はjig_propertiesより優先度が低い() throws IOException {
+        writeJigProperties(userDirDir, "jig.output.directory=/from/properties\n");
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
+        assertEquals(Path.of("/from/properties"), loaded.outputDirectory());
     }
 
     private static void writeJigProperties(Path dir, String content) throws IOException {

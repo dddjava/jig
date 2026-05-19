@@ -25,7 +25,7 @@ class IndexAdapterTest {
     void 出力対象がない場合は一覧セクションを出力しない() throws IOException {
         var sut = new IndexAdapter(new JigDocumentWriter(tempDir, Locale.JAPANESE));
 
-        sut.render(List.of(), GitRepositoryInfo.empty(), Locale.JAPANESE);
+        sut.render(List.of(), GitRepositoryInfo.empty());
 
         String actual = readIndex();
         assertFalse(actual.contains("<h2>設計情報: HTML</h2>"));
@@ -40,7 +40,7 @@ class IndexAdapterTest {
     void ローカルアセット参照にはキャッシュバスティングのクエリを付ける() throws IOException {
         var sut = new IndexAdapter(new JigDocumentWriter(tempDir, Locale.JAPANESE));
 
-        sut.render(List.of(), GitRepositoryInfo.empty(), Locale.JAPANESE);
+        sut.render(List.of(), GitRepositoryInfo.empty());
 
         String actual = readIndex();
         assertTrue(actual.contains("./assets/style.css?v="));
@@ -58,7 +58,7 @@ class IndexAdapterTest {
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html")))
         );
 
-        sut.render(results, GitRepositoryInfo.empty(), Locale.JAPANESE);
+        sut.render(results, GitRepositoryInfo.empty());
 
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("\"href\":\"package.html\""));

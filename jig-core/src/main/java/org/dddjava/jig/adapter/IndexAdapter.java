@@ -29,7 +29,7 @@ public class IndexAdapter {
     }
 
     public void render(List<HandleResult> handleResultList,
-                       GitRepositoryInfo gitRepositoryInfo, Locale locale) {
+                       GitRepositoryInfo gitRepositoryInfo) {
         Path outputDirectory = writer.outputDirectory();
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
@@ -38,7 +38,7 @@ public class IndexAdapter {
             }
         }
         write(documentLinks, outputDirectory);
-        writeNavigationData(documentLinks, outputDirectory, locale);
+        writeNavigationData(documentLinks, outputDirectory);
         writeSummaryData(gitRepositoryInfo, outputDirectory);
     }
 
@@ -81,22 +81,20 @@ public class IndexAdapter {
         }
     }
 
-    private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
+    private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory) {
         try {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
             // links のラベルは日本語（カノニカルキー）で出力し、クライアント i18n が翻訳する。
-            // サポート言語は JS 側 builtinDictionaries に集約しているため、ここでは出力しない。
+            // 言語は <html lang> から読むため navigation-data には含めない。
             List<JsonObjectBuilder> linkObjects = Arrays.stream(JigDocument.values())
                     .map(doc -> Optional.ofNullable(documentLinks.get(doc))
                             .map(href -> Json.object("href", href).and("label", doc.label())))
                     .flatMap(Optional::stream)
                     .toList();
 
-            String json = Json.object("locale", locale.toLanguageTag())
-                    .and("links", Json.arrayObjects(linkObjects))
-                    .build();
+            String json = Json.object("links", Json.arrayObjects(linkObjects)).build();
 
             Files.writeString(dataDirectory.resolve(NAVIGATION_DATA_JS),
                     "globalThis.navigationData = " + json + ";\n", StandardCharsets.UTF_8);

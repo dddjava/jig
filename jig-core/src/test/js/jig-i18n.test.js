@@ -34,10 +34,9 @@ test.describe('jig-i18n.js', () => {
         delete global.CustomEvent;
     });
 
-    test('locale=ja のときは翻訳しない', () => {
-        setupDom('<h1 data-i18n>インサイト</h1>');
+    test('lang=ja のときは翻訳しない', () => {
+        setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', links: []};
 
         Jig.apply();
 
@@ -46,9 +45,8 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('data-i18n を持つ要素のみ翻訳する', () => {
-        setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>');
+        setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>', {lang: 'en'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
@@ -59,10 +57,9 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('data-i18n="key" で明示キーを指定できる', () => {
-        setupDom('<button data-i18n="custom.label">なにか</button>');
+        setupDom('<button data-i18n="custom.label">なにか</button>', {lang: 'en'});
         Jig = loadI18n();
         Jig.builtinDictionaries.en['custom.label'] = 'Custom Label';
-        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
@@ -70,29 +67,26 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('辞書に無いキーはそのまま', () => {
-        setupDom('<h1 data-i18n>未知の単語</h1>');
+        setupDom('<h1 data-i18n>未知の単語</h1>', {lang: 'en'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
         assert.equal(document.querySelector('h1').textContent, '未知の単語');
     });
 
-    test('locale 未指定なら <html lang> をフォールバックに使う', () => {
-        setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'en'});
+    test('<html lang> が空ならデフォルトで ja として扱う', () => {
+        setupDom('<h1 data-i18n>インサイト</h1>', {lang: ''});
         Jig = loadI18n();
-        globalThis.navigationData = {};
 
         Jig.apply();
 
-        assert.equal(document.querySelector('h1').textContent, 'Insight');
+        assert.equal(document.querySelector('h1').textContent, 'インサイト');
     });
 
     test('data-i18n のない要素は同じ語でも放置する', () => {
-        setupDom('<p>入力</p><li>出力</li><dd>フィールド</dd>');
+        setupDom('<p>入力</p><li>出力</li><dd>フィールド</dd>', {lang: 'en'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
@@ -102,9 +96,8 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('複数の data-i18n 要素が辞書から翻訳される', () => {
-        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
+        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>', {lang: 'en'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: []};
 
         Jig.apply();
 
@@ -113,9 +106,8 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('setLanguage で切り替えられ、ja に戻すと原文が復元する', () => {
-        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
+        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>', {lang: 'ja'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', links: []};
 
         Jig.apply();
         assert.equal(document.querySelector('h1').textContent, 'インサイト');
@@ -134,9 +126,8 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('setLanguage は jig:locale-change イベントを発火する', () => {
-        setupDom('<h1 data-i18n>インサイト</h1>');
+        setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'ja', links: []};
 
         const received = [];
         document.addEventListener('jig:locale-change', e => received.push(e.detail?.lang));

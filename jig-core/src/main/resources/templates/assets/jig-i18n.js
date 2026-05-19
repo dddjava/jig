@@ -163,10 +163,8 @@ globalThis.Jig.i18n = (() => {
 
     function resolveLanguage() {
         if (currentLang) return currentLang;
-        const tag = globalThis.Jig?.data?.navigation?.get?.()?.locale
-            || document.documentElement.lang
-            || "ja";
-        return toLangCode(tag);
+        // 初期言語は HTML の lang 属性から決定する（Java 側で {{lang}} を全テンプレートに置換済み）。
+        return toLangCode(document.documentElement.lang || "ja");
     }
 
     // サポート言語は ja（カノニカルキー）と builtinDictionaries のキー集合から導出する。

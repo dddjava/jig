@@ -11,21 +11,18 @@ import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
 
 public class JigDocumentGenerator {
 
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
-    private final Locale locale;
     private final DataAdapterResolver dataAdapterResolver;
     private final JigDocumentWriter writer;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
-        this.locale = jigDocumentContext.locale();
         this.dataAdapterResolver = new DataAdapterResolver(jigService);
         this.writer = new JigDocumentWriter(outputDirectory, jigDocumentContext.locale());
     }
@@ -63,7 +60,7 @@ public class JigDocumentGenerator {
     }
 
     private void generateIndex(List<HandleResult> results, GitRepositoryInfo gitRepositoryInfo) {
-        new IndexAdapter(writer).render(results, gitRepositoryInfo, locale);
+        new IndexAdapter(writer).render(results, gitRepositoryInfo);
     }
 
     private void generateDebugHtml() {

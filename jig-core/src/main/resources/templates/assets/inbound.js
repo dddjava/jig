@@ -174,7 +174,7 @@ const InboundApp = (() => {
         }
 
         fieldset.innerHTML = "";
-        fieldset.appendChild(Jig.dom.createElement('legend', {textContent: '表示種別'}));
+        fieldset.appendChild(Jig.dom.createElement('legend', {textContent: '表示種別', i18n: true}));
         const options = [
             {value: 'all', label: 'すべて'},
             ...TYPE_CONFIG.filter(c => types.has(c.type)).map(c => ({value: c.type, label: c.label})),
@@ -191,8 +191,11 @@ const InboundApp = (() => {
                     render();
                 }
             });
-            fieldset.appendChild(Jig.dom.createElement('label', {children: [radio, ' ' + label]}));
+            fieldset.appendChild(Jig.dom.createElement('label', {
+                children: [radio, document.createTextNode(' '), Jig.dom.createElement('span', {textContent: label, i18n: true})]
+            }));
         });
+        Jig.i18n?.apply?.();
     }
 
     function initSimplifiedSetting() {
@@ -214,8 +217,9 @@ const InboundApp = (() => {
         });
         panel.appendChild(Jig.dom.createElement('label', {
             attributes: {for: 'simplified-toggle'},
-            children: [checkbox, ' 簡略表示']
+            children: [checkbox, document.createTextNode(' '), Jig.dom.createElement('span', {textContent: '簡略表示', i18n: true})]
         }));
+        Jig.i18n?.apply?.();
     }
 
     function render() {

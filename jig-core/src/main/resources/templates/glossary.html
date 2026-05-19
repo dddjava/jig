@@ -17,36 +17,36 @@
         <details id="sidebar-settings" class="sidebar-settings">
             <summary>
                 <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                表示設定
+                <span data-i18n>表示設定</span>
             </summary>
             <div class="sidebar-settings-panel">
                 <fieldset class="misc-option">
-                    <legend>表示対象</legend>
-                    <label>
+                    <legend data-i18n>表示対象</legend>
+                    <label data-i18n>
                         <input id="show-only-domain" type="checkbox" checked>
                         ドメインのみ
                     </label>
-                    <label>
+                    <label data-i18n>
                         <input id="show-empty-description" type="checkbox" checked>
                         説明のない用語
                     </label>
                 </fieldset>
                 <fieldset class="kind-option checkbox-options">
-                    <legend class="kind-option-title">種類</legend>
-                    <label><input type="checkbox" id="show-package" checked><span class="kind-badge" data-kind="パッケージ">P</span>パッケージ</label>
-                    <label><input type="checkbox" id="show-class" checked><span class="kind-badge" data-kind="クラス">C</span>クラス</label>
-                    <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span>メソッド</label>
-                    <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span>フィールド</label>
+                    <legend class="kind-option-title" data-i18n>種類</legend>
+                    <label><input type="checkbox" id="show-package" checked><span class="kind-badge" data-kind="パッケージ">P</span><span data-i18n>パッケージ</span></label>
+                    <label><input type="checkbox" id="show-class" checked><span class="kind-badge" data-kind="クラス">C</span><span data-i18n>クラス</span></label>
+                    <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span><span data-i18n>メソッド</span></label>
+                    <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span><span data-i18n>フィールド</span></label>
                 </fieldset>
                 <div class="display-option">
                     <div class="display-controls-row">
                         <div class="sorting-controls">
-                            <label>
+                            <label data-i18n>
                                 <input type="checkbox" id="show-attributes">
                                 属性情報を表示する
                             </label>
                         </div>
-                        <button id="export-csv" type="button">CSV出力</button>
+                        <button id="export-csv" type="button" data-i18n>CSV出力</button>
                     </div>
                 </div>
             </div>

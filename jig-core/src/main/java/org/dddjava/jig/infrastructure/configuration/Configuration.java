@@ -4,7 +4,6 @@ import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
@@ -14,8 +13,7 @@ public record Configuration(
         JigEventRepository jigEventRepository,
         JigSettings settings,
         JigDocumentGenerator jigDocumentGenerator,
-        JigService jigService,
-        JigDocumentContext jigDocumentContext
+        JigService jigService
 ) {
 
     public static Configuration from(JigSettings settings) {
@@ -25,16 +23,14 @@ public record Configuration(
         CoreDomainCondition architecture = new CoreDomainCondition(settings.domainPattern());
         JigService jigService = new JigService(architecture, jigEventRepository);
 
-        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(settings);
-        JigDocumentGenerator jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
+        JigDocumentGenerator jigDocumentGenerator = new JigDocumentGenerator(settings, jigService);
 
         return new Configuration(
                 glossaryRepository,
                 jigEventRepository,
                 settings,
                 jigDocumentGenerator,
-                jigService,
-                jigDocumentContext
+                jigService
         );
     }
 }

@@ -58,7 +58,7 @@ class JigSettingsLoaderTest {
 
         assertEquals(userDirDir.resolve("out"), loaded.outputDirectory());
         assertTrue(loaded.domainPattern().isEmpty());
-        assertEquals(JigDocument.canonical(), loaded.documentTypes());
+        assertEquals(JigDocument.canonical(), loaded.jigDocuments());
         assertEquals(Locale.JAPANESE, loaded.locale());
     }
 
@@ -67,7 +67,7 @@ class JigSettingsLoaderTest {
         PartialJigSettings explicit = PartialJigSettings.builder()
                 .outputDirectory(userDirDir.resolve("primary_output"))
                 .domainPattern("com.example.primary.+")
-                .documentTypes(List.of(JigDocument.DomainModel, JigDocument.ListOutput))
+                .jigDocuments(List.of(JigDocument.DomainModel, JigDocument.ListOutput))
                 .locale(Locale.ENGLISH)
                 .build();
 
@@ -75,7 +75,7 @@ class JigSettingsLoaderTest {
 
         assertEquals(userDirDir.resolve("primary_output"), loaded.outputDirectory());
         assertEquals("com.example.primary.+", loaded.domainPattern().orElseThrow());
-        assertEquals(List.of(JigDocument.DomainModel, JigDocument.ListOutput), loaded.documentTypes());
+        assertEquals(List.of(JigDocument.DomainModel, JigDocument.ListOutput), loaded.jigDocuments());
         assertEquals(Locale.ENGLISH, loaded.locale());
     }
 
@@ -97,7 +97,7 @@ class JigSettingsLoaderTest {
         PartialJigSettings explicit = PartialJigSettings.builder()
                 .outputDirectory(Path.of("/primary/jig"))
                 .domainPattern("com.example.primary.+")
-                .documentTypes(List.of(JigDocument.DomainModel, JigDocument.ListOutput))
+                .jigDocuments(List.of(JigDocument.DomainModel, JigDocument.ListOutput))
                 .locale(Locale.JAPANESE)
                 .build();
 
@@ -105,7 +105,7 @@ class JigSettingsLoaderTest {
 
         assertEquals(Path.of("/primary/jig"), loaded.outputDirectory());
         assertEquals("com.example.primary.+", loaded.domainPattern().orElseThrow());
-        assertEquals(List.of(JigDocument.DomainModel, JigDocument.ListOutput), loaded.documentTypes());
+        assertEquals(List.of(JigDocument.DomainModel, JigDocument.ListOutput), loaded.jigDocuments());
         assertEquals(Locale.JAPANESE, loaded.locale());
     }
 
@@ -138,7 +138,7 @@ class JigSettingsLoaderTest {
         JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
 
         assertEquals("com.example.userdir.+", loaded.domainPattern().orElseThrow());
-        assertEquals(List.of(JigDocument.ListOutput), loaded.documentTypes());
+        assertEquals(List.of(JigDocument.ListOutput), loaded.jigDocuments());
         assertEquals(Path.of("/userdir/jig"), loaded.outputDirectory());
         assertEquals(Locale.JAPANESE, loaded.locale());
     }
@@ -189,10 +189,24 @@ class JigSettingsLoaderTest {
     }
 
     @Test
+    void 未知のjigキーが含まれていても既知キーは正常に読まれる() throws IOException {
+        writeJigProperties(userDirDir, """
+                jig.outputDir=/typo/path
+                jig.pattern.domain=com.example.userdir.+
+                jig.output.directory=/correct/path
+                """);
+
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
+
+        assertEquals(Path.of("/correct/path"), loaded.outputDirectory());
+        assertEquals("com.example.userdir.+", loaded.domainPattern().orElseThrow());
+    }
+
+    @Test
     void documentTypesに未知の値が含まれていれば当該キーは無視される() throws IOException {
         writeJigProperties(userDirDir, "jig.document.types=UnknownDoc,DomainModel\n");
         JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
-        assertEquals(JigDocument.canonical(), loaded.documentTypes());
+        assertEquals(JigDocument.canonical(), loaded.jigDocuments());
     }
 
     @Test

@@ -57,7 +57,7 @@ public @interface JigTest {
                     JigSettings.class, () -> configuration.settings(),
                     JigDocumentGenerator.class, () -> configuration.jigDocumentGenerator(),
                     JigService.class, () -> configuration.jigService(),
-                    JigDocumentContext.class, () -> configuration.jigDocumentContext()
+                    JigDocumentContext.class, () -> configuration.settings()
             );
         }
 

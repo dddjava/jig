@@ -41,7 +41,7 @@ class CliConfig {
         PartialJigSettings explicit = PartialJigSettings.builder()
                 .outputDirectory(outputDirectory.isEmpty() ? null : Path.of(outputDirectory))
                 .domainPattern(modelPattern)
-                .documentTypes(documentTypeText.isEmpty() ? null : JigDocument.resolve(documentTypeText))
+                .jigDocuments(documentTypeText.isEmpty() ? null : JigDocument.resolve(documentTypeText))
                 .build();
         // jig.properties 等で上書きされない場合の最終的な既定値（CLI ランタイム固有）。
         PartialJigSettings cliDefaults = PartialJigSettings.builder()

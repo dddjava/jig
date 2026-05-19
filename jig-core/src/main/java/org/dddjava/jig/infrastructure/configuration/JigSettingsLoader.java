@@ -40,7 +40,7 @@ public class JigSettingsLoader {
                 .orElseThrow(() -> new IllegalStateException(
                         "出力先ディレクトリが指定されていません。jig.output.directory もしくは呼び出し側で必ず指定してください。"));
         List<JigDocument> docs = layers.stream()
-                .map(PartialJigSettings::documentTypes)
+                .map(PartialJigSettings::jigDocuments)
                 .filter(list -> !list.isEmpty())
                 .findFirst()
                 .orElseThrow(); // JigSettings.defaults() が必ず documentTypes を持つので到達しない

@@ -64,7 +64,7 @@ public abstract class JigReportsTask extends DefaultTask {
         PartialJigSettings explicit = PartialJigSettings.builder()
                 .outputDirectory(outputDirectory)
                 .domainPattern(getModelPattern().getOrNull())
-                .documentTypes(documentTypes)
+                .jigDocuments(documentTypes)
                 .build();
         JigSettings settings = JigSettingsLoader.loadStandard(explicit);
         Configuration configuration = Configuration.from(settings);

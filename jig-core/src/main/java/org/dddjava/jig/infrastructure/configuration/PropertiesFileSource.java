@@ -13,15 +13,24 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * {@code <configDirectory>/jig.properties} を {@link PartialJigSettings} に変換するソース。
  *
  * ファイルが存在しない場合や読み込みに失敗した場合は {@link PartialJigSettings#EMPTY} を返す。
  * 値の構文が不正な場合（例: {@code jig.locale=invalid-tag}）は当該キーのみ未指定扱いとする。
+ * 未知の {@code jig.*} キー（タイポ等）が含まれていれば WARN ログを出して無視する。
  */
 public class PropertiesFileSource {
     private static final Logger logger = LoggerFactory.getLogger(PropertiesFileSource.class);
+
+    private static final Set<String> KNOWN_KEYS = Set.of(
+            "jig.output.directory",
+            "jig.pattern.domain",
+            "jig.document.types",
+            "jig.locale"
+    );
 
     private final Path configDirectory;
 
@@ -43,21 +52,33 @@ public class PropertiesFileSource {
             logger.warn("fail to load {}", jigPropertiesPath, e);
             return PartialJigSettings.EMPTY;
         }
-        logger.info("configuration loaded from {}", jigPropertiesPath.toAbsolutePath());
+        logger.debug("configuration loaded from {}", jigPropertiesPath.toAbsolutePath());
 
-        PartialJigSettings.Builder builder = PartialJigSettings.builder()
+        warnUnknownKeys(jigPropertiesPath, properties);
+
+        return PartialJigSettings.builder()
                 .outputDirectory(parsePath(properties.getProperty("jig.output.directory")))
                 .domainPattern(properties.getProperty("jig.pattern.domain"))
-                .documentTypes(parseDocumentTypes(properties.getProperty("jig.document.types")))
-                .locale(parseLocale(properties.getProperty("jig.locale")));
-        return builder.build();
+                .jigDocuments(parseJigDocuments(properties.getProperty("jig.document.types")))
+                .locale(parseLocale(properties.getProperty("jig.locale")))
+                .build();
+    }
+
+    private static void warnUnknownKeys(Path path, Properties properties) {
+        properties.stringPropertyNames().stream()
+                .filter(key -> key.startsWith("jig."))
+                .filter(key -> !KNOWN_KEYS.contains(key))
+                .sorted()
+                .forEach(key -> logger.warn(
+                        "{}: 未知のキー \"{}\" を無視します（値: {}）。",
+                        path, key, properties.getProperty(key)));
     }
 
     private static Path parsePath(String value) {
         return (value == null || value.isEmpty()) ? null : Path.of(value);
     }
 
-    private static List<JigDocument> parseDocumentTypes(String value) {
+    private static List<JigDocument> parseJigDocuments(String value) {
         if (value == null || value.isEmpty()) return List.of();
         try {
             return JigDocument.resolve(value);

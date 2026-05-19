@@ -16,7 +16,7 @@ import java.util.Optional;
 public record PartialJigSettings(
         Optional<Path> outputDirectory,
         Optional<String> domainPattern,
-        List<JigDocument> documentTypes,
+        List<JigDocument> jigDocuments,
         Optional<Locale> locale
 ) {
 
@@ -30,7 +30,7 @@ public record PartialJigSettings(
     public static final class Builder {
         private Path outputDirectory;
         private String domainPattern;
-        private List<JigDocument> documentTypes = List.of();
+        private List<JigDocument> jigDocuments = List.of();
         private Locale locale;
 
         public Builder outputDirectory(Path value) {
@@ -43,8 +43,8 @@ public record PartialJigSettings(
             return this;
         }
 
-        public Builder documentTypes(List<JigDocument> value) {
-            this.documentTypes = (value == null) ? List.of() : List.copyOf(value);
+        public Builder jigDocuments(List<JigDocument> value) {
+            this.jigDocuments = (value == null) ? List.of() : List.copyOf(value);
             return this;
         }
 
@@ -57,7 +57,7 @@ public record PartialJigSettings(
             return new PartialJigSettings(
                     Optional.ofNullable(outputDirectory),
                     Optional.ofNullable(domainPattern),
-                    documentTypes,
+                    jigDocuments,
                     Optional.ofNullable(locale));
         }
     }

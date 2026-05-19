@@ -65,6 +65,7 @@ globalThis.Jig.i18n = (() => {
             "属性情報を表示する": "Show attributes",
             "CSV出力": "Export CSV",
             "用語一覧": "Terms",
+            "絞り込み": "Filter",
             // 他のサイドバー section タイトル
             "永続化操作対象": "Persistence targets",
             "外部型": "External types",
@@ -140,6 +141,22 @@ globalThis.Jig.i18n = (() => {
             const key = resolveKey(el);
             setTranslatedText(el, (dict && dict[key]) || key);
         });
+        // 属性翻訳: data-i18n-placeholder 等が指定された要素の対応属性を翻訳する
+        // 値は "属性名" もしくは "属性名:キー" で指定。キー省略時は現在の属性値を ja キーとして使う。
+        root.querySelectorAll("[data-i18n-attr]").forEach(el => translateAttribute(el, dict));
+    }
+
+    function translateAttribute(el, dict) {
+        const spec = el.getAttribute("data-i18n-attr");
+        if (!spec) return;
+        const [attrName, explicitKey] = spec.split(":");
+        if (!attrName) return;
+        const originalKey = `i18nAttrOrig_${attrName}`;
+        if (el.dataset[originalKey] == null) {
+            el.dataset[originalKey] = explicitKey || el.getAttribute(attrName) || "";
+        }
+        const key = el.dataset[originalKey];
+        el.setAttribute(attrName, (dict && dict[key]) || key);
     }
 
     function apply() {

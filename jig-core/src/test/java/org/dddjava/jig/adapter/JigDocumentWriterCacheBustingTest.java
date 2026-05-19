@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JigDocumentWriterCacheBustingTest {
@@ -29,6 +30,18 @@ class JigDocumentWriterCacheBustingTest {
         // CDN は対象外
         assertTrue(html.contains("https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js\""), html);
         assertFalse(html.contains("https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js?v="), html);
+    }
+
+    @Test
+    void prepareOutputDirectoryを呼ぶたびにassetVersionが更新される() throws Exception {
+        JigDocumentWriter.prepareOutputDirectory(tempDir);
+        String first = JigDocumentWriter.assetVersion();
+        // System.currentTimeMillis() の解像度より十分長く待つ
+        Thread.sleep(5);
+        JigDocumentWriter.prepareOutputDirectory(tempDir);
+        String second = JigDocumentWriter.assetVersion();
+
+        assertNotEquals(first, second, "assetVersion は実行ごとに変わる必要がある");
     }
 
     @Test

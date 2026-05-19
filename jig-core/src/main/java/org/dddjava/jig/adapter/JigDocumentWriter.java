@@ -13,10 +13,12 @@ import java.nio.file.StandardCopyOption;
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
-    private static final String ASSET_VERSION = Long.toString(System.currentTimeMillis());
+    // 生成実行ごとに更新する。同一 JVM（Gradle daemon 等）で複数回 generate しても
+    // 新しい値が割り当たるよう、static final にはしない。
+    private static String assetVersion = Long.toString(System.currentTimeMillis());
 
     static String assetVersion() {
-        return ASSET_VERSION;
+        return assetVersion;
     }
 
     public static void copyAssetsResource(String fileName, Path outputDirectory) {
@@ -66,7 +68,7 @@ public class JigDocumentWriter {
      * 各テンプレートはローカルアセット参照に明示的に {@code ?v={{assetVersion}}} を書いておく。
      */
     static String applyAssetVersion(String html) {
-        return html.replace("{{assetVersion}}", ASSET_VERSION);
+        return html.replace("{{assetVersion}}", assetVersion);
     }
 
     public static InputStream getResourceAsStream(String absolutePath) {
@@ -99,6 +101,9 @@ public class JigDocumentWriter {
     }
 
     public static void prepareOutputDirectory(Path outputDirectory) {
+        // 生成実行ごとに assetVersion を更新する（ブラウザキャッシュ無効化のため）。
+        // prepareOutputDirectory は generate の冒頭で必ず一度だけ呼ばれることを前提としている。
+        assetVersion = Long.toString(System.currentTimeMillis());
         createOutputDirectory(outputDirectory);
         createOutputDirectory(outputDirectory.resolve("assets"));
         createOutputDirectory(outputDirectory.resolve("data"));

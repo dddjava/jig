@@ -136,6 +136,24 @@ header.top a {
     min-width: 8em;
 }
 
+/* header.top を持たないページ（index）では右上に固定配置 */
+header:not(.top) > .jig-lang-switcher {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0.25em 0.5em;
+    background-color: #243D1E;
+    color: #FFF;
+    border-bottom-left-radius: 4px;
+    z-index: 1001;
+}
+
+header:not(.top) > .jig-lang-switcher .jig-header-nav__item a,
+header:not(.top) > .jig-lang-switcher .jig-header-nav__item span {
+    color: #FFF;
+}
+
 .jig-help-button {
     background: none;
     border: none;

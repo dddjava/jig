@@ -125,8 +125,18 @@ header.top a {
     cursor: default;
 }
 
-.jig-help-button {
+.jig-lang-switcher {
     margin-left: auto;
+    font-size: 0.85em;
+}
+
+.jig-lang-switcher__dropdown {
+    left: auto;
+    right: 0;
+    min-width: 8em;
+}
+
+.jig-help-button {
     background: none;
     border: none;
     color: #FFF;

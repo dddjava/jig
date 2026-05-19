@@ -536,9 +536,12 @@ globalThis.Jig.dom = (() => {
             ? String(currentLink.label)
             : pageTitleEl.textContent;
 
+        // ラベルは日本語キーで描画し data-i18n を付与する。
+        // ラベル文字列自体が翻訳対象キーになるため、属性値は空（""）にして textContent をキーとして使う。
         const trigger = createElement("span", {
             className: "jig-header-nav__trigger",
-            textContent: triggerLabel
+            textContent: triggerLabel,
+            attributes: {"data-i18n": ""}
         });
 
         const dropdown = createElement("ul", {
@@ -554,8 +557,8 @@ globalThis.Jig.dom = (() => {
 
             const isCurrent = (href === normalizedCurrent);
             const child = isCurrent
-                ? createElement("span", {textContent: label})
-                : createElement("a", {textContent: label, attributes: {href}});
+                ? createElement("span", {textContent: label, attributes: {"data-i18n": ""}})
+                : createElement("a", {textContent: label, attributes: {href, "data-i18n": ""}});
             dropdown.appendChild(createElement("li", {
                 className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
                 children: [child]
@@ -564,6 +567,67 @@ globalThis.Jig.dom = (() => {
 
         pageTitleEl.replaceWith(createElement("div", {
             className: "jig-header-nav",
+            children: [trigger, dropdown]
+        }));
+    }
+
+    function setupLanguageSwitcher() {
+        const i18n = globalThis.Jig?.i18n;
+        if (!i18n || typeof i18n.setLanguage !== "function") return;
+
+        const header = document.querySelector("header.top") || document.querySelector("header");
+        if (!header) return;
+        if (header.querySelector(".jig-lang-switcher")) return;
+
+        const langs = i18n.availableLanguages();
+        if (!Array.isArray(langs) || langs.length < 2) return;
+
+        const labels = {ja: "日本語", en: "English"};
+        const display = lang => labels[lang] || lang.toUpperCase();
+
+        const trigger = createElement("span", {
+            className: "jig-header-nav__trigger jig-lang-switcher__trigger",
+            textContent: display(i18n.currentLanguage())
+        });
+
+        const dropdown = createElement("ul", {
+            className: "jig-header-nav__dropdown jig-lang-switcher__dropdown",
+            attributes: {role: "list"}
+        });
+
+        const renderItems = () => {
+            dropdown.replaceChildren();
+            const current = i18n.currentLanguage();
+            langs.forEach(lang => {
+                const isCurrent = (lang === current);
+                const child = isCurrent
+                    ? createElement("span", {textContent: display(lang)})
+                    : createElement("a", {
+                        textContent: display(lang),
+                        attributes: {href: "#", "data-lang": lang}
+                    });
+                if (!isCurrent) {
+                    child.addEventListener("click", event => {
+                        event.preventDefault();
+                        i18n.setLanguage(lang);
+                    });
+                }
+                dropdown.appendChild(createElement("li", {
+                    className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
+                    children: [child]
+                }));
+            });
+        };
+
+        renderItems();
+
+        document.addEventListener("jig:locale-change", event => {
+            trigger.textContent = display(event?.detail?.lang || i18n.currentLanguage());
+            renderItems();
+        });
+
+        header.appendChild(createElement("div", {
+            className: "jig-header-nav jig-lang-switcher",
             children: [trigger, dropdown]
         }));
     }
@@ -602,6 +666,7 @@ globalThis.Jig.dom = (() => {
 
     function initCommonUi() {
         setupHeaderNavigation();
+        setupLanguageSwitcher();
         setupDocumentHelp();
         if (globalThis.Jig?.data?.createTypeLinkResolver) {
             setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());

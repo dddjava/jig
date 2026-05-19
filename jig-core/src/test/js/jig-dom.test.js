@@ -794,6 +794,137 @@ test.describe('jig-dom.js', () => {
             const nav = document.querySelector('.jig-header-nav');
             assert.equal(nav, null);
         });
+
+        test('nav の trigger とリンクに data-i18n が付与される', () => {
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-i18n.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
+
+            const dom = new JSDOM(`
+                <!DOCTYPE html>
+                <html>
+                <body>
+                    <header class="top">
+                        <div class="jig-page-title">ドメインモデル</div>
+                    </header>
+                </body>
+                </html>
+            `, {url: 'http://example.com/domain.html'});
+
+            global.window = dom.window;
+            global.document = dom.window.document;
+            global.location = dom.window.location;
+            global.CustomEvent = dom.window.CustomEvent;
+            global.navigationData = {
+                locale: 'ja',
+                availableLocales: ['ja', 'en'],
+                links: [
+                    {href: 'glossary.html', label: '用語集'},
+                    {href: 'domain.html', label: 'ドメインモデル'}
+                ]
+            };
+            delete globalThis.Jig;
+
+            require('../../main/resources/templates/assets/jig-util.js');
+            require('../../main/resources/templates/assets/jig-data.js');
+            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-i18n.js');
+            require('../../main/resources/templates/assets/jig-dom.js');
+
+            global.Jig.dom.initCommonUi();
+
+            const trigger = document.querySelector('.jig-header-nav__trigger');
+            assert.ok(trigger);
+            assert.ok(trigger.hasAttribute('data-i18n'));
+
+            const navRoot = document.querySelector('.jig-header-nav:not(.jig-lang-switcher)');
+            const linkEls = navRoot.querySelectorAll('.jig-header-nav__dropdown a, .jig-header-nav__dropdown span');
+            assert.ok(linkEls.length > 0);
+            linkEls.forEach(el => assert.ok(el.hasAttribute('data-i18n')));
+        });
+    });
+
+    test.describe('initCommonUi - setupLanguageSwitcher', () => {
+        function loadAll() {
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-i18n.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
+            delete globalThis.Jig;
+            require('../../main/resources/templates/assets/jig-util.js');
+            require('../../main/resources/templates/assets/jig-data.js');
+            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-i18n.js');
+            require('../../main/resources/templates/assets/jig-dom.js');
+        }
+
+        test('ヘッダ右上に言語スイッチャーが生成される', () => {
+            const dom = new JSDOM(`
+                <!DOCTYPE html>
+                <html>
+                <body>
+                    <header class="top">
+                        <div class="jig-page-title">ドメインモデル</div>
+                    </header>
+                </body>
+                </html>
+            `, {url: 'http://example.com/domain.html'});
+            global.window = dom.window;
+            global.document = dom.window.document;
+            global.location = dom.window.location;
+            global.CustomEvent = dom.window.CustomEvent;
+            global.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
+
+            loadAll();
+            global.Jig.dom.initCommonUi();
+
+            const switcher = document.querySelector('.jig-lang-switcher');
+            assert.ok(switcher);
+            const items = switcher.querySelectorAll('.jig-header-nav__item');
+            assert.equal(items.length, 2);
+        });
+
+        test('スイッチャーのクリックで setLanguage が呼ばれ trigger が更新される', () => {
+            const dom = new JSDOM(`
+                <!DOCTYPE html>
+                <html>
+                <body>
+                    <header class="top">
+                        <div class="jig-page-title">ドメインモデル</div>
+                    </header>
+                    <h1 data-i18n>インサイト</h1>
+                </body>
+                </html>
+            `, {url: 'http://example.com/domain.html'});
+            global.window = dom.window;
+            global.document = dom.window.document;
+            global.location = dom.window.location;
+            global.CustomEvent = dom.window.CustomEvent;
+            global.navigationData = {
+                locale: 'ja',
+                availableLocales: ['ja', 'en'],
+                links: [],
+                translations: {en: {'インサイト': 'Insight'}}
+            };
+
+            loadAll();
+            global.Jig.dom.initCommonUi();
+
+            const switcher = document.querySelector('.jig-lang-switcher');
+            const trigger = switcher.querySelector('.jig-header-nav__trigger');
+            assert.equal(trigger.textContent, '日本語');
+
+            const enLink = Array.from(switcher.querySelectorAll('a')).find(a => a.getAttribute('data-lang') === 'en');
+            assert.ok(enLink);
+            enLink.click();
+
+            assert.equal(global.Jig.i18n.currentLanguage(), 'en');
+            assert.equal(trigger.textContent, 'English');
+            assert.equal(document.querySelector('h1').textContent, 'Insight');
+        });
     });
 
     test.describe('escapeCsvValue', () => {

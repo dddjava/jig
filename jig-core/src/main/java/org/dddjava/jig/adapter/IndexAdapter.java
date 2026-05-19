@@ -100,20 +100,31 @@ public class IndexAdapter {
         }
     }
 
+    /**
+     * クライアントで切り替えるためのサポート言語。先頭が日本語（カノニカルキー）。
+     */
+    private static final List<Locale> SUPPORTED_LOCALES = List.of(Locale.JAPANESE, Locale.ENGLISH);
+
     private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory, Locale locale) {
         try {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
+            // links のラベルは日本語（カノニカルキー）で出力し、クライアント i18n が言語切替時に翻訳する。
             List<JsonObjectBuilder> linkObjects = Arrays.stream(JigDocument.values())
                     .map(doc -> Optional.ofNullable(documentLinks.get(doc))
-                            .map(href -> Json.object("href", href).and("label", doc.label(locale))))
+                            .map(href -> Json.object("href", href).and("label", doc.label(Locale.JAPANESE))))
                     .flatMap(Optional::stream)
                     .toList();
 
+            List<String> availableLocales = SUPPORTED_LOCALES.stream()
+                    .map(Locale::toLanguageTag)
+                    .toList();
+
             String json = Json.object("locale", locale.toLanguageTag())
+                    .and("availableLocales", Json.array(availableLocales))
                     .and("links", Json.arrayObjects(linkObjects))
-                    .and("translations", documentLabelTranslations(locale))
+                    .and("translations", documentLabelTranslationsAll())
                     .build();
 
             Files.writeString(dataDirectory.resolve(NAVIGATION_DATA_JS),
@@ -157,16 +168,21 @@ public class IndexAdapter {
     }
 
     /**
-     * JigDocument ラベルの日本語キー→指定 locale 値の翻訳マップを返す。
+     * 言語コード→（日本語キー→当該言語値）の翻訳マップを返す。
      * JS 側の i18n 辞書と重複定義しないため、サーバ側を唯一のソースにする。
+     * ja は恒等のため省略する。
      */
-    private JsonObjectBuilder documentLabelTranslations(Locale locale) {
-        JsonObjectBuilder builder = Json.object();
-        if (locale.getLanguage().equals("ja")) return builder;
-        for (JigDocument doc : JigDocument.values()) {
-            builder.and(doc.label(Locale.JAPANESE), doc.label(locale));
+    private JsonObjectBuilder documentLabelTranslationsAll() {
+        JsonObjectBuilder root = Json.object();
+        for (Locale locale : SUPPORTED_LOCALES) {
+            if (locale.getLanguage().equals("ja")) continue;
+            JsonObjectBuilder dict = Json.object();
+            for (JigDocument doc : JigDocument.values()) {
+                dict.and(doc.label(Locale.JAPANESE), doc.label(locale));
+            }
+            root.and(locale.getLanguage(), dict);
         }
-        return builder;
+        return root;
     }
 
     public static Path indexFilePath(Path outputDirectory) {

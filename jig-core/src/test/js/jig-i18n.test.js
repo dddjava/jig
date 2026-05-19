@@ -10,6 +10,7 @@ test.describe('jig-i18n.js', () => {
         global.window = dom.window;
         global.document = dom.window.document;
         global.NodeFilter = dom.window.NodeFilter;
+        global.CustomEvent = dom.window.CustomEvent;
     }
 
     function loadI18n() {
@@ -30,6 +31,7 @@ test.describe('jig-i18n.js', () => {
         delete global.window;
         delete global.document;
         delete global.NodeFilter;
+        delete global.CustomEvent;
     });
 
     test('locale=ja のときは翻訳しない', () => {
@@ -46,7 +48,7 @@ test.describe('jig-i18n.js', () => {
     test('data-i18n を持つ要素のみ翻訳する', () => {
         setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: [], translations: {'インサイト': 'Insight'}};
+        globalThis.navigationData = {locale: 'en', links: [], translations: {en: {'インサイト': 'Insight'}}};
 
         Jig.apply();
 
@@ -80,7 +82,7 @@ test.describe('jig-i18n.js', () => {
     test('locale 未指定なら <html lang> をフォールバックに使う', () => {
         setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'en'});
         Jig = loadI18n();
-        globalThis.navigationData = {translations: {'インサイト': 'Insight'}};
+        globalThis.navigationData = {translations: {en: {'インサイト': 'Insight'}}};
 
         Jig.apply();
 
@@ -102,7 +104,7 @@ test.describe('jig-i18n.js', () => {
     test('builtin と server の翻訳がマージされる', () => {
         setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
         Jig = loadI18n();
-        globalThis.navigationData = {locale: 'en', links: [], translations: {'インサイト': 'Insight'}};
+        globalThis.navigationData = {locale: 'en', links: [], translations: {en: {'インサイト': 'Insight'}}};
 
         Jig.apply();
 
@@ -110,5 +112,57 @@ test.describe('jig-i18n.js', () => {
         assert.equal(document.querySelector('h1').textContent, 'Insight');
         // builtin 由来
         assert.equal(document.querySelector('button').textContent, 'Input');
+    });
+
+    test('setLanguage で切り替えられ、ja に戻すと原文が復元する', () => {
+        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>');
+        Jig = loadI18n();
+        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: [], translations: {en: {'インサイト': 'Insight'}}};
+
+        Jig.apply();
+        assert.equal(document.querySelector('h1').textContent, 'インサイト');
+
+        Jig.setLanguage('en');
+        assert.equal(document.querySelector('h1').textContent, 'Insight');
+        assert.equal(document.querySelector('button').textContent, 'Input');
+        assert.equal(document.documentElement.lang, 'en');
+        assert.equal(Jig.currentLanguage(), 'en');
+
+        Jig.setLanguage('ja');
+        assert.equal(document.querySelector('h1').textContent, 'インサイト');
+        assert.equal(document.querySelector('button').textContent, '入力');
+        assert.equal(document.documentElement.lang, 'ja');
+        assert.equal(Jig.currentLanguage(), 'ja');
+    });
+
+    test('setLanguage は jig:locale-change イベントを発火する', () => {
+        setupDom('<h1 data-i18n>インサイト</h1>');
+        Jig = loadI18n();
+        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: [], translations: {en: {'インサイト': 'Insight'}}};
+
+        const received = [];
+        document.addEventListener('jig:locale-change', e => received.push(e.detail?.lang));
+
+        Jig.setLanguage('en');
+        Jig.setLanguage('ja');
+
+        assert.deepEqual(received, ['en', 'ja']);
+    });
+
+    test('availableLanguages は navigationData.availableLocales を返す', () => {
+        setupDom('');
+        Jig = loadI18n();
+        globalThis.navigationData = {locale: 'ja', availableLocales: ['ja', 'en'], links: []};
+
+        assert.deepEqual(Jig.availableLanguages(), ['ja', 'en']);
+    });
+
+    test('availableLanguages: navigationData 未設定なら builtin と ja から導出', () => {
+        setupDom('');
+        Jig = loadI18n();
+
+        const langs = Jig.availableLanguages();
+        assert.ok(langs.includes('ja'));
+        assert.ok(langs.includes('en'));
     });
 });

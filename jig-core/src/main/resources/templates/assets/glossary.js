@@ -87,6 +87,7 @@ const GlossaryApp = (() => {
         });
 
         list.appendChild(section);
+        Jig.i18n?.apply?.();
     }
 
     function getInitialChar(term) {

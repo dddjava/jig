@@ -64,6 +64,11 @@ globalThis.Jig.i18n = (() => {
             "クラス": "Class",
             "属性情報を表示する": "Show attributes",
             "CSV出力": "Export CSV",
+            "用語一覧": "Terms",
+            // 他のサイドバー section タイトル
+            "永続化操作対象": "Persistence targets",
+            "外部型": "External types",
+            "エントリーポイント一覧": "Entry points",
         },
     };
 

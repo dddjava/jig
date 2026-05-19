@@ -318,7 +318,7 @@ globalThis.Jig.dom = (() => {
     function buildCollapsibleTitle(title, links) {
         return createElement("p", {
             className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-            children: [createElement("span", {textContent: title}), createSidebarToggle(links)]
+            children: [createElement("span", {textContent: title, i18n: true}), createSidebarToggle(links)]
         });
     }
 
@@ -341,7 +341,7 @@ globalThis.Jig.dom = (() => {
 
         const titleEl = !title ? null
             : collapsible ? buildCollapsibleTitle(title, links)
-            : createElement("p", {className: "in-page-sidebar__title", textContent: title});
+            : createElement("p", {className: "in-page-sidebar__title", textContent: title, i18n: true});
 
         return createElement("section", {
             className: "in-page-sidebar__section",

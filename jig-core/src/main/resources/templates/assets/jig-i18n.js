@@ -250,12 +250,11 @@ globalThis.Jig.i18n = (() => {
 
     return {
         apply,
-        translate,
-        resolveDictionary,
-        builtinDictionaries,
         currentLanguage,
         setLanguage,
         availableLanguages,
+        // テストが明示キー翻訳をセットアップするために参照する
+        builtinDictionaries,
     };
 })();
 

@@ -62,26 +62,8 @@
         </div>
 
         <section id="hierarchy-package-list">
-            <table id="hierarchy-package-table">
-                <colgroup>
-                    <col class="col-action">
-                    <col class="col-fqn">
-                    <col class="col-name">
-                    <col class="col-number">
-                    <col class="col-number">
-                    <col class="col-number">
-                </colgroup>
-                <thead>
-                <tr>
-                    <th class="no-sort"></th>
-                    <th data-i18n>定義名 <input type="search" id="hierarchy-list-filter" placeholder="絞り込み" data-i18n-attr="placeholder" autocomplete="off"></th>
-                    <th data-i18n>名称</th>
-                    <th data-i18n>クラス数</th>
-                    <th data-i18n>関連数（依存元）</th>
-                    <th data-i18n>関連数（依存先）</th>
-                </tr>
-                </thead>
-            </table>
+            <!-- thead/colgroup は package.js の renderPackageTableHeader で挿入される -->
+            <table id="hierarchy-package-table" data-package-list-table data-filter-input-id="hierarchy-list-filter"></table>
         </section>
     </div>
 
@@ -129,26 +111,7 @@
         </div>
 
         <section id="explore-package-list">
-            <table id="explore-package-table">
-                <colgroup>
-                    <col class="col-action">
-                    <col class="col-fqn">
-                    <col class="col-name">
-                    <col class="col-number">
-                    <col class="col-number">
-                    <col class="col-number">
-                </colgroup>
-                <thead>
-                <tr>
-                    <th class="no-sort"></th>
-                    <th data-i18n>定義名 <input type="search" id="explore-list-filter" placeholder="絞り込み" data-i18n-attr="placeholder" autocomplete="off"></th>
-                    <th data-i18n>名称</th>
-                    <th data-i18n>クラス数</th>
-                    <th data-i18n>関連数（依存元）</th>
-                    <th data-i18n>関連数（依存先）</th>
-                </tr>
-                </thead>
-            </table>
+            <table id="explore-package-table" data-package-list-table data-filter-input-id="explore-list-filter"></table>
         </section>
     </div>
 </main>

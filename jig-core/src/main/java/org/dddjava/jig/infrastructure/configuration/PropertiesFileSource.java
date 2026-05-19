@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -47,34 +46,36 @@ public class PropertiesFileSource {
         logger.info("configuration loaded from {}", jigPropertiesPath.toAbsolutePath());
 
         PartialJigSettings.Builder builder = PartialJigSettings.builder()
-                .outputDirectoryFromString(properties.getProperty("jig.output.directory"))
-                .domainPattern(properties.getProperty("jig.pattern.domain"));
-        parseDocumentTypes(properties.getProperty("jig.document.types"))
-                .ifPresent(builder::documentTypes);
-        parseLocale(properties.getProperty("jig.locale"))
-                .ifPresent(builder::locale);
+                .outputDirectory(parsePath(properties.getProperty("jig.output.directory")))
+                .domainPattern(properties.getProperty("jig.pattern.domain"))
+                .documentTypes(parseDocumentTypes(properties.getProperty("jig.document.types")))
+                .locale(parseLocale(properties.getProperty("jig.locale")));
         return builder.build();
     }
 
-    private static Optional<List<JigDocument>> parseDocumentTypes(String value) {
-        if (value == null || value.isEmpty()) return Optional.empty();
+    private static Path parsePath(String value) {
+        return (value == null || value.isEmpty()) ? null : Path.of(value);
+    }
+
+    private static List<JigDocument> parseDocumentTypes(String value) {
+        if (value == null || value.isEmpty()) return List.of();
         try {
-            return Optional.of(JigDocument.resolve(value));
+            return JigDocument.resolve(value);
         } catch (IllegalArgumentException e) {
             logger.warn("jig.document.types=\"{}\" に未知のドキュメント種別が含まれているため無視します。", value);
-            return Optional.empty();
+            return List.of();
         }
     }
 
-    private static Optional<Locale> parseLocale(String value) {
-        if (value == null || value.isEmpty()) return Optional.empty();
+    private static Locale parseLocale(String value) {
+        if (value == null || value.isEmpty()) return null;
         Locale parsed = Locale.forLanguageTag(value);
         if (parsed.getLanguage().isEmpty()) {
             // forLanguageTag は不正タグに対して Locale.ROOT を返すため、言語コード未設定を弾く必要がある。
             // 採用すると <html lang=""> 出力や辞書引きの不整合を招く。
             logger.warn("jig.locale=\"{}\" は不正な言語タグです。設定を無視します。", value);
-            return Optional.empty();
+            return null;
         }
-        return Optional.of(parsed);
+        return parsed;
     }
 }

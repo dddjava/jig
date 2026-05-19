@@ -10,62 +10,55 @@ import java.util.Optional;
 /**
  * 設定ソース1層分の中間表現。
  *
- * {@link Optional#empty()} は「このソースでは値を指定していない（下位ソースに委ねる）」を意味する。
- * {@code null} や空文字を渡されたケースは、{@link Builder} 側で {@code Optional.empty()} に正規化する。
+ * 未指定状態は {@link Optional#empty()} か空コレクションで表す。{@link Builder} 側で
+ * {@code null} / 空文字 を未指定に正規化する。
  */
 public record PartialJigSettings(
         Optional<Path> outputDirectory,
         Optional<String> domainPattern,
-        Optional<List<JigDocument>> documentTypes,
+        List<JigDocument> documentTypes,
         Optional<Locale> locale
 ) {
 
     public static final PartialJigSettings EMPTY = new PartialJigSettings(
-            Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            Optional.empty(), Optional.empty(), List.of(), Optional.empty());
 
     public static Builder builder() {
         return new Builder();
     }
 
     public static final class Builder {
-        private Optional<Path> outputDirectory = Optional.empty();
-        private Optional<String> domainPattern = Optional.empty();
-        private Optional<List<JigDocument>> documentTypes = Optional.empty();
-        private Optional<Locale> locale = Optional.empty();
+        private Path outputDirectory;
+        private String domainPattern;
+        private List<JigDocument> documentTypes = List.of();
+        private Locale locale;
 
         public Builder outputDirectory(Path value) {
-            this.outputDirectory = Optional.ofNullable(value);
-            return this;
-        }
-
-        public Builder outputDirectoryFromString(String value) {
-            this.outputDirectory = (value == null || value.isEmpty())
-                    ? Optional.empty()
-                    : Optional.of(Path.of(value));
+            this.outputDirectory = value;
             return this;
         }
 
         public Builder domainPattern(String value) {
-            this.domainPattern = (value == null || value.isEmpty())
-                    ? Optional.empty()
-                    : Optional.of(value);
+            this.domainPattern = (value == null || value.isEmpty()) ? null : value;
             return this;
         }
 
         public Builder documentTypes(List<JigDocument> value) {
-            this.documentTypes = (value == null || value.isEmpty())
-                    ? Optional.empty()
-                    : Optional.of(List.copyOf(value));
+            this.documentTypes = (value == null) ? List.of() : List.copyOf(value);
             return this;
         }
 
         public Builder locale(Locale value) {
-            this.locale = Optional.ofNullable(value);
+            this.locale = value;
             return this;
         }
 
         public PartialJigSettings build() {
-            return new PartialJigSettings(outputDirectory, domainPattern, documentTypes, locale);
+            return new PartialJigSettings(
+                    Optional.ofNullable(outputDirectory),
+                    Optional.ofNullable(domainPattern),
+                    documentTypes,
+                    Optional.ofNullable(locale));
         }
     }
 }

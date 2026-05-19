@@ -1,8 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -23,21 +21,12 @@ class JigSettingsLoaderTest {
     @TempDir
     Path userDirDir;
 
-    String userHomeBackup;
-    String userDirBackup;
-
-    @BeforeEach
-    void setUp() {
-        userHomeBackup = System.getProperty("user.home");
-        userDirBackup = System.getProperty("user.dir");
-        System.setProperty("user.home", userHomeDir.toAbsolutePath().toString());
-        System.setProperty("user.dir", userDirDir.toAbsolutePath().toString());
-    }
-
-    @AfterEach
-    void tearDown() {
-        System.setProperty("user.home", userHomeBackup);
-        System.setProperty("user.dir", userDirBackup);
+    private JigSettings loadFromLayers(PartialJigSettings explicit) {
+        return JigSettingsLoader.load(List.of(
+                explicit,
+                new PropertiesFileSource(userDirDir).read(),
+                new PropertiesFileSource(userHomeDir.resolve(".jig")).read()
+        ));
     }
 
     @Test
@@ -47,13 +36,14 @@ class JigSettingsLoaderTest {
         assertTrue(defaults.domainPattern().isEmpty());
         assertEquals(JigDocument.canonical(), defaults.documentTypes());
         assertEquals(Locale.JAPANESE, defaults.locale());
-        // outputDirectory は user.dir/.jig
-        assertEquals(userDirDir.resolve(".jig").toAbsolutePath(), defaults.outputDirectory());
+        // outputDirectory は user.dir/.jig（システムプロパティ依存）
+        assertEquals(Path.of(System.getProperty("user.dir")).resolve(".jig").toAbsolutePath(),
+                defaults.outputDirectory());
     }
 
     @Test
     void 全層emptyならデフォルトが採用される() {
-        JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
 
         JigSettings defaults = JigSettings.defaults();
         assertEquals(defaults.outputDirectory(), loaded.outputDirectory());
@@ -71,7 +61,7 @@ class JigSettingsLoaderTest {
                 .locale(Locale.ENGLISH)
                 .build();
 
-        JigSettings loaded = JigSettingsLoader.loadStandard(explicit);
+        JigSettings loaded = loadFromLayers(explicit);
 
         assertEquals(userDirDir.resolve("primary_output"), loaded.outputDirectory());
         assertEquals("com.example.primary.+", loaded.domainPattern().orElseThrow());
@@ -101,7 +91,7 @@ class JigSettingsLoaderTest {
                 .locale(Locale.JAPANESE)
                 .build();
 
-        JigSettings loaded = JigSettingsLoader.loadStandard(explicit);
+        JigSettings loaded = loadFromLayers(explicit);
 
         assertEquals(Path.of("/primary/jig"), loaded.outputDirectory());
         assertEquals("com.example.primary.+", loaded.domainPattern().orElseThrow());
@@ -119,7 +109,7 @@ class JigSettingsLoaderTest {
                 jig.pattern.domain=com.example.userdir.+
                 """);
 
-        JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
 
         // user.dir が指定したフィールドは user.dir が勝つ
         assertEquals("com.example.userdir.+", loaded.domainPattern().orElseThrow());
@@ -135,7 +125,7 @@ class JigSettingsLoaderTest {
                 jig.output.directory=/userdir/jig
                 """);
 
-        JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
 
         assertEquals("com.example.userdir.+", loaded.domainPattern().orElseThrow());
         assertEquals(List.of(JigDocument.ListOutput), loaded.documentTypes());
@@ -150,7 +140,7 @@ class JigSettingsLoaderTest {
                 jig.output.directory=/home/jig
                 """);
 
-        JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
 
         assertEquals("com.example.home.+", loaded.domainPattern().orElseThrow());
         assertEquals(Path.of("/home/jig"), loaded.outputDirectory());
@@ -161,21 +151,21 @@ class JigSettingsLoaderTest {
         @Test
         void 有効な言語タグは反映される() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=en-US\n");
-            JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
             assertEquals(Locale.forLanguageTag("en-US"), loaded.locale());
         }
 
         @Test
         void 空文字は無視されデフォルトが残る() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=\n");
-            JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
             assertEquals(Locale.JAPANESE, loaded.locale());
         }
 
         @Test
         void 不正タグは無視されデフォルトが残る() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=!!!\n");
-            JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
             assertEquals(Locale.JAPANESE, loaded.locale());
         }
 
@@ -183,7 +173,7 @@ class JigSettingsLoaderTest {
         void 不正タグでも下位層の値があれば下位層が活きる() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=!!!\n");
             writeJigProperties(userHomeDir.resolve(".jig"), "jig.locale=en-US\n");
-            JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
             assertEquals(Locale.forLanguageTag("en-US"), loaded.locale());
         }
     }
@@ -191,7 +181,7 @@ class JigSettingsLoaderTest {
     @Test
     void documentTypesに未知の値が含まれていれば当該キーは無視される() throws IOException {
         writeJigProperties(userDirDir, "jig.document.types=UnknownDoc,DomainModel\n");
-        JigSettings loaded = JigSettingsLoader.loadStandard(PartialJigSettings.EMPTY);
+        JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY);
         assertEquals(JigDocument.canonical(), loaded.documentTypes());
     }
 

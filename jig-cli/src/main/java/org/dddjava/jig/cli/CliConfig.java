@@ -68,14 +68,12 @@ class CliConfig {
             modelPattern = ".*";
         }
 
-        PartialJigSettings.Builder explicit = PartialJigSettings.builder()
-                .outputDirectoryFromString(outputDirectory)
-                .domainPattern(modelPattern);
-        if (!documentTypeText.isEmpty()) {
-            explicit.documentTypes(JigDocument.resolve(documentTypeText));
-        }
-        JigSettings settings = JigSettingsLoader.loadStandard(explicit.build());
-        return Configuration.from(settings);
+        PartialJigSettings explicit = PartialJigSettings.builder()
+                .outputDirectory(outputDirectory.isEmpty() ? null : Path.of(outputDirectory))
+                .domainPattern(modelPattern)
+                .documentTypes(documentTypeText.isEmpty() ? null : JigDocument.resolve(documentTypeText))
+                .build();
+        return Configuration.from(JigSettingsLoader.loadStandard(explicit));
     }
 
     SourceBasePaths rawSourceLocations() {

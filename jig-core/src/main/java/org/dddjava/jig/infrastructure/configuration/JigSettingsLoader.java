@@ -1,5 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.domain.model.documents.JigDocument;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -24,10 +26,15 @@ public class JigSettingsLoader {
 
     public static JigSettings load(List<PartialJigSettings> highToLow) {
         JigSettings defaults = JigSettings.defaults();
+        List<JigDocument> docs = highToLow.stream()
+                .map(PartialJigSettings::documentTypes)
+                .filter(list -> !list.isEmpty())
+                .findFirst()
+                .orElse(defaults.documentTypes());
         return new JigSettings(
                 pick(highToLow, PartialJigSettings::outputDirectory).orElse(defaults.outputDirectory()),
                 pick(highToLow, PartialJigSettings::domainPattern),
-                pick(highToLow, PartialJigSettings::documentTypes).orElse(defaults.documentTypes()),
+                docs,
                 pick(highToLow, PartialJigSettings::locale).orElse(defaults.locale())
         );
     }

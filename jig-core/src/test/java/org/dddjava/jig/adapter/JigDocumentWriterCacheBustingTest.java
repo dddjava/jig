@@ -19,10 +19,11 @@ class JigDocumentWriterCacheBustingTest {
 
     @Test
     void HTMLコピー時にローカルアセット参照へバージョンクエリを付与する() throws IOException {
-        JigDocumentWriter.copyResourceTo("templates/", "glossary.html", tempDir);
+        JigDocumentWriter sut = new JigDocumentWriter(tempDir);
+        sut.copyResourceTo("templates/", "glossary.html", tempDir);
 
         String html = Files.readString(tempDir.resolve("glossary.html"), StandardCharsets.UTF_8);
-        String v = "?v=" + JigDocumentWriter.assetVersion();
+        String v = "?v=" + sut.assetVersion();
 
         assertTrue(html.contains("./assets/style.css" + v), html);
         assertTrue(html.contains("./assets/jig-bundle.js" + v), html);
@@ -33,20 +34,18 @@ class JigDocumentWriterCacheBustingTest {
     }
 
     @Test
-    void prepareOutputDirectoryを呼ぶたびにassetVersionが更新される() throws Exception {
-        JigDocumentWriter.prepareOutputDirectory(tempDir);
-        String first = JigDocumentWriter.assetVersion();
+    void インスタンスごとにassetVersionが異なる() throws Exception {
+        String first = new JigDocumentWriter(tempDir).assetVersion();
         // System.currentTimeMillis() の解像度より十分長く待つ
         Thread.sleep(5);
-        JigDocumentWriter.prepareOutputDirectory(tempDir);
-        String second = JigDocumentWriter.assetVersion();
+        String second = new JigDocumentWriter(tempDir).assetVersion();
 
-        assertNotEquals(first, second, "assetVersion は実行ごとに変わる必要がある");
+        assertNotEquals(first, second, "assetVersion はインスタンスごとに変わる必要がある");
     }
 
     @Test
     void 非HTMLリソースはバイトコピーのまま変更しない() throws IOException {
-        JigDocumentWriter.copyResourceTo("templates/assets/", "style.css", tempDir);
+        new JigDocumentWriter(tempDir).copyResourceTo("templates/assets/", "style.css", tempDir);
 
         byte[] copied = Files.readAllBytes(tempDir.resolve("style.css"));
         byte[] original;

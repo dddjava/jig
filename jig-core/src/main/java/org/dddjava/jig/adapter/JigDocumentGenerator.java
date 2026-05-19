@@ -20,16 +20,18 @@ public class JigDocumentGenerator {
     private final Path outputDirectory;
     private final Locale locale;
     private final DataAdapterResolver dataAdapterResolver;
+    private final JigDocumentWriter writer;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
         this.locale = jigDocumentContext.locale();
         this.dataAdapterResolver = new DataAdapterResolver(jigService);
+        this.writer = new JigDocumentWriter(outputDirectory);
     }
 
     public JigResult generate(JigRepository jigRepository, GitRepositoryInfo gitRepositoryInfo) {
-        JigDocumentWriter.prepareOutputDirectory(outputDirectory);
+        writer.prepareOutputDirectory();
 
         var handleResults = generateDocuments(jigRepository);
 
@@ -43,7 +45,7 @@ public class JigDocumentGenerator {
         writeDataFiles(jigRepository);
         return jigDocuments.stream()
                 .map(jigDocument -> {
-                    Path htmlPath = JigDocumentWriter.writeHtmlAndJs(jigDocument, outputDirectory);
+                    Path htmlPath = writer.writeHtmlAndJs(jigDocument);
                     return HandleResult.withOutput(jigDocument, List.of(htmlPath));
                 })
                 .toList();
@@ -56,17 +58,16 @@ public class JigDocumentGenerator {
                 .distinct()
                 .forEach(adapter -> {
                     String jsonText = adapter.buildJson(jigRepository);
-                    JigDocumentWriter.writeData(outputDirectory, adapter.dataFileName(), adapter.variableName(), jsonText);
+                    writer.writeData(adapter.dataFileName(), adapter.variableName(), jsonText);
                 });
     }
 
     private void generateIndex(List<HandleResult> results, GitRepositoryInfo gitRepositoryInfo) {
-        IndexAdapter indexAdapter = new IndexAdapter();
-        indexAdapter.render(results, outputDirectory, gitRepositoryInfo, locale);
+        new IndexAdapter(writer).render(results, gitRepositoryInfo, locale);
     }
 
     private void generateDebugHtml() {
-        JigDocumentWriter.copyResourceTo("templates/", "debug.html", outputDirectory);
+        writer.copyResourceTo("templates/", "debug.html", outputDirectory);
     }
 
     void generateSharedAssets() {
@@ -79,7 +80,7 @@ public class JigDocumentGenerator {
                 // 開発用なので不要
                 // "types.js"
         )) {
-            JigDocumentWriter.copyAssetsResource(fileName, outputDirectory);
+            writer.copyAssetsResource(fileName);
         }
     }
 

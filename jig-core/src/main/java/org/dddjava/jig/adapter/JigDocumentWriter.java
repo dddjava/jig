@@ -13,30 +13,34 @@ import java.nio.file.StandardCopyOption;
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
-    // 生成実行ごとに更新する。同一 JVM（Gradle daemon 等）で複数回 generate しても
-    // 新しい値が割り当たるよう、static final にはしない。
-    private static String assetVersion = Long.toString(System.currentTimeMillis());
+    private final Path outputDirectory;
+    private final String assetVersion;
 
-    static String assetVersion() {
+    public JigDocumentWriter(Path outputDirectory) {
+        this.outputDirectory = outputDirectory;
+        this.assetVersion = Long.toString(System.currentTimeMillis());
+    }
+
+    String assetVersion() {
         return assetVersion;
     }
 
-    public static void copyAssetsResource(String fileName, Path outputDirectory) {
+    public Path outputDirectory() {
+        return outputDirectory;
+    }
+
+    public void copyAssetsResource(String fileName) {
         copyResourceTo("templates/assets/", fileName, outputDirectory.resolve("assets"));
     }
 
-    public static Path writeHtmlAndJs(JigDocument jigDocument, Path outputDirectory) {
+    public Path writeHtmlAndJs(JigDocument jigDocument) {
         String fileName = jigDocument.fileName();
-        return writeHtmlAndJs(fileName, outputDirectory);
-    }
-
-    private static Path writeHtmlAndJs(String fileName, Path outputDirectory) {
         copyResourceTo("templates/", fileName + ".html", outputDirectory);
-        copyAssetsResource(fileName + ".js", outputDirectory);
+        copyAssetsResource(fileName + ".js");
         return outputDirectory.resolve(fileName + ".html");
     }
 
-    public static void writeData(Path outputDirectory, String fileName, String variableName, String json) {
+    public void writeData(String fileName, String variableName, String json) {
         Path outputFilePath = outputDirectory.resolve("data/" + fileName + ".js");
         try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
              OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
@@ -46,7 +50,7 @@ public class JigDocumentWriter {
         }
     }
 
-    public static void copyResourceTo(String resourceDir, String fileName, Path outputDir) {
+    public void copyResourceTo(String resourceDir, String fileName, Path outputDir) {
         String resourcePath = resourceDir + fileName;
         Path outputPath = outputDir.resolve(fileName);
         try (InputStream is = getResourceAsStream(resourcePath)) {
@@ -67,7 +71,7 @@ public class JigDocumentWriter {
      * テンプレート HTML 中の {@code {{assetVersion}}} プレースホルダを現在のバージョン値で置換する。
      * 各テンプレートはローカルアセット参照に明示的に {@code ?v={{assetVersion}}} を書いておく。
      */
-    static String applyAssetVersion(String html) {
+    String applyAssetVersion(String html) {
         return html.replace("{{assetVersion}}", assetVersion);
     }
 
@@ -100,17 +104,14 @@ public class JigDocumentWriter {
                 " This may be because the resource is not in the classpath or the module is not configured to allow resource access.");
     }
 
-    public static void prepareOutputDirectory(Path outputDirectory) {
-        // 生成実行ごとに assetVersion を更新する（ブラウザキャッシュ無効化のため）。
-        // prepareOutputDirectory は generate の冒頭で必ず一度だけ呼ばれることを前提としている。
-        assetVersion = Long.toString(System.currentTimeMillis());
+    public void prepareOutputDirectory() {
         createOutputDirectory(outputDirectory);
         createOutputDirectory(outputDirectory.resolve("assets"));
         createOutputDirectory(outputDirectory.resolve("data"));
     }
 
-    private static void createOutputDirectory(Path outputDirectory) {
-        File file = outputDirectory.toFile();
+    private void createOutputDirectory(Path dir) {
+        File file = dir.toFile();
         if (file.exists()) {
             if (!file.isDirectory()) {
                 throw new IllegalStateException(file.getAbsolutePath() + " is not Directory. Please review your settings.");
@@ -122,8 +123,8 @@ public class JigDocumentWriter {
         }
 
         try {
-            Files.createDirectories(outputDirectory);
-            logger.info("[JIG] created {}", outputDirectory.toAbsolutePath());
+            Files.createDirectories(dir);
+            logger.info("[JIG] created {}", dir.toAbsolutePath());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

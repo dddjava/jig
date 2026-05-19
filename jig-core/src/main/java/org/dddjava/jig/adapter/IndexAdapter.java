@@ -22,8 +22,15 @@ public class IndexAdapter {
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
     static final String SUMMARY_DATA_JS = "summary-data.js";
 
-    public void render(List<HandleResult> handleResultList, Path outputDirectory,
+    private final JigDocumentWriter writer;
+
+    public IndexAdapter(JigDocumentWriter writer) {
+        this.writer = writer;
+    }
+
+    public void render(List<HandleResult> handleResultList,
                        GitRepositoryInfo gitRepositoryInfo, Locale locale) {
+        Path outputDirectory = writer.outputDirectory();
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
@@ -61,7 +68,7 @@ public class IndexAdapter {
 
         try {
             Files.writeString(indexFilePath(outputDirectory),
-                    JigDocumentWriter.applyAssetVersion(html), StandardCharsets.UTF_8);
+                    writer.applyAssetVersion(html), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -59,7 +59,7 @@ public class IndexAdapter {
         html.append("\n");
         html.append("<header>\n");
         html.append("    <h1>").append(title).append("</h1>\n");
-        html.append("    <p>出力日時: <span id=\"jig-timestamp\" data-jig-timestamp=\"").append(timestampText).append("\">").append(timestampText).append("</span>");
+        html.append("    <p><span data-i18n>出力日時</span>: <span id=\"jig-timestamp\" data-jig-timestamp=\"").append(timestampText).append("\">").append(timestampText).append("</span>");
         html.append(" Version: ").append(jigVersion);
         html.append("</p>\n");
         html.append("    <p id=\"jig-source\"></p>\n");
@@ -73,7 +73,7 @@ public class IndexAdapter {
 
         if (documentLinks.containsKey(JigDocument.PackageRelation)) {
             html.append("    <section id=\"diagrams\">\n");
-            html.append("        <h2>主要パッケージ関連図</h2>\n");
+            html.append("        <h2 data-i18n>主要パッケージ関連図</h2>\n");
             html.append("        <div id=\"package-diagram\"></div>\n");
             html.append("    </section>\n");
         }

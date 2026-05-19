@@ -12,6 +12,10 @@ globalThis.Jig.i18n = (() => {
             "フィールド": "Fields",
             "折りたたむ": "Collapse",
             "展開": "Expand",
+            "出力日時": "Generated at",
+            "主要パッケージ関連図": "Key package diagram",
+            "ドメインパッケージ": "Domain package",
+            "最上位パッケージ": "Top-level package",
         },
     };
 

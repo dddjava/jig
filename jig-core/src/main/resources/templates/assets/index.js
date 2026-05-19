@@ -8,7 +8,7 @@ const IndexApp = (() => {
         return Jig.data.package.get();
     }
 
-    function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
+    function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabelKey) {
         const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
@@ -24,7 +24,13 @@ const IndexApp = (() => {
 
         if (generator("TB")) {
             // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-            packageDiagramContainer.insertBefore(Jig.dom.createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
+            const heading = Jig.dom.createElement("h3", {
+                children: [
+                    Jig.dom.createElement("span", {textContent: titleLabelKey, i18n: true}),
+                    document.createTextNode(": " + packageRoot)
+                ]
+            });
+            packageDiagramContainer.insertBefore(heading, domainPackageDiagram);
             Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
         }
     }
@@ -106,7 +112,7 @@ const IndexApp = (() => {
                 packageDiagramContainer,
                 allPackages, allPackageRelations,
                 packageRoot,
-                "ドメインパッケージ: " + packageRoot
+                "ドメインパッケージ"
             );
         });
 
@@ -115,7 +121,7 @@ const IndexApp = (() => {
             packageDiagramContainer,
             allPackages, allPackageRelations,
             commonRoot,
-            "最上位パッケージ: " + commonRoot
+            "最上位パッケージ"
         );
 
         updateRelativeTime();

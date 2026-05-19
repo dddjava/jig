@@ -152,6 +152,11 @@ globalThis.Jig.i18n = (() => {
     // セッション中のみ保持する現在言語（永続化しない）。
     let currentLang = null;
 
+    // BCP47 タグ（"ja-JP" など）から先頭の言語コード（"ja"）だけを取り出す。
+    function toLangCode(tag) {
+        return String(tag || "").split('-')[0];
+    }
+
     function resolveDictionary(lang) {
         return builtinDictionaries[lang] || null;
     }
@@ -161,15 +166,15 @@ globalThis.Jig.i18n = (() => {
         const tag = globalThis.Jig?.data?.navigation?.get?.()?.locale
             || document.documentElement.lang
             || "ja";
-        return tag.split('-')[0];
+        return toLangCode(tag);
     }
 
     function availableLanguages() {
         const fromData = globalThis.Jig?.data?.navigation?.get?.()?.availableLocales;
         if (Array.isArray(fromData) && fromData.length > 0) {
-            return fromData.map(tag => String(tag).split('-')[0]);
+            return fromData.map(toLangCode);
         }
-        // builtin に ja は無いので明示的に足す
+        // navigation-data 未提供時のフォールバック（主にテスト経路）。
         return ["ja", ...Object.keys(builtinDictionaries)];
     }
 
@@ -242,7 +247,7 @@ globalThis.Jig.i18n = (() => {
     }
 
     function setLanguage(lang) {
-        currentLang = String(lang).split('-')[0];
+        currentLang = toLangCode(lang);
         apply();
         document.dispatchEvent(new CustomEvent("jig:locale-change", {detail: {lang: currentLang}}));
     }

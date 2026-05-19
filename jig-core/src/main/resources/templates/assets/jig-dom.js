@@ -516,6 +516,33 @@ globalThis.Jig.dom = (() => {
         return String(href || "").replace(/^\.\//, "");
     }
 
+    /**
+     * hover で開閉するヘッダ用ドロップダウンナビ (.jig-header-nav) の構造を作る共通ヘルパ。
+     * setupHeaderNavigation / setupLanguageSwitcher の両方から使う。
+     *
+     * @param {HTMLElement} triggerEl 既に組み立て済みのトリガー要素 (.jig-header-nav__trigger)
+     * @param {string} [modifierClass] バリエーション用の追加クラス名（例: "jig-lang-switcher"）
+     * @returns {{wrapper: HTMLElement, dropdown: HTMLElement}}
+     */
+    function createDropdownNav(triggerEl, modifierClass) {
+        const dropdown = createElement("ul", {
+            className: ["jig-header-nav__dropdown", modifierClass && `${modifierClass}__dropdown`].filter(Boolean).join(" "),
+            attributes: {role: "list"}
+        });
+        const wrapper = createElement("div", {
+            className: ["jig-header-nav", modifierClass].filter(Boolean).join(" "),
+            children: [triggerEl, dropdown]
+        });
+        return {wrapper, dropdown};
+    }
+
+    function appendDropdownItem(dropdown, child, isCurrent) {
+        dropdown.appendChild(createElement("li", {
+            className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
+            children: [child]
+        }));
+    }
+
     function setupHeaderNavigation() {
         if (document.body.classList.contains("index")) return;
 
@@ -547,11 +574,7 @@ globalThis.Jig.dom = (() => {
             textContent: triggerLabel,
             i18n: true
         });
-
-        const dropdown = createElement("ul", {
-            className: "jig-header-nav__dropdown",
-            attributes: {role: "list"}
-        });
+        const {wrapper, dropdown} = createDropdownNav(trigger);
 
         navigationData.links.forEach(link => {
             if (!link) return;
@@ -563,16 +586,10 @@ globalThis.Jig.dom = (() => {
             const child = isCurrent
                 ? createElement("span", {textContent: label, i18n: true})
                 : createElement("a", {textContent: label, attributes: {href}, i18n: true});
-            dropdown.appendChild(createElement("li", {
-                className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
-                children: [child]
-            }));
+            appendDropdownItem(dropdown, child, isCurrent);
         });
 
-        pageTitleEl.replaceWith(createElement("div", {
-            className: "jig-header-nav",
-            children: [trigger, dropdown]
-        }));
+        pageTitleEl.replaceWith(wrapper);
     }
 
     function setupLanguageSwitcher() {
@@ -593,11 +610,7 @@ globalThis.Jig.dom = (() => {
             className: "jig-header-nav__trigger jig-lang-switcher__trigger",
             textContent: display(i18n.currentLanguage())
         });
-
-        const dropdown = createElement("ul", {
-            className: "jig-header-nav__dropdown jig-lang-switcher__dropdown",
-            attributes: {role: "list"}
-        });
+        const {wrapper, dropdown} = createDropdownNav(trigger, "jig-lang-switcher");
 
         const renderItems = () => {
             dropdown.replaceChildren();
@@ -616,10 +629,7 @@ globalThis.Jig.dom = (() => {
                         i18n.setLanguage(lang);
                     });
                 }
-                dropdown.appendChild(createElement("li", {
-                    className: "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : ""),
-                    children: [child]
-                }));
+                appendDropdownItem(dropdown, child, isCurrent);
             });
         };
 
@@ -630,10 +640,7 @@ globalThis.Jig.dom = (() => {
             renderItems();
         });
 
-        header.appendChild(createElement("div", {
-            className: "jig-header-nav jig-lang-switcher",
-            children: [trigger, dropdown]
-        }));
+        header.appendChild(wrapper);
     }
 
     function setupDocumentHelp() {

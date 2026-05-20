@@ -2,8 +2,8 @@
 
 ## 状況 (Context)
 
-`SpringDataJdbcStatementsReader#readFrom` では、`Stream#forEach` の中で外部の `Map` に `put` する実装を行っていました。
-この実装は次の問題を持ちます。
+過去には `Stream#forEach` の中で外部のコレクションに要素を追加する実装が行われていました（例: `Stream#forEach` 内で `Map#put` する形）。
+この種の実装は次の問題を持ちます。
 
 - Stream の中間処理と終端処理が副作用に依存し、意図が追いにくい
 - 変換ロジックと格納ロジックが分離されず、読みやすさが下がる
@@ -11,12 +11,13 @@
 
 ## 決定 (Decision)
 
-Stream では副作用を避け、`map` / `flatMap` で値を組み立て、`collect` で集約する方針を採用します。
+Stream では副作用を避け、`map` / `flatMap` で値を組み立て、`collect`（または `toList()` など）で集約する方針を採用します。
 
-今回の対象では、`forEach` で `Map` に `put` する構成を廃止し、次の構成へ変更しました。
+具体的には、`forEach` で外部のコレクションへ要素を追加する構成を避け、次の構成を取ります。
 
-- `flatMap` で `SqlStatement` を生成する
-- `collect(toMap(..., LinkedHashMap::new))` で `Map<SqlStatementId, SqlStatement>` を構築する
+- 生成は `map`、条件付き展開や 0..N 展開は `flatMap` で行う
+- 集約は `toList()` や `collect(...)` で行う
+- `Map` を構築する場合は `collect(toMap(...))` を用い、順序が必要なら `LinkedHashMap::new` を指定する
 
 ## 根拠・背景 (Rationale)
 

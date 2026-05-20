@@ -3,56 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./assets/style.css" rel="stylesheet">
-    <link rel="icon" href="./assets/favicon.ico">
-    <title>ドメインモデル</title>
+    <link href="./assets/style.css?v=1779292357041" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico?v=1779292357041">
+    <title data-i18n>ドメインモデル</title>
 </head>
 <body class="domain-model">
 <header class="top">
-    <a href="./index.html">JIG</a> / <b class="jig-page-title">ドメインモデル</b>
+    <a href="./index.html">JIG</a> / <b class="jig-page-title" data-i18n>ドメインモデル</b>
 </header>
 <div class="split-view">
     <nav id="domain-sidebar" class="in-page-sidebar in-page-sidebar--tree">
         <div class="sidebar-header">
         <details id="sidebar-settings" class="sidebar-settings">
             <summary>
-                <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                表示設定
+                <span data-i18n>表示設定</span>
             </summary>
             <div class="sidebar-settings-panel">
                 <fieldset>
-                    <legend>種類</legend>
-                    <label><input type="radio" name="kind-filter" value="all" checked> すべて</label>
-                    <label><input type="radio" name="kind-filter" value="パッケージ"> パッケージ</label>
-                    <label><input type="radio" name="kind-filter" value="文字列"> 文字列</label>
-                    <label><input type="radio" name="kind-filter" value="数値"> 数値</label>
-                    <label><input type="radio" name="kind-filter" value="日付"> 日付</label>
-                    <label><input type="radio" name="kind-filter" value="期間"> 期間</label>
-                    <label><input type="radio" name="kind-filter" value="区分"> 区分</label>
-                    <label><input type="radio" name="kind-filter" value="コレクション"> コレクション</label>
+                    <legend data-i18n>種類</legend>
+                    <label data-i18n><input type="radio" name="kind-filter" value="all" checked> すべて</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="パッケージ"> パッケージ</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="文字列"> 文字列</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="数値"> 数値</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="日付"> 日付</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="期間"> 期間</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="区分"> 区分</label>
+                    <label data-i18n><input type="radio" name="kind-filter" value="コレクション"> コレクション</label>
                 </fieldset>
                 <fieldset>
-                    <legend>表示内容</legend>
-                    <label>
+                    <legend data-i18n>表示内容</legend>
+                    <label data-i18n>
                         <input type="checkbox" id="show-descriptions" checked>
                         説明
                     </label>
-                    <label>
+                    <label data-i18n>
                         <input type="checkbox" id="show-members" checked>
                         メンバ
                     </label>
                 </fieldset>
                 <fieldset>
-                    <legend>ダイアグラム</legend>
-                    <label>
+                    <legend data-i18n>ダイアグラム</legend>
+                    <label data-i18n>
                         <input type="checkbox" id="show-diagrams" checked>
                         ダイアグラム表示
                     </label>
-<label>
+<label data-i18n>
                         <input type="checkbox" id="show-deprecated-nodes" checked>
                         Deprecated ノード
                     </label>
-                    <label>
+                    <label data-i18n>
                         <input type="checkbox" id="transitive-reduction-toggle" checked>
                         依存関係の簡略表示
                     </label>
@@ -62,7 +61,7 @@
         <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" aria-expanded="true" title="サイドバーを折りたたむ/展開する"></button>
         </div>
         <div class="sidebar-filter">
-            <input type="search" id="domain-sidebar-filter" placeholder="絞り込み" autocomplete="off">
+            <input type="search" id="domain-sidebar-filter" placeholder="絞り込み" data-i18n-attr="placeholder" autocomplete="off">
         </div>
         <div id="domain-sidebar-list" class="in-page-sidebar__list"></div>
     </nav>
@@ -74,11 +73,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
-<script src="./assets/jig-bundle.js"></script>
-<script src="./data/navigation-data.js"></script>
-<script src="./data/type-relations-data.js"></script>
-<script src="./data/domain-data.js"></script>
-<script src="./data/glossary-data.js"></script>
-<script src="./assets/domain.js"></script>
+<script src="./assets/jig-bundle.js?v=1779292357041"></script>
+<script src="./data/navigation-data.js?v=1779292357041"></script>
+<script src="./data/type-relations-data.js?v=1779292357041"></script>
+<script src="./data/domain-data.js?v=1779292357041"></script>
+<script src="./data/glossary-data.js?v=1779292357041"></script>
+<script src="./assets/domain.js?v=1779292357041"></script>
 </body>
 </html>

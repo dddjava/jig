@@ -441,7 +441,7 @@ const PackageApp = (() => {
                             tabSection.panels['diagram'].appendChild(Jig.dom.createElement('fieldset', {
                                 className: 'diagram-panel-options',
                                 children: [
-                                    Jig.dom.createElement('legend', {textContent: '表示する関連'}),
+                                    Jig.dom.i18nText('legend', '表示する関連'),
                                     Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [forwardCheckbox, `${item.titles[0]} → ${item.titles[1]} (${item.causesForward.length}件)`]}),
                                     Jig.dom.createElement('label', {className: 'diagram-panel-option', children: [backwardCheckbox, `${item.titles[0]} ← ${item.titles[1]} (${item.causesBackward.length}件)`]}),
                                 ],
@@ -480,9 +480,9 @@ const PackageApp = (() => {
                 className: 'mutual-dependency-stats',
                 children: [
                     Jig.dom.createElement('thead', {children: [Jig.dom.createElement('tr', {children: [
-                        Jig.dom.createElement('th', {textContent: 'パッケージ'}),
-                        Jig.dom.createElement('th', {textContent: 'クラス'}),
-                        Jig.dom.createElement('th', {textContent: '関連'}),
+                        Jig.dom.i18nText('th', 'パッケージ'),
+                        Jig.dom.i18nText('th', 'クラス'),
+                        Jig.dom.i18nText('th', '関連'),
                     ]})]}),
                     Jig.dom.createElement('tbody', {children: item.titles.map((title, i) =>
                         Jig.dom.createElement('tr', {children: [
@@ -504,7 +504,7 @@ const PackageApp = (() => {
             return tabSection.section;
         });
         const details = Jig.dom.createElement('details', {className: 'jig-card jig-card--type'});
-        details.appendChild(Jig.dom.createElement('summary', {textContent: '相互依存分析'}));
+        details.appendChild(Jig.dom.i18nText('summary', '相互依存分析'));
         sections.forEach(section => details.appendChild(section));
         container.innerHTML = '';
         container.appendChild(details);
@@ -1378,7 +1378,46 @@ const PackageApp = (() => {
         }
     }
 
+    /**
+     * 階層探索 / 関連探索の <table data-package-list-table> 配下に colgroup と thead を挿入する。
+     * 両パネルで同じ構造のため、HTML 側は空テーブルに data-filter-input-id だけを持たせ、
+     * 実体はここで一括生成する。
+     */
+    function renderPackageTableHeaders() {
+        const colClasses = ['col-action', 'col-fqn', 'col-name', 'col-number', 'col-number', 'col-number'];
+        const headerKeys = [null, '定義名', '名称', 'クラス数', '関連数（依存元）', '関連数（依存先）'];
+
+        document.querySelectorAll('table[data-package-list-table]').forEach(table => {
+            const filterInputId = table.dataset.filterInputId;
+            const colgroup = Jig.dom.createElement('colgroup', {
+                children: colClasses.map(className => Jig.dom.createElement('col', {className}))
+            });
+            const tr = Jig.dom.createElement('tr', {
+                children: headerKeys.map((key, i) => {
+                    if (key === null) return Jig.dom.createElement('th', {className: 'no-sort'});
+                    if (i === 1) {
+                        // 「定義名」セルには絞り込み input を内包する
+                        const input = Jig.dom.createElement('input', {
+                            attributes: {
+                                type: 'search', id: filterInputId,
+                                placeholder: '絞り込み', 'data-i18n-attr': 'placeholder',
+                                autocomplete: 'off'
+                            }
+                        });
+                        return Jig.dom.createElement('th', {
+                            i18n: true,
+                            children: [document.createTextNode(key + ' '), input]
+                        });
+                    }
+                    return Jig.dom.i18nText('th', key);
+                })
+            });
+            table.prepend(colgroup, Jig.dom.createElement('thead', {children: [tr]}));
+        });
+    }
+
     function init() {
+        renderPackageTableHeaders();
         Jig.dom.setupSortableTables();
         const renderedTabs = new Set();
         setupTabControl(tabName => {

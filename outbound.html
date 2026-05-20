@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./assets/style.css" rel="stylesheet">
-    <link rel="icon" href="./assets/favicon.ico">
-    <title>出力インタフェース</title>
+    <link href="./assets/style.css?v=1779292357041" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico?v=1779292357041">
+    <title data-i18n>出力インタフェース</title>
 </head>
 <body class="outbound-interface">
 <header class="top">
-    <a href="./index.html">JIG</a> / <b class="jig-page-title">出力インタフェース</b>
+    <a href="./index.html">JIG</a> / <b class="jig-page-title" data-i18n>出力インタフェース</b>
 </header>
 
 <div class="split-view">
@@ -17,34 +17,33 @@
         <div class="sidebar-header">
         <details id="sidebar-settings" class="sidebar-settings">
             <summary>
-                <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                表示設定
+                <span data-i18n>表示設定</span>
             </summary>
             <div class="sidebar-settings-panel">
                 <div class="outbound-visibility-panel">
                     <div class="outbound-visibility-panel__groups">
                         <div class="outbound-visibility-panel__group">
-                            <p class="outbound-visibility-panel__group-label">表示要素</p>
-                            <label><input type="checkbox" name="show-caller-usecase" checked> 呼び出しユースケース</label>
+                            <p class="outbound-visibility-panel__group-label" data-i18n>表示要素</p>
+                            <label data-i18n><input type="checkbox" name="show-caller-usecase" checked> 呼び出しユースケース</label>
                             <div class="checkbox-pair">
-                                <label><input type="checkbox" name="show-port" checked> ポート</label>
-                                <label class="checkbox-child"><input type="checkbox" name="show-operation" checked> メソッド</label>
+                                <label data-i18n><input type="checkbox" name="show-port" checked> ポート</label>
+                                <label class="checkbox-child" data-i18n><input type="checkbox" name="show-operation" checked> メソッド</label>
                             </div>
                             <div class="checkbox-pair">
-                                <label><input type="checkbox" name="show-adapter"> アダプタ</label>
-                                <label class="checkbox-child"><input type="checkbox" name="show-execution" checked> メソッド</label>
+                                <label data-i18n><input type="checkbox" name="show-adapter"> アダプタ</label>
+                                <label class="checkbox-child" data-i18n><input type="checkbox" name="show-execution" checked> メソッド</label>
                             </div>
                             <div class="checkbox-pair">
-                                <label><input type="checkbox" name="show-accessor"> 外部アクセサ</label>
-                                <label class="checkbox-child"><input type="checkbox" name="show-accessor-method" checked> メソッド</label>
+                                <label data-i18n><input type="checkbox" name="show-accessor"> 外部アクセサ</label>
+                                <label class="checkbox-child" data-i18n><input type="checkbox" name="show-accessor-method" checked> メソッド</label>
                             </div>
                             <div class="checkbox-pair">
-                                <label><input type="checkbox" name="show-target" checked> 外部操作対象</label>
-                                <label class="checkbox-child"><input type="checkbox" name="show-external-type-method" checked> 操作方法</label>
+                                <label data-i18n><input type="checkbox" name="show-target" checked> 外部操作対象</label>
+                                <label class="checkbox-child" data-i18n><input type="checkbox" name="show-external-type-method" checked> 操作方法</label>
                             </div>
                         </div>
                         <div class="outbound-visibility-panel__group">
-                            <p class="outbound-visibility-panel__group-label">永続化操作方法</p>
+                            <p class="outbound-visibility-panel__group-label" data-i18n>永続化操作方法</p>
                             <div class="outbound-visibility-panel__group--grid">
                                 <label><input type="checkbox" name="show-crud-r" checked> SELECT</label>
                                 <label><input type="checkbox" name="show-crud-c" checked> INSERT</label>
@@ -125,11 +124,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
-<script src="./assets/jig-bundle.js"></script>
-<script src="./data/navigation-data.js"></script>
-<script src="./data/domain-data.js"></script>
-<script src="./data/outbound-data.js"></script>
-<script src="./data/glossary-data.js"></script>
-<script src="./assets/outbound.js"></script>
+<script src="./assets/jig-bundle.js?v=1779292357041"></script>
+<script src="./data/navigation-data.js?v=1779292357041"></script>
+<script src="./data/domain-data.js?v=1779292357041"></script>
+<script src="./data/outbound-data.js?v=1779292357041"></script>
+<script src="./data/glossary-data.js?v=1779292357041"></script>
+<script src="./assets/outbound.js?v=1779292357041"></script>
 </body>
 </html>

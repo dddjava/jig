@@ -174,7 +174,7 @@ const InboundApp = (() => {
         }
 
         fieldset.innerHTML = "";
-        fieldset.appendChild(Jig.dom.createElement('legend', {textContent: '表示種別'}));
+        fieldset.appendChild(Jig.dom.i18nText('legend', '表示種別'));
         const options = [
             {value: 'all', label: 'すべて'},
             ...TYPE_CONFIG.filter(c => types.has(c.type)).map(c => ({value: c.type, label: c.label})),
@@ -191,7 +191,9 @@ const InboundApp = (() => {
                     render();
                 }
             });
-            fieldset.appendChild(Jig.dom.createElement('label', {children: [radio, ' ' + label]}));
+            fieldset.appendChild(Jig.dom.createElement('label', {
+                children: [radio, document.createTextNode(' '), Jig.dom.i18nText('span', label)]
+            }));
         });
     }
 
@@ -214,7 +216,7 @@ const InboundApp = (() => {
         });
         panel.appendChild(Jig.dom.createElement('label', {
             attributes: {for: 'simplified-toggle'},
-            children: [checkbox, ' 簡略表示']
+            children: [checkbox, document.createTextNode(' '), Jig.dom.i18nText('span', '簡略表示')]
         }));
     }
 
@@ -315,7 +317,7 @@ const InboundApp = (() => {
             children: [
                 Jig.dom.createElement("thead", {
                     children: [Jig.dom.createElement("tr", {
-                        children: headers.map(h => Jig.dom.createElement("th", {textContent: h}))
+                        children: headers.map(h => Jig.dom.i18nText("th", h))
                     })]
                 }),
                 Jig.dom.createElement("tbody", {
@@ -350,7 +352,7 @@ const InboundApp = (() => {
             children: [
                 Jig.dom.createElement("thead", {
                     children: [Jig.dom.createElement("tr", {
-                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.createElement("th", {textContent: h}))
+                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.i18nText("th", h))
                     })]
                 }),
                 tbody

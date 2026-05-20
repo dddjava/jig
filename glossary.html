@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./assets/style.css" rel="stylesheet">
-    <link rel="icon" href="./assets/favicon.ico">
-    <title>用語集</title>
+    <link href="./assets/style.css?v=1779292357041" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico?v=1779292357041">
+    <title data-i18n>用語集</title>
 </head>
 <body class="glossary">
 <header class="top">
-    <a href="./index.html">JIG</a> / <b class="jig-page-title">用語集</b>
+    <a href="./index.html">JIG</a> / <b class="jig-page-title" data-i18n>用語集</b>
 </header>
 <div class="split-view">
     <nav id="term-sidebar" class="in-page-sidebar in-page-sidebar--tree">
         <div class="sidebar-header">
         <details id="sidebar-settings" class="sidebar-settings">
             <summary>
-                <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                表示設定
+                <span data-i18n>表示設定</span>
             </summary>
             <div class="sidebar-settings-panel">
                 <fieldset class="misc-option">
-                    <legend>表示対象</legend>
-                    <label>
+                    <legend data-i18n>表示対象</legend>
+                    <label data-i18n>
                         <input id="show-only-domain" type="checkbox" checked>
                         ドメインのみ
                     </label>
-                    <label>
+                    <label data-i18n>
                         <input id="show-empty-description" type="checkbox" checked>
                         説明のない用語
                     </label>
                 </fieldset>
                 <fieldset class="kind-option checkbox-options">
-                    <legend class="kind-option-title">種類</legend>
-                    <label><input type="checkbox" id="show-package" checked><span class="kind-badge" data-kind="パッケージ">P</span>パッケージ</label>
-                    <label><input type="checkbox" id="show-class" checked><span class="kind-badge" data-kind="クラス">C</span>クラス</label>
-                    <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span>メソッド</label>
-                    <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span>フィールド</label>
+                    <legend class="kind-option-title" data-i18n>種類</legend>
+                    <label><input type="checkbox" id="show-package" checked><span class="kind-badge" data-kind="パッケージ">P</span><span data-i18n>パッケージ</span></label>
+                    <label><input type="checkbox" id="show-class" checked><span class="kind-badge" data-kind="クラス">C</span><span data-i18n>クラス</span></label>
+                    <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span><span data-i18n>メソッド</span></label>
+                    <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span><span data-i18n>フィールド</span></label>
                 </fieldset>
                 <div class="display-option">
                     <div class="display-controls-row">
                         <div class="sorting-controls">
-                            <label>
+                            <label data-i18n>
                                 <input type="checkbox" id="show-attributes">
                                 属性情報を表示する
                             </label>
                         </div>
-                        <button id="export-csv" type="button">CSV出力</button>
+                        <button id="export-csv" type="button" data-i18n>CSV出力</button>
                     </div>
                 </div>
             </div>
@@ -54,7 +53,7 @@
         <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" aria-expanded="true" title="サイドバーを折りたたむ/展開する"></button>
         </div>
         <div class="sidebar-filter">
-            <input type="search" id="glossary-sidebar-filter" placeholder="絞り込み" autocomplete="off">
+            <input type="search" id="glossary-sidebar-filter" placeholder="絞り込み" data-i18n-attr="placeholder" autocomplete="off">
         </div>
         <div id="term-sidebar-list" class="in-page-sidebar__list"></div>
     </nav>
@@ -67,10 +66,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
-<script src="./assets/jig-bundle.js"></script>
-<script src="./data/navigation-data.js"></script>
-<script src="./data/summary-data.js"></script>
-<script src="./data/glossary-data.js"></script>
-<script src="./assets/glossary.js"></script>
+<script src="./assets/jig-bundle.js?v=1779292357041"></script>
+<script src="./data/navigation-data.js?v=1779292357041"></script>
+<script src="./data/summary-data.js?v=1779292357041"></script>
+<script src="./data/glossary-data.js?v=1779292357041"></script>
+<script src="./assets/glossary.js?v=1779292357041"></script>
 </body>
 </html>

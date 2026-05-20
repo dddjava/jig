@@ -38,13 +38,14 @@ $ java -jar {JIGをダウンロードしたディレクトリ}/jig-cli.jar
 
 ## 設定
 
-次のように `--`に続けて指定します。
+JIG 自身の設定（`jig.*`）は以下の優先順位で解決されます。
 
-```
-$ java -jar jig-cli.jar --jig.document.types=PackageRelation,ListOutput
-```
+1. CLI 引数（`--jig.document.types=PackageRelation,ListOutput` のように指定）
+2. `{user.dir}/jig.properties`
+3. `{user.home}/.jig/jig.properties`
+4. コード内デフォルト
 
-設定できるプロパティは [application.properties](./src/main/resources/application.properties) を参照してください。
+Spring Boot 由来の設定（ログレベルや読み込みディレクトリ）は [application.yml](./src/main/resources/application.yml) を参照してください。
 
 ## 困ったら
 

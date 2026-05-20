@@ -39,8 +39,6 @@ jig {
     modelPattern = '.+'
     // パッケージ概要と一覧出力のみ出力する
     documentTypes = ['PackageRelation', 'ListOutput']
-    // 図のリンクのprefix: ダイアグラムのクラスなどからソースコードにリンクする（SVG限定）
-    linkPrefix = "https://github.com/dddjava/jig/tree/master/jig-core/src/main/java"
 }
 ```
 

@@ -46,7 +46,7 @@ JIGの実行にはJava21以降が必要です。
 
 JIGの生成する分析・設計情報をJIGドキュメントと呼んでいます。
 
-- 種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/domain/model/documents/documentformat/JigDocument.java) を参照してください。
+- 種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/domain/model/documents/JigDocument.java) を参照してください。
 - サンプルは [JIGのドッグフーディング](https://dddjava.github.io/jig/) を参照してください。
 
 ## LICENSE

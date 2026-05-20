@@ -34,11 +34,20 @@ npm run test
 node --test jig-core/src/test/js/insight.test.js
 ```
 
-### テスト実行ポリシー（AGENTS.md より）
+### テスト実行ポリシー
 
 - `*.js` ファイルのみ変更 → `npm run test`
 - それ以外（または混在） → `npm run test:full`
 - CSS のみの変更、または `docs` コミットに該当する変更のみテスト省略可
+
+### Playwright（E2E / スナップショット）
+
+```bash
+npm run pw           # Playwright テスト実行
+npm run pw:ui        # UI モード
+npm run pw:update    # スナップショット更新
+npm run pw:report    # レポート表示
+```
 
 ## アーキテクチャ
 
@@ -78,7 +87,8 @@ org.dddjava.jig/
 | MyBatis SQL 解析 | MyBatis |
 | CLI 設定・起動 | Spring Boot |
 | テスト | JUnit Jupiter 5 + Mockito |
-| JS テスト | Node.js 組み込み test runner |
+| JS テスト | Node.js 組み込み test runner + jsdom |
+| E2E テスト | Playwright |
 
 ### 出力ドキュメント
 
@@ -86,11 +96,12 @@ org.dddjava.jig/
 - `Glossary` — 用語集
 - `PackageRelation` — パッケージ関連
 - `DomainModel` — ドメインモデル
-- `UsecaseModel` — ユースケース
+- `Usecase` — ユースケース
 - `InboundInterface` — 入力インタフェース
 - `OutboundInterface` — 出力インタフェース
 - `Insight` — インサイト
 - `ListOutput` — 一覧出力（HTML）
+- `LibraryDependency` — ライブラリ依存情報
 
 ## コミットルール
 

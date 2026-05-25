@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -173,18 +174,19 @@ class JigSettingsLoaderTest {
         }
 
         @Test
-        void 不正タグは無視されデフォルトが残る() throws IOException {
+        void 不正タグは例外() throws IOException {
             writeJigProperties(userDirDir, "jig.locale=!!!\n");
-            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
-            assertEquals(Locale.JAPANESE, loaded.locale());
+            assertThrows(IllegalArgumentException.class,
+                    () -> loadFromLayers(PartialJigSettings.EMPTY, outputFallback()));
         }
 
         @Test
-        void 不正タグでも下位層の値があれば下位層が活きる() throws IOException {
+        void 下位層に有効値があっても不正タグは例外() throws IOException {
+            // fail-fast: 不正値はどの層にあっても読み込み時点で例外（下位層では救済しない）
             writeJigProperties(userDirDir, "jig.locale=!!!\n");
             writeJigProperties(userHomeDir.resolve(".jig"), "jig.locale=en-US\n");
-            JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
-            assertEquals(Locale.forLanguageTag("en-US"), loaded.locale());
+            assertThrows(IllegalArgumentException.class,
+                    () -> loadFromLayers(PartialJigSettings.EMPTY, outputFallback()));
         }
     }
 
@@ -203,10 +205,17 @@ class JigSettingsLoaderTest {
     }
 
     @Test
-    void documentTypesに未知の値が含まれていれば当該キーは無視される() throws IOException {
+    void documentTypesに未知の値が含まれていれば例外() throws IOException {
         writeJigProperties(userDirDir, "jig.document.types=UnknownDoc,DomainModel\n");
+        assertThrows(IllegalArgumentException.class,
+                () -> loadFromLayers(PartialJigSettings.EMPTY, outputFallback()));
+    }
+
+    @Test
+    void documentTypesはカンマ前後の空白を許容する() throws IOException {
+        writeJigProperties(userDirDir, "jig.document.types=DomainModel, ListOutput\n");
         JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
-        assertEquals(JigDocument.canonical(), loaded.jigDocuments());
+        assertEquals(List.of(JigDocument.DomainModel, JigDocument.ListOutput), loaded.jigDocuments());
     }
 
     @Test
@@ -221,6 +230,59 @@ class JigSettingsLoaderTest {
         writeJigProperties(userDirDir, "jig.output.directory=/from/properties\n");
         JigSettings loaded = loadFromLayers(PartialJigSettings.EMPTY, outputFallback());
         assertEquals(Path.of("/from/properties"), loaded.outputDirectory());
+    }
+
+    @Nested
+    class システムプロパティと環境変数 {
+        @Test
+        void systemPropertyが反映される() {
+            PartialJigSettings systemProperties = new SystemPropertySource(
+                    Map.of("jig.pattern.domain", "com.example.sysprop.+")).read();
+            JigSettings loaded = JigSettingsLoader.load(List.of(systemProperties, outputFallback()));
+            assertEquals("com.example.sysprop.+", loaded.domainPattern().orElseThrow());
+        }
+
+        @Test
+        void 環境変数が大文字名から逆マッピングされ反映される() {
+            PartialJigSettings env = new EnvironmentVariableSource(
+                    Map.of("JIG_PATTERN_DOMAIN", "com.example.env.+")).read();
+            JigSettings loaded = JigSettingsLoader.load(List.of(env, outputFallback()));
+            assertEquals("com.example.env.+", loaded.domainPattern().orElseThrow());
+        }
+
+        @Test
+        void 未知の環境変数は無視される() {
+            PartialJigSettings env = new EnvironmentVariableSource(
+                    Map.of("JIG_UNKNOWN", "x", "JIG_PATTERN_DOMAIN", "com.example.env.+")).read();
+            JigSettings loaded = JigSettingsLoader.load(List.of(env, outputFallback()));
+            assertEquals("com.example.env.+", loaded.domainPattern().orElseThrow());
+        }
+
+        @Test
+        void systemPropertyの不正値は例外() {
+            SystemPropertySource source = new SystemPropertySource(Map.of("jig.locale", "!!!"));
+            assertThrows(IllegalArgumentException.class, source::read);
+        }
+
+        @Test
+        void 優先順位は明示_systemProperty_環境変数_の順() {
+            // 明示 > -D > 環境変数 を1フィールドで検証する
+            PartialJigSettings explicit = PartialJigSettings.builder()
+                    .domainPattern("com.example.explicit.+").build();
+            PartialJigSettings systemProperties = new SystemPropertySource(
+                    Map.of("jig.pattern.domain", "com.example.sysprop.+")).read();
+            PartialJigSettings env = new EnvironmentVariableSource(
+                    Map.of("JIG_PATTERN_DOMAIN", "com.example.env.+")).read();
+
+            JigSettings withExplicit = JigSettingsLoader.load(List.of(explicit, systemProperties, env, outputFallback()));
+            assertEquals("com.example.explicit.+", withExplicit.domainPattern().orElseThrow());
+
+            JigSettings withoutExplicit = JigSettingsLoader.load(List.of(systemProperties, env, outputFallback()));
+            assertEquals("com.example.sysprop.+", withoutExplicit.domainPattern().orElseThrow());
+
+            JigSettings onlyEnv = JigSettingsLoader.load(List.of(env, outputFallback()));
+            assertEquals("com.example.env.+", onlyEnv.domainPattern().orElseThrow());
+        }
     }
 
     private static void writeJigProperties(Path dir, String content) throws IOException {

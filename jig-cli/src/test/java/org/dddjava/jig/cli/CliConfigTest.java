@@ -3,6 +3,7 @@ package org.dddjava.jig.cli;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.boot.DefaultApplicationArguments;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +22,7 @@ class CliConfigTest {
 
         @Test
         void 該当するディレクトリが一つもなくてもエラーにならない() {
-            var sut = new CliConfig();
+            var sut = new CliConfig(new DefaultApplicationArguments());
             sut.projectPath = tempDir.toAbsolutePath().toString();
             sut.directoryClasses = "invalid-directory-for-test";
             sut.directoryResources = "invalid-directory-for-test";
@@ -45,7 +46,7 @@ class CliConfigTest {
             Files.createDirectories(tempDir.resolve("src/main/resources"));
             Files.createDirectories(tempDir.resolve("src/test/java"));
 
-            var sut = new CliConfig();
+            var sut = new CliConfig(new DefaultApplicationArguments());
             sut.projectPath = tempDir.toAbsolutePath().toString();
             sut.directoryClasses = "build/classes/java/main/";
             sut.directoryResources = "build/resources/main/";
@@ -72,7 +73,7 @@ class CliConfigTest {
             Files.createDirectories(tempDir.resolve("b/src/main/java"));
             Files.createDirectories(tempDir.resolve("b/src/main/resources"));
 
-            var sut = new CliConfig();
+            var sut = new CliConfig(new DefaultApplicationArguments());
             sut.projectPath = tempDir.toAbsolutePath().toString();
             // ここではaやbなどを指定しない
             sut.directoryClasses = "build/classes/java/main/";
@@ -111,7 +112,7 @@ class CliConfigTest {
             Files.createDirectories(tempDir.resolve(".jig/build/resources/main"));
             Files.createDirectories(tempDir.resolve(".jig/src/main/java"));
 
-            var sut = new CliConfig();
+            var sut = new CliConfig(new DefaultApplicationArguments());
             // . や .. などの相対記述を使用している場合にドット始まりとして無視されてしまう不具合の検出のため resolve(.) を入れる
             sut.projectPath = tempDir.toAbsolutePath().resolve(".").toString();
             sut.directoryClasses = "classes";

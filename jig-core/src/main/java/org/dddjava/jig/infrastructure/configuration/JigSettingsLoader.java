@@ -23,7 +23,9 @@ import java.util.function.Function;
  *
  * 標準的な優先順位（{@link #loadStandard}）は以下:
  * <ol>
- *   <li>実行形式固有の設定（CLI 引数 / Gradle extension）</li>
+ *   <li>実行形式固有の設定（CLI 引数 {@code --jig.*} / Gradle extension）</li>
+ *   <li>システムプロパティ {@code -Djig.*}（{@link SystemPropertySource}）</li>
+ *   <li>環境変数 {@code JIG_*}（{@link EnvironmentVariableSource}）</li>
  *   <li>{@code {user.dir}/jig.properties}</li>
  *   <li>{@code {user.home}/.jig/jig.properties}</li>
  *   <li>{@code fallback}（呼び出し側ランタイム固有のデフォルト）</li>
@@ -68,6 +70,8 @@ public class JigSettingsLoader {
         Path userHomeJig = Paths.get(System.getProperty("user.home")).resolve(".jig");
         return load(List.of(
                 explicit,
+                SystemPropertySource.fromSystem().read(),
+                EnvironmentVariableSource.fromSystem().read(),
                 new PropertiesFileSource(userDir).read(),
                 new PropertiesFileSource(userHomeJig).read(),
                 fallback

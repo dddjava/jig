@@ -74,6 +74,8 @@ public enum JigDocument {
 
     public static List<JigDocument> resolve(String diagramTypes) {
         return Arrays.stream(diagramTypes.split(","))
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
                 .map(JigDocument::valueOf)
                 .toList();
     }

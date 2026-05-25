@@ -3,8 +3,9 @@ logging:
     root: WARN
     org.dddjava.jig: INFO
 
-# JIG 自身の設定（jig.*）はコード内デフォルト・jig.properties・CLI 引数で指定する。
-# 優先順位: CLI 引数 > {user.dir}/jig.properties > {user.home}/.jig/jig.properties > コード内デフォルト
+# JIG 自身の設定（jig.*）は CLI 引数・システムプロパティ・環境変数・jig.properties・コード内デフォルトで指定する。
+# 優先順位: CLI 引数(--jig.*) > -Djig.* > 環境変数(JIG_*) > {user.dir}/jig.properties > {user.home}/.jig/jig.properties > コード内デフォルト
+# 詳細は README.md を参照。
 
 # Root directory to read information
 project:

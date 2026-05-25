@@ -1,13 +1,14 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigSettings;
+import org.dddjava.jig.infrastructure.configuration.JigSettingKey;
 import org.dddjava.jig.infrastructure.configuration.JigSettingsLoader;
+import org.dddjava.jig.infrastructure.configuration.JigSettingsRawSource;
 import org.dddjava.jig.infrastructure.configuration.PartialJigSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,17 +17,15 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 class CliConfig {
     private static final Logger logger = LoggerFactory.getLogger(CliConfig.class);
 
-    @Value("${jig.document.types:}")
-    String documentTypeText;
-    @Value("${jig.pattern.domain:}")
-    String modelPattern;
-    @Value("${jig.output.directory:}")
-    String outputDirectory;
+    private final ApplicationArguments applicationArguments;
 
     @Value("${project.path}")
     String projectPath;
@@ -37,17 +36,29 @@ class CliConfig {
     @Value("${directory.sources:}")
     String directorySources;
 
+    CliConfig(ApplicationArguments applicationArguments) {
+        this.applicationArguments = applicationArguments;
+    }
+
     Configuration configuration() {
-        PartialJigSettings explicit = PartialJigSettings.builder()
-                .outputDirectory(outputDirectory.isEmpty() ? null : Path.of(outputDirectory))
-                .domainPattern(modelPattern)
-                .jigDocuments(documentTypeText.isEmpty() ? null : JigDocument.resolve(documentTypeText))
-                .build();
+        // 明示層は真の CLI 引数（--jig.*）のみ。-D / 環境変数はコアの設定ソースが担う。
+        PartialJigSettings explicit = JigSettingsRawSource.parse("CLI 引数", explicitFromArgs());
         // jig.properties 等で上書きされない場合の最終的な既定値（CLI ランタイム固有）。
         PartialJigSettings cliDefaults = PartialJigSettings.builder()
                 .outputDirectory(Path.of("./build/jig"))
                 .build();
         return Configuration.from(JigSettingsLoader.loadStandard(explicit, cliDefaults));
+    }
+
+    private Map<String, String> explicitFromArgs() {
+        Map<String, String> raw = new LinkedHashMap<>();
+        for (JigSettingKey key : JigSettingKey.values()) {
+            List<String> values = applicationArguments.getOptionValues(key.propertyKey());
+            if (values != null && !values.isEmpty()) {
+                raw.put(key.propertyKey(), values.get(values.size() - 1)); // 複数指定時は最後を採用
+            }
+        }
+        return raw;
     }
 
     SourceBasePaths rawSourceLocations() {

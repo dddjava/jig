@@ -38,12 +38,16 @@ $ java -jar {JIGをダウンロードしたディレクトリ}/jig-cli.jar
 
 ## 設定
 
-JIG 自身の設定（`jig.*`）は以下の優先順位で解決されます。
+JIG 自身の設定（`jig.*`）は以下の優先順位（上が優先）で解決されます。
 
 1. CLI 引数（`--jig.document.types=PackageRelation,ListOutput` のように指定）
-2. `{user.dir}/jig.properties`
-3. `{user.home}/.jig/jig.properties`
-4. コード内デフォルト
+2. システムプロパティ（`-Djig.document.types=...` のように指定）
+3. 環境変数（`JIG_DOCUMENT_TYPES=...` のように、キーを大文字化し `.` を `_` に置換した名前）
+4. `{user.dir}/jig.properties`
+5. `{user.home}/.jig/jig.properties`
+6. コード内デフォルト
+
+不正な値（存在しないドキュメント種別、不正な言語タグ、不正な正規表現など）が指定された場合は、警告で無視せずエラーで停止します（fail-fast）。
 
 Spring Boot 由来の設定（ログレベルや読み込みディレクトリ）は [application.yml](./src/main/resources/application.yml) を参照してください。
 

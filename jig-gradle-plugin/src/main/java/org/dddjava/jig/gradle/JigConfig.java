@@ -9,6 +9,8 @@ public class JigConfig {
     String modelPattern = "";
 
     List<String> documentTypes = new ArrayList<>();
+    // exclude は Gradle 拡張固有の利便機能。JigReportsTask が include から減算して最終リストを
+    // 解決してからコアへ渡す。jig-core / CLI / properties に exclude の概念は無い（意図的）。
     List<String> documentTypesExclude = new ArrayList<>();
 
     String outputDirectory = "";

@@ -100,6 +100,14 @@ public abstract class JigReportsTask extends DefaultTask {
                 System.currentTimeMillis() - startTime, resultLog);
     }
 
+    /**
+     * include / exclude を解決して最終的なドキュメント一覧を求める。
+     *
+     * exclude（{@code documentTypesExclude}）は Gradle 拡張固有の利便機能であり、ここで解決してから
+     * コアへ最終リストとして渡す。jig-core の設定モデル（{@code jig.document.types}）は最終的な
+     * include リストのみを持ち、減算的な exclude の概念は持たない（全設定ソースで一貫した
+     * first-non-empty-wins マージを保つための意図的な設計）。CLI / properties に exclude は無い。
+     */
     private List<JigDocument> resolveDocumentTypes() {
         List<JigDocument> toExclude = getDocumentTypesExclude().get().stream()
                 .map(JigDocument::valueOf)

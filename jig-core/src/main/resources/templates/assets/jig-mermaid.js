@@ -841,6 +841,27 @@ globalThis.Jig.mermaid = (() => {
         const EXTENDED_MAX_TEXT_SIZE = 200000;
         const DEFAULT_MAX_EDGES = 500;
 
+        // 描画済み SVG をコンテナ単位・ソース文字列キーでキャッシュする。
+        // 同一ソースの再描画（チェック切替の往復・向き切替の戻しなど）で mermaid.run を回避する。
+        const SVG_CACHE_LIMIT = 16;
+        const svgCacheStore = new WeakMap(); // targetEl -> Map<source, svgHTML>
+
+        function getSvgCache(targetEl) {
+            let cache = svgCacheStore.get(targetEl);
+            if (!cache) {
+                cache = new Map();
+                svgCacheStore.set(targetEl, cache);
+            }
+            return cache;
+        }
+
+        function putSvgCache(cache, source, svgHTML) {
+            cache.set(source, svgHTML);
+            while (cache.size > SVG_CACHE_LIMIT) {
+                cache.delete(cache.keys().next().value); // 最古を破棄（挿入順）
+            }
+        }
+
         function isTooLarge(source) {
             const text = source != null ? String(source) : "";
             return text.length > DEFAULT_MAX_TEXT_SIZE;
@@ -1164,6 +1185,7 @@ globalThis.Jig.mermaid = (() => {
                         }
                     });
                 }
+                return result;
             } catch (err) {
                 const message = err && err.message ? err.message : String(err);
                 diagramEl.style.display = "none";
@@ -1225,7 +1247,29 @@ globalThis.Jig.mermaid = (() => {
                     return;
                 }
 
-                renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
+                // 同一ソースを以前描画済みなら mermaid.run を回避して SVG を復元する
+                const svgCache = getSvgCache(targetEl);
+                const cachedSvg = svgCache.get(currentSource);
+                if (cachedSvg != null) {
+                    diagramEl.style.display = "";
+                    diagramEl.classList.remove("too-large");
+                    setEdgeWarning(container, {visible: false});
+                    diagramEl.innerHTML = cachedSvg;
+                    diagramEl.setAttribute("data-processed", "true");
+                    return;
+                }
+
+                const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
+                const cacheRendered = () => {
+                    if (diagramEl.getAttribute("data-processed") === "true") {
+                        putSvgCache(svgCache, currentSource, diagramEl.innerHTML);
+                    }
+                };
+                if (result && typeof result.then === "function") {
+                    result.then(cacheRendered).catch(() => {});
+                } else {
+                    cacheRendered();
+                }
             };
 
             let initialDirection = direction;

@@ -71,8 +71,8 @@ const DomainApp = (() => {
      * @param {string} direction
      * @returns {string|null}
      */
-    function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false) {
-        const directRelations = collectPackageDirectRelations(pkg, allPackageRelations);
+    function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false, hierarchyAggregation = false) {
+        const directRelations = collectPackageDirectRelations(pkg, allPackageRelations, hierarchyAggregation);
         if (directRelations.length === 0) return null;
 
         const packageFqns = new Set([pkg.fqn]);
@@ -93,12 +93,32 @@ const DomainApp = (() => {
         return source;
     }
 
-    function collectPackageDirectRelations(pkg, allPackageRelations) {
-        return allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+    /**
+     * 当該パッケージに関わる直接関連を収集する。
+     * hierarchyAggregation が true の場合、相手側パッケージを当該パッケージと同じ深さに丸め、
+     * 子孫パッケージの関連も当該パッケージへ巻き上げる。
+     * @param {{fqn: string}} pkg
+     * @param {{from: string, to: string}[]} allPackageRelations
+     * @param {boolean} hierarchyAggregation
+     * @returns {{from: string, to: string}[]}
+     */
+    function collectPackageDirectRelations(pkg, allPackageRelations, hierarchyAggregation = false) {
+        if (!hierarchyAggregation) {
+            return allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+        }
+        const depth = pkg.fqn.split('.').length;
+        const relMap = new Map();
+        allPackageRelations.forEach(r => {
+            const from = Jig.util.getAggregatedFqn(r.from, depth);
+            const to = Jig.util.getAggregatedFqn(r.to, depth);
+            if (from !== to) relMap.set(`${from}::${to}`, {from, to});
+        });
+        return Array.from(relMap.values()).filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
     }
 
     function hasPackageDirectRelationDiagram(pkg, allPackageRelations) {
-        return collectPackageDirectRelations(pkg, allPackageRelations).length > 0;
+        return collectPackageDirectRelations(pkg, allPackageRelations, false).length > 0
+            || collectPackageDirectRelations(pkg, allPackageRelations, true).length > 0;
     }
 
     /**
@@ -813,6 +833,34 @@ const DomainApp = (() => {
         });
     }
 
+    function setupPackageDirectDiagramPanel(panel, pkg, allPackageRelations) {
+        const aggregationCheckbox = Jig.dom.createElement("input", {
+            attributes: {type: "checkbox", class: "package-direct-aggregation"}
+        });
+        // 丸めると全関連が自己ループに潰れるパッケージでは既定OFFにし、空の図を初期表示しない
+        aggregationCheckbox.checked = collectPackageDirectRelations(pkg, allPackageRelations, true).length > 0;
+        panel.appendChild(Jig.dom.createElement("fieldset", {
+            className: "diagram-panel-options",
+            children: [
+                Jig.dom.createElement("legend", {textContent: "表示"}),
+                Jig.dom.createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [aggregationCheckbox, "階層集約"]
+                }),
+            ]
+        }));
+
+        const render = (container) => {
+            renderDiagram(container, {
+                pkg, type: undefined, diagramType: 'packageDirect',
+                allPackageRelations,
+                hierarchyAggregation: aggregationCheckbox.checked
+            });
+        };
+        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
+        aggregationCheckbox.addEventListener('change', () => render(container));
+    }
+
     function setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap) {
         const outgoingCheckbox = Jig.dom.createElement("input", {
             attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
@@ -903,12 +951,7 @@ const DomainApp = (() => {
                     id: 'direct',
                     label: 'パッケージ関連図',
                     enabled: hasPackageDirectRelationDiagram(pkg, allPackageRelations),
-                    setup: panel => registerDiagramPanel(panel, {
-                        pkg,
-                        type: undefined,
-                        diagramType: 'packageDirect',
-                        allPackageRelations
-                    })
+                    setup: panel => setupPackageDirectDiagramPanel(panel, pkg, allPackageRelations)
                 },
                 {
                     id: 'inner-pkg',
@@ -1039,7 +1082,7 @@ const DomainApp = (() => {
      * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true, showFields = true, showMethods = true, maxVisibility = 'PRIVATE'} = diagram;
+        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true, showFields = true, showMethods = true, maxVisibility = 'PRIVATE', hierarchyAggregation = false} = diagram;
 
         container.innerHTML = "";
 
@@ -1051,7 +1094,7 @@ const DomainApp = (() => {
 
         if (diagramType === 'packageDirect') {
             renderIfNonNull(
-                (dir, opts) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir, opts?.showPhysicalName),
+                (dir, opts) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir, opts?.showPhysicalName, hierarchyAggregation),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'package') {

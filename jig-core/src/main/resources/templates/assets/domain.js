@@ -845,7 +845,7 @@ const DomainApp = (() => {
                 Jig.dom.createElement("legend", {textContent: "表示"}),
                 Jig.dom.createElement("label", {
                     className: "diagram-panel-option",
-                    children: [aggregationCheckbox, "階層で丸める"]
+                    children: [aggregationCheckbox, "階層集約"]
                 }),
             ]
         }));

@@ -411,6 +411,61 @@ test.describe('domain.js', () => {
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
         });
+
+        test('階層丸めOFFでは深い相手パッケージへの完全一致関連のみ表示する', () => {
+            const modelPkg = {fqn: 'org.example.model', types: []};
+            const allPackageRelations = [
+                {from: 'org.example.model', to: 'org.external.deep.sub'},
+            ];
+
+            const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, false);
+
+            assert.ok(result.includes(Jig.util.fqnToId('domain', 'org.external.deep.sub')),
+                '相手側が深いFQNのまま表示されること');
+            assert.ok(!result.includes(Jig.util.fqnToId('domain', 'org.external')),
+                '丸めOFFでは浅い階層に丸められないこと');
+        });
+
+        test('階層丸めONでは相手パッケージを当該パッケージと同じ深さに丸める', () => {
+            const modelPkg = {fqn: 'org.example.model', types: []};
+            const allPackageRelations = [
+                {from: 'org.example.model', to: 'org.external.deep.sub'},
+            ];
+
+            const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, true);
+
+            assert.ok(result.includes(Jig.util.fqnToId('domain', 'org.external.deep')),
+                '相手側が当該パッケージと同じ深さ(3セグメント)に丸められること');
+            assert.ok(!result.includes(Jig.util.fqnToId('domain', 'org.external.deep.sub')),
+                '丸めONでは深いFQNが残らないこと');
+        });
+
+        test('階層丸めONでは子孫パッケージの関連を当該パッケージへ巻き上げる', () => {
+            const modelPkg = {fqn: 'org.example.model', types: []};
+            const allPackageRelations = [
+                {from: 'org.example.model.sub', to: 'org.external.foo'},
+            ];
+
+            assert.equal(createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, false), null,
+                '丸めOFFでは子孫からの関連は対象にならないこと');
+
+            const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, true);
+            assert.ok(result !== null && result.includes(Jig.util.fqnToId('domain', 'org.example.model')),
+                '丸めONでは子孫の関連が当該パッケージへ巻き上げられること');
+        });
+
+        test('唯一の関連が子孫パッケージ向けの場合、丸めONでは自己ループに潰れてnullになる', () => {
+            // この条件が setupPackageDirectDiagramPanel の初期チェックOFF判定の根拠
+            const modelPkg = {fqn: 'org.example.model', types: []};
+            const allPackageRelations = [
+                {from: 'org.example.model', to: 'org.example.model.sub'},
+            ];
+
+            assert.ok(createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, false) !== null,
+                '丸めOFFでは子孫向け関連が表示されること');
+            assert.equal(createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, true), null,
+                '丸めONでは相手が同深さに丸まり自己ループとなり除去され null になること');
+        });
     });
 
     test.describe('DomainApp', () => {

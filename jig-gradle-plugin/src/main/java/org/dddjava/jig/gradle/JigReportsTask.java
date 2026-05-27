@@ -118,8 +118,16 @@ public abstract class JigReportsTask extends DefaultTask {
                 ? JigDocument.canonical()
                 : includeTypes.stream().map(JigDocument::valueOf).toList();
 
-        return toInclude.stream()
+        List<JigDocument> resolved = toInclude.stream()
                 .filter(each -> !toExclude.contains(each))
                 .toList();
+        if (resolved.isEmpty()) {
+            // 空リストはコアの first-non-empty-wins マージで読み飛ばされ canonical（全種別）に
+            // フォールバックしてしまう。利用者の意図（全除外）と真逆になるため明示的に弾く。
+            throw new IllegalStateException(
+                    "出力対象のドキュメントがありません。documentTypes %s から documentTypesExclude %s を除外した結果が空です。"
+                            .formatted(toInclude, toExclude));
+        }
+        return resolved;
     }
 }

@@ -1214,8 +1214,13 @@ globalThis.Jig.mermaid = (() => {
             const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
             let showPhysicalName = false;
+            // 描画は再入する（方向切替・ラベル切替・キャッシュ復元）。mermaid.run は非同期なので
+            // 前の描画の解決コールバックが、後の描画で差し替わった diagramEl.innerHTML を
+            // 旧ソースのキーで誤ってキャッシュしうる。世代カウンタで最新の描画以外は無視する。
+            let renderGeneration = 0;
 
             const renderDiagram = (newDirection) => {
+                const generation = ++renderGeneration;
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 ensureCopySourceButton(container, currentSource);
@@ -1261,6 +1266,9 @@ globalThis.Jig.mermaid = (() => {
 
                 const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
                 const cacheRendered = () => {
+                    // 後続の描画が始まっていれば diagramEl.innerHTML は別ソースの SVG になっている。
+                    // 旧ソースのキーで誤キャッシュしないよう、最新の描画でなければ何もしない。
+                    if (generation !== renderGeneration) return;
                     if (diagramEl.getAttribute("data-processed") === "true") {
                         putSvgCache(svgCache, currentSource, diagramEl.innerHTML);
                     }

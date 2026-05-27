@@ -565,4 +565,53 @@ test.describe('jig-mermaid.js', () => {
             }
         });
     });
+
+    test.describe('renderMarkdownDiagrams', () => {
+        const {JSDOM} = require('jsdom');
+
+        function setup(html) {
+            const dom = new JSDOM(`<!DOCTYPE html><body><div class="markdown">${html}</div></body>`);
+            global.window = dom.window;
+            global.document = dom.window.document;
+            // 遅延描画の発火を防ぐため IntersectionObserver は no-op にする
+            const NoopObserver = class {
+                observe() {}
+                unobserve() {}
+            };
+            global.window.IntersectionObserver = NoopObserver;
+            global.IntersectionObserver = NoopObserver;
+            // renderMarkdownDiagrams が使う Jig.dom.createElement の最小スタブ
+            globalThis.Jig.dom = {
+                createElement(tagName, options = {}) {
+                    const el = document.createElement(tagName);
+                    if (options.className) el.className = options.className;
+                    return el;
+                }
+            };
+            return dom.window.document.querySelector('.markdown');
+        }
+
+        test('mermaid コードブロックを描画コンテナへ差し替える', () => {
+            const root = setup('<pre><code class="language-mermaid">graph LR\nA--&gt;B</code></pre>');
+
+            mermaid.renderMarkdownDiagrams(root);
+
+            assert.equal(root.querySelectorAll('pre').length, 0);
+            assert.equal(root.querySelectorAll('.mermaid-diagram').length, 1);
+        });
+
+        test('mermaid 以外のコードブロックは変換しない', () => {
+            const root = setup('<pre><code class="language-java">int x;</code></pre>');
+
+            mermaid.renderMarkdownDiagrams(root);
+
+            assert.equal(root.querySelectorAll('.mermaid-diagram').length, 0);
+            assert.equal(root.querySelectorAll('pre').length, 1);
+        });
+
+        test('root が無効でも例外にならない', () => {
+            assert.doesNotThrow(() => mermaid.renderMarkdownDiagrams(null));
+            assert.doesNotThrow(() => mermaid.renderMarkdownDiagrams({}));
+        });
+    });
 });

@@ -1558,6 +1558,26 @@ globalThis.Jig.mermaid = (() => {
     })();
 
     /**
+     * Markdown 内の ```mermaid コードブロックをダイアグラムに変換する。
+     * marked は ```mermaid を <pre><code class="language-mermaid"> に変換するので、
+     * それを描画コンテナへ差し替えて遅延レンダリングに登録する。
+     *
+     * @param {HTMLElement} root - createMarkdownElement が生成した要素など、変換対象の親要素
+     */
+    function renderMarkdownDiagrams(root) {
+        if (!root || typeof root.querySelectorAll !== "function") return;
+        root.querySelectorAll("pre > code.language-mermaid").forEach(code => {
+            const source = code.textContent || "";
+            const container = Jig.dom.createElement("div", {className: "mermaid-diagram"});
+            code.parentElement.replaceWith(container);
+            diagram.register(container, () => {
+                container.innerHTML = "";
+                render.renderWithControls(container, () => source);
+            });
+        });
+    }
+
+    /**
      * パッケージダイアグラム作成
      * index.htmlおよびdomain.htmlで表示するもの。
      *
@@ -1677,6 +1697,7 @@ globalThis.Jig.mermaid = (() => {
         graph,
         render,
         diagram,
+        renderMarkdownDiagrams,
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,

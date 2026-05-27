@@ -168,6 +168,25 @@ test.describe('jig-dom.js', () => {
             const el = Jig.dom.createMarkdownElement('# Heading');
             assert.equal(el.innerHTML, '<p># Heading</p>');
         });
+
+        test('Jig.mermaid があれば mermaid 変換を生成要素に対して呼ぶ', () => {
+            let received = null;
+            globalThis.Jig.mermaid = {
+                renderMarkdownDiagrams: (element) => {
+                    received = element;
+                }
+            };
+            try {
+                const el = Jig.dom.createMarkdownElement('text');
+                assert.equal(received, el);
+            } finally {
+                delete globalThis.Jig.mermaid;
+            }
+        });
+
+        test('Jig.mermaid が無くても例外にならない', () => {
+            assert.doesNotThrow(() => Jig.dom.createMarkdownElement('text'));
+        });
     });
 
     test.describe('createCell', () => {

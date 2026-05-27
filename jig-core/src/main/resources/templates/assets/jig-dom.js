@@ -71,10 +71,13 @@ globalThis.Jig.dom = (() => {
     }
 
     function createMarkdownElement(markdown) {
-        return createElement("div", {
+        const element = createElement("div", {
             className: "markdown",
             innerHTML: parseMarkdown(markdown)
         });
+        // Javadoc に書いた ```mermaid コードブロックをダイアグラムとして描画する
+        globalThis.Jig?.mermaid?.renderMarkdownDiagrams?.(element);
+        return element;
     }
 
     // --- CSV utility ---

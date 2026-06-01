@@ -317,6 +317,77 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.syncActiveLink', () => {
+        function setupSidebar(innerHtml) {
+            document.body.innerHTML =
+                `<nav class="in-page-sidebar"><div class="in-page-sidebar__list">${innerHtml}</div></nav>`;
+        }
+
+        test('hash がない場合は active を付与しない', () => {
+            setupSidebar('<a class="in-page-sidebar__link" href="#a">A</a>');
+            location.hash = '';
+            Jig.dom.sidebar.syncActiveLink();
+            assert.equal(document.querySelector('.in-page-sidebar__link--active'), null);
+        });
+
+        test('hash に一致するリンクへ active を付与', () => {
+            setupSidebar('<a class="in-page-sidebar__link" href="#a">A</a>'
+                + '<a class="in-page-sidebar__link" href="#b">B</a>');
+            location.hash = '#b';
+            Jig.dom.sidebar.syncActiveLink();
+            const active = document.querySelectorAll('.in-page-sidebar__link--active');
+            assert.equal(active.length, 1);
+            assert.equal(active[0].getAttribute('href'), '#b');
+        });
+
+        test('一致するリンクがなければ active を付与しない', () => {
+            setupSidebar('<a class="in-page-sidebar__link" href="#a">A</a>');
+            location.hash = '#zzz';
+            Jig.dom.sidebar.syncActiveLink();
+            assert.equal(document.querySelector('.in-page-sidebar__link--active'), null);
+        });
+
+        test('再同期で以前の active を解除する', () => {
+            setupSidebar('<a class="in-page-sidebar__link" href="#a">A</a>'
+                + '<a class="in-page-sidebar__link" href="#b">B</a>');
+            location.hash = '#a';
+            Jig.dom.sidebar.syncActiveLink();
+            location.hash = '#b';
+            Jig.dom.sidebar.syncActiveLink();
+            const active = document.querySelectorAll('.in-page-sidebar__link--active');
+            assert.equal(active.length, 1);
+            assert.equal(active[0].getAttribute('href'), '#b');
+        });
+
+        test('折りたたまれた祖先を展開しトグルの状態も更新する', () => {
+            setupSidebar(`
+                <section class="in-page-sidebar__section">
+                    <p class="in-page-sidebar__title in-page-sidebar__title--collapsible">
+                        <span>Pkg</span>
+                        <button class="in-page-sidebar__toggle" aria-expanded="false" aria-label="展開"></button>
+                    </p>
+                    <ul class="in-page-sidebar__links in-page-sidebar__links--hidden">
+                        <li><a class="in-page-sidebar__link" href="#child">Child</a></li>
+                    </ul>
+                </section>
+            `);
+            location.hash = '#child';
+            Jig.dom.sidebar.syncActiveLink();
+
+            const ul = document.querySelector('.in-page-sidebar__links');
+            assert.ok(!ul.classList.contains('in-page-sidebar__links--hidden'));
+            const toggle = document.querySelector('.in-page-sidebar__toggle');
+            assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+            assert.equal(toggle.getAttribute('aria-label'), '折りたたむ');
+        });
+
+        test('サイドバーが無くてもエラーにならない', () => {
+            document.body.innerHTML = '';
+            location.hash = '#a';
+            assert.doesNotThrow(() => Jig.dom.sidebar.syncActiveLink());
+        });
+    });
+
     test.describe('type.resolver', () => {
         test('デフォルトは null', () => {
             assert.equal(Jig.dom.type.getResolver(), null);

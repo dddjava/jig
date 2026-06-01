@@ -1680,6 +1680,13 @@ table td.number {
     text-decoration: none;
 }
 
+/* ID付きリンクで開いた／ページ内移動した際の現在地ハイライト */
+.in-page-sidebar__link--active {
+    background-color: #d3e3f7;
+    color: #10253f;
+    font-weight: bold;
+}
+
 /* サイドバーリンクのバッジ（疑似要素） */
 .in-page-sidebar__link[data-kind-char]::before {
     content: attr(data-kind-char);

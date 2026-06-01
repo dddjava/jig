@@ -397,6 +397,53 @@ globalThis.Jig.dom = (() => {
         input.addEventListener('input', () => onChange(input.value.trim()));
     }
 
+    // 折りたたまれた祖先（in-page-sidebar__links--hidden）を展開し、対応するトグルの状態も合わせる
+    function expandSidebarAncestors(sidebar, link) {
+        let el = link.parentElement;
+        while (el && el !== sidebar) {
+            if (el.classList.contains("in-page-sidebar__links--hidden")) {
+                el.classList.remove("in-page-sidebar__links--hidden");
+                const toggle = el.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
+                if (toggle) {
+                    toggle.setAttribute("aria-expanded", "true");
+                    toggle.setAttribute("aria-label", "折りたたむ");
+                }
+            }
+            el = el.parentElement;
+        }
+    }
+
+    // サイドバーのスクロール領域内で該当リンクを表示する。メインコンテンツのスクロール位置は動かさない
+    function scrollSidebarLinkIntoView(sidebar, link) {
+        const container = sidebar.querySelector(".in-page-sidebar__list") || sidebar;
+        const containerRect = container.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        if (linkRect.top >= containerRect.top && linkRect.bottom <= containerRect.bottom) return;
+        container.scrollTop += (linkRect.top + linkRect.bottom) / 2 - (containerRect.top + containerRect.bottom) / 2;
+    }
+
+    // location.hash に対応するサイドバーリンクをハイライトし、折りたたまれた祖先を展開する。
+    // scrollIntoSidebar が true なら該当リンクをサイドバー内に表示する。
+    function syncActiveSidebarLink(scrollIntoSidebar = false) {
+        if (typeof document === "undefined") return;
+        const sidebar = document.querySelector(".in-page-sidebar");
+        if (!sidebar) return;
+
+        sidebar.querySelectorAll(".in-page-sidebar__link--active")
+            .forEach(el => el.classList.remove("in-page-sidebar__link--active"));
+
+        const hash = location.hash;
+        if (!hash || hash === "#") return;
+
+        const link = [...sidebar.querySelectorAll(".in-page-sidebar__link")]
+            .find(a => a.getAttribute("href") === hash);
+        if (!link) return;
+
+        link.classList.add("in-page-sidebar__link--active");
+        expandSidebarAncestors(sidebar, link);
+        if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, link);
+    }
+
     function initSidebarCollapseBtn() {
         const collapseBtn = document.getElementById('sidebar-collapse-btn');
         if (!collapseBtn || collapseBtn.dataset.initialized) return;
@@ -689,6 +736,18 @@ globalThis.Jig.dom = (() => {
             setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
         }
         // 動的挿入された data-i18n 要素は jig-i18n.js の MutationObserver が初期 locale に追従させる
+
+        if (typeof window !== "undefined") {
+            // ページ内リンクやブラウザの戻る/進みに合わせてサイドバーの該当箇所を表示する
+            window.addEventListener("hashchange", () => syncActiveSidebarLink(true));
+            // 初回ロード時のサイドバー描画はこのあとの DOMContentLoaded ハンドラで行われるため、
+            // 描画完了後に同期する
+            if (typeof window.requestAnimationFrame === "function") {
+                window.requestAnimationFrame(() => syncActiveSidebarLink(true));
+            } else {
+                syncActiveSidebarLink(true);
+            }
+        }
     }
 
     return {
@@ -731,6 +790,7 @@ globalThis.Jig.dom = (() => {
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
+            syncActiveLink: syncActiveSidebarLink,
         },
         tab: {
             buildSection: buildTabSection,

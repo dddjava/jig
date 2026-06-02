@@ -379,7 +379,7 @@ test.describe('domain.js', () => {
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
         });
 
-        test('子パッケージ間に関連がない場合はnullを返す', () => {
+        test('子パッケージ間に関連がなくても、複数あればダイアグラムが生成される', () => {
             const packages = [
                 {fqn: 'org.example', types: []},
                 {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]},
@@ -389,7 +389,8 @@ test.describe('domain.js', () => {
 
             const result = createPackageRelationDiagram(parentPkg, packages, []);
 
-            assert.equal(result, null, 'ダイアグラムが生成されないこと');
+            assert.ok(result !== null, 'ダイアグラムが生成されること');
+            assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
         });
     });
 

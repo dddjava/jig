@@ -1599,8 +1599,8 @@ globalThis.Jig.mermaid = (() => {
                 transitiveReductionEnabled: transitiveReductionEnabled
             }
         );
-        // パッケージ数が1つだったり関連が0なら表示しない
-        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
+        // パッケージが1つしかなければ表示しない。関連が0でもパッケージが複数あればノードのみで表示する
+        if (packageFqns.size <= 1) return null;
 
         const {source} = builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,

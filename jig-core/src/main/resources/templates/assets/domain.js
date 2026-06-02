@@ -156,7 +156,8 @@ const DomainApp = (() => {
                 transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
             }
         );
-        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
+        // パッケージが1つしかなければ表示しない。関連が0でもパッケージが複数あればノードのみで表示する
+        if (packageFqns.size <= 1) return null;
         return {uniqueRelations, packageFqns};
     }
 

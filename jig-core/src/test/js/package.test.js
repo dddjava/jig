@@ -755,7 +755,7 @@ test.describe('package.js', () => {
                 assert.equal(textPanel.children[0].className, 'causes');
             });
 
-            test('renderHierarchyDiagram: 相互依存を含めて描画する', () => {
+            test('renderHierarchyDiagram: 相互依存を双方向矢印で描画する', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -774,6 +774,24 @@ test.describe('package.js', () => {
                 const diagram = doc.getElementById('package-relation-diagram');
                 assert.equal(diagram._textContent.includes('graph'), true);
                 assert.equal(diagram._textContent.includes('<-->'), true);
+            });
+
+            test('renderMutualDependencyTab: 相互依存を一覧化する', () => {
+                const doc = setupDocument();
+                setupDiagramEnvironment(doc, testContext);
+                setPackageData({
+                    packages: [
+                        {fqn: 'app.a', classCount: 1},
+                        {fqn: 'app.b', classCount: 1},
+                    ],
+                    relations: [
+                        {from: 'app.a', to: 'app.b'},
+                        {from: 'app.b', to: 'app.a'},
+                    ],
+                }, testContext);
+
+                PackageApp.renderMutualDependencyTab(testContext);
+
                 const mutual = doc.getElementById('mutual-dependency-list');
                 assert.equal(mutual.children.length > 0, true);
             });

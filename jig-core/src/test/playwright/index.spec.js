@@ -66,7 +66,7 @@ test('JIG Scenario Test', async ({page}) => {
     await expect(diagramTabSection).toHaveScreenshot('domain-sourcesCard-3.png');
 
     // ナビゲーションをホバーして「ユースケース」リンクをクリック
-    await page.locator('.jig-header-nav').hover();
+    await page.locator('.jig-header-nav').first().hover();
     await page.locator('.jig-header-nav__dropdown').getByRole('link', {name: 'ユースケース'}).click();
     // ------------------------------------------------------------
     // ユースケース

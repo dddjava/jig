@@ -22,8 +22,6 @@
             <li>パッケージフィルタ: 対象のパッケージ配下だけを表示します。</li>
             <li>依存関係の簡略表示: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
         </ul>
-        <p><b>相互依存</b>: パッケージ間の相互依存（循環）を抽出し、解消に向けて分析するための専用ビューです。階層探索と同じ集約・フィルタ条件に基づきます。
-        </p>
         <p><b>関連探索</b>: 特定のパッケージを起点として、その依存元・依存先ネットワークを探索します。依存元は青、依存先はオレンジ色で表示されます。
         </p>
         <ul>
@@ -35,12 +33,12 @@
 
     <nav class="package-mode-tabs">
         <button class="tab-button is-active" data-tab="hierarchy" data-i18n>階層探索</button>
-        <button class="tab-button" data-tab="mutual" data-i18n>相互依存</button>
         <button class="tab-button" data-tab="explore" data-i18n>関連探索</button>
     </nav>
 
     <div id="panel-hierarchy" class="package-tab-panel is-active">
         <pre id="package-relation-diagram" class="mermaid"></pre>
+        <section id="mutual-dependency-list" class="mutual-dependencies"></section>
 
         <div class="controls">
             <div class="control-row">
@@ -67,10 +65,6 @@
             <!-- thead/colgroup は package.js の renderPackageTableHeader で挿入される -->
             <table id="hierarchy-package-table" data-package-list-table data-filter-input-id="hierarchy-list-filter"></table>
         </section>
-    </div>
-
-    <div id="panel-mutual" class="package-tab-panel">
-        <section id="mutual-dependency-list" class="mutual-dependencies"></section>
     </div>
 
     <div id="panel-explore" class="package-tab-panel">

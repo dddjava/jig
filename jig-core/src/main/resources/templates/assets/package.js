@@ -28,7 +28,7 @@ const PackageApp = (() => {
 
     const HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
     const EXPLORE_DIAGRAM_CLICK_HANDLER_NAME = 'explorePackageDiagram';
-    const TAB = {HIERARCHY: 'hierarchy', MUTUAL: 'mutual', EXPLORE: 'explore'};
+    const TAB = {HIERARCHY: 'hierarchy', EXPLORE: 'explore'};
 
     const dom = {
         getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
@@ -697,7 +697,7 @@ const PackageApp = (() => {
         if (!diagram) return;
 
         const renderPlan = buildHierarchyDiagramRenderPlan(context);
-        context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
+        applyHierarchyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
         const generator = (dir, opts) => buildHierarchyDiagramRenderPlan(context, dir, opts?.showPhysicalName).source;
@@ -733,9 +733,8 @@ const PackageApp = (() => {
         };
     }
 
-    // 相互依存タブの描画。階層探索と同じ集約・フィルタ条件（hierarchyState）に基づき相互依存を一覧化する。
-    function renderMutualDependencyTab(context) {
-        const renderPlan = buildHierarchyDiagramRenderPlan(context);
+    function applyHierarchyDiagramRenderPlan(context, renderPlan) {
+        context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
         renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context, renderPlan.uniqueRelations, renderPlan.packageFqns);
     }
 
@@ -1291,8 +1290,6 @@ const PackageApp = (() => {
             renderExplorePackageList(exploreState);
         } else if (tabName === TAB.HIERARCHY) {
             renderHierarchyDiagramAndTable(hierarchyState);
-        } else if (tabName === TAB.MUTUAL) {
-            renderMutualDependencyTab(hierarchyState);
         }
     }
 
@@ -1326,7 +1323,6 @@ const PackageApp = (() => {
             if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
             if (exploreState.excludeDeprecatedOnly) params.set('excludeDeprecated', 'true');
         } else {
-            if (activeTab === TAB.MUTUAL) params.set('tab', TAB.MUTUAL);
             if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
             hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
             hierarchyState.hierarchyCollapsedPackages.forEach(p => params.append('hcollapsed', p));
@@ -1425,8 +1421,7 @@ const PackageApp = (() => {
         Jig.dom.setupSortableTables();
         const renderedTabs = new Set();
         setupTabControl(tabName => {
-            // 相互依存タブは階層探索の状態に追従するため、表示のたびに再描画する
-            if (tabName === TAB.MUTUAL || !renderedTabs.has(tabName)) {
+            if (!renderedTabs.has(tabName)) {
                 renderedTabs.add(tabName);
                 renderTab(tabName);
             }
@@ -1491,7 +1486,6 @@ const PackageApp = (() => {
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         renderMutualDependencyList,
-        renderMutualDependencyTab,
         buildMutualDependencyDiagramSource,
         renderHierarchyDiagram,
         renderHierarchyDiagramAndTable,

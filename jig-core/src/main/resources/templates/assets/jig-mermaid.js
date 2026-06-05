@@ -1260,11 +1260,12 @@ globalThis.Jig.mermaid = (() => {
                 }
 
                 // 同一ソースを以前描画済みなら mermaid.run を回避して SVG を復元する。
-                // ただし _jigNoop ツールチップを含む図はキャッシュ復元後に Mermaid の
-                // イベントリスナーが失われるため、常に mermaid.run を通す。
+                // ただし _jigNoop / _jigDomNav* など _jig プレフィックスのコールバックを
+                // 含む図はキャッシュ復元後に Mermaid のイベントリスナーが失われるため、
+                // 常に mermaid.run を通す。
                 const svgCache = getSvgCache(targetEl);
                 const cachedSvg = svgCache.get(currentSource);
-                if (cachedSvg != null && !currentSource.includes('_jigNoop')) {
+                if (cachedSvg != null && !currentSource.includes('_jig')) {
                     diagramEl.style.display = "";
                     diagramEl.classList.remove("too-large");
                     setEdgeWarning(container, {visible: false});

@@ -96,15 +96,9 @@
     function populateDepthSelect(select, maxDepth, initialDepth) {
         if (!select) return;
         select.innerHTML = "";
-        const noAgg = document.createElement("option");
-        noAgg.value = "0";
-        noAgg.textContent = "集約なし";
-        select.appendChild(noAgg);
+        select.appendChild(Jig.dom.createElement("option", {textContent: "集約なし", attributes: {value: "0"}}));
         for (let d = 1; d <= maxDepth; d++) {
-            const opt = document.createElement("option");
-            opt.value = String(d);
-            opt.textContent = `深さ${d}`;
-            select.appendChild(opt);
+            select.appendChild(Jig.dom.createElement("option", {textContent: `深さ${d}`, attributes: {value: String(d)}}));
         }
         select.value = String(initialDepth != null ? initialDepth : maxDepth);
     }
@@ -270,29 +264,26 @@
             tr.style.cursor = "pointer";
             tr.addEventListener("click", () => toggleSelection(group.id));
 
-            const nameTd = document.createElement("td");
-            nameTd.textContent = group.displayName;
-            tr.appendChild(nameTd);
+            tr.appendChild(Jig.dom.createElement("td", {textContent: group.displayName}));
+            tr.appendChild(Jig.dom.createElement("td", {
+                style: {whiteSpace: "pre-line"},
+                textContent: (group.samplePackages || []).join("\n"),
+            }));
 
-            const samplesTd = document.createElement("td");
-            samplesTd.style.whiteSpace = "pre-line";
-            samplesTd.textContent = (group.samplePackages || []).join("\n");
-            tr.appendChild(samplesTd);
-
-            const classesTd = document.createElement("td");
             const classes = group.usingClasses || [];
+            const classesTd = document.createElement("td");
             if (classes.length > 0) {
                 const details = document.createElement("details");
                 // 行クリック→外部グループ選択 と干渉しないように分離
                 details.addEventListener("click", e => e.stopPropagation());
-                const summary = document.createElement("summary");
-                summary.textContent = `${classes.length} 件`;
-                summary.style.cursor = "pointer";
-                details.appendChild(summary);
-                const list = document.createElement("div");
-                list.style.whiteSpace = "pre-line";
-                list.textContent = classes.join("\n");
-                details.appendChild(list);
+                details.appendChild(Jig.dom.createElement("summary", {
+                    style: {cursor: "pointer"},
+                    textContent: `${classes.length} 件`,
+                }));
+                details.appendChild(Jig.dom.createElement("div", {
+                    style: {whiteSpace: "pre-line"},
+                    textContent: classes.join("\n"),
+                }));
                 classesTd.appendChild(details);
             }
             tr.appendChild(classesTd);

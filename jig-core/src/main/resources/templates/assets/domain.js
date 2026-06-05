@@ -356,9 +356,7 @@ const DomainApp = (() => {
                 });
             }
 
-            const {handlerName: typeNavHandler, registry: typeNavRegistry} = _getDomainNavHandler('typeNav');
-            typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
-            builder.addCallbackClick(nodeId, typeNavHandler);
+            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
         });
         edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
 

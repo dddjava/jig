@@ -101,19 +101,15 @@ const DomainApp = (() => {
             packageFqns.add(r.to);
         });
 
-        const {handlerName, registry} = _getDomainNavHandler('direct:' + pkg.fqn);
-        const {source, nodeIdToFqn} = Jig.mermaid.builder.buildMermaidDiagramSource(
+        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, directRelations,
             {
                 diagramDirection: direction,
-                clickHandlerName: handlerName,
+                nodeClickUrlCallback: (fqn) => '#' + Jig.util.fqnToId('domain', fqn),
                 focusedPackageFqn: pkg.fqn,
                 showPhysicalName,
             }
         );
-        nodeIdToFqn.forEach((fqn, nodeId) => {
-            registry.set(nodeId, '#' + Jig.util.fqnToId('domain', fqn));
-        });
         return source;
     }
 
@@ -157,19 +153,15 @@ const DomainApp = (() => {
         const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
         if (!elements) return null;
         const {uniqueRelations, packageFqns} = elements;
-        const {handlerName, registry} = _getDomainNavHandler('innerPkg:' + pkg.fqn);
-        const {source, nodeIdToFqn} = Jig.mermaid.builder.buildMermaidDiagramSource(
+        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns,
             uniqueRelations,
             {
                 diagramDirection: direction,
-                clickHandlerName: handlerName,
+                nodeClickUrlCallback: (fqn) => '#' + Jig.util.fqnToId('domain', fqn),
                 showPhysicalName,
             }
         );
-        nodeIdToFqn.forEach((fqn, nodeId) => {
-            registry.set(nodeId, '#' + Jig.util.fqnToId('domain', fqn));
-        });
         return source;
     }
 

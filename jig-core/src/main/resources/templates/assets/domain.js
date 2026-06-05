@@ -64,6 +64,26 @@ const DomainApp = (() => {
 
     // ----- Mermaid ダイアグラムソース生成 -----
 
+    // click href "url" "tooltip" ではツールチップが表示されないため、
+    // ナビゲーション付きカスタムハンドラを使用して callback 経由でツールチップを表示する
+    const _domainNavHandlers = new Map(); // key → {handlerName, registry: Map<nodeId, url>}
+    let _domainNavCounter = 0;
+
+    function _getDomainNavHandler(key) {
+        if (!_domainNavHandlers.has(key)) {
+            const registry = new Map();
+            const safeName = `_jigDomNav${_domainNavCounter++}`;
+            _domainNavHandlers.set(key, {handlerName: safeName, registry});
+            if (typeof window !== 'undefined') {
+                window[safeName] = (nodeId) => {
+                    const url = registry.get(nodeId);
+                    if (url) window.location.href = url;
+                };
+            }
+        }
+        return _domainNavHandlers.get(key);
+    }
+
     /**
      * パッケージカードに表示するパッケージ関連図（同階層の直接関連）
      * @param {{fqn: string}} pkg
@@ -81,15 +101,19 @@ const DomainApp = (() => {
             packageFqns.add(r.to);
         });
 
-        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
+        const {handlerName, registry} = _getDomainNavHandler('direct:' + pkg.fqn);
+        const {source, nodeIdToFqn} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, directRelations,
             {
                 diagramDirection: direction,
-                nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
+                clickHandlerName: handlerName,
                 focusedPackageFqn: pkg.fqn,
                 showPhysicalName,
             }
         );
+        nodeIdToFqn.forEach((fqn, nodeId) => {
+            registry.set(nodeId, '#' + Jig.util.fqnToId('domain', fqn));
+        });
         return source;
     }
 
@@ -133,15 +157,19 @@ const DomainApp = (() => {
         const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
         if (!elements) return null;
         const {uniqueRelations, packageFqns} = elements;
-        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
+        const {handlerName, registry} = _getDomainNavHandler('innerPkg:' + pkg.fqn);
+        const {source, nodeIdToFqn} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns,
             uniqueRelations,
             {
                 diagramDirection: direction,
-                nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
+                clickHandlerName: handlerName,
                 showPhysicalName,
             }
         );
+        nodeIdToFqn.forEach((fqn, nodeId) => {
+            registry.set(nodeId, '#' + Jig.util.fqnToId('domain', fqn));
+        });
         return source;
     }
 

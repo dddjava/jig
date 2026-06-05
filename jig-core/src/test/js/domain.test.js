@@ -421,9 +421,9 @@ test.describe('domain.js', () => {
 
             const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, false);
 
-            assert.ok(result.includes(Jig.util.fqnToId('domain', 'org.external.deep.sub')),
+            assert.ok(result.includes('"org.external.deep.sub"'),
                 '相手側が深いFQNのまま表示されること');
-            assert.ok(!result.includes(Jig.util.fqnToId('domain', 'org.external')),
+            assert.ok(!result.includes('"org.external"'),
                 '丸めOFFでは浅い階層に丸められないこと');
         });
 
@@ -435,9 +435,9 @@ test.describe('domain.js', () => {
 
             const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, true);
 
-            assert.ok(result.includes(Jig.util.fqnToId('domain', 'org.external.deep')),
+            assert.ok(result.includes('"org.external.deep"'),
                 '相手側が当該パッケージと同じ深さ(3セグメント)に丸められること');
-            assert.ok(!result.includes(Jig.util.fqnToId('domain', 'org.external.deep.sub')),
+            assert.ok(!result.includes('"org.external.deep.sub"'),
                 '丸めONでは深いFQNが残らないこと');
         });
 
@@ -451,7 +451,7 @@ test.describe('domain.js', () => {
                 '丸めOFFでは子孫からの関連は対象にならないこと');
 
             const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations, 'TB', false, true);
-            assert.ok(result !== null && result.includes(Jig.util.fqnToId('domain', 'org.example.model')),
+            assert.ok(result !== null && result.includes('"org.example.model"'),
                 '丸めONでは子孫の関連が当該パッケージへ巻き上げられること');
         });
 

@@ -845,6 +845,81 @@ const PackageApp = (() => {
         return {ancestor: undefined, relative: fqn};
     }
 
+    function buildCollapseToggleTd(pkg, hasChildrenSet, collapsedSet, tbody, tr, refreshCountDisplay, config) {
+        const toggleTd = document.createElement('td');
+        if (!hasChildrenSet.has(pkg.fqn)) return toggleTd;
+        const toggleBtn = document.createElement('button');
+        const initiallyCollapsed = collapsedSet.has(pkg.fqn);
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'explore-collapse-toggle';
+        toggleBtn.textContent = initiallyCollapsed ? '▶' : '▼';
+        toggleBtn.setAttribute('aria-expanded', String(!initiallyCollapsed));
+        toggleBtn.setAttribute('aria-label', initiallyCollapsed ? '配下を展開' : '配下を折りたたむ');
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
+            toggleBtn.setAttribute('aria-expanded', String(!collapsing));
+            toggleBtn.textContent = collapsing ? '▶' : '▼';
+            toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
+            const childPrefix = pkg.fqn + '.';
+            tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                    childTr.classList.toggle('hidden-by-collapse', collapsing);
+                }
+            });
+            config.onCollapseChange(pkg.fqn, collapsing, childPrefix, tbody);
+            refreshCountDisplay(tr);
+            if (!collapsing) {
+                tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                    if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                        refreshCountDisplay(childTr);
+                    }
+                });
+            }
+        });
+        toggleTd.appendChild(toggleBtn);
+        return toggleTd;
+    }
+
+    function buildPackageRow(pkg, rowData, config, fqnSet, collapsedSet, hasChildrenSet, tbody, refreshCountDisplay) {
+        const tr = document.createElement('tr');
+        tr.dataset.fqn = pkg.fqn;
+        if (config.isSelected(pkg.fqn)) tr.classList.add('explore-target-selected');
+        if ([...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
+            tr.classList.add('hidden-by-collapse');
+        }
+        tr.addEventListener('click', () => config.onRowClick(pkg.fqn));
+        tr.appendChild(buildCollapseToggleTd(pkg, hasChildrenSet, collapsedSet, tbody, tr, refreshCountDisplay, config));
+
+        const {ancestor, relative} = getRelativeFqn(pkg.fqn, fqnSet);
+        const depth = ancestor ? ancestor.split('.').length : 0;
+        const fqnTd = document.createElement('td');
+        fqnTd.textContent = relative;
+        fqnTd.title = pkg.fqn;
+        fqnTd.className = 'fqn';
+        fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
+        tr.appendChild(fqnTd);
+
+        const nameTd = document.createElement('td');
+        nameTd.textContent = getGlossaryTitle(pkg.fqn);
+        tr.appendChild(nameTd);
+
+        tr.appendChild(createNumberTd(rowData.classCount, 'class'));
+        tr.appendChild(createNumberTd(rowData.incomingCount, 'incoming'));
+        tr.appendChild(createNumberTd(rowData.outgoingCount, 'outgoing'));
+        return tr;
+    }
+
+    function initPackageListFilter(filterInput, tbody) {
+        filterInput.addEventListener('input', () => {
+            const filterText = filterInput.value.toLowerCase();
+            tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
+                const matches = !filterText || tr.dataset.fqn.toLowerCase().includes(filterText);
+                tr.classList.toggle('hidden', !matches);
+            });
+        });
+    }
+
     function renderPackageList(config) {
         const container = config.getContainer();
         if (!container) return;
@@ -906,70 +981,8 @@ const PackageApp = (() => {
         }
 
         sortedPackages.forEach(pkg => {
-            const tr = document.createElement('tr');
-            tr.dataset.fqn = pkg.fqn;
             const rowData = rowDataMap.get(pkg.fqn);
-            if (config.isSelected(pkg.fqn)) tr.classList.add('explore-target-selected');
-            if ([...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
-                tr.classList.add('hidden-by-collapse');
-            }
-
-            tr.addEventListener('click', () => config.onRowClick(pkg.fqn));
-
-            const toggleTd = document.createElement('td');
-            if (hasChildrenSet.has(pkg.fqn)) {
-                const toggleBtn = document.createElement('button');
-                const initiallyCollapsed = collapsedSet.has(pkg.fqn);
-                toggleBtn.type = 'button';
-                toggleBtn.className = 'explore-collapse-toggle';
-                toggleBtn.textContent = initiallyCollapsed ? '▶' : '▼';
-                toggleBtn.setAttribute('aria-expanded', String(!initiallyCollapsed));
-                toggleBtn.setAttribute('aria-label', initiallyCollapsed ? '配下を展開' : '配下を折りたたむ');
-                toggleBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
-                    toggleBtn.setAttribute('aria-expanded', String(!collapsing));
-                    toggleBtn.textContent = collapsing ? '▶' : '▼';
-                    toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
-                    const childPrefix = pkg.fqn + '.';
-                    tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
-                        if (childTr.dataset.fqn.startsWith(childPrefix)) {
-                            childTr.classList.toggle('hidden-by-collapse', collapsing);
-                        }
-                    });
-                    config.onCollapseChange(pkg.fqn, collapsing, childPrefix, tbody);
-                    refreshCountDisplay(tr);
-                    if (!collapsing) {
-                        tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
-                            if (childTr.dataset.fqn.startsWith(childPrefix)) {
-                                refreshCountDisplay(childTr);
-                            }
-                        });
-                    }
-                });
-                toggleTd.appendChild(toggleBtn);
-            }
-            tr.appendChild(toggleTd);
-
-            const {ancestor, relative} = getRelativeFqn(pkg.fqn, fqnSet);
-            const depth = ancestor ? ancestor.split('.').length : 0;
-
-            const fqnTd = document.createElement('td');
-            fqnTd.textContent = relative;
-            fqnTd.title = pkg.fqn;
-            fqnTd.className = 'fqn';
-            fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
-            tr.appendChild(fqnTd);
-
-            const nameTd = document.createElement('td');
-            nameTd.textContent = getGlossaryTitle(pkg.fqn);
-            tr.appendChild(nameTd);
-
-            tr.appendChild(createNumberTd(rowData.classCount, 'class'));
-            tr.appendChild(createNumberTd(rowData.incomingCount, 'incoming'));
-            tr.appendChild(createNumberTd(rowData.outgoingCount, 'outgoing'));
-
-            tbody.appendChild(tr);
+            tbody.appendChild(buildPackageRow(pkg, rowData, config, fqnSet, collapsedSet, hasChildrenSet, tbody, refreshCountDisplay));
         });
 
         Array.from(tbody.children).forEach(tr => {
@@ -980,15 +993,7 @@ const PackageApp = (() => {
         container.appendChild(tbody);
 
         const filterInput = config.getFilterInput();
-        if (filterInput) {
-            filterInput.addEventListener('input', () => {
-                const filterText = filterInput.value.toLowerCase();
-                tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
-                    const matches = !filterText || tr.dataset.fqn.toLowerCase().includes(filterText);
-                    tr.classList.toggle('hidden', !matches);
-                });
-            });
-        }
+        if (filterInput) initPackageListFilter(filterInput, tbody);
     }
 
     function buildHierarchyListConfig(context) {

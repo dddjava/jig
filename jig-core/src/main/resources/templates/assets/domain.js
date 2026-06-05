@@ -931,6 +931,7 @@ const DomainApp = (() => {
                 title: pkgTerm.title,
                 fqn: pkg.fqn,
                 kind: "パッケージ",
+                titleSuffix: Jig.glossary.sourceLink(pkg.fqn),
                 attributes: {"data-kind-children": [...pkgKinds(pkg, childPackagesMap, typesMap)].join(' ')}
             });
 
@@ -1014,6 +1015,7 @@ const DomainApp = (() => {
                 title: titleSpan,
                 fqn: fqnDiv,
                 kind: "クラス",
+                titleSuffix: Jig.glossary.sourceLink(type.fqn),
                 attributes: {"data-kind": type.kind || ''}
             });
 

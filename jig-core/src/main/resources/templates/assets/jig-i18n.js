@@ -121,6 +121,7 @@ globalThis.Jig.i18n = (() => {
             "由来": "Origin",
             "関連ドキュメント": "Related document",
             "ソースコード": "Source code",
+            "ソースを開く": "Open source",
             // library-dependency controls
             "階層集約:": "Aggregation level:",
             "Java 標準（java.*, javax.*）を表示": "Show Java standard (java.*, javax.*)",

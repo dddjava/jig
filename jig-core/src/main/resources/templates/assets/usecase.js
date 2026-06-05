@@ -699,7 +699,7 @@ const UsecaseApp = (() => {
         if (handlerFqns && visibleUsecaseMethods.length === 0) return null;
 
         const term = Jig.glossary.getTypeTerm(usecase.fqn);
-        const section = Jig.dom.card.type({id: fqnToTypeId(usecase.fqn), title: term.title, fqn: usecase.fqn});
+        const section = Jig.dom.card.type({id: fqnToTypeId(usecase.fqn), title: term.title, fqn: usecase.fqn, titleSuffix: Jig.glossary.sourceLink(usecase.fqn)});
 
         if (term.description) {
             section.appendChild(Jig.dom.createElement("section", {

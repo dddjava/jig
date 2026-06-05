@@ -288,12 +288,13 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createTypeCard({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) {
+    function createTypeCard({id, title, fqn, kind, attributes, titleSuffix, tagName = "section", extraClass} = {}) {
         const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
         const titleContent = id
             ? createElement("a", {className: "card-title-anchor", attributes: {href: `#${id}`}, children: [titleEl]})
             : titleEl;
         const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleContent] : [titleContent];
+        if (titleSuffix) h3Children.push(titleSuffix);
 
         const card = createElement(tagName, {
             id,

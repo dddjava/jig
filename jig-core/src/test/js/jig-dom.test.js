@@ -132,6 +132,57 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('card.type titleSuffix', () => {
+        test('titleSuffix を指定すると h3 末尾に追加される', () => {
+            const suffix = Jig.dom.createElement('a', {className: 'source-link'});
+            const card = Jig.dom.card.type({title: 'タイトル', kind: 'クラス', titleSuffix: suffix});
+            const h3 = card.querySelector('h3');
+            assert.equal(h3.children[h3.children.length - 1], suffix);
+        });
+
+        test('titleSuffix が null の場合は何も追加されない', () => {
+            const card = Jig.dom.card.type({title: 'タイトル', kind: 'クラス', titleSuffix: null});
+            const h3 = card.querySelector('h3');
+            // kindBadge + title の2要素のみ
+            assert.equal(h3.children.length, 2);
+        });
+    });
+
+    test.describe('glossary.sourceLink', () => {
+        test.afterEach(() => {
+            delete globalThis.glossaryData;
+            delete globalThis.summaryData;
+        });
+
+        test('blobUrlPrefix と sourcePath が揃う場合はリンク要素を返す', () => {
+            globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
+            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass', sourcePath: 'src/main/java/com/example/MyClass.java'}}};
+            const link = Jig.glossary.sourceLink('com.example.MyClass');
+            assert.equal(link.tagName, 'A');
+            assert.equal(link.getAttribute('href'), 'https://github.com/foo/bar/blob/abc1234/src/main/java/com/example/MyClass.java');
+            assert.equal(link.getAttribute('target'), '_blank');
+        });
+
+        test('メソッド FQN は型の sourcePath にフォールバックして解決する', () => {
+            globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
+            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass', sourcePath: 'src/main/java/com/example/MyClass.java'}}};
+            const link = Jig.glossary.sourceLink('com.example.MyClass#doSomething()');
+            assert.equal(link.getAttribute('href'), 'https://github.com/foo/bar/blob/abc1234/src/main/java/com/example/MyClass.java');
+        });
+
+        test('blobUrlPrefix がない場合は null を返す', () => {
+            globalThis.summaryData = {git: {}};
+            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass', sourcePath: 'src/main/java/com/example/MyClass.java'}}};
+            assert.equal(Jig.glossary.sourceLink('com.example.MyClass'), null);
+        });
+
+        test('sourcePath がない場合は null を返す', () => {
+            globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
+            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass'}}};
+            assert.equal(Jig.glossary.sourceLink('com.example.MyClass'), null);
+        });
+    });
+
     test.describe('parseMarkdown', () => {
         test('marked.parse が存在する場合、それを使用', () => {
             const result = Jig.dom.parseMarkdown('# Heading');

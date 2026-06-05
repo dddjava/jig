@@ -571,6 +571,20 @@ td.fqn {
     text-underline-offset: 3px;
 }
 
+.jig-card--type h3 .source-link {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.4em;
+    color: #5577aa;
+    opacity: 0.5;
+    vertical-align: middle;
+    transition: opacity 0.15s;
+}
+
+.jig-card--type h3 .source-link:hover {
+    opacity: 1;
+}
+
 .jig-card--type > table {
     margin-top: 12px;
 }

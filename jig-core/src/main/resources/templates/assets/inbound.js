@@ -426,7 +426,8 @@ const InboundApp = (() => {
             const jigCard = Jig.dom.card.type({
                 id: Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
                 title: typeTerm.title,
-                fqn: adapter.fqn
+                fqn: adapter.fqn,
+                titleSuffix: Jig.glossary.sourceLink(adapter.fqn)
             });
 
             if (typeTerm.description) {

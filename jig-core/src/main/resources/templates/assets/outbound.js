@@ -304,6 +304,7 @@ const OutboundApp = (() => {
                 id: portId,
                 title: portLabel,
                 fqn: portFqnValue,
+                titleSuffix: Jig.glossary.sourceLink(portFqnValue),
             });
 
             if (visibility.adapter) {
@@ -456,6 +457,7 @@ const OutboundApp = (() => {
                 id: externalId,
                 title: externalLabel,
                 fqn: externalFqn,
+                titleSuffix: Jig.glossary.sourceLink(externalFqn),
             });
             Jig.mermaid.diagram.createAndRegister(externalCard, (container) => {
                 const currentVisibility = readVisibility();

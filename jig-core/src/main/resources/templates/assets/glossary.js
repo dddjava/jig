@@ -168,16 +168,6 @@ const GlossaryApp = (() => {
                         })));
                     }
                 }
-                if (term.sourcePath) {
-                    const blobUrlPrefix = Jig.data.summary.getGit()?.blobUrlPrefix;
-                    if (blobUrlPrefix) {
-                        metaItems.push(createMetaItem("ソースコード", Jig.dom.createElement("a", {
-                            className: "meta-value",
-                            attributes: {href: `${blobUrlPrefix}/${term.sourcePath}`, target: "_blank", rel: "noopener"},
-                            textContent: term.sourcePath,
-                        })));
-                    }
-                }
                 if (metaItems.length > 0) {
                     const metaCard = Jig.dom.card.item({extraClass: "weak"});
                     metaItems.forEach(item => metaCard.appendChild(item));
@@ -195,6 +185,7 @@ const GlossaryApp = (() => {
                     id: anchorId,
                     title: term.title || "",
                     kind: term.kind || "",
+                    titleSuffix: term.fqn ? Jig.glossary.sourceLink(term.fqn) : null,
                     tagName: "article",
                 });
                 metaChildren.forEach(child => article.appendChild(child));

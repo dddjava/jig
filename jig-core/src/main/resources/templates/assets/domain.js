@@ -64,24 +64,24 @@ const DomainApp = (() => {
 
     // ----- Mermaid ダイアグラムソース生成 -----
 
-    // click href "url" "tooltip" ではツールチップが表示されないため、
-    // ナビゲーション付きカスタムハンドラを使用して callback 経由でツールチップを表示する
-    const _domainNavHandlers = new Map(); // key → {handlerName, registry: Map<nodeId, url>}
-    let _domainNavCounter = 0;
+    const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
+    const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
-    function _getDomainNavHandler(key) {
-        if (!_domainNavHandlers.has(key)) {
-            const registry = new Map();
-            const safeName = `_jigDomNav${_domainNavCounter++}`;
-            _domainNavHandlers.set(key, {handlerName: safeName, registry});
-            if (typeof window !== 'undefined') {
-                window[safeName] = (nodeId) => {
-                    const url = registry.get(nodeId);
-                    if (url) window.location.href = url;
-                };
-            }
-        }
-        return _domainNavHandlers.get(key);
+    // クラス関連図・パッケージ内クラス関連図のクリック用。
+    // click href "url" "tooltip" ではツールチップが表示されないため、callback 方式を使う。
+    const _typeNavRegistry = new Map(); // nodeId → url
+    const _typeNavHandlerName = '_jigDomNavType';
+    if (typeof window !== 'undefined') {
+        window[_typeNavHandlerName] = (nodeId) => {
+            const url = _typeNavRegistry.get(nodeId);
+            if (url) window.location.href = url;
+        };
+    }
+
+    function _registerTypeNavClick(builder, fqn) {
+        const nodeId = fqnToMermaidId(fqn);
+        _typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
+        builder.addCallbackClick(nodeId, _typeNavHandlerName, fqn);
     }
 
     /**
@@ -237,8 +237,6 @@ const DomainApp = (() => {
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
-        const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
         const {type: typeLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function packageOf(fqn) {
@@ -274,12 +272,7 @@ const DomainApp = (() => {
                 fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), typeLabel(fqn)));
             }
         });
-        const {handlerName: typeNavHandler, registry: typeNavRegistry} = _getDomainNavHandler('typeNav');
-        involvedFqns.forEach(fqn => {
-            const nodeId = fqnToMermaidId(fqn);
-            typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
-            builder.addCallbackClick(nodeId, typeNavHandler, fqn);
-        });
+        involvedFqns.forEach(fqn => _registerTypeNavClick(builder, fqn));
         edges.forEach(r => {
             const edgeLength = edgeLengthByKey.get(`${r.from}::${r.to}`) || 1;
             builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), "", false, edgeLength);
@@ -310,8 +303,6 @@ const DomainApp = (() => {
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
-        const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
         const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function edgeTypeFromKinds(kinds) {
@@ -328,7 +319,7 @@ const DomainApp = (() => {
         const builder = new Jig.mermaid.ClassDiagramBuilder();
 
         involvedFqns.forEach(fqn => {
-            const nodeId = fqnToNodeId(fqn);
+            const nodeId = fqnToMermaidId(fqn);
             builder.addClass(nodeId, typeLabel(fqn));
 
             const domainType = typesMap?.get(fqn);
@@ -350,7 +341,7 @@ const DomainApp = (() => {
 
             builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
         });
-        edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
+        edges.forEach(r => builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), edgeTypeFromKinds(r.kinds)));
 
         return builder.build(direction);
     }
@@ -399,9 +390,6 @@ const DomainApp = (() => {
         direction = domainSettings.diagramDirection,
         showPhysicalName = false
     } = {}) {
-        const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
-
         const relations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -476,12 +464,7 @@ const DomainApp = (() => {
         const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
         internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
         externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), pkgLabel(fqn), 'package'));
-        const {handlerName: typeNavHandler, registry: typeNavRegistry} = _getDomainNavHandler('typeNav');
-        [...internalFqns, ...externalPkgFqns].forEach(fqn => {
-            const nodeId = fqnToMermaidId(fqn);
-            typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
-            builder.addCallbackClick(nodeId, typeNavHandler, fqn);
-        });
+        [...internalFqns, ...externalPkgFqns].forEach(fqn => _registerTypeNavClick(builder, fqn));
         edges.forEach(edge => {
             const edgeLength = edgeLengthByKey.get(`${edge.from}::${edge.to}`) || 1;
             builder.addEdge(fqnToMermaidId(edge.from), fqnToMermaidId(edge.to), "", false, edgeLength);

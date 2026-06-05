@@ -1674,12 +1674,6 @@ globalThis.Jig.mermaid = (() => {
             this._clicks.push(`  click ${id} href "${url}" _self`);
         }
 
-        addCallbackClick(id, handlerName, tooltip) {
-            if (!id || !handlerName) return;
-            const tooltipPart = tooltip ? ` "${(tooltip || "").replace(/"/g, '\\"')}"` : '';
-            this._clicks.push(`  click ${id} ${handlerName}${tooltipPart}`);
-        }
-
         build(direction = 'LR') {
             const safeDirection = direction === 'TB' ? 'TB' : 'LR';
             const lines = [`classDiagram`, `direction ${safeDirection}`];

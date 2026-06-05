@@ -282,7 +282,12 @@ const DomainApp = (() => {
                 fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), typeLabel(fqn)));
             }
         });
-        involvedFqns.forEach(fqn => builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`));
+        const {handlerName: typeNavHandler, registry: typeNavRegistry} = _getDomainNavHandler('typeNav');
+        involvedFqns.forEach(fqn => {
+            const nodeId = fqnToMermaidId(fqn);
+            typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
+            builder.addCallbackClick(nodeId, typeNavHandler, fqn);
+        });
         edges.forEach(r => {
             const edgeLength = edgeLengthByKey.get(`${r.from}::${r.to}`) || 1;
             builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), "", false, edgeLength);
@@ -351,7 +356,9 @@ const DomainApp = (() => {
                 });
             }
 
-            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
+            const {handlerName: typeNavHandler, registry: typeNavRegistry} = _getDomainNavHandler('typeNav');
+            typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
+            builder.addCallbackClick(nodeId, typeNavHandler, fqn);
         });
         edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
 
@@ -479,9 +486,12 @@ const DomainApp = (() => {
         const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
         internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
         externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), pkgLabel(fqn), 'package'));
-        [...internalFqns, ...externalPkgFqns].forEach(fqn =>
-            builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)
-        );
+        const {handlerName: typeNavHandler, registry: typeNavRegistry} = _getDomainNavHandler('typeNav');
+        [...internalFqns, ...externalPkgFqns].forEach(fqn => {
+            const nodeId = fqnToMermaidId(fqn);
+            typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
+            builder.addCallbackClick(nodeId, typeNavHandler, fqn);
+        });
         edges.forEach(edge => {
             const edgeLength = edgeLengthByKey.get(`${edge.from}::${edge.to}`) || 1;
             builder.addEdge(fqnToMermaidId(edge.from), fqnToMermaidId(edge.to), "", false, edgeLength);

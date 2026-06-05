@@ -94,6 +94,13 @@ globalThis.Jig.mermaid = (() => {
                 this.clicks.push(`click ${id} _jigNoop "${escapeMermaidText(tooltip)}"`);
             }
 
+            addCallbackClick(id, handlerName, tooltip) {
+                if (!id || !handlerName || this.clickSet.has(id)) return;
+                this.clickSet.add(id);
+                const tooltipPart = tooltip ? ` "${escapeMermaidText(tooltip)}"` : '';
+                this.clicks.push(`click ${id} ${handlerName}${tooltipPart}`);
+            }
+
             addClass(id, className) {
                 if (!id || !className) return;
                 this.styles.push(`class ${id} ${className}`);
@@ -1663,6 +1670,12 @@ globalThis.Jig.mermaid = (() => {
         addClick(id, url) {
             if (!id || !url) return;
             this._clicks.push(`  click ${id} href "${url}" _self`);
+        }
+
+        addCallbackClick(id, handlerName, tooltip) {
+            if (!id || !handlerName) return;
+            const tooltipPart = tooltip ? ` "${(tooltip || "").replace(/"/g, '\\"')}"` : '';
+            this._clicks.push(`  click ${id} ${handlerName}${tooltipPart}`);
         }
 
         build(direction = 'LR') {

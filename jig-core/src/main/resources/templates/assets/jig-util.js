@@ -152,6 +152,24 @@ globalThis.Jig.util = (() => {
         map.get(key).add(value);
     }
 
+    /**
+     * items をパッケージFQN単位でグループ化する。
+     * @template T
+     * @param {T[]} items
+     * @param {function(T): string} getFqn - アイテムのFQNを返す関数
+     * @returns {Map<string, T[]>} パッケージFQN → アイテム配列
+     */
+    function groupByPackageFqn(items, getFqn) {
+        const byPackage = new Map();
+        items.forEach(item => {
+            const fqn = getFqn(item);
+            const dotIdx = fqn.lastIndexOf('.');
+            const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
+            pushToMap(byPackage, pkg, item);
+        });
+        return byPackage;
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -163,6 +181,7 @@ globalThis.Jig.util = (() => {
         collectTypeRefFqns,
         pushToMap,
         addToSetMap,
+        groupByPackageFqn,
     }
 })();
 

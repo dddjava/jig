@@ -365,13 +365,7 @@ const OutboundApp = (() => {
         });
 
         if (sidebar && grouped.length > 0) {
-            const byPackage = new Map();
-            grouped.forEach(group => {
-                const fqn = group.outboundPort.fqn;
-                const dotIdx = fqn.lastIndexOf('.');
-                const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
-                Jig.util.pushToMap(byPackage, pkg, group);
-            });
+            const byPackage = Jig.util.groupByPackageFqn(grouped, group => group.outboundPort.fqn);
 
             const packageContainer = Jig.dom.createElement("div", {});
             Jig.dom.sidebar.renderPackageGrouped(packageContainer, byPackage, pkgGroups =>

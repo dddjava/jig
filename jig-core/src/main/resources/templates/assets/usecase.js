@@ -503,12 +503,7 @@ const UsecaseApp = (() => {
             return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
         });
 
-        const byPackage = new Map();
-        filteredItems.forEach(item => {
-            const dotIdx = item.usecase.fqn.lastIndexOf('.');
-            const pkg = dotIdx === -1 ? '' : item.usecase.fqn.slice(0, dotIdx);
-            Jig.util.pushToMap(byPackage, pkg, item);
-        });
+        const byPackage = Jig.util.groupByPackageFqn(filteredItems, item => item.usecase.fqn);
 
         byPackage.forEach((items, packageFqn) => {
             const typeList = Jig.dom.createElement("ul", {

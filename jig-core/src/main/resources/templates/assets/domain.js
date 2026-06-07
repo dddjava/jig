@@ -69,7 +69,8 @@ const DomainApp = (() => {
 
     // クラス関連図・パッケージ内クラス関連図のクリック用。
     // click href "url" "tooltip" ではツールチップが表示されないため、callback 方式を使う。
-    const _typeNavRegistry = new Map(); // nodeId → url
+    // nodeId → url。FQN から決定的に導出されるため描画ごとにクリアせず蓄積してよい。
+    const _typeNavRegistry = new Map();
     const _typeNavHandlerName = '_jigDomNavType';
     if (typeof window !== 'undefined') {
         window[_typeNavHandlerName] = (nodeId) => {

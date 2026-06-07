@@ -15,12 +15,7 @@ const InsightApp = (() => {
 
     function createZoomCell() {
         return Jig.dom.createElement("td", {
-            children: [
-                Jig.dom.createElement("i", {
-                    className: "zoom",
-                    textContent: "🔍"
-                })
-            ]
+            children: [Jig.dom.createElement("i", {className: "zoom"})]
         });
     }
 

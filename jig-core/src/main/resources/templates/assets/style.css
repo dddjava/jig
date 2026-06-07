@@ -1465,6 +1465,10 @@ label {
     cursor: pointer;
 }
 
+.insight table i.zoom::before {
+    content: "🔍";
+}
+
 #metric-definitions {
     margin-bottom: 2em;
 }

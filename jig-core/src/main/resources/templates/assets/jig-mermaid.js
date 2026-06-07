@@ -1699,7 +1699,6 @@ globalThis.Jig.mermaid = (() => {
         inboundAdapterUrl: navUrl("inbound", "adapter"),
         outboundPortUrl:   navUrl("outbound", "port"),
         domainTypeUrl:     navUrl("domain",   "domain"),
-        domainPackageUrl:  navUrl("domain",   "domain"),
     };
 
     return {

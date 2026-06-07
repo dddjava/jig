@@ -108,7 +108,7 @@ const IndexApp = (() => {
                 allPackages, allPackageRelations,
                 packageRoot,
                 "ドメインパッケージ",
-                Jig.mermaid.nav.domainPackageUrl
+                Jig.mermaid.nav.domainTypeUrl
             );
         });
 

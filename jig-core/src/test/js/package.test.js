@@ -1189,4 +1189,111 @@ test.describe('package.js', () => {
         });
     });
 
+    test.describe('selectOuterRoots', () => {
+        test('ラベルからペアの外側ルートを2つ返す', () => {
+            assert.deepEqual(PackageApp.selectOuterRoots('a.b.c <-> a.b.x'), ['a.b.c', 'a.b.x']);
+        });
+
+        test('スペースを含むラベルを正しくトリムする', () => {
+            assert.deepEqual(PackageApp.selectOuterRoots('a.b.c  <->  a.b.x'), ['a.b.c', 'a.b.x']);
+        });
+
+        test('非文字列の場合は空配列を返す', () => {
+            assert.deepEqual(PackageApp.selectOuterRoots(null), []);
+            assert.deepEqual(PackageApp.selectOuterRoots(undefined), []);
+            assert.deepEqual(PackageApp.selectOuterRoots(42), []);
+        });
+
+        test('(default) パッケージは除外する', () => {
+            assert.deepEqual(PackageApp.selectOuterRoots('(default) <-> a.b'), ['a.b']);
+        });
+
+        test('包含関係にある場合、子パッケージ（長い方）を折りたたむ', () => {
+            // a.b.c.d は a.b.c の子なので collapsedPairPackages に入り除外される
+            assert.deepEqual(PackageApp.selectOuterRoots('a.b.c <-> a.b.c.d'), ['a.b.c']);
+        });
+
+        test('重複するパッケージは1つにまとめる', () => {
+            assert.deepEqual(PackageApp.selectOuterRoots('a.b <-> a.b'), ['a.b']);
+        });
+    });
+
+    test.describe('buildPackageAdjacency', () => {
+        test('型FQNのエッジからパッケージ間の双方向隣接Mapを構築する', () => {
+            const adjacency = PackageApp.buildPackageAdjacency([
+                {from: 'a.b.A', to: 'a.c.B'},
+            ]);
+            assert.ok(adjacency.get('a.b')?.has('a.c'));
+            assert.ok(adjacency.get('a.c')?.has('a.b'));
+        });
+
+        test('同一パッケージ内のエッジは無視する', () => {
+            const adjacency = PackageApp.buildPackageAdjacency([
+                {from: 'a.b.A', to: 'a.b.B'},
+            ]);
+            assert.equal(adjacency.size, 0);
+        });
+
+        test('空のエッジリストは空のMapを返す', () => {
+            assert.equal(PackageApp.buildPackageAdjacency([]).size, 0);
+        });
+    });
+
+    test.describe('bfsDistance', () => {
+        test('直接隣接するノードの距離は1', () => {
+            const adj = new Map([['a', new Set(['b'])], ['b', new Set(['a'])]]);
+            assert.equal(PackageApp.bfsDistance('a', 'b', adj), 1);
+        });
+
+        test('2ホップの距離は2', () => {
+            const adj = new Map([
+                ['a', new Set(['b'])],
+                ['b', new Set(['a', 'c'])],
+                ['c', new Set(['b'])],
+            ]);
+            assert.equal(PackageApp.bfsDistance('a', 'c', adj), 2);
+        });
+
+        test('同一ノードは距離0', () => {
+            assert.equal(PackageApp.bfsDistance('a', 'a', new Map()), 0);
+        });
+
+        test('到達不能なノードはPositiveInfinityを返す', () => {
+            const adj = new Map([['a', new Set(['b'])]]);
+            assert.equal(PackageApp.bfsDistance('a', 'z', adj), Number.POSITIVE_INFINITY);
+        });
+
+        test('start/goalがnullの場合はPositiveInfinityを返す', () => {
+            assert.equal(PackageApp.bfsDistance(null, 'a', new Map()), Number.POSITIVE_INFINITY);
+            assert.equal(PackageApp.bfsDistance('a', null, new Map()), Number.POSITIVE_INFINITY);
+        });
+    });
+
+    test.describe('chooseOuterRoot', () => {
+        test('outerRootsが空の場合はnullを返す', () => {
+            assert.equal(PackageApp.chooseOuterRoot('a.b', [], new Map()), null);
+            assert.equal(PackageApp.chooseOuterRoot('a.b', null, new Map()), null);
+        });
+
+        test('直接一致するrootがひとつの場合はそれを返す', () => {
+            assert.equal(PackageApp.chooseOuterRoot('a.b.c', ['a.b', 'x.y'], new Map()), 'a.b');
+        });
+
+        test('複数の直接一致がある場合は最長一致を返す', () => {
+            // a.b.c.d は a.b にも a.b.c にも startsWith するが a.b.c の方が長い
+            assert.equal(PackageApp.chooseOuterRoot('a.b.c.d', ['a.b', 'a.b.c'], new Map()), 'a.b.c');
+        });
+
+        test('直接一致がない場合は共通プレフィックス深さで選ぶ', () => {
+            // a.b.c と a.b.x.y を比較: pkg=a.b.z は a.b まで共通なので同深さ → adjacencyで判定
+            const adj = new Map([
+                ['a.b.z', new Set(['a.b.c'])],
+                ['a.b.c', new Set(['a.b.z'])],
+            ]);
+            // a.b.z は a.b.c に直接隣接（距離1）、a.b.x.y には未接続（Infinity）
+            assert.equal(PackageApp.chooseOuterRoot('a.b.z', ['a.b.c', 'a.b.x.y'], adj), 'a.b.c');
+        });
+    });
+
 });
+

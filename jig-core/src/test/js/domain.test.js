@@ -820,6 +820,16 @@ test.describe('domain.js', () => {
             assert.ok(result.includes('prot'), 'PROTECTED メソッドは含まれること');
             assert.ok(!result.includes('priv'), 'PRIVATE メソッドは含まれないこと');
         });
+
+        test('クリックディレクティブにFQNをツールチップとして含む', () => {
+            const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['フィールド型']}];
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            assert.ok(result.includes(`click ${idA} href`), 'クリックディレクティブが含まれること');
+            assert.ok(result.includes('"org.example.A"'), 'FQNがツールチップとして含まれること');
+        });
     });
 
     test.describe('サイドバーテキストフィルター', () => {

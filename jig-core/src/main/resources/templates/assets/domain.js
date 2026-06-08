@@ -340,7 +340,7 @@ const DomainApp = (() => {
                 });
             }
 
-            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
+            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`, fqn);
         });
         edges.forEach(r => builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), edgeTypeFromKinds(r.kinds)));
 

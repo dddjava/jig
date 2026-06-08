@@ -1669,9 +1669,10 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        addClick(id, url) {
+        addClick(id, url, tooltip) {
             if (!id || !url) return;
-            this._clicks.push(`  click ${id} href "${url}" _self`);
+            const tooltipPart = tooltip ? ` "${this._escape(tooltip)}"` : ' _self';
+            this._clicks.push(`  click ${id} href "${url}"${tooltipPart}`);
         }
 
         build(direction = 'LR') {

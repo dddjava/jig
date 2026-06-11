@@ -604,7 +604,7 @@ const InboundApp = (() => {
 
             // クラス図タブ
             Jig.mermaid.diagram.createAndRegister(panels['diagram'], (mmdContainer) => {
-                Jig.mermaid.render.renderWithControls(mmdContainer, (dir, opts) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir, opts?.showPhysicalName), {enableLabelToggle: true});
+                Jig.mermaid.render.renderWithControls(mmdContainer, (dir, opts) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir, opts?.showPhysicalName), {direction: 'TB', enableLabelToggle: true});
             });
 
             section.appendChild(card);

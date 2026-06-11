@@ -320,6 +320,7 @@ test.describe('inbound.js', () => {
         assert.equal(groupHeaders[0].querySelector('a').textContent, 'ControllerA');
         assert.ok(groupHeaders[0].querySelector('a').getAttribute('href').startsWith('#'));
         assert.equal(groupHeaders[0].querySelector('.controller-group-path').textContent, '/api');
+        assert.equal(groupHeaders[0].querySelector('.controller-group-count').textContent, '1');
         assert.ok(groupHeaders[0].querySelector('button.controller-group-toggle'));
         // データ行の確認（グループヘッダー行を除外）
         const rows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');

@@ -367,6 +367,10 @@ const InboundApp = (() => {
                     textContent: classPath
                 }));
             }
+            headerChildren.push(Jig.dom.createElement("span", {
+                className: "controller-group-count",
+                textContent: rows.length
+            }));
             headerChildren.push(toggleBtn);
             const headerRow = Jig.dom.createElement("tr", {
                 className: "controller-group-header",

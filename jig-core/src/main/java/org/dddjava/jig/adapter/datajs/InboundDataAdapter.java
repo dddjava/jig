@@ -91,7 +91,7 @@ public class InboundDataAdapter implements DataAdapter {
     private static IoTypeCollection collectIoTypes(InboundAdapters inboundAdapters, JigTypes jigTypes) {
         var queue = new ArrayDeque<TypeId>();
         var rootTypeIds = new HashSet<TypeId>();
-        var visited = new LinkedHashMap<TypeId, JigType>();
+        var visited = new HashMap<TypeId, JigType>();
 
         inboundAdapters.groups().forEach(inboundAdapter ->
                 inboundAdapter.entrypoints().forEach(entrypoint -> {

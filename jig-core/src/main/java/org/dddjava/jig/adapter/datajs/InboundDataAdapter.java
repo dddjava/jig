@@ -12,12 +12,7 @@ import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * 入力インタフェース（inbound-data.js）
@@ -95,7 +90,7 @@ public class InboundDataAdapter implements DataAdapter {
 
     private static IoTypeCollection collectIoTypes(InboundAdapters inboundAdapters, JigTypes jigTypes) {
         var queue = new ArrayDeque<TypeId>();
-        var rootTypeIds = new LinkedHashSet<TypeId>();
+        var rootTypeIds = new HashSet<TypeId>();
         var visited = new LinkedHashMap<TypeId, JigType>();
 
         inboundAdapters.groups().forEach(inboundAdapter ->

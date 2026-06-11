@@ -263,27 +263,26 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    function createMemberSection(items, title, className, createItem) {
+        return createElement("section", {
+            className,
+            children: [
+                ...(title !== undefined ? [i18nText("h4", title)] : []),
+                ...items.map(createItem)
+            ]
+        });
+    }
+
     function createFieldsList(fields, options = {}) {
         if (fields.length === 0) return null;
         const title = options.showTitle !== false ? "フィールド" : undefined;
-        const section = createElement("section", {
-            className: "methods-section fields",
-            children: title !== undefined ? [i18nText("h4", title)] : []
-        });
-        fields.forEach(field => section.appendChild(createFieldItem(field)));
-        return section;
+        return createMemberSection(fields, title, "methods-section fields", createFieldItem);
     }
 
     function createMethodsList(kind, methods, options = {}) {
         if (methods.length === 0) return null;
-
         const title = options.showTitle !== false ? kind : undefined;
-        const section = createElement("section", {
-            className: "methods-section",
-            children: title !== undefined ? [i18nText("h4", title)] : []
-        });
-        methods.forEach(method => section.appendChild(createMethodItem(method)));
-        return section;
+        return createMemberSection(methods, title, "methods-section", createMethodItem);
     }
 
     // --- Card builders ---

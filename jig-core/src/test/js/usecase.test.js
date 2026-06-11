@@ -155,7 +155,7 @@ test.describe('usecase.js', () => {
 
             const fieldsSection = serviceSection.querySelector('section.methods-section');
             assert.ok(fieldsSection);
-            assert.equal(fieldsSection.querySelector('.method-name').textContent, 'field1');
+            assert.equal(fieldsSection.querySelector('.field-name').textContent, 'field1');
 
             const staticMethodsSection = serviceSection.querySelector('section.static-methods');
             assert.ok(staticMethodsSection);

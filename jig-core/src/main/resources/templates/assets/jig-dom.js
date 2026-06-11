@@ -57,7 +57,9 @@ globalThis.Jig.dom = (() => {
      * children を伴う複合要素や label の mixed content では createElement に i18n: true を直接渡す。
      */
     function i18nText(tagName, key, options = {}) {
-        return createElement(tagName, {...options, textContent: key, i18n: true});
+        const el = createElement(tagName, {...options, textContent: key, i18n: true});
+        el.dataset.i18nOriginal = key;
+        return el;
     }
 
     // --- Markdown ---
@@ -244,16 +246,16 @@ globalThis.Jig.dom = (() => {
 
     function createFieldItem(field) {
         return createElement("div", {
-            className: "method-item",
+            className: "field-item",
             children: [
                 createElement("div", {
-                    className: "method-signature",
+                    className: "field-signature",
                     children: [
                         createElement("span", {
-                            className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                            className: "field-name" + (field.isDeprecated ? " deprecated" : ""),
                             textContent: field.name
                         }),
-                        createElement("span", {className: "method-return-sep", textContent: ":"}),
+                        createElement("span", {className: "field-type-sep", textContent: ":"}),
                         createElementForTypeRef(field.typeRef)
                     ]
                 })
@@ -261,21 +263,26 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    function createMemberSection(items, title, className, createItem) {
+        return createElement("section", {
+            className,
+            children: [
+                ...(title !== undefined ? [i18nText("h4", title)] : []),
+                ...items.map(createItem)
+            ]
+        });
+    }
+
     function createFieldsList(fields, options = {}) {
         if (fields.length === 0) return null;
         const title = options.showTitle !== false ? "フィールド" : undefined;
-        const card = createItemCard({title, extraClass: "methods-section fields"});
-        fields.forEach(field => card.appendChild(createFieldItem(field)));
-        return card;
+        return createMemberSection(fields, title, "methods-section fields", createFieldItem);
     }
 
     function createMethodsList(kind, methods, options = {}) {
         if (methods.length === 0) return null;
-
         const title = options.showTitle !== false ? kind : undefined;
-        const card = createItemCard({title, extraClass: "methods-section"});
-        methods.forEach(method => card.appendChild(createMethodItem(method)));
-        return card;
+        return createMemberSection(methods, title, "methods-section", createMethodItem);
     }
 
     // --- Card builders ---

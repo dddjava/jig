@@ -373,16 +373,19 @@ main table thead {
     gap: 8px;
 }
 
-.method-item {
+.method-item,
+.field-item {
     padding: 8px 0;
     border-bottom: 1px solid #eef0f5;
 }
 
-.method-item:last-child {
+.method-item:last-child,
+.field-item:last-child {
     border-bottom: none;
 }
 
-.method-signature {
+.method-signature,
+.field-signature {
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
@@ -396,7 +399,14 @@ main table thead {
     white-space: nowrap;
 }
 
-.method-return-sep {
+.field-name {
+    font-weight: bold;
+    color: #1b3a66;
+    white-space: nowrap;
+}
+
+.method-return-sep,
+.field-type-sep {
     margin: 0 4px;
     color: #999;
 }
@@ -630,6 +640,63 @@ td.fqn {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
+.jig-card--type > .jig-card--type + .jig-card--type {
+    margin-top: 12px;
+}
+
+.io-type-card .field-item,
+.io-type-nested .field-item {
+    padding: 3px 0;
+    border-bottom: none;
+}
+
+.io-type-usages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 4px 0;
+}
+
+.io-type-usages-label {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #666;
+    white-space: nowrap;
+}
+
+.io-type-usage-link {
+    font-size: 0.85em;
+    color: #2d5fa8;
+    text-decoration: none;
+    background-color: #ebf0fb;
+    border-radius: 3px;
+    padding: 1px 7px;
+}
+
+.io-type-usage-link:hover {
+    text-decoration: underline;
+}
+
+.io-type-nested {
+    margin-left: 1em;
+    padding-left: 0.75em;
+    border-left: 2px solid #c8d0e0;
+    margin-top: 0.5em;
+}
+
+.io-type-nested-label {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #2d5fa8;
+    background-color: #ebf0fb;
+    border-radius: 3px;
+    padding: 1px 7px;
+    margin-bottom: 4px;
+}
+
 .jig-card.jig-card--item > h4 {
     margin-top: 0;
     margin-bottom: 0.5em;
@@ -723,13 +790,6 @@ body.hide-usecase-members .tab-member-section {
 
 .tab-content-section .jig-tab-panel {
     background-color: #fff;
-}
-
-.tab-content-section.tab-diagram-section .jig-tab-panel {
-    padding: 12px;
-}
-
-.tab-content-section.tab-mutual-dependency .jig-tab-panel {
     padding: 12px;
 }
 
@@ -750,14 +810,6 @@ body.hide-usecase-members .tab-member-section {
     margin-right: 8px;
     align-self: flex-end;
     padding-bottom: 6px;
-}
-
-.tab-content-section.tab-member-section .jig-tab-panel .jig-card.jig-card--item {
-    border: none;
-    box-shadow: none;
-    margin-top: 0;
-    border-radius: 0;
-    padding: 12px;
 }
 
 body.hide-usecase-descriptions .description,

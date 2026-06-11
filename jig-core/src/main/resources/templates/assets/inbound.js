@@ -151,6 +151,7 @@ const InboundApp = (() => {
 
         initDisplayTypeSettings();
         initSimplifiedSetting();
+        initIoTypeLinkResolver();
 
         render();
     }
@@ -221,6 +222,15 @@ const InboundApp = (() => {
         }));
     }
 
+    function initIoTypeLinkResolver() {
+        const ioTypeFqns = new Set((state.data.ioTypes || []).map(t => t.fqn));
+        const baseResolver = Jig.data.createTypeLinkResolver();
+        Jig.dom.type.setResolver(fqn => {
+            if (ioTypeFqns.has(fqn)) return {href: '#' + Jig.util.fqnToId('io-type', fqn)};
+            return baseResolver ? baseResolver(fqn) : null;
+        });
+    }
+
     function render() {
         const adapters = filteredAdapters();
         renderSidebar(adapters);
@@ -232,7 +242,10 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        Jig.dom.sidebar.renderSection(sidebar, null, [{id: "entrypoint-summary", label: "エントリーポイント一覧"}]);
+        Jig.dom.sidebar.renderSection(sidebar, null, [
+            {id: "entrypoint-summary", label: "エントリーポイント一覧"},
+            {id: "io-types", label: "入出力オブジェクト一覧"},
+        ]);
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
@@ -550,6 +563,168 @@ const InboundApp = (() => {
 
             container.appendChild(jigCard);
         });
+
+        const ioTypesSection = renderIoTypesSection(state.data.ioTypes || [], state.data.rootIoTypeFqns || [], adapters);
+        if (ioTypesSection) container.appendChild(ioTypesSection);
+    }
+
+    function buildIoTypeUsageMap(rootIoTypeFqns, adapters) {
+        const usageMap = new Map(rootIoTypeFqns.map(fqn => [fqn, []]));
+        adapters.forEach(adapter => {
+            const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn);
+            (adapter.entrypoints || []).forEach(ep => {
+                const allFqns = new Set([
+                    ...Jig.util.collectTypeRefFqns(ep.returnTypeRef),
+                    ...(ep.parameters || []).flatMap(p => Jig.util.collectTypeRefFqns(p.typeRef))
+                ]);
+                rootIoTypeFqns.forEach(rootFqn => {
+                    if (allFqns.has(rootFqn)) {
+                        usageMap.get(rootFqn).push({ep, cardId});
+                    }
+                });
+            });
+        });
+        return usageMap;
+    }
+
+    function renderIoTypesSection(ioTypes, rootIoTypeFqns, adapters = []) {
+        if (ioTypes.length === 0) return null;
+
+        const ioTypeMap = new Map(ioTypes.map(t => [t.fqn, t]));
+        const roots = rootIoTypeFqns.filter(fqn => ioTypeMap.has(fqn));
+        if (roots.length === 0) return null;
+
+        const usageMap = buildIoTypeUsageMap(roots, adapters);
+        const section = Jig.dom.card.type({id: "io-types", title: "入出力オブジェクト一覧", extraClass: "io-types-section"});
+
+        roots.forEach(rootFqn => {
+            const rootIoType = ioTypeMap.get(rootFqn);
+            const card = Jig.dom.card.type({
+                id: Jig.util.fqnToId('io-type', rootFqn),
+                title: Jig.dom.createElement('span', {
+                    textContent: Jig.glossary.getTypeTerm(rootFqn).title,
+                    className: rootIoType.isDeprecated ? 'deprecated' : '',
+                }),
+                fqn: rootFqn,
+                titleSuffix: Jig.glossary.sourceLink(rootFqn),
+                extraClass: 'io-type-card',
+            });
+
+            const {panels, section: tabSection} = Jig.dom.tab.buildSection(
+                [{id: 'fields', label: '構造'}, {id: 'diagram', label: 'クラス図'}],
+                {className: "jig-card-section tab-content-section tab-io-section"}
+            );
+            card.appendChild(tabSection);
+
+            // フィールド展開タブ: カード内のフィールド型はすぐ下にネスト展開があるためリンク不要
+            const savedResolver = Jig.dom.type.getResolver();
+            Jig.dom.type.setResolver(null);
+            try {
+                appendIoTypeExpanded(panels['fields'], rootFqn, ioTypeMap, new Set([rootFqn]));
+            } finally {
+                Jig.dom.type.setResolver(savedResolver);
+            }
+
+            // クラス図タブ
+            Jig.mermaid.diagram.createAndRegister(panels['diagram'], (mmdContainer) => {
+                Jig.mermaid.render.renderWithControls(mmdContainer, (dir, opts) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir, opts?.showPhysicalName), {direction: 'TB', enableLabelToggle: true});
+            });
+
+            const usages = usageMap.get(rootFqn);
+            if (usages.length > 0) {
+                card.appendChild(Jig.dom.createElement('div', {
+                    className: 'io-type-usages',
+                    children: [
+                        Jig.dom.i18nText('span', '使用するエントリーポイント', {className: 'io-type-usages-label'}),
+                        ...usages.map(({ep, cardId}) => Jig.dom.createElement('a', {
+                            className: 'io-type-usage-link',
+                            textContent: Jig.glossary.getMethodTerm(ep.fqn, true).title,
+                            attributes: {href: '#' + cardId}
+                        }))
+                    ]
+                }));
+            }
+
+            section.appendChild(card);
+        });
+
+        return section;
+    }
+
+    function appendIoTypeExpanded(container, fqn, ioTypeMap, visitedInBranch) {
+        const ioType = ioTypeMap.get(fqn);
+        if (!ioType) return;
+
+        // フィールドごとに「フィールド行 → そのネスト型展開」を逐次処理する
+        (ioType.fields || []).forEach(field => {
+            container.appendChild(Jig.dom.type.fieldItem(field));
+
+            collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
+                if (visitedInBranch.has(nestedFqn)) return;
+                visitedInBranch.add(nestedFqn);
+
+                const nestedSection = Jig.dom.createElement('div', {className: 'io-type-nested'});
+                nestedSection.appendChild(Jig.dom.createElement('span', {
+                    className: 'io-type-nested-label',
+                    textContent: Jig.glossary.getTypeTerm(nestedFqn).title,
+                }));
+                appendIoTypeExpanded(nestedSection, nestedFqn, ioTypeMap, visitedInBranch);
+                container.appendChild(nestedSection);
+            });
+        });
+    }
+
+    function collectIoFqnsFromTypeRef(typeRef, ioTypeMap) {
+        return Jig.util.collectTypeRefFqns(typeRef).filter(fqn => ioTypeMap.has(fqn));
+    }
+
+    const COLLECTION_FQNS = new Set([
+        'java.util.List', 'java.util.Set', 'java.util.Map',
+        'java.util.Collection', 'java.util.Iterable',
+        'java.util.Queue', 'java.util.Deque', 'java.util.SortedSet',
+    ]);
+
+    function ioTypeMultiplicity(typeRef) {
+        if (!typeRef) return '';
+        if (typeRef.fqn === 'java.util.Optional') return '0..1';
+        if (COLLECTION_FQNS.has(typeRef.fqn)) return '*';
+        return '';
+    }
+
+    function buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir = 'LR', showPhysicalName = false) {
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
+        const builder = new Jig.mermaid.ClassDiagramBuilder();
+        const visited = new Set();
+
+        function typeRefToLabel(typeRef) {
+            if (!typeRef) return '';
+            const name = typeLabel(typeRef.fqn);
+            if (!typeRef.typeArgumentRefs || typeRef.typeArgumentRefs.length === 0) return name;
+            return `${name}~${typeRef.typeArgumentRefs.map(a => typeRefToLabel(a)).join(', ')}~`;
+        }
+
+        function traverse(fqn) {
+            if (visited.has(fqn)) return;
+            visited.add(fqn);
+            const ioType = ioTypeMap.get(fqn);
+            if (!ioType) return;
+
+            const classId = Jig.util.fqnToId('io', fqn);
+            builder.addClass(classId, typeLabel(fqn));
+
+            (ioType.fields || []).forEach(field => {
+                builder.addField(classId, typeRefToLabel(field.typeRef), field.name || '');
+                const multiplicity = ioTypeMultiplicity(field.typeRef);
+                collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
+                    const nestedClassId = Jig.util.fqnToId('io', nestedFqn);
+                    traverse(nestedFqn);
+                    builder.addEdge(classId, nestedClassId, 'association', multiplicity);
+                });
+            });
+        }
+
+        traverse(rootFqn);
+        return builder.build(dir);
     }
 
     return {
@@ -559,6 +734,7 @@ const InboundApp = (() => {
         renderSidebar,
         renderSummaryTable,
         renderMain,
+        renderIoTypesSection,
     };
 })();
 

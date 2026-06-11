@@ -608,7 +608,7 @@ const InboundApp = (() => {
             });
 
             const {panels, section: tabSection} = Jig.dom.tab.buildSection(
-                [{id: 'fields', label: 'フィールド'}, {id: 'diagram', label: 'クラス図'}],
+                [{id: 'fields', label: '構造'}, {id: 'diagram', label: 'クラス図'}],
                 {className: "jig-card-section tab-content-section tab-io-section"}
             );
             card.appendChild(tabSection);

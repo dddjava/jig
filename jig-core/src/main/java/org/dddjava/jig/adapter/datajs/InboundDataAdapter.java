@@ -9,12 +9,12 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * 入力インタフェース（inbound-data.js）
@@ -99,7 +99,7 @@ public class InboundDataAdapter implements DataAdapter {
         inboundAdapters.groups().stream()
                 .flatMap(group -> group.entrypoints().stream())
                 .map(Entrypoint::jigMethod)
-                .flatMap(method -> Stream.concat(method.parameterTypeStream(), Stream.of(method.returnType())))
+                .flatMap(JigMethod::declarationIoTypeStream)
                 .flatMap(JigTypeReference::toTypeIdStream)
                 .forEach(id -> {
                     rootTypeIds.add(id);

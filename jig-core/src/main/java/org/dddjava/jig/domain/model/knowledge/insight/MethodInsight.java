@@ -89,8 +89,7 @@ public record MethodInsight(JigMethod jigMethod) {
             return false;
         }
 
-        return jigMethod.returnType().id().isPrimitive()
-                || jigMethod.parameterTypeStream()
+        return jigMethod.declarationIoTypeStream()
                 .anyMatch(jigTypeReference -> jigTypeReference.id().isPrimitive());
     }
 

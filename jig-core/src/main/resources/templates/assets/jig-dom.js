@@ -266,18 +266,24 @@ globalThis.Jig.dom = (() => {
     function createFieldsList(fields, options = {}) {
         if (fields.length === 0) return null;
         const title = options.showTitle !== false ? "フィールド" : undefined;
-        const card = createItemCard({title, extraClass: "methods-section fields"});
-        fields.forEach(field => card.appendChild(createFieldItem(field)));
-        return card;
+        const section = createElement("section", {
+            className: "methods-section fields",
+            children: title !== undefined ? [i18nText("h4", title)] : []
+        });
+        fields.forEach(field => section.appendChild(createFieldItem(field)));
+        return section;
     }
 
     function createMethodsList(kind, methods, options = {}) {
         if (methods.length === 0) return null;
 
         const title = options.showTitle !== false ? kind : undefined;
-        const card = createItemCard({title, extraClass: "methods-section"});
-        methods.forEach(method => card.appendChild(createMethodItem(method)));
-        return card;
+        const section = createElement("section", {
+            className: "methods-section",
+            children: title !== undefined ? [i18nText("h4", title)] : []
+        });
+        methods.forEach(method => section.appendChild(createMethodItem(method)));
+        return section;
     }
 
     // --- Card builders ---

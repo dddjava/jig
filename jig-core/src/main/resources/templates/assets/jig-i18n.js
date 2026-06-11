@@ -20,6 +20,11 @@ globalThis.Jig.i18n = (() => {
             "フィールド": "Fields",
             "折りたたむ": "Collapse",
             "展開": "Expand",
+            "全て折りたたむ": "Collapse all",
+            "全て展開": "Expand all",
+            "パスで絞り込み": "Filter by path",
+            "購読先で絞り込み": "Filter by subscription",
+            "スケジュールで絞り込み": "Filter by schedule",
             "出力日時": "Generated at",
             "主要パッケージ関連図": "Key package diagram",
             "ドメインパッケージ": "Domain package",
@@ -232,6 +237,13 @@ globalThis.Jig.i18n = (() => {
         el.setAttribute(attrName, (dict && dict[key]) || key);
     }
 
+    function t(key) {
+        const lang = resolveLanguage();
+        if (lang === 'ja') return key;
+        const dict = resolveDictionary(lang);
+        return (dict && dict[key]) || key;
+    }
+
     function apply() {
         const lang = resolveLanguage();
         document.documentElement.lang = lang;
@@ -255,6 +267,7 @@ globalThis.Jig.i18n = (() => {
         currentLanguage,
         setLanguage,
         availableLanguages,
+        t,
         // テストが明示キー翻訳をセットアップするために参照する
         builtinDictionaries,
     };

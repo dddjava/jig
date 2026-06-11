@@ -4,10 +4,10 @@ const InboundApp = (() => {
     const ADAPTER_ID_PREFIX = "adapter";
 
     const TYPE_CONFIG = [
-        {type: 'HTTP_API',       label: 'リクエストハンドラ', headers: ['パス', 'メソッド', 'ハンドラ']},
-        {type: 'QUEUE_LISTENER', label: 'メッセージリスナー', headers: ['購読先', 'ハンドラ']},
-        {type: 'SCHEDULER',      label: 'スケジューラー',     headers: ['スケジュール', 'ハンドラ']},
-        {type: 'OTHER',          label: 'その他',             headers: ['パス', 'ハンドラ']},
+        {type: 'HTTP_API',       label: 'リクエストハンドラ', headers: ['パス', 'メソッド', 'ハンドラ'],  filterPlaceholder: 'パスで絞り込み'},
+        {type: 'QUEUE_LISTENER', label: 'メッセージリスナー', headers: ['購読先', 'ハンドラ'],            filterPlaceholder: '購読先で絞り込み'},
+        {type: 'SCHEDULER',      label: 'スケジューラー',     headers: ['スケジュール', 'ハンドラ'],       filterPlaceholder: 'スケジュールで絞り込み'},
+        {type: 'OTHER',          label: 'その他',             headers: ['パス', 'ハンドラ'],               filterPlaceholder: 'パスで絞り込み'},
     ];
 
     const INITIAL_STATE = {
@@ -302,7 +302,7 @@ const InboundApp = (() => {
         });
     }
 
-    function buildGroupedSubSection(title, headers, groups, tableClass = '') {
+    function buildGroupedSubSection(title, headers, groups, tableClass = '', filterPlaceholder = '絞り込み') {
         const table = Jig.dom.createElement("table", {
             className: ["entrypoint-summary", tableClass].filter(Boolean).join(" "),
             children: [
@@ -322,12 +322,12 @@ const InboundApp = (() => {
 
             const toggleBtn = Jig.dom.createElement("button", {
                 className: "controller-group-toggle",
-                attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
+                attributes: {"aria-expanded": "true", "aria-label": Jig.i18n.t("折りたたむ")}
             });
             toggleBtn.addEventListener("click", () => {
                 const collapsing = toggleBtn.getAttribute("aria-expanded") === "true";
                 toggleBtn.setAttribute("aria-expanded", String(!collapsing));
-                toggleBtn.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
+                toggleBtn.setAttribute("aria-label", Jig.i18n.t(collapsing ? "展開" : "折りたたむ"));
                 dataRows.forEach(tr => tr.classList.toggle("hidden", collapsing));
             });
 
@@ -368,7 +368,7 @@ const InboundApp = (() => {
 
         const filterInput = Jig.dom.createElement("input", {
             className: "entrypoint-filter",
-            attributes: {type: "search", placeholder: "パスで絞り込み", autocomplete: "off"}
+            attributes: {type: "search", placeholder: filterPlaceholder, autocomplete: "off", "data-i18n-attr": "placeholder"}
         });
         filterInput.addEventListener('input', () => {
             const text = filterInput.value.toLowerCase();
@@ -395,10 +395,13 @@ const InboundApp = (() => {
             allToggleBtn.addEventListener("click", () => {
                 const collapsing = allToggleBtn.getAttribute("aria-expanded") === "true";
                 allToggleBtn.setAttribute("aria-expanded", String(!collapsing));
-                allToggleBtn.querySelector("span").textContent = collapsing ? "全て展開" : "全て折りたたむ";
+                const newKey = collapsing ? "全て展開" : "全て折りたたむ";
+                const span = allToggleBtn.querySelector("span");
+                span.textContent = Jig.i18n.t(newKey);
+                span.setAttribute("data-i18n", newKey);
                 for (const {toggleBtn, dataRows} of groupEntries) {
                     toggleBtn.setAttribute("aria-expanded", String(!collapsing));
-                    toggleBtn.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
+                    toggleBtn.setAttribute("aria-label", Jig.i18n.t(collapsing ? "展開" : "折りたたむ"));
                     dataRows.forEach(tr => tr.classList.toggle("hidden", collapsing));
                 }
             });
@@ -427,7 +430,7 @@ const InboundApp = (() => {
 
         const subSections = [];
 
-        const {label: httpLabel, headers: httpHeaders} = TYPE_CONFIG.find(c => c.type === 'HTTP_API');
+        const {label: httpLabel, headers: httpHeaders, filterPlaceholder: httpFilterPlaceholder} = TYPE_CONFIG.find(c => c.type === 'HTTP_API');
         if (typeRows.HTTP_API.length > 0) {
             const sorted = [...typeRows.HTTP_API].sort((a, b) => {
                 const [, pathA] = splitHttpPath(a.ep.path);
@@ -446,10 +449,10 @@ const InboundApp = (() => {
                 );
             });
 
-            subSections.push(buildGroupedSubSection(httpLabel, httpHeaders, [...groupMap.values()], 'entrypoint-summary--http'));
+            subSections.push(buildGroupedSubSection(httpLabel, httpHeaders, [...groupMap.values()], 'entrypoint-summary--http', httpFilterPlaceholder));
         }
 
-        for (const {type, label, headers} of TYPE_CONFIG.filter(c => c.type !== 'HTTP_API')) {
+        for (const {type, label, headers, filterPlaceholder} of TYPE_CONFIG.filter(c => c.type !== 'HTTP_API')) {
             if (typeRows[type].length === 0) continue;
             const groupMap = new Map();
             typeRows[type].forEach(({ep, cardId, classPath, adapterFqn}) => {
@@ -460,7 +463,7 @@ const InboundApp = (() => {
                     [Jig.dom.createCell(ep.path || ''), methodLinkCell(ep.fqn, cardId)]
                 );
             });
-            subSections.push(buildGroupedSubSection(label, headers, [...groupMap.values()]));
+            subSections.push(buildGroupedSubSection(label, headers, [...groupMap.values()], '', filterPlaceholder));
         }
 
         if (subSections.length === 0) return null;

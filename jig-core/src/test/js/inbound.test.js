@@ -174,6 +174,7 @@ test.describe('inbound.js', () => {
         require('../../main/resources/templates/assets/jig-glossary.js');
         require('../../main/resources/templates/assets/jig-mermaid.js');
         require('../../main/resources/templates/assets/jig-bootstrap.js');
+        globalThis.Jig.i18n = {t: (key) => key};
         globalThis.Jig.dom = {
             createElement,
             createCell: (text, className) => createElement('td', {className: className || undefined, textContent: text}),

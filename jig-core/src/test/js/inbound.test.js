@@ -249,12 +249,12 @@ test.describe('inbound.js', () => {
                 methodsList: createMethodsList,
                 setResolver: () => {},
                 getResolver: () => null,
-                fieldItem: (field) => createElement('div', {className: 'method-item', textContent: field.name}),
+                fieldItem: (field) => createElement('div', {className: 'field-item', textContent: field.name}),
                 fieldsList: (fields) => {
                     if (!fields || fields.length === 0) return null;
                     const section = createElement('section', {className: 'methods-section fields'});
                     fields.forEach(field => {
-                        section.appendChild(createElement('div', {className: 'method-item', textContent: field.name}));
+                        section.appendChild(createElement('div', {className: 'field-item', textContent: field.name}));
                     });
                     return section;
                 },
@@ -1016,7 +1016,7 @@ test.describe('inbound.js', () => {
         assert.ok(orderItemCard, 'OrderItemのカードが存在する');
         assert.equal(orderItemCard.querySelector('h3 span').textContent, 'OrderItem');
 
-        const fieldItem = orderItemCard.querySelector('.method-item');
+        const fieldItem = orderItemCard.querySelector('.field-item');
         assert.ok(fieldItem, 'フィールドアイテムが存在する');
         assert.equal(fieldItem.textContent, 'id');
     });
@@ -1059,7 +1059,7 @@ test.describe('inbound.js', () => {
         assert.equal(orderIdSection.querySelector('.io-type-nested-label').textContent, 'OrderId');
 
         // OrderIdの内部にフィールドが展開される
-        const nestedFieldItem = orderIdSection.querySelector('.method-item');
+        const nestedFieldItem = orderIdSection.querySelector('.field-item');
         assert.ok(nestedFieldItem, 'OrderIdのフィールドアイテムが存在する');
         assert.equal(nestedFieldItem.textContent, 'value');
 
@@ -1069,7 +1069,7 @@ test.describe('inbound.js', () => {
 
         // フィールド行の直後にネストセクションが来る（DOM順序の確認）
         const cardChildren = Array.from(orderItemCard.children);
-        const idFieldIdx    = cardChildren.findIndex(el => el.classList.contains('method-item'));
+        const idFieldIdx    = cardChildren.findIndex(el => el.classList.contains('field-item'));
         const nestedIdx     = cardChildren.findIndex(el => el.classList.contains('io-type-nested'));
         assert.ok(idFieldIdx !== -1 && nestedIdx !== -1, 'フィールドとネストセクションが存在する');
         assert.ok(nestedIdx === idFieldIdx + 1, 'ネストセクションはフィールド行の直後に配置される');

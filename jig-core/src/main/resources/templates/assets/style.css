@@ -373,16 +373,19 @@ main table thead {
     gap: 8px;
 }
 
-.method-item {
+.method-item,
+.field-item {
     padding: 8px 0;
     border-bottom: 1px solid #eef0f5;
 }
 
-.method-item:last-child {
+.method-item:last-child,
+.field-item:last-child {
     border-bottom: none;
 }
 
-.method-signature {
+.method-signature,
+.field-signature {
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
@@ -396,7 +399,14 @@ main table thead {
     white-space: nowrap;
 }
 
-.method-return-sep {
+.field-name {
+    font-weight: bold;
+    color: #1b3a66;
+    white-space: nowrap;
+}
+
+.method-return-sep,
+.field-type-sep {
     margin: 0 4px;
     color: #999;
 }
@@ -630,8 +640,8 @@ td.fqn {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.io-type-card .method-item,
-.io-type-nested .method-item {
+.io-type-card .field-item,
+.io-type-nested .field-item {
     padding: 3px 0;
     border-bottom: none;
 }

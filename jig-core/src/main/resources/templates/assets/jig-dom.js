@@ -244,16 +244,16 @@ globalThis.Jig.dom = (() => {
 
     function createFieldItem(field) {
         return createElement("div", {
-            className: "method-item",
+            className: "field-item",
             children: [
                 createElement("div", {
-                    className: "method-signature",
+                    className: "field-signature",
                     children: [
                         createElement("span", {
-                            className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                            className: "field-name" + (field.isDeprecated ? " deprecated" : ""),
                             textContent: field.name
                         }),
-                        createElement("span", {className: "method-return-sep", textContent: ":"}),
+                        createElement("span", {className: "field-type-sep", textContent: ":"}),
                         createElementForTypeRef(field.typeRef)
                     ]
                 })

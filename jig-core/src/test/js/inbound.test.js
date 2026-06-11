@@ -1121,6 +1121,48 @@ test.describe('inbound.js', () => {
         assert.equal(nestedTypeAInB, null, 'TypeB内にTypeAが再展開されない（無限ループ防止）');
     });
 
+    test('入出力オブジェクトカードに使用するエントリーポイントへのリンクが表示される', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.OrderController",
+                classPath: "/api", relations: [],
+                entrypoints: [{
+                    fqn: "com.example.OrderController#order()",
+                    entrypointType: "HTTP_API",
+                    path: "GET /order",
+                    parameters: [],
+                    returnTypeRef: {fqn: "com.example.OrderItem"}
+                }]
+            }],
+            ioTypes: [
+                {fqn: "com.example.OrderItem", fields: [{name: "id", typeRef: {fqn: "java.lang.Long"}, isDeprecated: false}], isDeprecated: false}
+            ],
+            rootIoTypeFqns: ["com.example.OrderItem"]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""},
+            "com.example.OrderItem": {title: "OrderItem", description: "", kind: "クラス"}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        const orderItemCard = mainList.querySelector('#' + Jig.util.fqnToId('io-type', 'com.example.OrderItem'));
+        assert.ok(orderItemCard, 'OrderItemのカードが存在する');
+
+        const usagesDiv = orderItemCard.querySelector('.io-type-usages');
+        assert.ok(usagesDiv, '使用するエントリーポイントセクションが存在する');
+
+        const usageLinks = usagesDiv.querySelectorAll('a.io-type-usage-link');
+        assert.equal(usageLinks.length, 1, '使用リンクが1件表示される');
+        assert.equal(usageLinks[0].textContent, 'order', 'エントリーポイントのメソッド名が表示される');
+        assert.equal(
+            usageLinks[0].getAttribute('href'),
+            '#' + Jig.util.fqnToId('adapter', 'com.example.OrderController'),
+            'アダプターカードへのリンクになっている'
+        );
+    });
+
     test('ioTypesが空の場合は入出力オブジェクト一覧セクションが描画されない', () => {
         globalThis.inboundData = {
             inboundAdapters: [{

@@ -646,6 +646,35 @@ td.fqn {
     border-bottom: none;
 }
 
+.io-type-usages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 4px 0;
+}
+
+.io-type-usages-label {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #666;
+    white-space: nowrap;
+}
+
+.io-type-usage-link {
+    font-size: 0.85em;
+    color: #2d5fa8;
+    text-decoration: none;
+    background-color: #ebf0fb;
+    border-radius: 3px;
+    padding: 1px 7px;
+}
+
+.io-type-usage-link:hover {
+    text-decoration: underline;
+}
+
 .io-type-nested {
     margin-left: 1em;
     padding-left: 0.75em;

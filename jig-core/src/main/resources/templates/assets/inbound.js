@@ -564,17 +564,37 @@ const InboundApp = (() => {
             container.appendChild(jigCard);
         });
 
-        const ioTypesSection = renderIoTypesSection(state.data.ioTypes || [], state.data.rootIoTypeFqns || []);
+        const ioTypesSection = renderIoTypesSection(state.data.ioTypes || [], state.data.rootIoTypeFqns || [], adapters);
         if (ioTypesSection) container.appendChild(ioTypesSection);
     }
 
-    function renderIoTypesSection(ioTypes, rootIoTypeFqns) {
+    function buildIoTypeUsageMap(rootIoTypeFqns, adapters) {
+        const usageMap = new Map(rootIoTypeFqns.map(fqn => [fqn, []]));
+        adapters.forEach(adapter => {
+            const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn);
+            (adapter.entrypoints || []).forEach(ep => {
+                const allFqns = new Set([
+                    ...Jig.util.collectTypeRefFqns(ep.returnTypeRef),
+                    ...(ep.parameters || []).flatMap(p => Jig.util.collectTypeRefFqns(p.typeRef))
+                ]);
+                rootIoTypeFqns.forEach(rootFqn => {
+                    if (allFqns.has(rootFqn)) {
+                        usageMap.get(rootFqn).push({ep, cardId});
+                    }
+                });
+            });
+        });
+        return usageMap;
+    }
+
+    function renderIoTypesSection(ioTypes, rootIoTypeFqns, adapters = []) {
         if (ioTypes.length === 0) return null;
 
         const ioTypeMap = new Map(ioTypes.map(t => [t.fqn, t]));
         const roots = rootIoTypeFqns.filter(fqn => ioTypeMap.has(fqn));
         if (roots.length === 0) return null;
 
+        const usageMap = buildIoTypeUsageMap(roots, adapters);
         const section = Jig.dom.card.type({id: "io-types", title: "入出力オブジェクト一覧", extraClass: "io-types-section"});
 
         roots.forEach(rootFqn => {
@@ -586,6 +606,21 @@ const InboundApp = (() => {
                 titleSuffix: Jig.glossary.sourceLink(rootFqn),
                 extraClass: 'io-type-card',
             });
+
+            const usages = usageMap.get(rootFqn);
+            if (usages.length > 0) {
+                card.appendChild(Jig.dom.createElement('div', {
+                    className: 'io-type-usages',
+                    children: [
+                        Jig.dom.i18nText('span', '使用するエントリーポイント', {className: 'io-type-usages-label'}),
+                        ...usages.map(({ep, cardId}) => Jig.dom.createElement('a', {
+                            className: 'io-type-usage-link',
+                            textContent: Jig.glossary.getMethodTerm(ep.fqn, true).title,
+                            attributes: {href: '#' + cardId}
+                        }))
+                    ]
+                }));
+            }
 
             const {panels, section: tabSection} = Jig.dom.tab.buildSection(
                 [{id: 'fields', label: 'フィールド'}, {id: 'diagram', label: 'クラス図'}],

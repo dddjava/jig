@@ -247,6 +247,15 @@ test.describe('inbound.js', () => {
             },
             type: {
                 methodsList: createMethodsList,
+                setResolver: () => {},
+                fieldsList: (fields) => {
+                    if (!fields || fields.length === 0) return null;
+                    const section = createElement('section', {className: 'methods-section fields'});
+                    fields.forEach(field => {
+                        section.appendChild(createElement('div', {className: 'method-item', textContent: field.name}));
+                    });
+                    return section;
+                },
                 refElement: (typeRef) => {
                     if (!typeRef) return createElement('span', {});
                     const text = typeRef.fqn.split('.').pop();
@@ -965,8 +974,92 @@ test.describe('inbound.js', () => {
 
         // サイドバーには HttpController のリンクのみ表示
         const sidebar = document.getElementById('inbound-sidebar-list');
+        const fixedLabels = new Set(['エントリーポイント一覧', '入出力オブジェクト一覧']);
         const adapterLinks = Array.from(sidebar.querySelectorAll('a'))
-            .filter(a => a.textContent !== 'エントリーポイント一覧');
+            .filter(a => !fixedLabels.has(a.textContent));
         assert.deepEqual(adapterLinks.map(a => a.textContent), ['HttpController'], 'HttpControllerのみ表示');
+    });
+
+    test('ioTypesがある場合は入出力オブジェクト一覧セクションが描画される', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.OrderController",
+                classPath: "/api", relations: [],
+                entrypoints: [{
+                    fqn: "com.example.OrderController#order()",
+                    entrypointType: "HTTP_API",
+                    path: "GET /order",
+                    parameters: [],
+                    returnTypeRef: {fqn: "com.example.OrderItem"}
+                }]
+            }],
+            ioTypes: [
+                {fqn: "com.example.OrderItem", fields: [{name: "id", typeRef: {fqn: "java.lang.Long"}, isDeprecated: false}], isDeprecated: false}
+            ]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""},
+            "com.example.OrderItem": {title: "OrderItem", description: "", kind: "クラス"}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        const ioTypesSection = mainList.querySelector('#io-types');
+        assert.ok(ioTypesSection, '入出力オブジェクト一覧セクションが存在する');
+        assert.equal(ioTypesSection.querySelector('h3 span').textContent, '入出力オブジェクト一覧');
+
+        const orderItemCard = mainList.querySelector('#' + Jig.util.fqnToId('io-type', 'com.example.OrderItem'));
+        assert.ok(orderItemCard, 'OrderItemのカードが存在する');
+        assert.equal(orderItemCard.querySelector('h3 span').textContent, 'OrderItem');
+
+        const fieldsSection = orderItemCard.querySelector('.methods-section.fields');
+        assert.ok(fieldsSection, 'フィールドセクションが存在する');
+        assert.equal(fieldsSection.querySelector('.method-item').textContent, 'id');
+    });
+
+    test('ioTypesが空の場合は入出力オブジェクト一覧セクションが描画されない', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.OrderController",
+                classPath: "/api", relations: [],
+                entrypoints: [{
+                    fqn: "com.example.OrderController#order()",
+                    entrypointType: "HTTP_API",
+                    path: "GET /order",
+                    parameters: [],
+                    returnTypeRef: {fqn: "java.lang.String"}
+                }]
+            }],
+            ioTypes: []
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        const ioTypesSection = mainList.querySelector('#io-types');
+        assert.equal(ioTypesSection, null, '入出力オブジェクト一覧セクションは存在しない');
+    });
+
+    test('サイドバーに入出力オブジェクト一覧リンクが表示される', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.OrderController",
+                classPath: "/api", relations: [],
+                entrypoints: [{fqn: "com.example.OrderController#order()", entrypointType: "HTTP_API", path: "GET /order"}]
+            }],
+            ioTypes: []
+        };
+        setGlossaryData({"com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"}, "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""}});
+        InboundApp.init();
+
+        const sidebar = document.getElementById('inbound-sidebar-list');
+        const links = Array.from(sidebar.querySelectorAll('a'));
+        const ioLink = links.find(a => a.textContent === '入出力オブジェクト一覧');
+        assert.ok(ioLink, '入出力オブジェクト一覧リンクが存在する');
+        assert.equal(ioLink.getAttribute('href'), '#io-types');
     });
 });

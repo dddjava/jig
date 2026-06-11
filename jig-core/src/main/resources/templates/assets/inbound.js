@@ -151,6 +151,7 @@ const InboundApp = (() => {
 
         initDisplayTypeSettings();
         initSimplifiedSetting();
+        initIoTypeLinkResolver();
 
         render();
     }
@@ -221,6 +222,15 @@ const InboundApp = (() => {
         }));
     }
 
+    function initIoTypeLinkResolver() {
+        const ioTypeFqns = new Set((state.data.ioTypes || []).map(t => t.fqn));
+        const baseResolver = Jig.data.createTypeLinkResolver();
+        Jig.dom.type.setResolver(fqn => {
+            if (ioTypeFqns.has(fqn)) return {href: '#' + Jig.util.fqnToId('io-type', fqn)};
+            return baseResolver ? baseResolver(fqn) : null;
+        });
+    }
+
     function render() {
         const adapters = filteredAdapters();
         renderSidebar(adapters);
@@ -232,7 +242,10 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        Jig.dom.sidebar.renderSection(sidebar, null, [{id: "entrypoint-summary", label: "エントリーポイント一覧"}]);
+        Jig.dom.sidebar.renderSection(sidebar, null, [
+            {id: "entrypoint-summary", label: "エントリーポイント一覧"},
+            {id: "io-types", label: "入出力オブジェクト一覧"},
+        ]);
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
@@ -550,6 +563,32 @@ const InboundApp = (() => {
 
             container.appendChild(jigCard);
         });
+
+        const ioTypesSection = renderIoTypesSection(state.data.ioTypes || []);
+        if (ioTypesSection) container.appendChild(ioTypesSection);
+    }
+
+    function renderIoTypesSection(ioTypes) {
+        if (ioTypes.length === 0) return null;
+
+        const section = Jig.dom.card.type({id: "io-types", title: "入出力オブジェクト一覧", extraClass: "io-types-section"});
+
+        ioTypes.forEach(t => {
+            const typeTerm = Jig.glossary.getTypeTerm(t.fqn);
+            const typeCard = Jig.dom.card.type({
+                id: Jig.util.fqnToId('io-type', t.fqn),
+                title: typeTerm.title,
+                fqn: t.fqn,
+                titleSuffix: Jig.glossary.sourceLink(t.fqn),
+            });
+
+            const fieldsList = Jig.dom.type.fieldsList(t.fields || []);
+            if (fieldsList) typeCard.appendChild(fieldsList);
+
+            section.appendChild(typeCard);
+        });
+
+        return section;
     }
 
     return {
@@ -559,6 +598,7 @@ const InboundApp = (() => {
         renderSidebar,
         renderSummaryTable,
         renderMain,
+        renderIoTypesSection,
     };
 })();
 

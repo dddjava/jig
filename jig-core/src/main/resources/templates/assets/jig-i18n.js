@@ -155,6 +155,7 @@ globalThis.Jig.i18n = (() => {
             "永続化操作対象": "Persistence targets",
             "外部型": "External types",
             "エントリーポイント一覧": "Entry points",
+            "入出力オブジェクト一覧": "I/O objects",
         },
     };
 

@@ -366,6 +366,16 @@ const InboundApp = (() => {
             groupEntries.push({headerRow, dataRows, toggleBtn});
         });
 
+        const totalRows = groupEntries.reduce((sum, {dataRows}) => sum + dataRows.length, 0);
+        const autoCollapse = totalRows > 10;
+        if (autoCollapse) {
+            for (const {dataRows, toggleBtn} of groupEntries) {
+                dataRows.forEach(tr => tr.classList.add("hidden"));
+                toggleBtn.setAttribute("aria-expanded", "false");
+                toggleBtn.setAttribute("aria-label", Jig.i18n.t("展開"));
+            }
+        }
+
         const filterInput = Jig.dom.createElement("input", {
             className: "entrypoint-filter",
             attributes: {type: "search", placeholder: filterPlaceholder, autocomplete: "off", "data-i18n-attr": "placeholder"}
@@ -389,8 +399,8 @@ const InboundApp = (() => {
         if (groups.length > 1) {
             const allToggleBtn = Jig.dom.createElement("button", {
                 className: "controller-group-toggle-all",
-                attributes: {"aria-expanded": "true"},
-                children: [Jig.dom.i18nText("span", "全て折りたたむ")]
+                attributes: {"aria-expanded": String(!autoCollapse)},
+                children: [Jig.dom.i18nText("span", autoCollapse ? "全て展開" : "全て折りたたむ")]
             });
             allToggleBtn.addEventListener("click", () => {
                 const collapsing = allToggleBtn.getAttribute("aria-expanded") === "true";

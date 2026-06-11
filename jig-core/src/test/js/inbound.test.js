@@ -705,6 +705,80 @@ test.describe('inbound.js', () => {
         assert.ok(!summaryCard.querySelector('.controller-group-toggle-all'), '一括開閉ボタンは表示されない');
     });
 
+    test('エントリーポイント数が10を超える場合は初期表示で折りたたまれる', () => {
+        const entrypoints = Array.from({length: 11}, (_, i) => ({
+            fqn: `com.example.ControllerA#method${i}()`,
+            entrypointType: "HTTP_API",
+            path: `GET /method${i}`
+        }));
+        globalThis.inboundData = {
+            inboundAdapters: [{fqn: "com.example.ControllerA", classPath: "/api", relations: [], entrypoints}]
+        };
+        const glossary = {"com.example.ControllerA": {title: "ControllerA", description: "", kind: "クラス"}};
+        entrypoints.forEach(ep => { glossary[ep.fqn] = {title: ep.fqn.split('#')[1], simpleText: ep.fqn.split('#')[1], kind: "メソッド", description: ""}; });
+        setGlossaryData(glossary);
+        InboundApp.init();
+
+        const summaryTable = document.getElementById('inbound-list').querySelector('table.entrypoint-summary--http');
+        const dataRows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
+        assert.equal(dataRows.length, 11);
+        dataRows.forEach(tr => assert.ok(tr.classList.has('hidden'), '初期表示で折りたたまれている'));
+
+        const toggleBtn = summaryTable.querySelector('.controller-group-toggle');
+        assert.equal(toggleBtn.getAttribute('aria-expanded'), 'false', '初期状態は折りたたみ');
+        assert.equal(toggleBtn.getAttribute('aria-label'), '展開');
+    });
+
+    test('エントリーポイント数が10以下の場合は初期表示で展開される', () => {
+        const entrypoints = Array.from({length: 10}, (_, i) => ({
+            fqn: `com.example.ControllerA#method${i}()`,
+            entrypointType: "HTTP_API",
+            path: `GET /method${i}`
+        }));
+        globalThis.inboundData = {
+            inboundAdapters: [{fqn: "com.example.ControllerA", classPath: "/api", relations: [], entrypoints}]
+        };
+        const glossary = {"com.example.ControllerA": {title: "ControllerA", description: "", kind: "クラス"}};
+        entrypoints.forEach(ep => { glossary[ep.fqn] = {title: ep.fqn.split('#')[1], simpleText: ep.fqn.split('#')[1], kind: "メソッド", description: ""}; });
+        setGlossaryData(glossary);
+        InboundApp.init();
+
+        const summaryTable = document.getElementById('inbound-list').querySelector('table.entrypoint-summary--http');
+        const dataRows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
+        dataRows.forEach(tr => assert.ok(!tr.classList.has('hidden'), '初期表示で展開されている'));
+
+        const toggleBtn = summaryTable.querySelector('.controller-group-toggle');
+        assert.equal(toggleBtn.getAttribute('aria-expanded'), 'true', '初期状態は展開');
+    });
+
+    test('エントリーポイント数が10を超える場合、複数グループある時の一括ボタンは「全て展開」になる', () => {
+        const makeEntrypoints = (prefix, n) => Array.from({length: n}, (_, i) => ({
+            fqn: `com.example.${prefix}#method${i}()`,
+            entrypointType: "HTTP_API",
+            path: `GET /${prefix.toLowerCase()}/${i}`
+        }));
+        const ep1 = makeEntrypoints("ControllerA", 6);
+        const ep2 = makeEntrypoints("ControllerB", 6);
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {fqn: "com.example.ControllerA", classPath: "/a", relations: [], entrypoints: ep1},
+                {fqn: "com.example.ControllerB", classPath: "/b", relations: [], entrypoints: ep2}
+            ]
+        };
+        const glossary = {
+            "com.example.ControllerA": {title: "ControllerA", description: "", kind: "クラス"},
+            "com.example.ControllerB": {title: "ControllerB", description: "", kind: "クラス"}
+        };
+        [...ep1, ...ep2].forEach(ep => { glossary[ep.fqn] = {title: ep.fqn.split('#')[1], simpleText: ep.fqn.split('#')[1], kind: "メソッド", description: ""}; });
+        setGlossaryData(glossary);
+        InboundApp.init();
+
+        const summaryCard = document.getElementById('inbound-list').querySelector('.entrypoint-summary-section');
+        const allToggleBtn = summaryCard.querySelector('.controller-group-toggle-all');
+        assert.equal(allToggleBtn.getAttribute('aria-expanded'), 'false', '初期状態は折りたたみ');
+        assert.equal(allToggleBtn.querySelector('span').textContent, '全て展開');
+    });
+
     test('QUEUE_LISTENERもController単位でグループ化される', () => {
         globalThis.inboundData = {
             inboundAdapters: [

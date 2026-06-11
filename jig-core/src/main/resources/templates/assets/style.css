@@ -2252,6 +2252,60 @@ p.jig-data-warning {
     width: 5em;
 }
 
+.controller-group-header > td {
+    background-color: #edf1fa;
+    padding: 4px 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.controller-group-header > td > a {
+    color: #1b3a66;
+    text-decoration: none;
+    flex: 1;
+}
+
+.controller-group-header > td > a:hover {
+    text-decoration: underline;
+}
+
+.controller-group-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #5a7a9a;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.controller-group-toggle::before {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+    margin-top: -3px;
+}
+
+.controller-group-toggle[aria-expanded="false"]::before {
+    transform: rotate(-45deg);
+    margin-top: 0;
+}
+
+.entrypoint-summary tr.hidden {
+    display: none;
+}
+
 /* 外部依存図で選択中の表行（共通の package-relation スタイルに上乗せ） */
 .library-dependency tr.is-selected {
     background-color: #cfe9ff !important;

@@ -314,7 +314,14 @@ test.describe('inbound.js', () => {
         assert.equal(summaryCard.querySelector('h4').textContent, 'リクエストハンドラ');
         const summaryTable = summaryCard.querySelector('table.entrypoint-summary');
         assert.ok(summaryTable);
-        const rows = summaryTable.querySelectorAll('tbody tr');
+        // Controller グループヘッダー行の確認
+        const groupHeaders = summaryTable.querySelectorAll('tr.controller-group-header');
+        assert.equal(groupHeaders.length, 1);
+        assert.equal(groupHeaders[0].querySelector('a').textContent, 'ControllerA');
+        assert.ok(groupHeaders[0].querySelector('a').getAttribute('href').startsWith('#'));
+        assert.ok(groupHeaders[0].querySelector('button.controller-group-toggle'));
+        // データ行の確認（グループヘッダー行を除外）
+        const rows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
         assert.equal(rows.length, 1);
         const cells = rows[0].children;
         assert.equal(cells[0].textContent, '/api/method1'); // クラスパス+メソッドパス
@@ -480,19 +487,162 @@ test.describe('inbound.js', () => {
         const filterInput = document.getElementById('inbound-list').querySelector('input.entrypoint-filter');
         assert.ok(filterInput, 'フィルター入力欄が存在する');
 
-        const tbody = document.getElementById('inbound-list').querySelector('table.entrypoint-summary tbody');
-        assert.equal(tbody.children.length, 2);
+        const summaryTable = document.getElementById('inbound-list').querySelector('table.entrypoint-summary');
+        const dataRows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
+        assert.equal(dataRows.length, 2);
 
         filterInput.value = 'user';
         filterInput.dispatchEvent(new EventStub('input'));
 
         // パス昇順ソート: /api/orders → /api/users
-        assert.equal(tbody.children[0].style.display, 'none', '/api/orders はマッチしないので非表示');
-        assert.equal(tbody.children[1].style.display, '', '/api/users はマッチするので表示');
+        assert.equal(dataRows[0].style.display, 'none', '/api/orders はマッチしないので非表示');
+        assert.equal(dataRows[1].style.display, '', '/api/users はマッチするので表示');
 
         filterInput.value = '';
         filterInput.dispatchEvent(new EventStub('input'));
-        assert.equal(tbody.children[0].style.display, '', 'クリアすると全行表示');
+        assert.equal(dataRows[0].style.display, '', 'クリアすると全行表示');
+    });
+
+    test('フィルターで全データ行が非表示になったグループのヘッダー行も非表示になる', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.OrderController",
+                    classPath: "/orders",
+                    relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /"}
+                    ]
+                },
+                {
+                    fqn: "com.example.UserController",
+                    classPath: "/users",
+                    relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /"}
+                    ]
+                }
+            ]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#list()": {title: "list", simpleText: "list", kind: "メソッド", description: ""},
+            "com.example.UserController": {title: "UserController", description: "", kind: "クラス"},
+            "com.example.UserController#list()": {title: "list", simpleText: "list", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const summaryTable = document.getElementById('inbound-list').querySelector('table.entrypoint-summary--http');
+        const filterInput = document.getElementById('inbound-list').querySelector('input.entrypoint-filter');
+        const groupHeaders = summaryTable.querySelectorAll('tr.controller-group-header');
+        assert.equal(groupHeaders.length, 2);
+
+        // /users にマッチ → OrderController の全データ行が非表示になる
+        filterInput.value = 'users';
+        filterInput.dispatchEvent(new EventStub('input'));
+
+        // OrderController (/orders/) のヘッダーは非表示
+        const orderHeader = Array.from(groupHeaders).find(h => h.querySelector('a').textContent === 'OrderController');
+        assert.equal(orderHeader.style.display, 'none', '全行非表示のグループヘッダーも非表示');
+
+        // UserController (/users/) のヘッダーは表示
+        const userHeader = Array.from(groupHeaders).find(h => h.querySelector('a').textContent === 'UserController');
+        assert.equal(userHeader.style.display, '', '一致行があるグループヘッダーは表示');
+
+        // フィルタークリアで全ヘッダーが復元
+        filterInput.value = '';
+        filterInput.dispatchEvent(new EventStub('input'));
+        assert.equal(orderHeader.style.display, '', 'クリアするとヘッダーも復元');
+    });
+
+    test('複数ControllerのHTTP_APIはController単位でグループ化される', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.OrderController",
+                    classPath: "/orders",
+                    relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /"},
+                        {fqn: "com.example.OrderController#get()", entrypointType: "HTTP_API", path: "GET /{id}"}
+                    ]
+                },
+                {
+                    fqn: "com.example.UserController",
+                    classPath: "/users",
+                    relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /"}
+                    ]
+                }
+            ]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#list()": {title: "list", simpleText: "list", kind: "メソッド", description: ""},
+            "com.example.OrderController#get()": {title: "get", simpleText: "get", kind: "メソッド", description: ""},
+            "com.example.UserController": {title: "UserController", description: "", kind: "クラス"},
+            "com.example.UserController#list()": {title: "list", simpleText: "list", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const summaryTable = document.getElementById('inbound-list').querySelector('table.entrypoint-summary--http');
+        assert.ok(summaryTable, 'テーブルが存在する');
+
+        const groupHeaders = summaryTable.querySelectorAll('tr.controller-group-header');
+        assert.equal(groupHeaders.length, 2, 'Controller数分のグループヘッダーが存在する');
+
+        const headerLabels = Array.from(groupHeaders).map(h => h.querySelector('a').textContent);
+        assert.ok(headerLabels.includes('OrderController'), 'OrderControllerのヘッダーが存在する');
+        assert.ok(headerLabels.includes('UserController'), 'UserControllerのヘッダーが存在する');
+
+        const dataRows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
+        assert.equal(dataRows.length, 3, 'データ行は全エントリーポイント数分');
+
+        // tbody が2つ存在し、それぞれにデータ行がグループ化されている
+        const tbodies = summaryTable.querySelectorAll('tbody');
+        assert.equal(tbodies.length, 2, 'tbody がController数分存在する');
+    });
+
+    test('Controller グループのトグルボタンでデータ行を開閉できる', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.ControllerA",
+                classPath: "/api",
+                relations: [],
+                entrypoints: [
+                    {fqn: "com.example.ControllerA#methodA()", entrypointType: "HTTP_API", path: "GET /a"},
+                    {fqn: "com.example.ControllerA#methodB()", entrypointType: "HTTP_API", path: "GET /b"}
+                ]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ControllerA": {title: "ControllerA", description: "", kind: "クラス"},
+            "com.example.ControllerA#methodA()": {title: "methodA", simpleText: "methodA", kind: "メソッド", description: ""},
+            "com.example.ControllerA#methodB()": {title: "methodB", simpleText: "methodB", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const summaryTable = document.getElementById('inbound-list').querySelector('table.entrypoint-summary--http');
+        const toggleBtn = summaryTable.querySelector('.controller-group-toggle');
+        assert.ok(toggleBtn, 'トグルボタンが存在する');
+        assert.equal(toggleBtn.getAttribute('aria-expanded'), 'true', '初期状態は展開');
+
+        const dataRows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
+        assert.equal(dataRows.length, 2);
+        dataRows.forEach(tr => assert.ok(!tr.classList.has('hidden'), '初期状態はhiddenクラスなし'));
+
+        // 折りたたむ
+        toggleBtn.dispatchEvent(new EventStub('click'));
+        assert.equal(toggleBtn.getAttribute('aria-expanded'), 'false', 'クリック後はaria-expanded=false');
+        assert.equal(toggleBtn.getAttribute('aria-label'), '展開', 'ラベルが「展開」に変わる');
+        dataRows.forEach(tr => assert.ok(tr.classList.has('hidden'), '折りたたみ後はhiddenクラスあり'));
+
+        // 展開
+        toggleBtn.dispatchEvent(new EventStub('click'));
+        assert.equal(toggleBtn.getAttribute('aria-expanded'), 'true', '再クリックでaria-expanded=true');
+        assert.equal(toggleBtn.getAttribute('aria-label'), '折りたたむ', 'ラベルが「折りたたむ」に戻る');
+        dataRows.forEach(tr => assert.ok(!tr.classList.has('hidden'), '展開後はhiddenクラスなし'));
     });
 
     test('簡略表示チェックボックスで入出力セクションを非表示にできる', () => {

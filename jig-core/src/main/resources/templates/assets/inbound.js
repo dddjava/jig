@@ -325,9 +325,54 @@ const InboundApp = (() => {
         return card;
     }
 
-    function buildHttpSubSection(rows) {
-        const tbody = Jig.dom.createElement("tbody", {
-            children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
+    function buildHttpSubSection(groups) {
+        const table = Jig.dom.createElement("table", {
+            className: "entrypoint-summary entrypoint-summary--http",
+            children: [
+                Jig.dom.createElement("thead", {
+                    children: [Jig.dom.createElement("tr", {
+                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.i18nText("th", h))
+                    })]
+                })
+            ]
+        });
+
+        const groupEntries = [];
+
+        groups.forEach(({adapterFqn, cardId, rows}) => {
+            const dataRows = rows.map(cells => Jig.dom.createElement("tr", {children: cells}));
+            const tbody = Jig.dom.createElement("tbody");
+
+            const toggleBtn = Jig.dom.createElement("button", {
+                className: "controller-group-toggle",
+                attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
+            });
+            toggleBtn.addEventListener("click", () => {
+                const collapsing = toggleBtn.getAttribute("aria-expanded") === "true";
+                toggleBtn.setAttribute("aria-expanded", String(!collapsing));
+                toggleBtn.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
+                dataRows.forEach(tr => tr.classList.toggle("hidden", collapsing));
+            });
+
+            const controllerLabel = Jig.glossary.getTypeTerm(adapterFqn).title;
+            const headerRow = Jig.dom.createElement("tr", {
+                className: "controller-group-header",
+                children: [Jig.dom.createElement("td", {
+                    attributes: {colspan: "3"},
+                    children: [
+                        Jig.dom.createElement("a", {
+                            textContent: controllerLabel,
+                            attributes: {href: '#' + cardId}
+                        }),
+                        toggleBtn
+                    ]
+                })]
+            });
+
+            tbody.appendChild(headerRow);
+            dataRows.forEach(tr => tbody.appendChild(tr));
+            table.appendChild(tbody);
+            groupEntries.push({headerRow, dataRows});
         });
 
         const filterInput = Jig.dom.createElement("input", {
@@ -336,25 +381,21 @@ const InboundApp = (() => {
         });
         filterInput.addEventListener('input', () => {
             const text = filterInput.value.toLowerCase();
-            for (const tr of tbody.children) {
-                const path = (tr.children[0]?.textContent || '').toLowerCase();
-                tr.style.display = text && !path.includes(text) ? 'none' : '';
+            for (const {headerRow, dataRows} of groupEntries) {
+                let anyVisible = false;
+                for (const tr of dataRows) {
+                    const path = (tr.children[0].textContent || '').toLowerCase();
+                    const hidden = text && !path.includes(text);
+                    tr.style.display = hidden ? 'none' : '';
+                    if (!hidden) anyVisible = true;
+                }
+                headerRow.style.display = text && !anyVisible ? 'none' : '';
             }
         });
 
         const card = Jig.dom.card.item({title: 'リクエストハンドラ'});
         card.appendChild(filterInput);
-        card.appendChild(Jig.dom.createElement("table", {
-            className: "entrypoint-summary entrypoint-summary--http",
-            children: [
-                Jig.dom.createElement("thead", {
-                    children: [Jig.dom.createElement("tr", {
-                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.i18nText("th", h))
-                    })]
-                }),
-                tbody
-            ]
-        }));
+        card.appendChild(table);
         return card;
     }
 
@@ -365,7 +406,7 @@ const InboundApp = (() => {
             const cardId = Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn);
             const classPath = adapter.classPath || '';
             (adapter.entrypoints || []).forEach(ep => {
-                if (typeRows[ep.entrypointType]) typeRows[ep.entrypointType].push({ep, cardId, classPath});
+                if (typeRows[ep.entrypointType]) typeRows[ep.entrypointType].push({ep, cardId, classPath, adapterFqn: adapter.fqn});
             });
         });
 
@@ -377,12 +418,19 @@ const InboundApp = (() => {
                 const [, pathB] = splitHttpPath(b.ep.path);
                 return (a.classPath + pathA).localeCompare(b.classPath + pathB);
             });
-            subSections.push(buildHttpSubSection(
-                sorted.map(({ep, cardId, classPath}) => {
-                    const [method, path] = splitHttpPath(ep.path);
-                    return [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)];
-                })
-            ));
+
+            const groupMap = new Map();
+            sorted.forEach(({ep, cardId, classPath, adapterFqn}) => {
+                if (!groupMap.has(adapterFqn)) {
+                    groupMap.set(adapterFqn, {adapterFqn, cardId, rows: []});
+                }
+                const [method, path] = splitHttpPath(ep.path);
+                groupMap.get(adapterFqn).rows.push(
+                    [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)]
+                );
+            });
+
+            subSections.push(buildHttpSubSection([...groupMap.values()]));
         }
 
         for (const {type, label} of TYPE_CONFIG.filter(c => c.type !== 'HTTP_API')) {

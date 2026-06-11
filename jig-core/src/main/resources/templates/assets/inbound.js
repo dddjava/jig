@@ -376,7 +376,10 @@ const InboundApp = (() => {
                 className: "controller-group-header",
                 children: [Jig.dom.createElement("td", {
                     attributes: {colspan: "3"},
-                    children: headerChildren
+                    children: [Jig.dom.createElement("div", {
+                        className: "controller-group-header__inner",
+                        children: headerChildren
+                    })]
                 })]
             });
 

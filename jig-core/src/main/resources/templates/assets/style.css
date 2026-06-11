@@ -2284,18 +2284,20 @@ p.jig-data-warning {
     padding: 4px 8px;
     font-size: 0.85em;
     font-weight: 600;
+}
+
+.controller-group-header__inner {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
-.controller-group-header > td > a {
+.controller-group-header__inner > a {
     color: #1b3a66;
     text-decoration: none;
-    flex: 1;
 }
 
-.controller-group-header > td > a:hover {
+.controller-group-header__inner > a:hover {
     text-decoration: underline;
 }
 

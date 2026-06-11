@@ -379,7 +379,7 @@ const InboundApp = (() => {
             tbody.appendChild(headerRow);
             dataRows.forEach(tr => tbody.appendChild(tr));
             table.appendChild(tbody);
-            groupEntries.push({headerRow, dataRows});
+            groupEntries.push({headerRow, dataRows, toggleBtn});
         });
 
         const filterInput = Jig.dom.createElement("input", {
@@ -401,7 +401,31 @@ const InboundApp = (() => {
         });
 
         const card = Jig.dom.card.item({title: 'リクエストハンドラ'});
-        card.appendChild(filterInput);
+
+        if (groups.length > 1) {
+            const allToggleBtn = Jig.dom.createElement("button", {
+                className: "controller-group-toggle-all",
+                attributes: {"aria-expanded": "true"},
+                children: [Jig.dom.i18nText("span", "全て折りたたむ")]
+            });
+            allToggleBtn.addEventListener("click", () => {
+                const collapsing = allToggleBtn.getAttribute("aria-expanded") === "true";
+                allToggleBtn.setAttribute("aria-expanded", String(!collapsing));
+                allToggleBtn.querySelector("span").textContent = collapsing ? "全て展開" : "全て折りたたむ";
+                for (const {toggleBtn, dataRows} of groupEntries) {
+                    toggleBtn.setAttribute("aria-expanded", String(!collapsing));
+                    toggleBtn.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
+                    dataRows.forEach(tr => tr.classList.toggle("hidden", collapsing));
+                }
+            });
+            card.appendChild(Jig.dom.createElement("div", {
+                className: "entrypoint-filter-row",
+                children: [filterInput, allToggleBtn]
+            }));
+        } else {
+            card.appendChild(filterInput);
+        }
+
         card.appendChild(table);
         return card;
     }

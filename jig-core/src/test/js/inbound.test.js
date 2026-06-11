@@ -646,6 +646,63 @@ test.describe('inbound.js', () => {
         dataRows.forEach(tr => assert.ok(!tr.classList.has('hidden'), '展開後はhiddenクラスなし'));
     });
 
+    test('複数Controllerがある場合に一括開閉ボタンが表示される', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.OrderController",
+                    classPath: "/orders", relations: [],
+                    entrypoints: [{fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /"}]
+                },
+                {
+                    fqn: "com.example.UserController",
+                    classPath: "/users", relations: [],
+                    entrypoints: [{fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /"}]
+                }
+            ]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#list()": {title: "list", simpleText: "list", kind: "メソッド", description: ""},
+            "com.example.UserController": {title: "UserController", description: "", kind: "クラス"},
+            "com.example.UserController#list()": {title: "list", simpleText: "list", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const summaryCard = document.getElementById('inbound-list').querySelector('.entrypoint-summary-section');
+        const allToggleBtn = summaryCard.querySelector('.controller-group-toggle-all');
+        assert.ok(allToggleBtn, '一括開閉ボタンが存在する');
+        assert.equal(allToggleBtn.getAttribute('aria-expanded'), 'true', '初期状態は展開');
+        assert.equal(allToggleBtn.querySelector('span').textContent, '全て折りたたむ');
+
+        const summaryTable = summaryCard.querySelector('table.entrypoint-summary--http');
+        const dataRows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
+        const individualToggles = summaryTable.querySelectorAll('.controller-group-toggle');
+
+        // 一括折りたたみ
+        allToggleBtn.dispatchEvent(new EventStub('click'));
+        assert.equal(allToggleBtn.getAttribute('aria-expanded'), 'false');
+        assert.equal(allToggleBtn.querySelector('span').textContent, '全て展開');
+        dataRows.forEach(tr => assert.ok(tr.classList.has('hidden'), '全データ行が折りたたまれる'));
+        individualToggles.forEach(btn => assert.equal(btn.getAttribute('aria-expanded'), 'false', '個別トグルも同期される'));
+
+        // 一括展開
+        allToggleBtn.dispatchEvent(new EventStub('click'));
+        assert.equal(allToggleBtn.getAttribute('aria-expanded'), 'true');
+        assert.equal(allToggleBtn.querySelector('span').textContent, '全て折りたたむ');
+        dataRows.forEach(tr => assert.ok(!tr.classList.has('hidden'), '全データ行が展開される'));
+        individualToggles.forEach(btn => assert.equal(btn.getAttribute('aria-expanded'), 'true', '個別トグルも同期される'));
+    });
+
+    test('Controllerが1件の場合は一括開閉ボタンが表示されない', () => {
+        globalThis.inboundData = mockInboundData;
+        setGlossaryData(mockGlossaryData);
+        InboundApp.init();
+
+        const summaryCard = document.getElementById('inbound-list').querySelector('.entrypoint-summary-section');
+        assert.ok(!summaryCard.querySelector('.controller-group-toggle-all'), '一括開閉ボタンは表示されない');
+    });
+
     test('簡略表示チェックボックスで入出力セクションを非表示にできる', () => {
         globalThis.inboundData = mockInboundData;
         setGlossaryData(mockGlossaryData);

@@ -2252,6 +2252,33 @@ p.jig-data-warning {
     width: 5em;
 }
 
+.entrypoint-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.entrypoint-filter-row .entrypoint-filter {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.controller-group-toggle-all {
+    white-space: nowrap;
+    background: none;
+    border: 1px solid #d4d9e5;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 3px 8px;
+    font-size: 0.85em;
+    color: #5a7a9a;
+}
+
+.controller-group-toggle-all:hover {
+    background-color: #edf1fa;
+}
+
 .controller-group-header > td {
     background-color: #edf1fa;
     padding: 4px 8px;

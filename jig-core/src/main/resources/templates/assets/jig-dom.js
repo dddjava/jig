@@ -57,7 +57,9 @@ globalThis.Jig.dom = (() => {
      * children を伴う複合要素や label の mixed content では createElement に i18n: true を直接渡す。
      */
     function i18nText(tagName, key, options = {}) {
-        return createElement(tagName, {...options, textContent: key, i18n: true});
+        const el = createElement(tagName, {...options, textContent: key, i18n: true});
+        el.dataset.i18nOriginal = key;
+        return el;
     }
 
     // --- Markdown ---

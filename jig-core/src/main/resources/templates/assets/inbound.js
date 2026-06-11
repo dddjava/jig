@@ -4,10 +4,10 @@ const InboundApp = (() => {
     const ADAPTER_ID_PREFIX = "adapter";
 
     const TYPE_CONFIG = [
-        {type: 'HTTP_API',       label: 'リクエストハンドラ'},
-        {type: 'QUEUE_LISTENER', label: 'メッセージリスナー'},
-        {type: 'SCHEDULER',      label: 'スケジューラー'},
-        {type: 'OTHER',          label: 'その他'},
+        {type: 'HTTP_API',       label: 'リクエストハンドラ', headers: ['パス', 'メソッド', 'ハンドラ']},
+        {type: 'QUEUE_LISTENER', label: 'メッセージリスナー', headers: ['購読先', 'ハンドラ']},
+        {type: 'SCHEDULER',      label: 'スケジューラー',     headers: ['スケジュール', 'ハンドラ']},
+        {type: 'OTHER',          label: 'その他',             headers: ['パス', 'ハンドラ']},
     ];
 
     const INITIAL_STATE = {
@@ -427,6 +427,7 @@ const InboundApp = (() => {
 
         const subSections = [];
 
+        const {label: httpLabel, headers: httpHeaders} = TYPE_CONFIG.find(c => c.type === 'HTTP_API');
         if (typeRows.HTTP_API.length > 0) {
             const sorted = [...typeRows.HTTP_API].sort((a, b) => {
                 const [, pathA] = splitHttpPath(a.ep.path);
@@ -445,10 +446,10 @@ const InboundApp = (() => {
                 );
             });
 
-            subSections.push(buildGroupedSubSection('リクエストハンドラ', ['パス', 'メソッド', 'エントリーポイント'], [...groupMap.values()], 'entrypoint-summary--http'));
+            subSections.push(buildGroupedSubSection(httpLabel, httpHeaders, [...groupMap.values()], 'entrypoint-summary--http'));
         }
 
-        for (const {type, label} of TYPE_CONFIG.filter(c => c.type !== 'HTTP_API')) {
+        for (const {type, label, headers} of TYPE_CONFIG.filter(c => c.type !== 'HTTP_API')) {
             if (typeRows[type].length === 0) continue;
             const groupMap = new Map();
             typeRows[type].forEach(({ep, cardId, classPath, adapterFqn}) => {
@@ -459,7 +460,7 @@ const InboundApp = (() => {
                     [Jig.dom.createCell(ep.path || ''), methodLinkCell(ep.fqn, cardId)]
                 );
             });
-            subSections.push(buildGroupedSubSection(label, ['パス', 'エントリーポイント'], [...groupMap.values()]));
+            subSections.push(buildGroupedSubSection(label, headers, [...groupMap.values()]));
         }
 
         if (subSections.length === 0) return null;

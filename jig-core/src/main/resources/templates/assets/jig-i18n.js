@@ -113,6 +113,9 @@ globalThis.Jig.i18n = (() => {
             "列挙定数名": "Enum constant",
             "パス": "Path",
             "エントリーポイント": "Entry point",
+            "ハンドラ": "Handler",
+            "購読先": "Subscription",
+            "スケジュール": "Schedule",
             "出力ポート / 操作": "Outbound port / operation",
             "列挙値": "Enum values",
             // glossary attribute meta

@@ -510,6 +510,87 @@ const PackageApp = (() => {
         container.appendChild(details);
     }
 
+    function selectOuterRoots(mutualPairLabel) {
+        const pairPackages = typeof mutualPairLabel === 'string'
+            ? mutualPairLabel.split(' <-> ').map(value => value.trim()).filter(value => value)
+            : [];
+        const uniquePairPackages = [...new Set(pairPackages)];
+        const collapsedPairPackages = new Set(
+            uniquePairPackages.filter(packageFqn =>
+                uniquePairPackages.some(other => other !== packageFqn && packageFqn.startsWith(`${other}.`))
+            )
+        );
+        return uniquePairPackages
+            .filter(packageFqn => packageFqn && packageFqn !== '(default)' && !collapsedPairPackages.has(packageFqn))
+            .slice(0, 2);
+    }
+
+    function buildPackageAdjacency(edges) {
+        const adjacency = new Map();
+        edges.forEach(({from, to}) => {
+            const pkgFrom = Jig.util.getPackageFqnFromTypeFqn(from);
+            const pkgTo = Jig.util.getPackageFqnFromTypeFqn(to);
+            if (!pkgFrom || !pkgTo || pkgFrom === pkgTo) return;
+            Jig.util.addToSetMap(adjacency, pkgFrom, pkgTo);
+            Jig.util.addToSetMap(adjacency, pkgTo, pkgFrom);
+        });
+        return adjacency;
+    }
+
+    function bfsDistance(start, goal, adjacency) {
+        if (!start || !goal) return Number.POSITIVE_INFINITY;
+        if (start === goal) return 0;
+        const queue = [{node: start, distance: 0}];
+        const visited = new Set([start]);
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const adjacent = adjacency.get(current.node);
+            if (!adjacent) continue;
+            for (const next of adjacent) {
+                if (visited.has(next)) continue;
+                if (next === goal) return current.distance + 1;
+                visited.add(next);
+                queue.push({node: next, distance: current.distance + 1});
+            }
+        }
+        return Number.POSITIVE_INFINITY;
+    }
+
+    function chooseOuterRoot(packageFqn, outerRoots, adjacency) {
+        if (!outerRoots?.length) return null;
+        const directMatches = outerRoots.filter(root => packageFqn === root || packageFqn.startsWith(`${root}.`));
+        if (directMatches.length === 1) return directMatches[0];
+        if (directMatches.length > 1) {
+            return directMatches.reduce((best, current) => current.length > best.length ? current : best, directMatches[0]);
+        }
+
+        let bestRoot = outerRoots[0];
+        let bestDepth = -1;
+        let tiedRoots = [];
+        outerRoots.forEach(root => {
+            const depth = Jig.util.getCommonPrefixDepth([packageFqn, root]);
+            if (depth > bestDepth) {
+                bestDepth = depth;
+                bestRoot = root;
+                tiedRoots = [root];
+            } else if (depth === bestDepth) {
+                tiedRoots.push(root);
+            }
+        });
+        if (tiedRoots.length <= 1) return bestRoot;
+
+        let bestDistance = Number.POSITIVE_INFINITY;
+        let nearestRoot = tiedRoots[0];
+        tiedRoots.forEach(root => {
+            const distance = bfsDistance(packageFqn, root, adjacency);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                nearestRoot = root;
+            }
+        });
+        return nearestRoot;
+    }
+
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
         if (!causes?.length) return {source: null};
 
@@ -538,81 +619,8 @@ const PackageApp = (() => {
 
         const escapeId = id => id.replace(/\./g, '_');
         const escapeLabel = label => `"${label.replace(/"/g, '#quot;')}"`;
-        const pairPackages = typeof mutualPairLabel === 'string'
-            ? mutualPairLabel.split(' <-> ').map(value => value.trim()).filter(value => value)
-            : [];
-        const uniquePairPackages = [...new Set(pairPackages)];
-        const collapsedPairPackages = new Set(
-            uniquePairPackages.filter(packageFqn =>
-                uniquePairPackages.some(other => other !== packageFqn && packageFqn.startsWith(`${other}.`))
-            )
-        );
-        const outerRoots = uniquePairPackages
-            .filter(packageFqn => packageFqn && packageFqn !== '(default)' && !collapsedPairPackages.has(packageFqn))
-            .slice(0, 2);
-
-        const packageRelations = edges.map(({from, to}) => ({
-            from: Jig.util.getPackageFqnFromTypeFqn(from),
-            to: Jig.util.getPackageFqnFromTypeFqn(to),
-        }));
-        const packageAdjacency = new Map();
-        packageRelations.forEach(({from, to}) => {
-            if (!from || !to || from === to) return;
-            Jig.util.addToSetMap(packageAdjacency, from, to);
-            Jig.util.addToSetMap(packageAdjacency, to, from);
-        });
-        const shortestDistance = (start, goal) => {
-            if (!start || !goal) return Number.POSITIVE_INFINITY;
-            if (start === goal) return 0;
-            const queue = [{node: start, distance: 0}];
-            const visited = new Set([start]);
-            while (queue.length > 0) {
-                const current = queue.shift();
-                const adjacent = packageAdjacency.get(current.node);
-                if (!adjacent) continue;
-                for (const next of adjacent) {
-                    if (visited.has(next)) continue;
-                    if (next === goal) return current.distance + 1;
-                    visited.add(next);
-                    queue.push({node: next, distance: current.distance + 1});
-                }
-            }
-            return Number.POSITIVE_INFINITY;
-        };
-        const chooseOuterRoot = packageFqn => {
-            if (!outerRoots?.length) return null;
-            const directMatches = outerRoots.filter(root => packageFqn === root || packageFqn.startsWith(`${root}.`));
-            if (directMatches.length === 1) return directMatches[0];
-            if (directMatches.length > 1) {
-                return directMatches.reduce((best, current) => current.length > best.length ? current : best, directMatches[0]);
-            }
-
-            let bestRoot = outerRoots[0];
-            let bestDepth = -1;
-            let tiedRoots = [];
-            outerRoots.forEach(root => {
-                const depth = Jig.util.getCommonPrefixDepth([packageFqn, root]);
-                if (depth > bestDepth) {
-                    bestDepth = depth;
-                    bestRoot = root;
-                    tiedRoots = [root];
-                } else if (depth === bestDepth) {
-                    tiedRoots.push(root);
-                }
-            });
-            if (tiedRoots.length <= 1) return bestRoot;
-
-            let bestDistance = Number.POSITIVE_INFINITY;
-            let nearestRoot = tiedRoots[0];
-            tiedRoots.forEach(root => {
-                const distance = shortestDistance(packageFqn, root);
-                if (distance < bestDistance) {
-                    bestDistance = distance;
-                    nearestRoot = root;
-                }
-            });
-            return nearestRoot;
-        };
+        const outerRoots = selectOuterRoots(mutualPairLabel);
+        const adjacency = buildPackageAdjacency(edges);
         const appendClassNodes = (targetLines, classNodes) => {
             classNodes.forEach(classFqn => {
                 const nodeId = escapeId(classFqn);
@@ -646,7 +654,7 @@ const PackageApp = (() => {
             const groups = new Map(outerRoots.map(root => [root, []]));
             for (const packageEntry of packages.entries()) {
                 const packageFqn = packageEntry[0];
-                const selectedRoot = chooseOuterRoot(packageFqn) || outerRoots[0];
+                const selectedRoot = chooseOuterRoot(packageFqn, outerRoots, adjacency) || outerRoots[0];
                 groups.get(selectedRoot).push(packageEntry);
             }
             const subgraphCounter = {value: 0};
@@ -845,6 +853,81 @@ const PackageApp = (() => {
         return {ancestor: undefined, relative: fqn};
     }
 
+    function buildCollapseToggleTd(pkg, hasChildrenSet, collapsedSet, tbody, tr, refreshCountDisplay, config) {
+        const toggleTd = document.createElement('td');
+        if (!hasChildrenSet.has(pkg.fqn)) return toggleTd;
+        const toggleBtn = document.createElement('button');
+        const initiallyCollapsed = collapsedSet.has(pkg.fqn);
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'explore-collapse-toggle';
+        toggleBtn.textContent = initiallyCollapsed ? '▶' : '▼';
+        toggleBtn.setAttribute('aria-expanded', String(!initiallyCollapsed));
+        toggleBtn.setAttribute('aria-label', initiallyCollapsed ? '配下を展開' : '配下を折りたたむ');
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
+            toggleBtn.setAttribute('aria-expanded', String(!collapsing));
+            toggleBtn.textContent = collapsing ? '▶' : '▼';
+            toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
+            const childPrefix = pkg.fqn + '.';
+            tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                    childTr.classList.toggle('hidden-by-collapse', collapsing);
+                }
+            });
+            config.onCollapseChange(pkg.fqn, collapsing, childPrefix, tbody);
+            refreshCountDisplay(tr);
+            if (!collapsing) {
+                tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                    if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                        refreshCountDisplay(childTr);
+                    }
+                });
+            }
+        });
+        toggleTd.appendChild(toggleBtn);
+        return toggleTd;
+    }
+
+    function buildPackageRow(pkg, rowData, config, fqnSet, collapsedSet, hasChildrenSet, tbody, refreshCountDisplay) {
+        const tr = document.createElement('tr');
+        tr.dataset.fqn = pkg.fqn;
+        if (config.isSelected(pkg.fqn)) tr.classList.add('explore-target-selected');
+        if ([...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
+            tr.classList.add('hidden-by-collapse');
+        }
+        tr.addEventListener('click', () => config.onRowClick(pkg.fqn));
+        tr.appendChild(buildCollapseToggleTd(pkg, hasChildrenSet, collapsedSet, tbody, tr, refreshCountDisplay, config));
+
+        const {ancestor, relative} = getRelativeFqn(pkg.fqn, fqnSet);
+        const depth = ancestor ? ancestor.split('.').length : 0;
+        const fqnTd = document.createElement('td');
+        fqnTd.textContent = relative;
+        fqnTd.title = pkg.fqn;
+        fqnTd.className = 'fqn';
+        fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
+        tr.appendChild(fqnTd);
+
+        const nameTd = document.createElement('td');
+        nameTd.textContent = getGlossaryTitle(pkg.fqn);
+        tr.appendChild(nameTd);
+
+        tr.appendChild(createNumberTd(rowData.classCount, 'class'));
+        tr.appendChild(createNumberTd(rowData.incomingCount, 'incoming'));
+        tr.appendChild(createNumberTd(rowData.outgoingCount, 'outgoing'));
+        return tr;
+    }
+
+    function initPackageListFilter(filterInput, tbody) {
+        filterInput.addEventListener('input', () => {
+            const filterText = filterInput.value.toLowerCase();
+            tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
+                const matches = !filterText || tr.dataset.fqn.toLowerCase().includes(filterText);
+                tr.classList.toggle('hidden', !matches);
+            });
+        });
+    }
+
     function renderPackageList(config) {
         const container = config.getContainer();
         if (!container) return;
@@ -906,70 +989,8 @@ const PackageApp = (() => {
         }
 
         sortedPackages.forEach(pkg => {
-            const tr = document.createElement('tr');
-            tr.dataset.fqn = pkg.fqn;
             const rowData = rowDataMap.get(pkg.fqn);
-            if (config.isSelected(pkg.fqn)) tr.classList.add('explore-target-selected');
-            if ([...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
-                tr.classList.add('hidden-by-collapse');
-            }
-
-            tr.addEventListener('click', () => config.onRowClick(pkg.fqn));
-
-            const toggleTd = document.createElement('td');
-            if (hasChildrenSet.has(pkg.fqn)) {
-                const toggleBtn = document.createElement('button');
-                const initiallyCollapsed = collapsedSet.has(pkg.fqn);
-                toggleBtn.type = 'button';
-                toggleBtn.className = 'explore-collapse-toggle';
-                toggleBtn.textContent = initiallyCollapsed ? '▶' : '▼';
-                toggleBtn.setAttribute('aria-expanded', String(!initiallyCollapsed));
-                toggleBtn.setAttribute('aria-label', initiallyCollapsed ? '配下を展開' : '配下を折りたたむ');
-                toggleBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
-                    toggleBtn.setAttribute('aria-expanded', String(!collapsing));
-                    toggleBtn.textContent = collapsing ? '▶' : '▼';
-                    toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
-                    const childPrefix = pkg.fqn + '.';
-                    tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
-                        if (childTr.dataset.fqn.startsWith(childPrefix)) {
-                            childTr.classList.toggle('hidden-by-collapse', collapsing);
-                        }
-                    });
-                    config.onCollapseChange(pkg.fqn, collapsing, childPrefix, tbody);
-                    refreshCountDisplay(tr);
-                    if (!collapsing) {
-                        tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
-                            if (childTr.dataset.fqn.startsWith(childPrefix)) {
-                                refreshCountDisplay(childTr);
-                            }
-                        });
-                    }
-                });
-                toggleTd.appendChild(toggleBtn);
-            }
-            tr.appendChild(toggleTd);
-
-            const {ancestor, relative} = getRelativeFqn(pkg.fqn, fqnSet);
-            const depth = ancestor ? ancestor.split('.').length : 0;
-
-            const fqnTd = document.createElement('td');
-            fqnTd.textContent = relative;
-            fqnTd.title = pkg.fqn;
-            fqnTd.className = 'fqn';
-            fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
-            tr.appendChild(fqnTd);
-
-            const nameTd = document.createElement('td');
-            nameTd.textContent = getGlossaryTitle(pkg.fqn);
-            tr.appendChild(nameTd);
-
-            tr.appendChild(createNumberTd(rowData.classCount, 'class'));
-            tr.appendChild(createNumberTd(rowData.incomingCount, 'incoming'));
-            tr.appendChild(createNumberTd(rowData.outgoingCount, 'outgoing'));
-
-            tbody.appendChild(tr);
+            tbody.appendChild(buildPackageRow(pkg, rowData, config, fqnSet, collapsedSet, hasChildrenSet, tbody, refreshCountDisplay));
         });
 
         Array.from(tbody.children).forEach(tr => {
@@ -980,15 +1001,7 @@ const PackageApp = (() => {
         container.appendChild(tbody);
 
         const filterInput = config.getFilterInput();
-        if (filterInput) {
-            filterInput.addEventListener('input', () => {
-                const filterText = filterInput.value.toLowerCase();
-                tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
-                    const matches = !filterText || tr.dataset.fqn.toLowerCase().includes(filterText);
-                    tr.classList.toggle('hidden', !matches);
-                });
-            });
-        }
+        if (filterInput) initPackageListFilter(filterInput, tbody);
     }
 
     function buildHierarchyListConfig(context) {
@@ -1487,6 +1500,10 @@ const PackageApp = (() => {
         buildMutualDependencyItems,
         renderMutualDependencyList,
         buildMutualDependencyDiagramSource,
+        selectOuterRoots,
+        buildPackageAdjacency,
+        bfsDistance,
+        chooseOuterRoot,
         renderHierarchyDiagram,
         renderHierarchyDiagramAndTable,
         buildHierarchyDiagramRenderPlan,

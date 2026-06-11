@@ -20,6 +20,40 @@ const UsecaseApp = (() => {
     const makeEdgeKey = (from, to) => `${from} ${to}`;
 
     /**
+     * メソッドのパラメータ・戻り値からドメイン型ノード・エッジを収集する
+     * @param {UsecaseMethod} method
+     * @param {string} methodFqn
+     * @param {Set<string>} domainFqnSet
+     * @param {Set<string>} edgeSet
+     * @param {DiagramEdge[]} edges
+     * @param {function(string): void} addDomainNode
+     */
+    function collectDomainTypeNodesAndEdges(method, methodFqn, domainFqnSet, edgeSet, edges, addDomainNode) {
+        (method.parameters || []).forEach(param => {
+            Jig.util.collectTypeRefFqns(param.typeRef)
+                .filter(domainFqn => domainFqnSet.has(domainFqn))
+                .forEach(domainFqn => {
+                    addDomainNode(domainFqn);
+                    const edgeKey = makeEdgeKey(domainFqn, methodFqn);
+                    if (!edgeSet.has(edgeKey)) {
+                        edgeSet.add(edgeKey);
+                        edges.push({from: domainFqn, to: methodFqn, dotted: true});
+                    }
+                });
+        });
+        Jig.util.collectTypeRefFqns(method.returnTypeRef)
+            .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
+            .forEach(returnFqn => {
+                addDomainNode(returnFqn);
+                const edgeKey = makeEdgeKey(methodFqn, returnFqn);
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({from: methodFqn, to: returnFqn, dotted: true});
+                }
+            });
+    }
+
+    /**
      * @param {string} fqn
      * @returns {string}
      */
@@ -245,34 +279,11 @@ const UsecaseApp = (() => {
             [...nodes.keys()].forEach(fqn => {
                 const method = diagramContext.methodMap.get(fqn);
                 if (!method) return; // outbound / inbound-class はスキップ
-
-                (method.parameters || []).forEach(param => {
-                    Jig.util.collectTypeRefFqns(param.typeRef)
-                        .filter(domainFqn => domainFqnSet.has(domainFqn))
-                        .forEach(domainFqn => {
-                            if (!nodes.has(domainFqn)) {
-                                nodes.set(domainFqn, {fqn: domainFqn, kind: "domain-type"});
-                            }
-                            const edgeKey = makeEdgeKey(domainFqn, fqn);
-                            if (!edgeSet.has(edgeKey)) {
-                                edgeSet.add(edgeKey);
-                                edges.push({from: domainFqn, to: fqn, dotted: true});
-                            }
-                        });
+                collectDomainTypeNodesAndEdges(method, fqn, domainFqnSet, edgeSet, edges, domainFqn => {
+                    if (!nodes.has(domainFqn)) {
+                        nodes.set(domainFqn, {fqn: domainFqn, kind: "domain-type"});
+                    }
                 });
-
-                Jig.util.collectTypeRefFqns(method.returnTypeRef)
-                    .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
-                    .forEach(returnFqn => {
-                        if (!nodes.has(returnFqn)) {
-                            nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
-                        }
-                        const edgeKey = makeEdgeKey(fqn, returnFqn);
-                        if (!edgeSet.has(edgeKey)) {
-                            edgeSet.add(edgeKey);
-                            edges.push({from: fqn, to: returnFqn, dotted: true});
-                        }
-                    });
             });
         }
 
@@ -309,35 +320,12 @@ const UsecaseApp = (() => {
                 }
             });
 
-            (method.parameters || []).forEach(param => {
-                Jig.util.collectTypeRefFqns(param.typeRef)
-                    .filter(domainFqn => domainFqnSet.has(domainFqn))
-                    .forEach(domainFqn => {
-                        if (!domainNodeSet.has(domainFqn)) {
-                            domainNodeSet.add(domainFqn);
-                            nodes.push({fqn: domainFqn, kind: "domain-type"});
-                        }
-                        const edgeKey = makeEdgeKey(domainFqn, method.fqn);
-                        if (!edgeSet.has(edgeKey)) {
-                            edgeSet.add(edgeKey);
-                            edges.push({from: domainFqn, to: method.fqn, dotted: true});
-                        }
-                    });
+            collectDomainTypeNodesAndEdges(method, method.fqn, domainFqnSet, edgeSet, edges, domainFqn => {
+                if (!domainNodeSet.has(domainFqn)) {
+                    domainNodeSet.add(domainFqn);
+                    nodes.push({fqn: domainFqn, kind: "domain-type"});
+                }
             });
-
-            Jig.util.collectTypeRefFqns(method.returnTypeRef)
-                .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
-                .forEach(returnFqn => {
-                    if (!domainNodeSet.has(returnFqn)) {
-                        domainNodeSet.add(returnFqn);
-                        nodes.push({fqn: returnFqn, kind: "domain-type"});
-                    }
-                    const edgeKey = makeEdgeKey(method.fqn, returnFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: method.fqn, to: returnFqn, dotted: true});
-                    }
-                });
         });
 
         const inboundNodeSet = new Set();
@@ -515,12 +503,7 @@ const UsecaseApp = (() => {
             return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
         });
 
-        const byPackage = new Map();
-        filteredItems.forEach(item => {
-            const dotIdx = item.usecase.fqn.lastIndexOf('.');
-            const pkg = dotIdx === -1 ? '' : item.usecase.fqn.slice(0, dotIdx);
-            Jig.util.pushToMap(byPackage, pkg, item);
-        });
+        const byPackage = Jig.util.groupByPackageFqn(filteredItems, item => item.usecase.fqn);
 
         byPackage.forEach((items, packageFqn) => {
             const typeList = Jig.dom.createElement("ul", {
@@ -699,7 +682,7 @@ const UsecaseApp = (() => {
         if (handlerFqns && visibleUsecaseMethods.length === 0) return null;
 
         const term = Jig.glossary.getTypeTerm(usecase.fqn);
-        const section = Jig.dom.card.type({id: fqnToTypeId(usecase.fqn), title: term.title, fqn: usecase.fqn});
+        const section = Jig.dom.card.type({id: fqnToTypeId(usecase.fqn), title: term.title, fqn: usecase.fqn, titleSuffix: Jig.glossary.sourceLink(usecase.fqn)});
 
         if (term.description) {
             section.appendChild(Jig.dom.createElement("section", {

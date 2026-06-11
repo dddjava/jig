@@ -64,6 +64,27 @@ const DomainApp = (() => {
 
     // ----- Mermaid ダイアグラムソース生成 -----
 
+    const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
+    const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
+
+    // クラス関連図・パッケージ内クラス関連図のクリック用。
+    // click href "url" "tooltip" ではツールチップが表示されないため、callback 方式を使う。
+    // nodeId → url。FQN から決定的に導出されるため描画ごとにクリアせず蓄積してよい。
+    const _typeNavRegistry = new Map();
+    const _typeNavHandlerName = '_jigDomNavType';
+    if (typeof window !== 'undefined') {
+        window[_typeNavHandlerName] = (nodeId) => {
+            const url = _typeNavRegistry.get(nodeId);
+            if (url) window.location.href = url;
+        };
+    }
+
+    function _registerTypeNavClick(builder, fqn) {
+        const nodeId = fqnToMermaidId(fqn);
+        _typeNavRegistry.set(nodeId, `#${fqnToHtmlId(fqn)}`);
+        builder.addCallbackClick(nodeId, _typeNavHandlerName, fqn);
+    }
+
     /**
      * パッケージカードに表示するパッケージ関連図（同階層の直接関連）
      * @param {{fqn: string}} pkg
@@ -85,7 +106,7 @@ const DomainApp = (() => {
             packageFqns, directRelations,
             {
                 diagramDirection: direction,
-                nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
+                nodeClickUrlCallback: (fqn) => '#' + Jig.util.fqnToId('domain', fqn),
                 focusedPackageFqn: pkg.fqn,
                 showPhysicalName,
             }
@@ -138,7 +159,7 @@ const DomainApp = (() => {
             uniqueRelations,
             {
                 diagramDirection: direction,
-                nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
+                nodeClickUrlCallback: (fqn) => '#' + Jig.util.fqnToId('domain', fqn),
                 showPhysicalName,
             }
         );
@@ -156,7 +177,8 @@ const DomainApp = (() => {
                 transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
             }
         );
-        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
+        // パッケージが1つしかなければ表示しない。関連が0でもパッケージが複数あればノードのみで表示する
+        if (packageFqns.size <= 1) return null;
         return {uniqueRelations, packageFqns};
     }
 
@@ -216,8 +238,6 @@ const DomainApp = (() => {
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
-        const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
         const {type: typeLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function packageOf(fqn) {
@@ -253,7 +273,7 @@ const DomainApp = (() => {
                 fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), typeLabel(fqn)));
             }
         });
-        involvedFqns.forEach(fqn => builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`));
+        involvedFqns.forEach(fqn => _registerTypeNavClick(builder, fqn));
         edges.forEach(r => {
             const edgeLength = edgeLengthByKey.get(`${r.from}::${r.to}`) || 1;
             builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), "", false, edgeLength);
@@ -284,8 +304,6 @@ const DomainApp = (() => {
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
-        const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
         const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
 
         function edgeTypeFromKinds(kinds) {
@@ -302,7 +320,7 @@ const DomainApp = (() => {
         const builder = new Jig.mermaid.ClassDiagramBuilder();
 
         involvedFqns.forEach(fqn => {
-            const nodeId = fqnToNodeId(fqn);
+            const nodeId = fqnToMermaidId(fqn);
             builder.addClass(nodeId, typeLabel(fqn));
 
             const domainType = typesMap?.get(fqn);
@@ -322,9 +340,9 @@ const DomainApp = (() => {
                 });
             }
 
-            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`);
+            builder.addClick(nodeId, `#${fqnToHtmlId(fqn)}`, fqn);
         });
-        edges.forEach(r => builder.addEdge(fqnToNodeId(r.from), fqnToNodeId(r.to), edgeTypeFromKinds(r.kinds)));
+        edges.forEach(r => builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), edgeTypeFromKinds(r.kinds)));
 
         return builder.build(direction);
     }
@@ -373,9 +391,6 @@ const DomainApp = (() => {
         direction = domainSettings.diagramDirection,
         showPhysicalName = false
     } = {}) {
-        const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
-
         const relations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -450,9 +465,7 @@ const DomainApp = (() => {
         const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), pkgLabel(pkg.fqn), direction);
         internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), typeLabel(fqn)));
         externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), pkgLabel(fqn), 'package'));
-        [...internalFqns, ...externalPkgFqns].forEach(fqn =>
-            builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)
-        );
+        [...internalFqns, ...externalPkgFqns].forEach(fqn => _registerTypeNavClick(builder, fqn));
         edges.forEach(edge => {
             const edgeLength = edgeLengthByKey.get(`${edge.from}::${edge.to}`) || 1;
             builder.addEdge(fqnToMermaidId(edge.from), fqnToMermaidId(edge.to), "", false, edgeLength);
@@ -930,6 +943,7 @@ const DomainApp = (() => {
                 title: pkgTerm.title,
                 fqn: pkg.fqn,
                 kind: "パッケージ",
+                titleSuffix: Jig.glossary.sourceLink(pkg.fqn),
                 attributes: {"data-kind-children": [...pkgKinds(pkg, childPackagesMap, typesMap)].join(' ')}
             });
 
@@ -1013,6 +1027,7 @@ const DomainApp = (() => {
                 title: titleSpan,
                 fqn: fqnDiv,
                 kind: "クラス",
+                titleSuffix: Jig.glossary.sourceLink(type.fqn),
                 attributes: {"data-kind": type.kind || ''}
             });
 

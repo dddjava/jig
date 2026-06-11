@@ -8,7 +8,7 @@ const IndexApp = (() => {
         return Jig.data.package.get();
     }
 
-    function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabelKey) {
+    function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabelKey, nodeClickUrlCallback) {
         const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
@@ -18,7 +18,8 @@ const IndexApp = (() => {
             {
                 transitiveReductionEnabled: true,
                 diagramDirection: dir,
-                showPhysicalName: opts?.showPhysicalName
+                showPhysicalName: opts?.showPhysicalName,
+                nodeClickUrlCallback
             }
         );
 
@@ -106,7 +107,8 @@ const IndexApp = (() => {
                 packageDiagramContainer,
                 allPackages, allPackageRelations,
                 packageRoot,
-                "ドメインパッケージ"
+                "ドメインパッケージ",
+                Jig.mermaid.nav.domainTypeUrl
             );
         });
 

@@ -571,6 +571,20 @@ td.fqn {
     text-underline-offset: 3px;
 }
 
+.jig-card--type h3 .source-link {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.4em;
+    color: #5577aa;
+    opacity: 0.5;
+    vertical-align: middle;
+    transition: opacity 0.15s;
+}
+
+.jig-card--type h3 .source-link:hover {
+    opacity: 1;
+}
+
 .jig-card--type > table {
     margin-top: 12px;
 }
@@ -1451,6 +1465,10 @@ label {
     cursor: pointer;
 }
 
+.insight table i.zoom::before {
+    content: "🔍";
+}
+
 #metric-definitions {
     margin-bottom: 2em;
 }
@@ -1678,6 +1696,13 @@ table td.number {
     background-color: #e8f0fb;
     color: #10253f;
     text-decoration: none;
+}
+
+/* ID付きリンクで開いた／ページ内移動した際の現在地ハイライト */
+.in-page-sidebar__link--active {
+    background-color: #d3e3f7;
+    color: #10253f;
+    font-weight: bold;
 }
 
 /* サイドバーリンクのバッジ（疑似要素） */

@@ -304,6 +304,7 @@ const OutboundApp = (() => {
                 id: portId,
                 title: portLabel,
                 fqn: portFqnValue,
+                titleSuffix: Jig.glossary.sourceLink(portFqnValue),
             });
 
             if (visibility.adapter) {
@@ -364,13 +365,7 @@ const OutboundApp = (() => {
         });
 
         if (sidebar && grouped.length > 0) {
-            const byPackage = new Map();
-            grouped.forEach(group => {
-                const fqn = group.outboundPort.fqn;
-                const dotIdx = fqn.lastIndexOf('.');
-                const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
-                Jig.util.pushToMap(byPackage, pkg, group);
-            });
+            const byPackage = Jig.util.groupByPackageFqn(grouped, group => group.outboundPort.fqn);
 
             const packageContainer = Jig.dom.createElement("div", {});
             Jig.dom.sidebar.renderPackageGrouped(packageContainer, byPackage, pkgGroups =>
@@ -456,6 +451,7 @@ const OutboundApp = (() => {
                 id: externalId,
                 title: externalLabel,
                 fqn: externalFqn,
+                titleSuffix: Jig.glossary.sourceLink(externalFqn),
             });
             Jig.mermaid.diagram.createAndRegister(externalCard, (container) => {
                 const currentVisibility = readVisibility();
@@ -574,6 +570,23 @@ const OutboundApp = (() => {
         container.appendChild(Jig.dom.createElement("p", {className: "weak", textContent: "データなし"}));
     }
 
+    function createDiagramContext() {
+        return {
+            portSubgraphs: new Map(),
+            adapterSubgraphs: new Map(),
+            accessorSubgraphs: new Map(),
+            accessorNodes: new Map(),
+            persistenceTargetNodes: new Map(),
+            extAccessorNodes: new Map(),
+            extAccessorSubgraphs: new Map(),
+            extTypeNodes: new Map(),
+            usecaseSubgraphs: new Map(),
+            usecaseNodes: new Map(),
+            usecaseEdges: new Set(),
+            methodFqnToNodeId: new Map(),
+        };
+    }
+
     /**
      * builder の生成・テーマ適用・空チェック・build を共通化する。
      * populate(builder, showPhysicalName) でダイアグラム固有のノード/エッジを追加する。
@@ -592,18 +605,9 @@ const OutboundApp = (() => {
             const portFqn = group.outboundPort.fqn;
             const portLabel = typeLabel(portFqn);
 
-            const portSubgraphs = new Map();
-            const adapterSubgraphs = new Map();
-            const accessorSubgraphs = new Map();
-            const accessorNodes = new Map();
-            const persistenceTargetNodes = new Map();
-            const extAccessorNodes = new Map();
-            const extAccessorSubgraphs = new Map();
-            const extTypeNodes = new Map();
-            const usecaseSubgraphs = new Map();
-            const usecaseNodes = new Map();
-            const usecaseEdges = new Set();
-            const methodFqnToNodeId = new Map();
+            const {portSubgraphs, adapterSubgraphs, accessorSubgraphs, accessorNodes, persistenceTargetNodes,
+                extAccessorNodes, extAccessorSubgraphs, extTypeNodes, usecaseSubgraphs, usecaseNodes, usecaseEdges,
+                methodFqnToNodeId} = createDiagramContext();
 
             group.operations.forEach((operation) => {
                 const props = extractOperationProps({...operation, outboundPort: group.outboundPort}, showPhysicalName);
@@ -633,14 +637,8 @@ const OutboundApp = (() => {
         return buildOutboundMermaid(visibility, (builder, showPhysicalName) => {
             const persistenceTarget = group.persistenceTarget;
 
-            const portSubgraphs = new Map();
-            const adapterSubgraphs = new Map();
-            const accessorSubgraphs = new Map();
-            const accessorNodes = new Map();
-            const persistenceTargetNodes = new Map();
-            const usecaseSubgraphs = new Map();
-            const usecaseNodes = new Map();
-            const usecaseEdges = new Set();
+            const {portSubgraphs, adapterSubgraphs, accessorSubgraphs, accessorNodes, persistenceTargetNodes,
+                usecaseSubgraphs, usecaseNodes, usecaseEdges} = createDiagramContext();
 
             group.operations.forEach((operation) => {
                 const props = extractOperationProps(operation, showPhysicalName);
@@ -667,15 +665,8 @@ const OutboundApp = (() => {
         return buildOutboundMermaid(visibility, (builder, showPhysicalName) => {
             const externalType = group.externalType;
 
-            const portSubgraphs = new Map();
-            const adapterSubgraphs = new Map();
-            const extAccessorNodes = new Map();
-            const extAccessorSubgraphs = new Map();
-            const extTypeNodes = new Map();
-            const usecaseSubgraphs = new Map();
-            const usecaseNodes = new Map();
-            const usecaseEdges = new Set();
-            const methodFqnToNodeId = new Map();
+            const {portSubgraphs, adapterSubgraphs, extAccessorNodes, extAccessorSubgraphs, extTypeNodes,
+                usecaseSubgraphs, usecaseNodes, usecaseEdges, methodFqnToNodeId} = createDiagramContext();
 
             const filterToExternalType = accessor => ({
                 ...accessor,

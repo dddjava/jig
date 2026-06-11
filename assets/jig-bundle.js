@@ -153,6 +153,24 @@ globalThis.Jig.util = (() => {
         map.get(key).add(value);
     }
 
+    /**
+     * items をパッケージFQN単位でグループ化する。
+     * @template T
+     * @param {T[]} items
+     * @param {function(T): string} getFqn - アイテムのFQNを返す関数
+     * @returns {Map<string, T[]>} パッケージFQN → アイテム配列
+     */
+    function groupByPackageFqn(items, getFqn) {
+        const byPackage = new Map();
+        items.forEach(item => {
+            const fqn = getFqn(item);
+            const dotIdx = fqn.lastIndexOf('.');
+            const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
+            pushToMap(byPackage, pkg, item);
+        });
+        return byPackage;
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -164,6 +182,7 @@ globalThis.Jig.util = (() => {
         collectTypeRefFqns,
         pushToMap,
         addToSetMap,
+        groupByPackageFqn,
     }
 })();
 
@@ -451,12 +470,40 @@ globalThis.Jig ??= {};
 
 globalThis.Jig.glossary = (() => {
 
+    // GitHubアイコン（octicon mark-github）
+    const SOURCE_ICON_SVG = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>';
+
     /**
      * @param {string} fqn
      * @return {Term | undefined}
      */
     function findTerm(fqn) {
         return globalThis.Jig.data.glossary.getTerm(fqn);
+    }
+
+    /**
+     * 型/パッケージ/メソッド等のFQNからソース（GitHub等）へのリンク要素を生成する。
+     * sourcePath と blobUrlPrefix が揃う場合のみ要素を返し、それ以外は null。
+     * メソッドFQN等で用語が見つからない場合は型FQNにフォールバックして解決する。
+     * @param {string} fqn
+     * @return {HTMLElement | null}
+     */
+    function sourceLink(fqn) {
+        const blobUrlPrefix = globalThis.Jig.data.summary.getGit()?.blobUrlPrefix;
+        if (!blobUrlPrefix) return null;
+        const sourcePath = findTerm(fqn)?.sourcePath ?? findTerm(fqn.split('#')[0])?.sourcePath;
+        if (!sourcePath) return null;
+        return globalThis.Jig.dom.createElement("a", {
+            className: "source-link",
+            innerHTML: SOURCE_ICON_SVG,
+            attributes: {
+                href: `${blobUrlPrefix}/${sourcePath}`,
+                target: "_blank",
+                rel: "noopener",
+                title: "ソースを開く",
+                "data-i18n-attr": "title",
+            },
+        });
     }
 
     /**
@@ -570,6 +617,7 @@ globalThis.Jig.glossary = (() => {
         getFieldTerm,
         getMethodTerm,
         findTerm,
+        sourceLink,
         typeSimpleName,
         methodSimpleName,
         makeLabels,
@@ -654,10 +702,13 @@ globalThis.Jig.dom = (() => {
     }
 
     function createMarkdownElement(markdown) {
-        return createElement("div", {
+        const element = createElement("div", {
             className: "markdown",
             innerHTML: parseMarkdown(markdown)
         });
+        // Javadoc に書いた ```mermaid コードブロックをダイアグラムとして描画する
+        globalThis.Jig?.mermaid?.renderMarkdownDiagrams?.(element);
+        return element;
     }
 
     // --- CSV utility ---
@@ -868,12 +919,13 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createTypeCard({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) {
+    function createTypeCard({id, title, fqn, kind, attributes, titleSuffix, tagName = "section", extraClass} = {}) {
         const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
         const titleContent = id
             ? createElement("a", {className: "card-title-anchor", attributes: {href: `#${id}`}, children: [titleEl]})
             : titleEl;
         const h3Children = kind !== undefined ? [kindBadgeElement(kind), titleContent] : [titleContent];
+        if (titleSuffix) h3Children.push(titleSuffix);
 
         const card = createElement(tagName, {
             id,
@@ -975,6 +1027,53 @@ globalThis.Jig.dom = (() => {
         const input = document.getElementById(inputId);
         if (!input) return;
         input.addEventListener('input', () => onChange(input.value.trim()));
+    }
+
+    // 折りたたまれた祖先（in-page-sidebar__links--hidden）を展開し、対応するトグルの状態も合わせる
+    function expandSidebarAncestors(sidebar, link) {
+        let el = link.parentElement;
+        while (el && el !== sidebar) {
+            if (el.classList.contains("in-page-sidebar__links--hidden")) {
+                el.classList.remove("in-page-sidebar__links--hidden");
+                const toggle = el.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
+                if (toggle) {
+                    toggle.setAttribute("aria-expanded", "true");
+                    toggle.setAttribute("aria-label", "折りたたむ");
+                }
+            }
+            el = el.parentElement;
+        }
+    }
+
+    // サイドバーのスクロール領域内で該当リンクを表示する。メインコンテンツのスクロール位置は動かさない
+    function scrollSidebarLinkIntoView(sidebar, link) {
+        const container = sidebar.querySelector(".in-page-sidebar__list") || sidebar;
+        const containerRect = container.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        if (linkRect.top >= containerRect.top && linkRect.bottom <= containerRect.bottom) return;
+        container.scrollTop += (linkRect.top + linkRect.bottom) / 2 - (containerRect.top + containerRect.bottom) / 2;
+    }
+
+    // location.hash に対応するサイドバーリンクをハイライトし、折りたたまれた祖先を展開する。
+    // scrollIntoSidebar が true なら該当リンクをサイドバー内に表示する。
+    function syncActiveSidebarLink(scrollIntoSidebar = false) {
+        if (typeof document === "undefined") return;
+        const sidebar = document.querySelector(".in-page-sidebar");
+        if (!sidebar) return;
+
+        sidebar.querySelectorAll(".in-page-sidebar__link--active")
+            .forEach(el => el.classList.remove("in-page-sidebar__link--active"));
+
+        const hash = location.hash;
+        if (!hash || hash === "#") return;
+
+        const link = [...sidebar.querySelectorAll(".in-page-sidebar__link")]
+            .find(a => a.getAttribute("href") === hash);
+        if (!link) return;
+
+        link.classList.add("in-page-sidebar__link--active");
+        expandSidebarAncestors(sidebar, link);
+        if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, link);
     }
 
     function initSidebarCollapseBtn() {
@@ -1269,6 +1368,18 @@ globalThis.Jig.dom = (() => {
             setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
         }
         // 動的挿入された data-i18n 要素は jig-i18n.js の MutationObserver が初期 locale に追従させる
+
+        if (typeof window !== "undefined") {
+            // ページ内リンクやブラウザの戻る/進みに合わせてサイドバーの該当箇所を表示する
+            window.addEventListener("hashchange", () => syncActiveSidebarLink(true));
+            // 初回ロード時のサイドバー描画はこのあとの DOMContentLoaded ハンドラで行われるため、
+            // 描画完了後に同期する
+            if (typeof window.requestAnimationFrame === "function") {
+                window.requestAnimationFrame(() => syncActiveSidebarLink(true));
+            } else {
+                syncActiveSidebarLink(true);
+            }
+        }
     }
 
     return {
@@ -1311,6 +1422,7 @@ globalThis.Jig.dom = (() => {
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
+            syncActiveLink: syncActiveSidebarLink,
         },
         tab: {
             buildSection: buildTabSection,
@@ -1419,6 +1531,13 @@ globalThis.Jig.mermaid = (() => {
                 if (!id || !tooltip || this.clickSet.has(id)) return;
                 this.clickSet.add(id);
                 this.clicks.push(`click ${id} _jigNoop "${escapeMermaidText(tooltip)}"`);
+            }
+
+            addCallbackClick(id, handlerName, tooltip) {
+                if (!id || !handlerName || this.clickSet.has(id)) return;
+                this.clickSet.add(id);
+                const tooltipPart = tooltip ? ` "${escapeMermaidText(tooltip)}"` : '';
+                this.clicks.push(`click ${id} ${handlerName}${tooltipPart}`);
             }
 
             addClass(id, className) {
@@ -2541,8 +2660,13 @@ globalThis.Jig.mermaid = (() => {
             const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
             let showPhysicalName = false;
+            // 描画は再入する（方向切替・ラベル切替・キャッシュ復元）。mermaid.run は非同期なので
+            // 前の描画の解決コールバックが、後の描画で差し替わった diagramEl.innerHTML を
+            // 旧ソースのキーで誤ってキャッシュしうる。世代カウンタで最新の描画以外は無視する。
+            let renderGeneration = 0;
 
             const renderDiagram = (newDirection) => {
+                const generation = ++renderGeneration;
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 ensureCopySourceButton(container, currentSource);
@@ -2574,10 +2698,12 @@ globalThis.Jig.mermaid = (() => {
                     return;
                 }
 
-                // 同一ソースを以前描画済みなら mermaid.run を回避して SVG を復元する
+                // 同一ソースを以前描画済みなら mermaid.run を回避して SVG を復元する。
+                // ただし click ディレクティブを含む図はキャッシュ復元後に Mermaid の
+                // クリック・ツールチップイベントリスナーが失われるため、常に mermaid.run を通す。
                 const svgCache = getSvgCache(targetEl);
                 const cachedSvg = svgCache.get(currentSource);
-                if (cachedSvg != null) {
+                if (cachedSvg != null && !/^\s*click\s/m.test(currentSource)) {
                     diagramEl.style.display = "";
                     diagramEl.classList.remove("too-large");
                     setEdgeWarning(container, {visible: false});
@@ -2588,6 +2714,9 @@ globalThis.Jig.mermaid = (() => {
 
                 const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
                 const cacheRendered = () => {
+                    // 後続の描画が始まっていれば diagramEl.innerHTML は別ソースの SVG になっている。
+                    // 旧ソースのキーで誤キャッシュしないよう、最新の描画でなければ何もしない。
+                    if (generation !== renderGeneration) return;
                     if (diagramEl.getAttribute("data-processed") === "true") {
                         putSvgCache(svgCache, currentSource, diagramEl.innerHTML);
                     }
@@ -2877,6 +3006,26 @@ globalThis.Jig.mermaid = (() => {
     })();
 
     /**
+     * Markdown 内の ```mermaid コードブロックをダイアグラムに変換する。
+     * marked は ```mermaid を <pre><code class="language-mermaid"> に変換するので、
+     * それを描画コンテナへ差し替えて遅延レンダリングに登録する。
+     *
+     * @param {HTMLElement} root - createMarkdownElement が生成した要素など、変換対象の親要素
+     */
+    function renderMarkdownDiagrams(root) {
+        if (!root || typeof root.querySelectorAll !== "function") return;
+        root.querySelectorAll("pre > code.language-mermaid").forEach(code => {
+            const source = code.textContent || "";
+            const container = Jig.dom.createElement("div", {className: "mermaid-diagram"});
+            code.parentElement.replaceWith(container);
+            diagram.register(container, () => {
+                container.innerHTML = "";
+                render.renderWithControls(container, () => source);
+            });
+        });
+    }
+
+    /**
      * パッケージダイアグラム作成
      * index.htmlおよびdomain.htmlで表示するもの。
      *
@@ -2898,8 +3047,8 @@ globalThis.Jig.mermaid = (() => {
                 transitiveReductionEnabled: transitiveReductionEnabled
             }
         );
-        // パッケージ数が1つだったり関連が0なら表示しない
-        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
+        // パッケージが1つしかなければ表示しない。関連が0でもパッケージが複数あればノードのみで表示する
+        if (packageFqns.size <= 1) return null;
 
         const {source} = builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
@@ -2959,9 +3108,10 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        addClick(id, url) {
+        addClick(id, url, tooltip) {
             if (!id || !url) return;
-            this._clicks.push(`  click ${id} href "${url}" _self`);
+            const tooltipPart = tooltip ? ` "${this._escape(tooltip)}"` : ' _self';
+            this._clicks.push(`  click ${id} href "${url}"${tooltipPart}`);
         }
 
         build(direction = 'LR') {
@@ -2996,6 +3146,7 @@ globalThis.Jig.mermaid = (() => {
         graph,
         render,
         diagram,
+        renderMarkdownDiagrams,
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
@@ -3144,6 +3295,7 @@ globalThis.Jig.i18n = (() => {
             "由来": "Origin",
             "関連ドキュメント": "Related document",
             "ソースコード": "Source code",
+            "ソースを開く": "Open source",
             // library-dependency controls
             "階層集約:": "Aggregation level:",
             "Java 標準（java.*, javax.*）を表示": "Show Java standard (java.*, javax.*)",

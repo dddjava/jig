@@ -235,14 +235,11 @@ const InboundApp = (() => {
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
-        const byPackage = new Map();
-        adapters.forEach(adapter => {
-            const title = Jig.glossary.getTypeTerm(adapter.fqn).title;
-            if (filterText && !title.toLowerCase().includes(filterText)) return;
-            const dotIdx = adapter.fqn.lastIndexOf('.');
-            const pkg = dotIdx === -1 ? '' : adapter.fqn.slice(0, dotIdx);
-            Jig.util.pushToMap(byPackage, pkg, adapter);
+        const filteredAdapters = adapters.filter(adapter => {
+            if (!filterText) return true;
+            return Jig.glossary.getTypeTerm(adapter.fqn).title.toLowerCase().includes(filterText);
         });
+        const byPackage = Jig.util.groupByPackageFqn(filteredAdapters, adapter => adapter.fqn);
 
         Jig.dom.sidebar.renderPackageGrouped(sidebar, byPackage, pkgAdapters =>
             pkgAdapters.map(adapter =>
@@ -426,7 +423,8 @@ const InboundApp = (() => {
             const jigCard = Jig.dom.card.type({
                 id: Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
                 title: typeTerm.title,
-                fqn: adapter.fqn
+                fqn: adapter.fqn,
+                titleSuffix: Jig.glossary.sourceLink(adapter.fqn)
             });
 
             if (typeTerm.description) {

@@ -339,7 +339,7 @@ const InboundApp = (() => {
 
         const groupEntries = [];
 
-        groups.forEach(({adapterFqn, cardId, rows}) => {
+        groups.forEach(({adapterFqn, cardId, classPath, rows}) => {
             const dataRows = rows.map(cells => Jig.dom.createElement("tr", {children: cells}));
             const tbody = Jig.dom.createElement("tbody");
 
@@ -355,17 +355,24 @@ const InboundApp = (() => {
             });
 
             const controllerLabel = Jig.glossary.getTypeTerm(adapterFqn).title;
+            const headerChildren = [
+                Jig.dom.createElement("a", {
+                    textContent: controllerLabel,
+                    attributes: {href: '#' + cardId}
+                }),
+            ];
+            if (classPath) {
+                headerChildren.push(Jig.dom.createElement("span", {
+                    className: "controller-group-path",
+                    textContent: classPath
+                }));
+            }
+            headerChildren.push(toggleBtn);
             const headerRow = Jig.dom.createElement("tr", {
                 className: "controller-group-header",
                 children: [Jig.dom.createElement("td", {
                     attributes: {colspan: "3"},
-                    children: [
-                        Jig.dom.createElement("a", {
-                            textContent: controllerLabel,
-                            attributes: {href: '#' + cardId}
-                        }),
-                        toggleBtn
-                    ]
+                    children: headerChildren
                 })]
             });
 
@@ -422,11 +429,17 @@ const InboundApp = (() => {
             const groupMap = new Map();
             sorted.forEach(({ep, cardId, classPath, adapterFqn}) => {
                 if (!groupMap.has(adapterFqn)) {
-                    groupMap.set(adapterFqn, {adapterFqn, cardId, rows: []});
+                    groupMap.set(adapterFqn, {adapterFqn, cardId, classPath, rows: []});
                 }
                 const [method, path] = splitHttpPath(ep.path);
+                const methodCell = Jig.dom.createElement("td", {
+                    children: [Jig.dom.createElement("a", {
+                        textContent: Jig.glossary.getMethodTerm(ep.fqn, true).title,
+                        attributes: {href: '#' + cardId}
+                    })]
+                });
                 groupMap.get(adapterFqn).rows.push(
-                    [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), linkCell(ep.fqn, cardId)]
+                    [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), methodCell]
                 );
             });
 

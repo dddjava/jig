@@ -319,6 +319,7 @@ test.describe('inbound.js', () => {
         assert.equal(groupHeaders.length, 1);
         assert.equal(groupHeaders[0].querySelector('a').textContent, 'ControllerA');
         assert.ok(groupHeaders[0].querySelector('a').getAttribute('href').startsWith('#'));
+        assert.equal(groupHeaders[0].querySelector('.controller-group-path').textContent, '/api');
         assert.ok(groupHeaders[0].querySelector('button.controller-group-toggle'));
         // データ行の確認（グループヘッダー行を除外）
         const rows = summaryTable.querySelectorAll('tbody tr:not(.controller-group-header)');
@@ -327,7 +328,7 @@ test.describe('inbound.js', () => {
         assert.equal(cells[0].textContent, '/api/method1'); // クラスパス+メソッドパス
         assert.equal(cells[1].textContent, 'GET');
         const link = cells[2].querySelector('a');
-        assert.equal(link.textContent, 'ControllerA method1');
+        assert.equal(link.textContent, 'method1'); // Controller名なしのメソッド名のみ
         assert.ok(link.getAttribute('href').startsWith('#'));
 
         const controllerSection = mainList.children[1];

@@ -2269,6 +2269,12 @@ p.jig-data-warning {
     text-decoration: underline;
 }
 
+.controller-group-path {
+    color: #5a7a9a;
+    font-weight: normal;
+    margin-left: 6px;
+}
+
 .controller-group-toggle {
     background: none;
     border: none;

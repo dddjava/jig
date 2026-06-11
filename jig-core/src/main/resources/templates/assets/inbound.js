@@ -604,7 +604,7 @@ const InboundApp = (() => {
 
             // クラス図タブ
             Jig.mermaid.diagram.createAndRegister(panels['diagram'], (mmdContainer) => {
-                Jig.mermaid.render.renderWithControls(mmdContainer, (dir) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir));
+                Jig.mermaid.render.renderWithControls(mmdContainer, (dir, opts) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir, opts?.showPhysicalName), {enableLabelToggle: true});
             });
 
             section.appendChild(card);
@@ -640,17 +640,17 @@ const InboundApp = (() => {
         return Jig.util.collectTypeRefFqns(typeRef).filter(fqn => ioTypeMap.has(fqn));
     }
 
-    function typeRefToText(typeRef) {
-        if (!typeRef) return '';
-        const simpleName = fqn => fqn.slice(fqn.lastIndexOf('.') + 1);
-        const name = simpleName(typeRef.fqn);
-        if (!typeRef.typeArgumentRefs || typeRef.typeArgumentRefs.length === 0) return name;
-        return `${name}~${typeRef.typeArgumentRefs.map(a => typeRefToText(a)).join(', ')}~`;
-    }
-
-    function buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir = 'LR') {
+    function buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir = 'LR', showPhysicalName = false) {
+        const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
         const builder = new Jig.mermaid.ClassDiagramBuilder();
         const visited = new Set();
+
+        function typeRefToLabel(typeRef) {
+            if (!typeRef) return '';
+            const name = typeLabel(typeRef.fqn);
+            if (!typeRef.typeArgumentRefs || typeRef.typeArgumentRefs.length === 0) return name;
+            return `${name}~${typeRef.typeArgumentRefs.map(a => typeRefToLabel(a)).join(', ')}~`;
+        }
 
         function traverse(fqn) {
             if (visited.has(fqn)) return;
@@ -659,10 +659,10 @@ const InboundApp = (() => {
             if (!ioType) return;
 
             const classId = Jig.util.fqnToId('io', fqn);
-            builder.addClass(classId, Jig.glossary.getTypeTerm(fqn).title);
+            builder.addClass(classId, typeLabel(fqn));
 
             (ioType.fields || []).forEach(field => {
-                builder.addField(classId, typeRefToText(field.typeRef), field.name || '');
+                builder.addField(classId, typeRefToLabel(field.typeRef), field.name || '');
                 collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
                     const nestedClassId = Jig.util.fqnToId('io', nestedFqn);
                     traverse(nestedFqn);

@@ -2304,7 +2304,6 @@ p.jig-data-warning {
 .controller-group-path {
     color: #5a7a9a;
     font-weight: normal;
-    margin-left: 6px;
 }
 
 .controller-group-count {
@@ -2322,15 +2321,13 @@ p.jig-data-warning {
     border: none;
     cursor: pointer;
     padding: 2px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 16px;
     height: 16px;
     flex-shrink: 0;
     color: #5a7a9a;
-    vertical-align: middle;
-    margin-left: 4px;
 }
 
 .controller-group-toggle::before {

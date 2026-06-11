@@ -440,14 +440,8 @@ const InboundApp = (() => {
                     groupMap.set(adapterFqn, {adapterFqn, cardId, classPath, rows: []});
                 }
                 const [method, path] = splitHttpPath(ep.path);
-                const methodCell = Jig.dom.createElement("td", {
-                    children: [Jig.dom.createElement("a", {
-                        textContent: Jig.glossary.getMethodTerm(ep.fqn, true).title,
-                        attributes: {href: '#' + cardId}
-                    })]
-                });
                 groupMap.get(adapterFqn).rows.push(
-                    [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), methodCell]
+                    [Jig.dom.createCell(classPath + path), Jig.dom.createCell(method), methodLinkCell(ep.fqn, cardId)]
                 );
             });
 

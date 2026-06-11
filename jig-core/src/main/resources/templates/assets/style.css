@@ -640,6 +640,12 @@ td.fqn {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
+.io-types-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .io-type-card .field-item,
 .io-type-nested .field-item {
     padding: 3px 0;

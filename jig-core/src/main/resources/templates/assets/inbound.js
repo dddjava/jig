@@ -586,11 +586,27 @@ const InboundApp = (() => {
                 titleSuffix: Jig.glossary.sourceLink(rootFqn),
                 extraClass: 'io-type-card',
             });
-            // カード内のフィールド型はすぐ下にネスト展開があるためリンク不要
+
+            const {panels, section: tabSection} = Jig.dom.tab.buildSection(
+                [{id: 'fields', label: 'フィールド'}, {id: 'diagram', label: 'クラス図'}],
+                {className: "jig-card-section tab-content-section tab-io-section"}
+            );
+            card.appendChild(tabSection);
+
+            // フィールド展開タブ: カード内のフィールド型はすぐ下にネスト展開があるためリンク不要
             const savedResolver = Jig.dom.type.getResolver();
             Jig.dom.type.setResolver(null);
-            appendIoTypeExpanded(card, rootFqn, ioTypeMap, new Set([rootFqn]));
-            Jig.dom.type.setResolver(savedResolver);
+            try {
+                appendIoTypeExpanded(panels['fields'], rootFqn, ioTypeMap, new Set([rootFqn]));
+            } finally {
+                Jig.dom.type.setResolver(savedResolver);
+            }
+
+            // クラス図タブ
+            Jig.mermaid.diagram.createAndRegister(panels['diagram'], (mmdContainer) => {
+                Jig.mermaid.render.renderWithControls(mmdContainer, (dir) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir));
+            });
+
             section.appendChild(card);
         });
 
@@ -621,14 +637,42 @@ const InboundApp = (() => {
     }
 
     function collectIoFqnsFromTypeRef(typeRef, ioTypeMap) {
-        const result = [];
-        function collect(ref) {
-            if (!ref) return;
-            if (ioTypeMap.has(ref.fqn)) result.push(ref.fqn);
-            (ref.typeArgumentRefs || []).forEach(collect);
+        return Jig.util.collectTypeRefFqns(typeRef).filter(fqn => ioTypeMap.has(fqn));
+    }
+
+    function typeRefToText(typeRef) {
+        if (!typeRef) return '';
+        const simpleName = fqn => fqn.slice(fqn.lastIndexOf('.') + 1);
+        const name = simpleName(typeRef.fqn);
+        if (!typeRef.typeArgumentRefs || typeRef.typeArgumentRefs.length === 0) return name;
+        return `${name}~${typeRef.typeArgumentRefs.map(a => typeRefToText(a)).join(', ')}~`;
+    }
+
+    function buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir = 'LR') {
+        const builder = new Jig.mermaid.ClassDiagramBuilder();
+        const visited = new Set();
+
+        function traverse(fqn) {
+            if (visited.has(fqn)) return;
+            visited.add(fqn);
+            const ioType = ioTypeMap.get(fqn);
+            if (!ioType) return;
+
+            const classId = Jig.util.fqnToId('io', fqn);
+            builder.addClass(classId, Jig.glossary.getTypeTerm(fqn).title);
+
+            (ioType.fields || []).forEach(field => {
+                builder.addField(classId, typeRefToText(field.typeRef), field.name || '');
+                collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
+                    const nestedClassId = Jig.util.fqnToId('io', nestedFqn);
+                    traverse(nestedFqn);
+                    builder.addEdge(classId, nestedClassId, 'association');
+                });
+            });
         }
-        collect(typeRef);
-        return result;
+
+        traverse(rootFqn);
+        return builder.build(dir);
     }
 
     return {

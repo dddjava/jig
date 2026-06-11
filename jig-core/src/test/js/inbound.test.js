@@ -289,6 +289,19 @@ test.describe('inbound.js', () => {
                         ]
                     });
                 }
+            },
+            tab: {
+                buildSection: (tabDefs, options = {}) => {
+                    const panels = {};
+                    tabDefs.forEach(tab => {
+                        panels[tab.id] = createElement('div', {className: 'jig-tab-panel'});
+                    });
+                    const section = createElement('div', {
+                        className: options.className,
+                        children: Object.values(panels)
+                    });
+                    return {panels, section};
+                }
             }
         };
         globalThis.Jig.mermaid.render.renderWithControls = (targetEl, source, {direction} = {}) => {
@@ -1068,9 +1081,10 @@ test.describe('inbound.js', () => {
         assert.equal(orderIdTopLevel, null, 'OrderIdはトップレベルには存在しない');
 
         // フィールド行の直後にネストセクションが来る（DOM順序の確認）
-        const cardChildren = Array.from(orderItemCard.children);
-        const idFieldIdx    = cardChildren.findIndex(el => el.classList.contains('field-item'));
-        const nestedIdx     = cardChildren.findIndex(el => el.classList.contains('io-type-nested'));
+        const fieldsPanel = orderItemCard.querySelector('.jig-tab-panel');
+        const panelChildren = Array.from(fieldsPanel.children);
+        const idFieldIdx    = panelChildren.findIndex(el => el.classList.contains('field-item'));
+        const nestedIdx     = panelChildren.findIndex(el => el.classList.contains('io-type-nested'));
         assert.ok(idFieldIdx !== -1 && nestedIdx !== -1, 'フィールドとネストセクションが存在する');
         assert.ok(nestedIdx === idFieldIdx + 1, 'ネストセクションはフィールド行の直後に配置される');
     });

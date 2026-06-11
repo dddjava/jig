@@ -980,7 +980,7 @@ test.describe('inbound.js', () => {
         assert.deepEqual(adapterLinks.map(a => a.textContent), ['HttpController'], 'HttpControllerのみ表示');
     });
 
-    test('ioTypesがある場合は入出力オブジェクト一覧セクションが描画される', () => {
+    test('ioTypesがある場合はルート型カードが描画されフィールドを展開する', () => {
         globalThis.inboundData = {
             inboundAdapters: [{
                 fqn: "com.example.OrderController",
@@ -995,7 +995,8 @@ test.describe('inbound.js', () => {
             }],
             ioTypes: [
                 {fqn: "com.example.OrderItem", fields: [{name: "id", typeRef: {fqn: "java.lang.Long"}, isDeprecated: false}], isDeprecated: false}
-            ]
+            ],
+            rootIoTypeFqns: ["com.example.OrderItem"]
         };
         setGlossaryData({
             "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
@@ -1018,6 +1019,85 @@ test.describe('inbound.js', () => {
         assert.equal(fieldsSection.querySelector('.method-item').textContent, 'id');
     });
 
+    test('ネスト型をルートカード内に再帰展開する', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.OrderController",
+                classPath: "/api", relations: [],
+                entrypoints: [{
+                    fqn: "com.example.OrderController#order()",
+                    entrypointType: "HTTP_API",
+                    path: "GET /order",
+                    parameters: [],
+                    returnTypeRef: {fqn: "com.example.OrderItem"}
+                }]
+            }],
+            ioTypes: [
+                {fqn: "com.example.OrderItem", fields: [{name: "id", typeRef: {fqn: "com.example.OrderId"}, isDeprecated: false}], isDeprecated: false},
+                {fqn: "com.example.OrderId",   fields: [{name: "value", typeRef: {fqn: "java.lang.Long"}, isDeprecated: false}], isDeprecated: false}
+            ],
+            rootIoTypeFqns: ["com.example.OrderItem"]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""},
+            "com.example.OrderItem": {title: "OrderItem", description: "", kind: "クラス"},
+            "com.example.OrderId":   {title: "OrderId",   description: "", kind: "クラス"}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        // OrderItemはルートカードとして存在する
+        const orderItemCard = mainList.querySelector('#' + Jig.util.fqnToId('io-type', 'com.example.OrderItem'));
+        assert.ok(orderItemCard, 'OrderItemのルートカードが存在する');
+
+        // OrderIdはOrderItemカード内にネストとして存在する
+        const orderIdSection = orderItemCard.querySelector('.io-type-nested');
+        assert.ok(orderIdSection, 'OrderIdのネストセクションがOrderItem内に存在する');
+        assert.equal(orderIdSection.querySelector('h4').textContent, 'OrderId');
+
+        // OrderIdの内部にフィールドが展開される
+        const nestedFields = orderIdSection.querySelector('.methods-section.fields');
+        assert.ok(nestedFields, 'OrderIdのフィールドセクションが存在する');
+        assert.equal(nestedFields.querySelector('.method-item').textContent, 'value');
+
+        // OrderIdは独立したトップレベルカードとして存在しない（ルートでないため）
+        const orderIdTopLevel = mainList.querySelector('#io-types > #' + Jig.util.fqnToId('io-type', 'com.example.OrderId'));
+        assert.equal(orderIdTopLevel, null, 'OrderIdはトップレベルには存在しない');
+    });
+
+    test('循環参照がある場合でも無限ループしない', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.Ctrl",
+                classPath: "/api", relations: [],
+                entrypoints: [{fqn: "com.example.Ctrl#a()", entrypointType: "HTTP_API", path: "GET /a"}]
+            }],
+            ioTypes: [
+                {fqn: "com.example.TypeA", fields: [{name: "b", typeRef: {fqn: "com.example.TypeB"}, isDeprecated: false}], isDeprecated: false},
+                {fqn: "com.example.TypeB", fields: [{name: "a", typeRef: {fqn: "com.example.TypeA"}, isDeprecated: false}], isDeprecated: false}
+            ],
+            rootIoTypeFqns: ["com.example.TypeA"]
+        };
+        setGlossaryData({
+            "com.example.Ctrl": {title: "Ctrl", description: "", kind: "クラス"},
+            "com.example.Ctrl#a()": {title: "a", simpleText: "a", kind: "メソッド", description: ""},
+            "com.example.TypeA": {title: "TypeA", description: "", kind: "クラス"},
+            "com.example.TypeB": {title: "TypeB", description: "", kind: "クラス"}
+        });
+
+        assert.doesNotThrow(() => InboundApp.init(), '循環参照があっても例外が発生しない');
+
+        const mainList = document.getElementById('inbound-list');
+        const typeACard = mainList.querySelector('#' + Jig.util.fqnToId('io-type', 'com.example.TypeA'));
+        assert.ok(typeACard, 'TypeAカードが存在する');
+        // TypeBはTypeAの内部にネストされるが、TypeBからTypeAへの再展開はされない
+        const typeBSection = typeACard.querySelector('.io-type-nested');
+        assert.ok(typeBSection, 'TypeBのネストセクションが存在する');
+        const nestedTypeAInB = typeBSection.querySelector('.io-type-nested');
+        assert.equal(nestedTypeAInB, null, 'TypeB内にTypeAが再展開されない（無限ループ防止）');
+    });
+
     test('ioTypesが空の場合は入出力オブジェクト一覧セクションが描画されない', () => {
         globalThis.inboundData = {
             inboundAdapters: [{
@@ -1031,7 +1111,8 @@ test.describe('inbound.js', () => {
                     returnTypeRef: {fqn: "java.lang.String"}
                 }]
             }],
-            ioTypes: []
+            ioTypes: [],
+            rootIoTypeFqns: []
         };
         setGlossaryData({
             "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
@@ -1051,7 +1132,8 @@ test.describe('inbound.js', () => {
                 classPath: "/api", relations: [],
                 entrypoints: [{fqn: "com.example.OrderController#order()", entrypointType: "HTTP_API", path: "GET /order"}]
             }],
-            ioTypes: []
+            ioTypes: [],
+            rootIoTypeFqns: []
         };
         setGlossaryData({"com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"}, "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""}});
         InboundApp.init();

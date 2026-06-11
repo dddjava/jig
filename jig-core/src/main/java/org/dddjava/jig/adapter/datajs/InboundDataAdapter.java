@@ -16,6 +16,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -82,22 +83,32 @@ public class InboundDataAdapter implements DataAdapter {
                     .and("entrypoints", Json.arrayObjects(entrypointList)));
         });
 
-        List<JsonObjectBuilder> ioTypeList = collectIoTypes(inboundAdapters, jigTypes);
+        var ioTypes = collectIoTypes(inboundAdapters, jigTypes);
 
         return Json.object("inboundAdapters", Json.arrayObjects(controllerList))
-                .and("ioTypes", Json.arrayObjects(ioTypeList))
+                .and("ioTypes", Json.arrayObjects(ioTypes.types()))
+                .and("rootIoTypeFqns", Json.array(ioTypes.rootFqns()))
                 .build();
     }
 
-    private static List<JsonObjectBuilder> collectIoTypes(InboundAdapters inboundAdapters, JigTypes jigTypes) {
+    private record IoTypeCollection(List<JsonObjectBuilder> types, List<String> rootFqns) {}
+
+    private static IoTypeCollection collectIoTypes(InboundAdapters inboundAdapters, JigTypes jigTypes) {
         var queue = new ArrayDeque<TypeId>();
+        var rootTypeIds = new LinkedHashSet<TypeId>();
         var visited = new LinkedHashMap<TypeId, JigType>();
 
         inboundAdapters.groups().forEach(inboundAdapter ->
                 inboundAdapter.entrypoints().forEach(entrypoint -> {
                     var method = entrypoint.jigMethod();
-                    method.parameterList().forEach(p -> p.typeReference().toTypeIdStream().forEach(queue::add));
-                    method.returnType().toTypeIdStream().forEach(queue::add);
+                    method.parameterList().forEach(p -> p.typeReference().toTypeIdStream().forEach(id -> {
+                        rootTypeIds.add(id);
+                        queue.add(id);
+                    }));
+                    method.returnType().toTypeIdStream().forEach(id -> {
+                        rootTypeIds.add(id);
+                        queue.add(id);
+                    });
                 })
         );
 
@@ -112,7 +123,14 @@ public class InboundDataAdapter implements DataAdapter {
             });
         }
 
-        return visited.values().stream()
+        List<String> rootFqns = rootTypeIds.stream()
+                .filter(visited::containsKey)
+                .map(id -> visited.get(id).fqn())
+                .distinct()
+                .sorted()
+                .toList();
+
+        List<JsonObjectBuilder> types = visited.values().stream()
                 .sorted(Comparator.comparing(JigType::fqn))
                 .map(jigType -> {
                     var fields = jigType.instanceJigFields().fields().stream()
@@ -123,5 +141,7 @@ public class InboundDataAdapter implements DataAdapter {
                             .and("isDeprecated", jigType.isDeprecated());
                 })
                 .toList();
+
+        return new IoTypeCollection(types, rootFqns);
     }
 }

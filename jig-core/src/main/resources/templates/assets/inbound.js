@@ -640,6 +640,19 @@ const InboundApp = (() => {
         return Jig.util.collectTypeRefFqns(typeRef).filter(fqn => ioTypeMap.has(fqn));
     }
 
+    const COLLECTION_FQNS = new Set([
+        'java.util.List', 'java.util.Set', 'java.util.Map',
+        'java.util.Collection', 'java.util.Iterable',
+        'java.util.Queue', 'java.util.Deque', 'java.util.SortedSet',
+    ]);
+
+    function ioTypeMultiplicity(typeRef) {
+        if (!typeRef) return '';
+        if (typeRef.fqn === 'java.util.Optional') return '0..1';
+        if (COLLECTION_FQNS.has(typeRef.fqn)) return '*';
+        return '';
+    }
+
     function buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir = 'LR', showPhysicalName = false) {
         const {type: typeLabel} = Jig.glossary.makeLabels(showPhysicalName);
         const builder = new Jig.mermaid.ClassDiagramBuilder();
@@ -663,10 +676,11 @@ const InboundApp = (() => {
 
             (ioType.fields || []).forEach(field => {
                 builder.addField(classId, typeRefToLabel(field.typeRef), field.name || '');
+                const multiplicity = ioTypeMultiplicity(field.typeRef);
                 collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
                     const nestedClassId = Jig.util.fqnToId('io', nestedFqn);
                     traverse(nestedFqn);
-                    builder.addEdge(classId, nestedClassId, 'association');
+                    builder.addEdge(classId, nestedClassId, 'association', multiplicity);
                 });
             });
         }

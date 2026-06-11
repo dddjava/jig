@@ -1624,7 +1624,11 @@ globalThis.Jig.mermaid = (() => {
         if (edge.edgeType === 'inheritance') {
             return `${edge.to} <|-- ${edge.from}`;
         }
-        return `${edge.from} ${CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>'} ${edge.to}`;
+        const arrow = CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>';
+        if (edge.multiplicity) {
+            return `${edge.from} "1" ${arrow} "${edge.multiplicity}" ${edge.to}`;
+        }
+        return `${edge.from} ${arrow} ${edge.to}`;
     }
 
     // classDiagram ビルダー
@@ -1661,11 +1665,11 @@ globalThis.Jig.mermaid = (() => {
             cls.members.push(`    ${visChar}${methodName}(${params.join(', ')})${staticMark}${ret}`);
         }
 
-        addEdge(from, to, edgeType = 'dependency') {
+        addEdge(from, to, edgeType = 'dependency', multiplicity = '') {
             const key = `${from}::${to}`;
             if (!this._edgeSet.has(key)) {
                 this._edgeSet.add(key);
-                this._edges.push({from, to, edgeType});
+                this._edges.push({from, to, edgeType, multiplicity});
             }
         }
 

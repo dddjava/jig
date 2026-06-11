@@ -1015,9 +1015,9 @@ test.describe('inbound.js', () => {
         assert.ok(orderItemCard, 'OrderItemのカードが存在する');
         assert.equal(orderItemCard.querySelector('h3 span').textContent, 'OrderItem');
 
-        const fieldsEl = orderItemCard.querySelector('.io-type-fields');
-        assert.ok(fieldsEl, 'フィールド要素が存在する');
-        assert.equal(fieldsEl.querySelector('.method-item').textContent, 'id');
+        const fieldItem = orderItemCard.querySelector('.method-item');
+        assert.ok(fieldItem, 'フィールドアイテムが存在する');
+        assert.equal(fieldItem.textContent, 'id');
     });
 
     test('ネスト型をルートカード内に再帰展開する', () => {
@@ -1058,13 +1058,20 @@ test.describe('inbound.js', () => {
         assert.equal(orderIdSection.querySelector('.io-type-nested-label').textContent, 'OrderId');
 
         // OrderIdの内部にフィールドが展開される
-        const nestedFields = orderIdSection.querySelector('.io-type-fields');
-        assert.ok(nestedFields, 'OrderIdのフィールド要素が存在する');
-        assert.equal(nestedFields.querySelector('.method-item').textContent, 'value');
+        const nestedFieldItem = orderIdSection.querySelector('.method-item');
+        assert.ok(nestedFieldItem, 'OrderIdのフィールドアイテムが存在する');
+        assert.equal(nestedFieldItem.textContent, 'value');
 
         // OrderIdは独立したトップレベルカードとして存在しない（ルートでないため）
         const orderIdTopLevel = mainList.querySelector('#io-types > #' + Jig.util.fqnToId('io-type', 'com.example.OrderId'));
         assert.equal(orderIdTopLevel, null, 'OrderIdはトップレベルには存在しない');
+
+        // フィールド行の直後にネストセクションが来る（DOM順序の確認）
+        const cardChildren = Array.from(orderItemCard.children);
+        const idFieldIdx    = cardChildren.findIndex(el => el.classList.contains('method-item'));
+        const nestedIdx     = cardChildren.findIndex(el => el.classList.contains('io-type-nested'));
+        assert.ok(idFieldIdx !== -1 && nestedIdx !== -1, 'フィールドとネストセクションが存在する');
+        assert.ok(nestedIdx === idFieldIdx + 1, 'ネストセクションはフィールド行の直後に配置される');
     });
 
     test('循環参照がある場合でも無限ループしない', () => {

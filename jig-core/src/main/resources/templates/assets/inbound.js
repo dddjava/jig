@@ -587,6 +587,7 @@ const InboundApp = (() => {
                 title: typeTerm.title,
                 fqn: rootFqn,
                 titleSuffix: Jig.glossary.sourceLink(rootFqn),
+                extraClass: 'io-type-card',
             });
             idAssigned.add(rootFqn);
             appendIoTypeExpanded(card, rootFqn, ioTypeMap, idAssigned, new Set([rootFqn]));
@@ -600,40 +601,30 @@ const InboundApp = (() => {
         const ioType = ioTypeMap.get(fqn);
         if (!ioType) return;
 
-        const fields = ioType.fields || [];
-        if (fields.length > 0) {
-            const fieldsEl = Jig.dom.createElement('div', {className: 'io-type-fields'});
-            fields.forEach(field => fieldsEl.appendChild(Jig.dom.type.fieldItem(field)));
-            container.appendChild(fieldsEl);
-        }
+        // フィールドごとに「フィールド行 → そのネスト型展開」を逐次処理する
+        (ioType.fields || []).forEach(field => {
+            container.appendChild(Jig.dom.type.fieldItem(field));
 
-        // フィールドの型参照からネストすべきIOタイプを収集（重複除去・順序維持）
-        const nestedFqns = [];
-        fields.forEach(field => {
             collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
-                if (!visitedInBranch.has(nestedFqn) && !nestedFqns.includes(nestedFqn)) {
-                    nestedFqns.push(nestedFqn);
-                }
-            });
-        });
+                if (visitedInBranch.has(nestedFqn)) return;
+                visitedInBranch.add(nestedFqn);
 
-        nestedFqns.forEach(nestedFqn => {
-            visitedInBranch.add(nestedFqn);
-            const nestedTypeTerm = Jig.glossary.getTypeTerm(nestedFqn);
-            // 同FQNの最初の出現にのみIDを付与する
-            const nestedId = idAssigned.has(nestedFqn) ? undefined : Jig.util.fqnToId('io-type', nestedFqn);
-            if (nestedId) idAssigned.add(nestedFqn);
+                const nestedTypeTerm = Jig.glossary.getTypeTerm(nestedFqn);
+                // 同FQNの最初の出現にのみIDを付与する
+                const nestedId = idAssigned.has(nestedFqn) ? undefined : Jig.util.fqnToId('io-type', nestedFqn);
+                if (nestedId) idAssigned.add(nestedFqn);
 
-            const nestedSection = Jig.dom.createElement('div', {
-                id: nestedId,
-                className: 'io-type-nested',
+                const nestedSection = Jig.dom.createElement('div', {
+                    id: nestedId,
+                    className: 'io-type-nested',
+                });
+                nestedSection.appendChild(Jig.dom.createElement('span', {
+                    className: 'io-type-nested-label',
+                    textContent: nestedTypeTerm.title,
+                }));
+                appendIoTypeExpanded(nestedSection, nestedFqn, ioTypeMap, idAssigned, visitedInBranch);
+                container.appendChild(nestedSection);
             });
-            nestedSection.appendChild(Jig.dom.createElement('span', {
-                className: 'io-type-nested-label',
-                textContent: nestedTypeTerm.title,
-            }));
-            appendIoTypeExpanded(nestedSection, nestedFqn, ioTypeMap, idAssigned, visitedInBranch);
-            container.appendChild(nestedSection);
         });
     }
 

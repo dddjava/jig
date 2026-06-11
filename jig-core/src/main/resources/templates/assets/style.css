@@ -630,7 +630,8 @@ td.fqn {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.io-type-fields .method-item {
+.io-type-card .method-item,
+.io-type-nested .method-item {
     padding: 3px 0;
     border-bottom: none;
 }

@@ -607,21 +607,6 @@ const InboundApp = (() => {
                 extraClass: 'io-type-card',
             });
 
-            const usages = usageMap.get(rootFqn);
-            if (usages.length > 0) {
-                card.appendChild(Jig.dom.createElement('div', {
-                    className: 'io-type-usages',
-                    children: [
-                        Jig.dom.i18nText('span', '使用するエントリーポイント', {className: 'io-type-usages-label'}),
-                        ...usages.map(({ep, cardId}) => Jig.dom.createElement('a', {
-                            className: 'io-type-usage-link',
-                            textContent: Jig.glossary.getMethodTerm(ep.fqn, true).title,
-                            attributes: {href: '#' + cardId}
-                        }))
-                    ]
-                }));
-            }
-
             const {panels, section: tabSection} = Jig.dom.tab.buildSection(
                 [{id: 'fields', label: 'フィールド'}, {id: 'diagram', label: 'クラス図'}],
                 {className: "jig-card-section tab-content-section tab-io-section"}
@@ -641,6 +626,21 @@ const InboundApp = (() => {
             Jig.mermaid.diagram.createAndRegister(panels['diagram'], (mmdContainer) => {
                 Jig.mermaid.render.renderWithControls(mmdContainer, (dir, opts) => buildIoTypeClassDiagramCode(rootFqn, ioTypeMap, dir, opts?.showPhysicalName), {direction: 'TB', enableLabelToggle: true});
             });
+
+            const usages = usageMap.get(rootFqn);
+            if (usages.length > 0) {
+                card.appendChild(Jig.dom.createElement('div', {
+                    className: 'io-type-usages',
+                    children: [
+                        Jig.dom.i18nText('span', '使用するエントリーポイント', {className: 'io-type-usages-label'}),
+                        ...usages.map(({ep, cardId}) => Jig.dom.createElement('a', {
+                            className: 'io-type-usage-link',
+                            textContent: Jig.glossary.getMethodTerm(ep.fqn, true).title,
+                            attributes: {href: '#' + cardId}
+                        }))
+                    ]
+                }));
+            }
 
             section.appendChild(card);
         });

@@ -2,6 +2,7 @@ const InboundApp = (() => {
     const Jig = globalThis.Jig;
 
     const ADAPTER_ID_PREFIX = "adapter";
+    const SIMPLIFIED_CLASS = 'entrypoint-section--simplified';
 
     const TYPE_CONFIG = [
         {type: 'HTTP_API',       label: 'リクエストハンドラ', headers: ['パス', 'メソッド', 'ハンドラ'],  filterPlaceholder: 'パスで絞り込み'},
@@ -260,29 +261,24 @@ const InboundApp = (() => {
     function buildEntrypointItem(ep) {
         const methodTerm = Jig.glossary.getMethodTerm(ep.fqn, true);
 
-        const children = [
-            Jig.dom.createElement("div", {
-                className: "entrypoint-item__header",
-                children: [
-                    Jig.dom.createElement("span", {
-                        className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
-                        textContent: methodTerm.title
-                    }),
-                    Jig.dom.createElement("span", {
-                        className: "entrypoint-item__path",
-                        textContent: ep.path || ''
-                    })
-                ]
-            })
-        ];
-
-        if (!state.simplified) {
-            children.push(Jig.dom.type.methodIOSection(ep.parameters || [], ep.returnTypeRef));
-        }
-
         return Jig.dom.createElement("div", {
             className: "entrypoint-item",
-            children
+            children: [
+                Jig.dom.createElement("div", {
+                    className: "entrypoint-item__header",
+                    children: [
+                        Jig.dom.createElement("span", {
+                            className: "entrypoint-item__name" + (ep.isDeprecated ? " deprecated" : ""),
+                            textContent: methodTerm.title
+                        }),
+                        Jig.dom.createElement("span", {
+                            className: "entrypoint-item__path",
+                            textContent: ep.path || ''
+                        })
+                    ]
+                }),
+                Jig.dom.type.methodIOSection(ep.parameters || [], ep.returnTypeRef)
+            ]
         });
     }
 
@@ -519,7 +515,25 @@ const InboundApp = (() => {
             }
 
             if (adapter.entrypoints && adapter.entrypoints.length > 0) {
-                const epSection = Jig.dom.card.item({title: "エントリーポイント"});
+                const epSection = Jig.dom.card.item({title: "エントリーポイント", extraClass: "entrypoint-section"});
+
+                if (state.simplified) {
+                    epSection.classList.add(SIMPLIFIED_CLASS);
+                }
+
+                const btnSpan = Jig.dom.i18nText('span', '簡略表示');
+                const toggleBtn = Jig.dom.createElement('button', {
+                    className: 'simplified-toggle-btn',
+                    attributes: {'aria-pressed': String(state.simplified)},
+                    children: [btnSpan]
+                });
+                toggleBtn.addEventListener('click', () => {
+                    epSection.classList.toggle(SIMPLIFIED_CLASS);
+                    const isNowSimplified = epSection.classList.contains(SIMPLIFIED_CLASS);
+                    toggleBtn.setAttribute('aria-pressed', String(isNowSimplified));
+                });
+                epSection.querySelector('h4').appendChild(toggleBtn);
+
                 adapter.entrypoints.forEach(ep => epSection.appendChild(buildEntrypointItem(ep)));
                 jigCard.appendChild(epSection);
             }

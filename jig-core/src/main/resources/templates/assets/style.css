@@ -410,6 +410,38 @@ main table thead {
     border-bottom: none;
 }
 
+.entrypoint-section > h4 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.simplified-toggle-btn {
+    font-size: 0.75em;
+    padding: 2px 8px;
+    cursor: pointer;
+    border: 1px solid #1b3a66;
+    border-radius: 3px;
+    background: none;
+    color: #1b3a66;
+    font-weight: normal;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.simplified-toggle-btn:hover {
+    background-color: rgba(27, 58, 102, 0.08);
+}
+
+.simplified-toggle-btn[aria-pressed="true"] {
+    background-color: #1b3a66;
+    color: #fff;
+}
+
+.entrypoint-section--simplified .entrypoint-item__io {
+    display: none;
+}
+
 .entrypoint-item__header {
     display: flex;
     gap: 12px;

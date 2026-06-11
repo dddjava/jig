@@ -841,7 +841,10 @@ test.describe('inbound.js', () => {
 
         // 初期状態では入出力セクションが表示されている
         const mainList = document.getElementById('inbound-list');
-        assert.ok(mainList.querySelector('.entrypoint-item__io'), '初期状態では入出力セクションが表示されている');
+        const epSection = mainList.querySelector('.entrypoint-section');
+        assert.ok(epSection, '初期状態ではエントリーポイントセクションが存在する');
+        assert.ok(!epSection.classList.has('entrypoint-section--simplified'), '初期状態では簡略表示クラスなし');
+        assert.ok(mainList.querySelector('.entrypoint-item__io'), '初期状態では入出力セクションが存在する');
 
         // 簡略表示チェックボックスを取得してオン
         const checkbox = document.getElementById('simplified-toggle');
@@ -849,7 +852,8 @@ test.describe('inbound.js', () => {
         checkbox._checked = true;
         checkbox.dispatchEvent(new EventStub('change'));
 
-        assert.ok(!mainList.querySelector('.entrypoint-item__io'), '簡略表示オン: 入出力セクションが非表示になる');
+        const epSectionSimplified = mainList.querySelector('.entrypoint-section');
+        assert.ok(epSectionSimplified.classList.has('entrypoint-section--simplified'), '簡略表示オン: epSectionに簡略表示クラスが付与される');
         assert.ok(mainList.querySelector('.entrypoint-item__name'), '簡略表示オン: 名称は表示されている');
         assert.ok(mainList.querySelector('.entrypoint-item__path'), '簡略表示オン: パスは表示されている');
 
@@ -857,7 +861,33 @@ test.describe('inbound.js', () => {
         checkbox._checked = false;
         checkbox.dispatchEvent(new EventStub('change'));
 
-        assert.ok(mainList.querySelector('.entrypoint-item__io'), '簡略表示オフ: 入出力セクションが再表示される');
+        const epSectionFull = mainList.querySelector('.entrypoint-section');
+        assert.ok(!epSectionFull.classList.has('entrypoint-section--simplified'), '簡略表示オフ: 簡略表示クラスが削除される');
+    });
+
+    test('各エントリーポイントカードの簡略表示トグルボタンでカード単位の表示切り替えができる', () => {
+        globalThis.inboundData = mockInboundData;
+        setGlossaryData(mockGlossaryData);
+        globalThis.usecaseData = mockUsecaseData;
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        const epSection = mainList.querySelector('.entrypoint-section');
+        assert.ok(epSection, 'エントリーポイントセクションが存在する');
+
+        const toggleBtn = epSection.querySelector('.simplified-toggle-btn');
+        assert.ok(toggleBtn, 'カード内にトグルボタンが存在する');
+        assert.equal(toggleBtn.getAttribute('aria-pressed'), 'false', '初期状態はaria-pressed=false');
+
+        // 簡略表示にする
+        toggleBtn.dispatchEvent(new EventStub('click'));
+        assert.equal(toggleBtn.getAttribute('aria-pressed'), 'true', 'クリック後はaria-pressed=true');
+        assert.ok(epSection.classList.has('entrypoint-section--simplified'), 'epSectionに簡略表示クラスが付与される');
+
+        // 詳細表示に戻す
+        toggleBtn.dispatchEvent(new EventStub('click'));
+        assert.equal(toggleBtn.getAttribute('aria-pressed'), 'false', '再クリックでaria-pressed=false');
+        assert.ok(!epSection.classList.has('entrypoint-section--simplified'), 'epSectionの簡略表示クラスが削除される');
     });
 
     test('init再呼び出し時に簡略表示チェックボックスはリセットされリスナーは重複しない', () => {
@@ -870,14 +900,16 @@ test.describe('inbound.js', () => {
         assert.ok(checkbox);
         checkbox._checked = true;
         checkbox.dispatchEvent(new EventStub('change'));
-        assert.ok(!document.getElementById('inbound-list').querySelector('.entrypoint-item__io'), '簡略表示オン');
+        const epSectionSimplified = document.getElementById('inbound-list').querySelector('.entrypoint-section');
+        assert.ok(epSectionSimplified.classList.has('entrypoint-section--simplified'), '簡略表示オン');
 
         // init再呼び出し
         InboundApp.init();
 
         assert.ok(document.getElementById('simplified-toggle'), 'チェックボックスは存在する');
         assert.equal(document.getElementById('simplified-toggle').checked, false, 'チェックはリセットされる');
-        assert.ok(document.getElementById('inbound-list').querySelector('.entrypoint-item__io'), '入出力セクションが再表示される');
+        const epSectionAfter = document.getElementById('inbound-list').querySelector('.entrypoint-section');
+        assert.ok(!epSectionAfter.classList.has('entrypoint-section--simplified'), '簡略表示クラスがリセットされる');
     });
 
     test('エントリーポイント種別が1種類以下の場合は表示設定パネルを非表示にする', () => {

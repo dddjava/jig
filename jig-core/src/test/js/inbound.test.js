@@ -248,6 +248,7 @@ test.describe('inbound.js', () => {
             type: {
                 methodsList: createMethodsList,
                 setResolver: () => {},
+                getResolver: () => null,
                 fieldItem: (field) => createElement('div', {className: 'method-item', textContent: field.name}),
                 fieldsList: (fields) => {
                     if (!fields || fields.length === 0) return null;

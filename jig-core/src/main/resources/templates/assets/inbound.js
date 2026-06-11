@@ -590,7 +590,11 @@ const InboundApp = (() => {
                 extraClass: 'io-type-card',
             });
             idAssigned.add(rootFqn);
+            // カード内のフィールド型はすぐ下にネスト展開があるためリンク不要
+            const savedResolver = Jig.dom.type.getResolver();
+            Jig.dom.type.setResolver(null);
             appendIoTypeExpanded(card, rootFqn, ioTypeMap, idAssigned, new Set([rootFqn]));
+            Jig.dom.type.setResolver(savedResolver);
             section.appendChild(card);
         });
 

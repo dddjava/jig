@@ -120,8 +120,7 @@ public class InboundDataAdapter implements DataAdapter {
 
         List<String> rootFqns = rootTypeIds.stream()
                 .filter(visited::containsKey)
-                .map(id -> visited.get(id).fqn())
-                .distinct()
+                .map(TypeId::fqn)
                 .sorted()
                 .toList();
 

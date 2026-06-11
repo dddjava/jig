@@ -598,10 +598,13 @@ const InboundApp = (() => {
         const section = Jig.dom.card.type({id: "io-types", title: "入出力オブジェクト一覧", extraClass: "io-types-section"});
 
         roots.forEach(rootFqn => {
-            const typeTerm = Jig.glossary.getTypeTerm(rootFqn);
+            const rootIoType = ioTypeMap.get(rootFqn);
             const card = Jig.dom.card.type({
                 id: Jig.util.fqnToId('io-type', rootFqn),
-                title: typeTerm.title,
+                title: Jig.dom.createElement('span', {
+                    textContent: Jig.glossary.getTypeTerm(rootFqn).title,
+                    className: rootIoType.isDeprecated ? 'deprecated' : '',
+                }),
                 fqn: rootFqn,
                 titleSuffix: Jig.glossary.sourceLink(rootFqn),
                 extraClass: 'io-type-card',

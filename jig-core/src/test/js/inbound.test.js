@@ -1034,6 +1034,36 @@ test.describe('inbound.js', () => {
         assert.equal(fieldItem.textContent, 'id');
     });
 
+    test('deprecatedなルート型カードのタイトルにdeprecatedクラスが付く', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                fqn: "com.example.OrderController",
+                classPath: "/api", relations: [],
+                entrypoints: [{
+                    fqn: "com.example.OrderController#order()",
+                    entrypointType: "HTTP_API",
+                    path: "GET /order",
+                    parameters: [],
+                    returnTypeRef: {fqn: "com.example.OrderItem"}
+                }]
+            }],
+            ioTypes: [
+                {fqn: "com.example.OrderItem", fields: [{name: "id", typeRef: {fqn: "java.lang.Long"}, isDeprecated: false}], isDeprecated: true}
+            ],
+            rootIoTypeFqns: ["com.example.OrderItem"]
+        };
+        setGlossaryData({
+            "com.example.OrderController": {title: "OrderController", description: "", kind: "クラス"},
+            "com.example.OrderController#order()": {title: "order", simpleText: "order", kind: "メソッド", description: ""},
+            "com.example.OrderItem": {title: "OrderItem", description: "", kind: "クラス"}
+        });
+        InboundApp.init();
+
+        const orderItemCard = document.getElementById('inbound-list')
+            .querySelector('#' + Jig.util.fqnToId('io-type', 'com.example.OrderItem'));
+        assert.ok(orderItemCard.querySelector('h3 span.deprecated'), 'タイトルspanにdeprecatedクラスが付く');
+    });
+
     test('ネスト型をルートカード内に再帰展開する', () => {
         globalThis.inboundData = {
             inboundAdapters: [{

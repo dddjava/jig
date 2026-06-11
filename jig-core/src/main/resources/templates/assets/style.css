@@ -630,10 +630,24 @@ td.fqn {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.jig-card.jig-card--item.io-type-nested {
-    margin-left: 1.5em;
-    border-left: 3px solid #c8d0e0;
-    box-shadow: none;
+.io-type-fields .method-item {
+    padding: 3px 0;
+    border-bottom: none;
+}
+
+.io-type-nested {
+    margin-left: 1em;
+    padding-left: 0.75em;
+    border-left: 2px solid #c8d0e0;
+    margin-top: 0.5em;
+}
+
+.io-type-nested-label {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 2px;
 }
 
 .jig-card.jig-card--item > h4 {

@@ -248,6 +248,7 @@ test.describe('inbound.js', () => {
             type: {
                 methodsList: createMethodsList,
                 setResolver: () => {},
+                fieldItem: (field) => createElement('div', {className: 'method-item', textContent: field.name}),
                 fieldsList: (fields) => {
                     if (!fields || fields.length === 0) return null;
                     const section = createElement('section', {className: 'methods-section fields'});
@@ -1014,9 +1015,9 @@ test.describe('inbound.js', () => {
         assert.ok(orderItemCard, 'OrderItemのカードが存在する');
         assert.equal(orderItemCard.querySelector('h3 span').textContent, 'OrderItem');
 
-        const fieldsSection = orderItemCard.querySelector('.methods-section.fields');
-        assert.ok(fieldsSection, 'フィールドセクションが存在する');
-        assert.equal(fieldsSection.querySelector('.method-item').textContent, 'id');
+        const fieldsEl = orderItemCard.querySelector('.io-type-fields');
+        assert.ok(fieldsEl, 'フィールド要素が存在する');
+        assert.equal(fieldsEl.querySelector('.method-item').textContent, 'id');
     });
 
     test('ネスト型をルートカード内に再帰展開する', () => {
@@ -1054,11 +1055,11 @@ test.describe('inbound.js', () => {
         // OrderIdはOrderItemカード内にネストとして存在する
         const orderIdSection = orderItemCard.querySelector('.io-type-nested');
         assert.ok(orderIdSection, 'OrderIdのネストセクションがOrderItem内に存在する');
-        assert.equal(orderIdSection.querySelector('h4').textContent, 'OrderId');
+        assert.equal(orderIdSection.querySelector('.io-type-nested-label').textContent, 'OrderId');
 
         // OrderIdの内部にフィールドが展開される
-        const nestedFields = orderIdSection.querySelector('.methods-section.fields');
-        assert.ok(nestedFields, 'OrderIdのフィールドセクションが存在する');
+        const nestedFields = orderIdSection.querySelector('.io-type-fields');
+        assert.ok(nestedFields, 'OrderIdのフィールド要素が存在する');
         assert.equal(nestedFields.querySelector('.method-item').textContent, 'value');
 
         // OrderIdは独立したトップレベルカードとして存在しない（ルートでないため）

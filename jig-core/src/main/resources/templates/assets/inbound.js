@@ -600,12 +600,16 @@ const InboundApp = (() => {
         const ioType = ioTypeMap.get(fqn);
         if (!ioType) return;
 
-        const fieldsList = Jig.dom.type.fieldsList(ioType.fields || []);
-        if (fieldsList) container.appendChild(fieldsList);
+        const fields = ioType.fields || [];
+        if (fields.length > 0) {
+            const fieldsEl = Jig.dom.createElement('div', {className: 'io-type-fields'});
+            fields.forEach(field => fieldsEl.appendChild(Jig.dom.type.fieldItem(field)));
+            container.appendChild(fieldsEl);
+        }
 
         // フィールドの型参照からネストすべきIOタイプを収集（重複除去・順序維持）
         const nestedFqns = [];
-        (ioType.fields || []).forEach(field => {
+        fields.forEach(field => {
             collectIoFqnsFromTypeRef(field.typeRef, ioTypeMap).forEach(nestedFqn => {
                 if (!visitedInBranch.has(nestedFqn) && !nestedFqns.includes(nestedFqn)) {
                     nestedFqns.push(nestedFqn);
@@ -620,13 +624,16 @@ const InboundApp = (() => {
             const nestedId = idAssigned.has(nestedFqn) ? undefined : Jig.util.fqnToId('io-type', nestedFqn);
             if (nestedId) idAssigned.add(nestedFqn);
 
-            const nestedCard = Jig.dom.card.item({
+            const nestedSection = Jig.dom.createElement('div', {
                 id: nestedId,
-                title: nestedTypeTerm.title,
-                extraClass: 'io-type-nested',
+                className: 'io-type-nested',
             });
-            appendIoTypeExpanded(nestedCard, nestedFqn, ioTypeMap, idAssigned, visitedInBranch);
-            container.appendChild(nestedCard);
+            nestedSection.appendChild(Jig.dom.createElement('span', {
+                className: 'io-type-nested-label',
+                textContent: nestedTypeTerm.title,
+            }));
+            appendIoTypeExpanded(nestedSection, nestedFqn, ioTypeMap, idAssigned, visitedInBranch);
+            container.appendChild(nestedSection);
         });
     }
 

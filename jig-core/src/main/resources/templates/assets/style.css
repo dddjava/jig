@@ -786,13 +786,6 @@ body.hide-usecase-members .tab-member-section {
 
 .tab-content-section .jig-tab-panel {
     background-color: #fff;
-}
-
-.tab-content-section.tab-diagram-section .jig-tab-panel {
-    padding: 12px;
-}
-
-.tab-content-section.tab-mutual-dependency .jig-tab-panel {
     padding: 12px;
 }
 
@@ -813,6 +806,10 @@ body.hide-usecase-members .tab-member-section {
     margin-right: 8px;
     align-self: flex-end;
     padding-bottom: 6px;
+}
+
+.tab-content-section.tab-member-section .jig-tab-panel {
+    padding: 0;
 }
 
 .tab-content-section.tab-member-section .jig-tab-panel .jig-card.jig-card--item {

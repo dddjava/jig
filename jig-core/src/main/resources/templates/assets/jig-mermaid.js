@@ -1626,7 +1626,7 @@ globalThis.Jig.mermaid = (() => {
         }
         const arrow = CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>';
         if (edge.multiplicity) {
-            return `${edge.from} "1" ${arrow} "${edge.multiplicity}" ${edge.to}`;
+            return `${edge.from} ${arrow} "${edge.multiplicity}" ${edge.to}`;
         }
         return `${edge.from} ${arrow} ${edge.to}`;
     }

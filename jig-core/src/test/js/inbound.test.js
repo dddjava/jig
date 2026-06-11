@@ -704,6 +704,60 @@ test.describe('inbound.js', () => {
         assert.ok(!summaryCard.querySelector('.controller-group-toggle-all'), '一括開閉ボタンは表示されない');
     });
 
+    test('QUEUE_LISTENERもController単位でグループ化される', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.OrderListener",
+                    classPath: "",
+                    relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.OrderListener#onOrder()", entrypointType: "QUEUE_LISTENER", path: "order-queue"},
+                        {fqn: "com.example.OrderListener#onCancel()", entrypointType: "QUEUE_LISTENER", path: "cancel-queue"}
+                    ]
+                },
+                {
+                    fqn: "com.example.UserListener",
+                    classPath: "",
+                    relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.UserListener#onUser()", entrypointType: "QUEUE_LISTENER", path: "user-queue"}
+                    ]
+                }
+            ]
+        };
+        setGlossaryData({
+            "com.example.OrderListener": {title: "OrderListener", description: "", kind: "クラス"},
+            "com.example.OrderListener#onOrder()": {title: "onOrder", simpleText: "onOrder", kind: "メソッド", description: ""},
+            "com.example.OrderListener#onCancel()": {title: "onCancel", simpleText: "onCancel", kind: "メソッド", description: ""},
+            "com.example.UserListener": {title: "UserListener", description: "", kind: "クラス"},
+            "com.example.UserListener#onUser()": {title: "onUser", simpleText: "onUser", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const summaryCard = document.getElementById('inbound-list').querySelector('.entrypoint-summary-section');
+        // メッセージリスナーのサブセクション
+        const listenerSection = Array.from(summaryCard.querySelectorAll('.jig-card--item'))
+            .find(el => el.querySelector('h4')?.textContent === 'メッセージリスナー');
+        assert.ok(listenerSection, 'メッセージリスナーセクションが存在する');
+
+        const groupHeaders = listenerSection.querySelectorAll('tr.controller-group-header');
+        assert.equal(groupHeaders.length, 2, 'Listener数分のグループヘッダーが存在する');
+
+        const headerLabels = Array.from(groupHeaders).map(h => h.querySelector('a').textContent);
+        assert.ok(headerLabels.includes('OrderListener'));
+        assert.ok(headerLabels.includes('UserListener'));
+
+        // エントリーポイント列はメソッド名のみ
+        const dataRows = listenerSection.querySelectorAll('tbody tr:not(.controller-group-header)');
+        assert.equal(dataRows.length, 3);
+        assert.equal(dataRows[0].children[1].querySelector('a').textContent, 'onOrder');
+
+        // 件数バッジ
+        const orderHeader = Array.from(groupHeaders).find(h => h.querySelector('a').textContent === 'OrderListener');
+        assert.equal(orderHeader.querySelector('.controller-group-count').textContent, '2');
+    });
+
     test('簡略表示チェックボックスで入出力セクションを非表示にできる', () => {
         globalThis.inboundData = mockInboundData;
         setGlossaryData(mockGlossaryData);

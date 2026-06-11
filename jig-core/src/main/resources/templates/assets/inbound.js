@@ -293,45 +293,22 @@ const InboundApp = (() => {
             : ['', path || ''];
     }
 
-    function entrypointLabel(fqn) {
-        const typeFqn = fqn.split('#')[0];
-        return Jig.glossary.getTypeTerm(typeFqn).title + ' ' + Jig.glossary.getMethodTerm(fqn, true).title;
-    }
-
-    function linkCell(fqn, cardId) {
+    function methodLinkCell(fqn, cardId) {
         return Jig.dom.createElement("td", {
             children: [Jig.dom.createElement("a", {
-                textContent: entrypointLabel(fqn),
+                textContent: Jig.glossary.getMethodTerm(fqn, true).title,
                 attributes: {href: '#' + cardId}
             })]
         });
     }
 
-    function buildTypeSubSection(title, headers, rows) {
-        const card = Jig.dom.card.item({title});
-        card.appendChild(Jig.dom.createElement("table", {
-            className: "entrypoint-summary",
+    function buildGroupedSubSection(title, headers, groups, tableClass = '') {
+        const table = Jig.dom.createElement("table", {
+            className: ["entrypoint-summary", tableClass].filter(Boolean).join(" "),
             children: [
                 Jig.dom.createElement("thead", {
                     children: [Jig.dom.createElement("tr", {
                         children: headers.map(h => Jig.dom.i18nText("th", h))
-                    })]
-                }),
-                Jig.dom.createElement("tbody", {
-                    children: rows.map(cells => Jig.dom.createElement("tr", {children: cells}))
-                })
-            ]
-        }));
-        return card;
-    }
-
-    function buildHttpSubSection(groups) {
-        const table = Jig.dom.createElement("table", {
-            className: "entrypoint-summary entrypoint-summary--http",
-            children: [
-                Jig.dom.createElement("thead", {
-                    children: [Jig.dom.createElement("tr", {
-                        children: ['パス', 'メソッド', 'エントリーポイント'].map(h => Jig.dom.i18nText("th", h))
                     })]
                 })
             ]
@@ -375,7 +352,7 @@ const InboundApp = (() => {
             const headerRow = Jig.dom.createElement("tr", {
                 className: "controller-group-header",
                 children: [Jig.dom.createElement("td", {
-                    attributes: {colspan: "3"},
+                    attributes: {colspan: String(headers.length)},
                     children: [Jig.dom.createElement("div", {
                         className: "controller-group-header__inner",
                         children: headerChildren
@@ -407,7 +384,7 @@ const InboundApp = (() => {
             }
         });
 
-        const card = Jig.dom.card.item({title: 'リクエストハンドラ'});
+        const card = Jig.dom.card.item({title});
 
         if (groups.length > 1) {
             const allToggleBtn = Jig.dom.createElement("button", {
@@ -474,18 +451,21 @@ const InboundApp = (() => {
                 );
             });
 
-            subSections.push(buildHttpSubSection([...groupMap.values()]));
+            subSections.push(buildGroupedSubSection('リクエストハンドラ', ['パス', 'メソッド', 'エントリーポイント'], [...groupMap.values()], 'entrypoint-summary--http'));
         }
 
         for (const {type, label} of TYPE_CONFIG.filter(c => c.type !== 'HTTP_API')) {
             if (typeRows[type].length === 0) continue;
-            subSections.push(buildTypeSubSection(label,
-                ['パス', 'エントリーポイント'],
-                typeRows[type].map(({ep, cardId}) => [
-                    Jig.dom.createCell(ep.path || ''),
-                    linkCell(ep.fqn, cardId)
-                ])
-            ));
+            const groupMap = new Map();
+            typeRows[type].forEach(({ep, cardId, classPath, adapterFqn}) => {
+                if (!groupMap.has(adapterFqn)) {
+                    groupMap.set(adapterFqn, {adapterFqn, cardId, classPath, rows: []});
+                }
+                groupMap.get(adapterFqn).rows.push(
+                    [Jig.dom.createCell(ep.path || ''), methodLinkCell(ep.fqn, cardId)]
+                );
+            });
+            subSections.push(buildGroupedSubSection(label, ['パス', 'エントリーポイント'], [...groupMap.values()]));
         }
 
         if (subSections.length === 0) return null;

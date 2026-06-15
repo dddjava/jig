@@ -30,7 +30,9 @@ public class JavaparserReader {
     public JavaparserReader() {
         ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
         configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
-        if (Runtime.version().feature() >= 21) {
+        if (Runtime.version().feature() >= 25) {
+            configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_25);
+        } else if (Runtime.version().feature() >= 21) {
             configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
         }
         logger.info("javaparser language level: {}", configuration.getLanguageLevel());

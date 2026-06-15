@@ -1,1 +1,1 @@
-globalThis.inboundData = {"inboundAdapters":[]}
+globalThis.inboundData = {"inboundAdapters":[],"ioTypes":[],"rootIoTypeFqns":[]}

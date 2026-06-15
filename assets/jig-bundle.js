@@ -688,7 +688,9 @@ globalThis.Jig.dom = (() => {
      * children を伴う複合要素や label の mixed content では createElement に i18n: true を直接渡す。
      */
     function i18nText(tagName, key, options = {}) {
-        return createElement(tagName, {...options, textContent: key, i18n: true});
+        const el = createElement(tagName, {...options, textContent: key, i18n: true});
+        el.dataset.i18nOriginal = key;
+        return el;
     }
 
     // --- Markdown ---
@@ -875,16 +877,16 @@ globalThis.Jig.dom = (() => {
 
     function createFieldItem(field) {
         return createElement("div", {
-            className: "method-item",
+            className: "field-item",
             children: [
                 createElement("div", {
-                    className: "method-signature",
+                    className: "field-signature",
                     children: [
                         createElement("span", {
-                            className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                            className: "field-name" + (field.isDeprecated ? " deprecated" : ""),
                             textContent: field.name
                         }),
-                        createElement("span", {className: "method-return-sep", textContent: ":"}),
+                        createElement("span", {className: "field-type-sep", textContent: ":"}),
                         createElementForTypeRef(field.typeRef)
                     ]
                 })
@@ -892,21 +894,26 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    function createMemberSection(items, title, className, createItem) {
+        return createElement("section", {
+            className,
+            children: [
+                ...(title !== undefined ? [i18nText("h4", title)] : []),
+                ...items.map(createItem)
+            ]
+        });
+    }
+
     function createFieldsList(fields, options = {}) {
         if (fields.length === 0) return null;
         const title = options.showTitle !== false ? "フィールド" : undefined;
-        const card = createItemCard({title, extraClass: "methods-section fields"});
-        fields.forEach(field => card.appendChild(createFieldItem(field)));
-        return card;
+        return createMemberSection(fields, title, "methods-section fields", createFieldItem);
     }
 
     function createMethodsList(kind, methods, options = {}) {
         if (methods.length === 0) return null;
-
         const title = options.showTitle !== false ? kind : undefined;
-        const card = createItemCard({title, extraClass: "methods-section"});
-        methods.forEach(method => card.appendChild(createMethodItem(method)));
-        return card;
+        return createMemberSection(methods, title, "methods-section", createMethodItem);
     }
 
     // --- Card builders ---
@@ -3063,7 +3070,11 @@ globalThis.Jig.mermaid = (() => {
         if (edge.edgeType === 'inheritance') {
             return `${edge.to} <|-- ${edge.from}`;
         }
-        return `${edge.from} ${CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>'} ${edge.to}`;
+        const arrow = CLASS_DIAGRAM_ARROW_MAP[edge.edgeType] ?? '..>';
+        if (edge.multiplicity) {
+            return `${edge.from} ${arrow} "${edge.multiplicity}" ${edge.to}`;
+        }
+        return `${edge.from} ${arrow} ${edge.to}`;
     }
 
     // classDiagram ビルダー
@@ -3100,11 +3111,11 @@ globalThis.Jig.mermaid = (() => {
             cls.members.push(`    ${visChar}${methodName}(${params.join(', ')})${staticMark}${ret}`);
         }
 
-        addEdge(from, to, edgeType = 'dependency') {
+        addEdge(from, to, edgeType = 'dependency', multiplicity = '') {
             const key = `${from}::${to}`;
             if (!this._edgeSet.has(key)) {
                 this._edgeSet.add(key);
-                this._edges.push({from, to, edgeType});
+                this._edges.push({from, to, edgeType, multiplicity});
             }
         }
 
@@ -3194,6 +3205,11 @@ globalThis.Jig.i18n = (() => {
             "フィールド": "Fields",
             "折りたたむ": "Collapse",
             "展開": "Expand",
+            "全て折りたたむ": "Collapse all",
+            "全て展開": "Expand all",
+            "パスで絞り込み": "Filter by path",
+            "購読先で絞り込み": "Filter by subscription",
+            "スケジュールで絞り込み": "Filter by schedule",
             "出力日時": "Generated at",
             "主要パッケージ関連図": "Key package diagram",
             "ドメインパッケージ": "Domain package",
@@ -3287,6 +3303,9 @@ globalThis.Jig.i18n = (() => {
             "列挙定数名": "Enum constant",
             "パス": "Path",
             "エントリーポイント": "Entry point",
+            "ハンドラ": "Handler",
+            "購読先": "Subscription",
+            "スケジュール": "Schedule",
             "出力ポート / 操作": "Outbound port / operation",
             "列挙値": "Enum values",
             // glossary attribute meta
@@ -3321,6 +3340,7 @@ globalThis.Jig.i18n = (() => {
             "永続化操作対象": "Persistence targets",
             "外部型": "External types",
             "エントリーポイント一覧": "Entry points",
+            "入出力オブジェクト一覧": "I/O objects",
         },
     };
 
@@ -3403,6 +3423,13 @@ globalThis.Jig.i18n = (() => {
         el.setAttribute(attrName, (dict && dict[key]) || key);
     }
 
+    function t(key) {
+        const lang = resolveLanguage();
+        if (lang === 'ja') return key;
+        const dict = resolveDictionary(lang);
+        return (dict && dict[key]) || key;
+    }
+
     function apply() {
         const lang = resolveLanguage();
         document.documentElement.lang = lang;
@@ -3426,6 +3453,7 @@ globalThis.Jig.i18n = (() => {
         currentLanguage,
         setLanguage,
         availableLanguages,
+        t,
         // テストが明示キー翻訳をセットアップするために参照する
         builtinDictionaries,
     };

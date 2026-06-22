@@ -318,8 +318,15 @@ class AsmMethodVisitorTest {
 
     @Test
     void lambdaで生成されるメソッドが判定できる() {
-        // MEMO: lambdaを書くたびにインクリメントされるのに追随するのが手間
-        var sut = TestSupport.buildJigMethod(MethodVisitorSut.class, "lambda$lambda合成メソッドを判定できる$1");
+        // コンパイラによってlambda合成メソッドの番号が異なる（Java 25で変更あり）ため、
+        // メソッド名のプレフィックスで動的に特定する
+        var prefix = "lambda$lambda合成メソッドを判定できる$";
+        var members = TestSupport.buildJigType(MethodVisitorSut.class).jigTypeMembers();
+        var sut = members.allJigMethodStream()
+                .filter(m -> m.name().startsWith(prefix))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(
+                        "lambda合成メソッドが見つかりません: " + prefix));
         assertTrue(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 

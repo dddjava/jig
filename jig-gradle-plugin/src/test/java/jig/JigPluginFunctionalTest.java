@@ -35,6 +35,7 @@ public class JigPluginFunctionalTest {
 
     static Stream<String> supportGradleVersion() {
         return Stream.of(SupportGradleVersion.values())
+                .filter(SupportGradleVersion::isSupportedOnCurrentJre)
                 .map(SupportGradleVersion::getVersion)
                 .distinct();
     }

@@ -147,8 +147,11 @@ test.describe('usecase.js', () => {
 
             const mainList = document.getElementById('usecase-list');
             assert.equal(mainList.children.length, 1);
-            const serviceSection = mainList.children[0];
-            assert.equal(serviceSection.id, globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
+            const packageSection = mainList.children[0];
+            assert.equal(packageSection.className, 'package-section');
+            assert.equal(packageSection.querySelector('.package-header h2').textContent, 'example');
+            assert.equal(packageSection.querySelector('.package-header .fully-qualified-name').textContent, 'com.example');
+            const serviceSection = packageSection.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             assert.equal(serviceSection.querySelector('h3 span').textContent, 'ServiceA');
             assert.equal(serviceSection.querySelector('.fully-qualified-name').textContent, 'com.example.ServiceA');
             assert.equal(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
@@ -197,6 +200,39 @@ test.describe('usecase.js', () => {
             assert.equal(description.querySelector('.markdown')?.innerHTML, 'Description of method1');
         });
 
+        test('パッケージのdescriptionが存在する場合、パッケージセクションに説明が表示される', () => {
+            setGlossaryData({
+                "com.example": {title: "サンプル", description: "サンプルパッケージの説明"},
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#method1()": {title: "method1"},
+                "com.example.ServiceA#otherMethod()": {title: "otherMethod"}
+            });
+            globalThis.usecaseData = mockUsecaseAppData;
+            UsecaseApp.init();
+
+            const mainList = document.getElementById('usecase-list');
+            const packageSection = mainList.children[0];
+            assert.equal(packageSection.querySelector('.package-header h2').textContent, 'サンプル');
+            const pkgDescription = packageSection.querySelector('.description .markdown');
+            assert.ok(pkgDescription, 'パッケージの説明が表示されること');
+            assert.equal(pkgDescription.innerHTML, 'サンプルパッケージの説明');
+        });
+
+        test('パッケージのdescriptionが空の場合、説明セクションは表示されない', () => {
+            setGlossaryData({
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#method1()": {title: "method1"},
+                "com.example.ServiceA#otherMethod()": {title: "otherMethod"}
+            });
+            globalThis.usecaseData = mockUsecaseAppData;
+            UsecaseApp.init();
+
+            const mainList = document.getElementById('usecase-list');
+            const packageSection = mainList.children[0];
+            const headerNext = packageSection.children[1];
+            assert.ok(!headerNext || !headerNext.classList.has('description'), 'descriptionセクションが存在しないこと');
+        });
+
         test('クラス単位の図では内部メソッド（非PUBLIC）は表示されない', () => {
             const usecaseDataWithInternal = {
                 usecases: [{
@@ -233,8 +269,8 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithInternal;
             UsecaseApp.init();
 
-            const classDiagram = document.getElementById('usecase-list').children[0].querySelector('.diagram-container.class-diagram');
-            // publicMethod のみなのでエッジがなく、クラス図は生成されない
+            const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
+            const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             assert.ok(!classDiagram, '内部メソッドのみへのエッジがある場合、クラス図は生成されない');
         });
 
@@ -247,8 +283,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = mockUsecaseAppData;
             UsecaseApp.init();
 
-            const mainList = document.getElementById('usecase-list');
-            const serviceSection = mainList.children[0];
+            const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
 
             // クラス単位のダイアグラムコンテナがあること
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
@@ -306,7 +341,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithDomain;
             UsecaseApp.init();
 
-            const serviceSection = document.getElementById('usecase-list').children[0];
+            const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             assert.ok(classDiagram, 'クラス図が生成されること');
 
@@ -407,7 +442,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithGenerics;
             UsecaseApp.init();
 
-            const serviceSection = document.getElementById('usecase-list').children[0];
+            const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             assert.ok(classDiagram, 'クラス図が生成されること');
 
@@ -440,7 +475,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = mockUsecaseAppData;
             UsecaseApp.init();
 
-            const serviceSection = document.getElementById('usecase-list').children[0];
+            const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             assert.ok(classDiagram, 'クラス図が生成されること');
 
@@ -541,11 +576,11 @@ test.describe('usecase.js', () => {
             assert.ok(document.getElementById(method1Id), 'method1のarticleが存在する');
             assert.ok(!document.getElementById(otherMethodId), 'otherMethodのarticleは存在しない');
 
-            // ServiceA クラスのセクションは表示される（ハンドラを含むため）
+            // パッケージセクションが1つ表示される（ハンドラを含むため）
             assert.equal(mainList.children.length, 1);
 
             // クラス単位の図にはハンドラ（method1）のみが含まれ、otherMethodは含まれない
-            const serviceSection = mainList.children[0];
+            const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             if (classDiagram) {
                 const code = classDiagram.querySelector('.mermaid').textContent;

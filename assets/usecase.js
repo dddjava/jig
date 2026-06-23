@@ -799,9 +799,34 @@ const UsecaseApp = (() => {
 
         const handlerFqns = state.handlerFqns;
 
-        usecases.forEach(usecase => {
-            const card = renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext);
-            if (card) container.appendChild(card);
+        const byPackage = Jig.util.groupByPackageFqn(usecases, u => u.fqn);
+        byPackage.forEach((packageUsecases, packageFqn) => {
+            const cards = packageUsecases
+                .map(u => renderUsecaseCard(u, handlerFqns, buildCurrentDiagramContext))
+                .filter(Boolean);
+            if (cards.length === 0) return;
+
+            const pkgTerm = Jig.glossary.getPackageTerm(packageFqn);
+            const pkgSection = Jig.dom.createElement("section", {className: "package-section"});
+
+            const header = Jig.dom.createElement("header", {
+                className: "package-header",
+                children: [
+                    Jig.dom.createElement("h2", {textContent: pkgTerm.title}),
+                    Jig.dom.createElement("span", {className: "fully-qualified-name", textContent: packageFqn})
+                ]
+            });
+            pkgSection.appendChild(header);
+
+            if (pkgTerm.description) {
+                pkgSection.appendChild(Jig.dom.createElement("section", {
+                    className: "description",
+                    children: [Jig.dom.createMarkdownElement(pkgTerm.description)]
+                }));
+            }
+
+            cards.forEach(card => pkgSection.appendChild(card));
+            container.appendChild(pkgSection);
         });
     }
 

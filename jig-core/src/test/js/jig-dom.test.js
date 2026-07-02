@@ -375,6 +375,95 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.renderPackageTree', () => {
+        const renderItem = item => Jig.dom.createElement('li', {
+            className: 'in-page-sidebar__item',
+            children: [Jig.dom.createElement('a', {
+                className: 'in-page-sidebar__link',
+                attributes: {href: '#' + item.fqn},
+                textContent: item.fqn
+            })]
+        });
+        const options = {getFqn: item => item.fqn, renderItem};
+
+        test('container が null の場合、何もしない', () => {
+            assert.doesNotThrow(() => Jig.dom.sidebar.renderPackageTree(null, [{fqn: 'com.example.A'}], options));
+        });
+
+        test('単児チェーンのパッケージは連結表示のsectionになる', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderPackageTree(container, [{fqn: 'com.example.app.A'}], options);
+
+            assert.equal(container.children.length, 1);
+            const section = container.children[0];
+            assert.equal(section.tagName, 'SECTION');
+            assert.equal(section.className, 'in-page-sidebar__section');
+            const title = section.querySelector('p.in-page-sidebar__title--collapsible');
+            assert.equal(title.querySelector('span').textContent, 'com/example/app');
+            assert.ok(title.querySelector('button.in-page-sidebar__toggle'));
+            const links = section.querySelectorAll('a');
+            assert.equal(links.length, 1);
+            assert.equal(links[0].getAttribute('href'), '#com.example.app.A');
+        });
+
+        test('分岐するパッケージはネストしたliになる', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderPackageTree(container, [
+                {fqn: 'com.example.foo.A'},
+                {fqn: 'com.example.bar.B'},
+            ], options);
+
+            const section = container.children[0];
+            assert.equal(section.querySelector('span').textContent, 'com/example');
+            const items = section.querySelector('ul').children;
+            assert.equal(items.length, 2);
+            assert.equal(items[0].tagName, 'LI');
+            assert.equal(items[0].querySelector('.in-page-sidebar__item-header span').textContent, 'bar');
+            assert.equal(items[1].querySelector('.in-page-sidebar__item-header span').textContent, 'foo');
+            assert.ok(items[0].querySelector('ul.in-page-sidebar__links a[href="#com.example.bar.B"]'));
+        });
+
+        test('itemを持つパッケージは子パッケージと連結しない', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderPackageTree(container, [
+                {fqn: 'com.example.A'},
+                {fqn: 'com.example.sub.B'},
+            ], options);
+
+            const section = container.children[0];
+            assert.equal(section.querySelector('span').textContent, 'com/example');
+            const topList = section.querySelector('ul');
+            // 子パッケージのliが先、itemのliが後
+            assert.equal(topList.children[0].querySelector('span').textContent, 'sub');
+            assert.equal(topList.children[1].querySelector('a').getAttribute('href'), '#com.example.A');
+        });
+
+        test('トグルで子リストを折りたたむ', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderPackageTree(container, [{fqn: 'com.example.A'}], options);
+
+            const toggle = container.querySelector('.in-page-sidebar__toggle');
+            const list = container.querySelector('ul');
+            toggle.dispatchEvent(new window.Event('click'));
+            assert.ok(list.classList.contains('in-page-sidebar__links--hidden'));
+            assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+        });
+
+        test('rootAsSection: false ではul直下のliとして描画する', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderPackageTree(container, [{fqn: 'com.example.A'}],
+                {...options, rootAsSection: false});
+
+            assert.equal(container.children.length, 1);
+            const list = container.children[0];
+            assert.equal(list.tagName, 'UL');
+            assert.equal(list.className, 'in-page-sidebar__links');
+            const rootItem = list.children[0];
+            assert.equal(rootItem.tagName, 'LI');
+            assert.equal(rootItem.querySelector('.in-page-sidebar__item-header span').textContent, 'com/example');
+        });
+    });
+
     test.describe('sidebar.syncActiveLink', () => {
         function setupSidebar(innerHtml) {
             document.body.innerHTML =

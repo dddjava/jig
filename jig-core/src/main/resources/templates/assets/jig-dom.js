@@ -399,6 +399,68 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    /**
+     * items をパッケージ階層ツリーとしてサイドバーに描画する。
+     * 子が1つだけでitemを持たないパッケージは名前を "/" 連結して1ノードに統合する。
+     *
+     * @param {Element} container
+     * @param {Array} items
+     * @param {Object} options
+     * @param {function(*): string} options.getFqn - itemの型FQNを返す関数
+     * @param {function(*): Element} options.renderItem - itemを表すli要素を生成する関数
+     * @param {boolean} [options.rootAsSection=true] - trueならルートをsectionで描画、falseならul直下のliで描画
+     */
+    function renderPackageTree(container, items, {getFqn, renderItem, rootAsSection = true}) {
+        if (!container) return;
+        const roots = globalThis.Jig.util.buildPackageTree(items, getFqn);
+
+        function renderNode(node, isRoot) {
+            // 子が1つだけでitemを持たないパッケージを統合して表示
+            let current = node;
+            const mergedNames = [globalThis.Jig.glossary.getPackageTerm(current.fqn).title];
+            while (current.children.length === 1 && current.items.length === 0) {
+                current = current.children[0];
+                mergedNames.push(globalThis.Jig.glossary.getPackageTerm(current.fqn).title);
+            }
+
+            const childList = createElement("ul", {className: "in-page-sidebar__links"});
+            current.children.forEach(child => childList.appendChild(renderNode(child, false)));
+            current.items.forEach(item => childList.appendChild(renderItem(item)));
+
+            const label = createElement("span", {textContent: mergedNames.join("/")});
+            if (isRoot) {
+                return createElement("section", {
+                    className: "in-page-sidebar__section",
+                    children: [
+                        createElement("p", {
+                            className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
+                            children: [label, createSidebarToggle(childList)]
+                        }),
+                        childList
+                    ]
+                });
+            }
+            return createElement("li", {
+                className: "in-page-sidebar__item",
+                children: [
+                    createElement("div", {
+                        className: "in-page-sidebar__item-header",
+                        children: [label, createSidebarToggle(childList)]
+                    }),
+                    childList
+                ]
+            });
+        }
+
+        if (rootAsSection) {
+            roots.forEach(root => container.appendChild(renderNode(root, true)));
+        } else {
+            const list = createElement("ul", {className: "in-page-sidebar__links"});
+            roots.forEach(root => list.appendChild(renderNode(root, false)));
+            container.appendChild(list);
+        }
+    }
+
     function initSidebarTextFilter(inputId, onChange) {
         const input = document.getElementById(inputId);
         if (!input) return;
@@ -795,6 +857,7 @@ globalThis.Jig.dom = (() => {
             section: createSection,
             renderSection,
             renderPackageGrouped,
+            renderPackageTree,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,

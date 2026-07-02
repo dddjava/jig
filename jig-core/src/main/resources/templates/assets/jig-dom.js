@@ -377,28 +377,6 @@ globalThis.Jig.dom = (() => {
         }
     }
 
-    function renderPackageGrouped(container, byPackage, buildListItems, {titleClass} = {}) {
-        const packageTitleClass = ["in-page-sidebar__title", "in-page-sidebar__title--collapsible", titleClass]
-            .filter(Boolean).join(" ");
-        byPackage.forEach((items, packageFqn) => {
-            const typeList = createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: buildListItems(items)
-            });
-            const packageTitle = createElement("p", {
-                className: packageTitleClass,
-                children: [
-                    createElement("span", {textContent: globalThis.Jig.glossary.getPackageTerm(packageFqn).title}),
-                    createSidebarToggle(typeList)
-                ]
-            });
-            container.appendChild(createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [packageTitle, typeList]
-            }));
-        });
-    }
-
     /**
      * items をパッケージ階層ツリーとしてサイドバーに描画する。
      * 子が1つだけでitemを持たないパッケージは名前を "/" 連結して1ノードに統合する。
@@ -856,7 +834,6 @@ globalThis.Jig.dom = (() => {
         sidebar: {
             section: createSection,
             renderSection,
-            renderPackageGrouped,
             renderPackageTree,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,

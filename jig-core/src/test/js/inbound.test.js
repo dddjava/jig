@@ -75,62 +75,12 @@ test.describe('inbound.js', () => {
         return element;
     }
 
-    function createSidebarSection(title, items) {
-        if (!items || items.length === 0) return null;
-        return createElement('section', {
-            className: 'in-page-sidebar__section',
-            children: [
-                createElement('p', {
-                    className: 'in-page-sidebar__title',
-                    textContent: title
-                }),
-                createElement('ul', {
-                    className: 'in-page-sidebar__links',
-                    children: items.map(({id, label}) => createElement('li', {
-                        className: 'in-page-sidebar__item',
-                        children: [
-                            createElement('a', {
-                                className: 'in-page-sidebar__link',
-                                attributes: {href: '#' + id},
-                                textContent: label
-                            })
-                        ]
-                    }))
-                })
-            ]
-        });
-    }
-
-    function createMethodsList(kind, methods) {
-        if (!methods || methods.length === 0) return null;
-
-        return createElement('section', {
-            className: 'methods-section jig-card jig-card--item',
-            children: [
-                createElement('h4', {textContent: kind}),
-                ...methods.map(method => createElement('div', {
-                    className: 'method-item',
-                    children: [
-                        createElement('div', {
-                            className: 'method-signature',
-                            children: [
-                                createElement('span', {
-                                    className: 'method-name',
-                                    textContent: globalThis.Jig.glossary.getMethodTerm(method.fqn, true).title
-                                })
-                            ]
-                        })
-                    ]
-                }))
-            ]
-        });
-    }
-
     test.beforeEach(() => {
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-mermaid.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-bootstrap.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/inbound.js')];
 
@@ -173,137 +123,9 @@ test.describe('inbound.js', () => {
         require('../../main/resources/templates/assets/jig-data.js');
         require('../../main/resources/templates/assets/jig-glossary.js');
         require('../../main/resources/templates/assets/jig-mermaid.js');
+        require('../../main/resources/templates/assets/jig-dom.js');
         require('../../main/resources/templates/assets/jig-bootstrap.js');
         globalThis.Jig.i18n = {t: (key) => key};
-        globalThis.Jig.dom = {
-            createElement,
-            createCell: (text, className) => createElement('td', {className: className || undefined, textContent: text}),
-            i18nText: (tag, key, options = {}) => createElement(tag, {...options, textContent: key}),
-            parseMarkdown: (markdown) => String(markdown ?? ''),
-            createMarkdownElement: (markdown) => createElement('div', {
-                className: 'markdown',
-                innerHTML: String(markdown ?? '')
-            }),
-            card: {
-                item: ({id, title, tagName = "section", extraClass} = {}) => {
-                    return createElement(tagName, {
-                        id,
-                        className: ["jig-card", "jig-card--item", extraClass].filter(Boolean).join(" "),
-                        children: title !== undefined ? [createElement("h4", {textContent: title})] : []
-                    });
-                },
-                type: ({id, title, fqn, kind, attributes, tagName = "section", extraClass} = {}) => {
-                    const titleEl = typeof title === 'string' ? createElement("span", {textContent: title}) : title;
-                    const h3Children = kind !== undefined ? [createElement("span", {className: "kind-badge"}), titleEl] : [titleEl];
-                    const card = createElement(tagName, {
-                        id,
-                        className: ["jig-card", "jig-card--type", extraClass].filter(Boolean).join(" "),
-                        attributes,
-                        children: [createElement("h3", {children: h3Children})]
-                    });
-                    if (fqn != null) {
-                        card.appendChild(typeof fqn === 'string'
-                            ? createElement("div", {className: "fully-qualified-name", textContent: fqn})
-                            : fqn);
-                    }
-                    return card;
-                }
-            },
-            sidebar: {
-                renderSection: (container, title, items) => {
-                    if (!container) return;
-                    const section = createSidebarSection(title, items);
-                    if (section) container.appendChild(section);
-                },
-                renderPackageGrouped: (container, byPackage, buildListItems, {titleClass} = {}) => {
-                    if (!container) return;
-                    const packageTitleClass = ["in-page-sidebar__title", "in-page-sidebar__title--collapsible", titleClass]
-                        .filter(Boolean).join(" ");
-                    byPackage.forEach((items, packageFqn) => {
-                        const typeList = createElement("ul", {
-                            className: "in-page-sidebar__links",
-                            children: buildListItems(items)
-                        });
-                        const packageTitle = createElement("p", {
-                            className: packageTitleClass,
-                            children: [
-                                createElement("span", {textContent: globalThis.Jig.glossary.getPackageTerm(packageFqn).title}),
-                                createElement("button", {className: "in-page-sidebar__toggle"})
-                            ]
-                        });
-                        container.appendChild(createElement("section", {
-                            className: "in-page-sidebar__section",
-                            children: [packageTitle, typeList]
-                        }));
-                    });
-                },
-                initCollapseBtn: () => {},
-                initTextFilter: (inputId, onChange) => {
-                    const input = document.getElementById(inputId);
-                    if (!input) return;
-                    input.addEventListener('input', () => onChange(input.value.trim()));
-                },
-                createToggle: () => createElement('button', {className: 'in-page-sidebar__toggle'})
-            },
-            type: {
-                methodsList: createMethodsList,
-                setResolver: () => {},
-                getResolver: () => null,
-                fieldItem: (field) => createElement('div', {className: 'field-item', textContent: field.name}),
-                fieldsList: (fields) => {
-                    if (!fields || fields.length === 0) return null;
-                    const section = createElement('section', {className: 'methods-section fields'});
-                    fields.forEach(field => {
-                        section.appendChild(createElement('div', {className: 'field-item', textContent: field.name}));
-                    });
-                    return section;
-                },
-                refElement: (typeRef) => {
-                    if (!typeRef) return createElement('span', {});
-                    const text = typeRef.fqn.split('.').pop();
-                    return createElement('span', {textContent: text});
-                },
-                methodIOSection: (parameters, returnTypeRef) => {
-                    const toSpan = (typeRef) => typeRef
-                        ? createElement('span', {textContent: typeRef.fqn.split('.').pop()})
-                        : createElement('span', {});
-                    const inputDd = parameters.length > 0
-                        ? createElement('dd', {
-                            className: 'entrypoint-item__params',
-                            children: parameters.flatMap(param => [
-                                toSpan(param.typeRef),
-                                createElement('span', {
-                                    className: 'entrypoint-item__param-name',
-                                    textContent: param.nameSource === 'METHOD_PARAMETERS' ? param.name : ''
-                                })
-                            ])
-                        })
-                        : createElement('dd', {className: 'entrypoint-item__empty', textContent: '-'});
-                    return createElement('dl', {
-                        className: 'entrypoint-item__io',
-                        children: [
-                            createElement('dt', {textContent: '入力'}),
-                            inputDd,
-                            createElement('dt', {textContent: '出力'}),
-                            createElement('dd', {children: [toSpan(returnTypeRef)]})
-                        ]
-                    });
-                }
-            },
-            tab: {
-                buildSection: (tabDefs, options = {}) => {
-                    const panels = {};
-                    tabDefs.forEach(tab => {
-                        panels[tab.id] = createElement('div', {className: 'jig-tab-panel'});
-                    });
-                    const section = createElement('div', {
-                        className: options.className,
-                        children: Object.values(panels)
-                    });
-                    return {panels, section};
-                }
-            }
-        };
         globalThis.Jig.mermaid.render.renderWithControls = (targetEl, source, {direction} = {}) => {
             const code = (typeof source === 'function') ? source(direction || 'LR') : source;
             const pre = createElement('pre', {
@@ -325,7 +147,7 @@ test.describe('inbound.js', () => {
         assert.equal(sidebar.children.length, 2); // エントリーポイント一覧リンク + com.example パッケージ
         assert.equal(sidebar.children[0].querySelector('a').textContent, 'エントリーポイント一覧');
         assert.equal(sidebar.children[0].querySelector('a').getAttribute('href'), '#entrypoint-summary');
-        assert.equal(sidebar.children[1].querySelector('p span').textContent, 'example'); // パッケージ名
+        assert.equal(sidebar.children[1].querySelector('p span').textContent, 'com/example'); // 階層を連結したパッケージ名
         assert.equal(sidebar.children[1].querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
@@ -499,8 +321,8 @@ test.describe('inbound.js', () => {
                 classPath: "/api",
                 relations: [],
                 entrypoints: [
-                    {fqn: "com.example.ControllerA#methodA()", entrypointType: "HTTP_API", path: "GET /users"},
-                    {fqn: "com.example.ControllerA#methodB()", entrypointType: "HTTP_API", path: "GET /orders"}
+                    {fqn: "com.example.ControllerA#methodA()", entrypointType: "HTTP_API", path: "GET /users", parameters: [], returnTypeRef: {fqn: "void"}},
+                    {fqn: "com.example.ControllerA#methodB()", entrypointType: "HTTP_API", path: "GET /orders", parameters: [], returnTypeRef: {fqn: "void"}}
                 ]
             }]
         };
@@ -538,7 +360,7 @@ test.describe('inbound.js', () => {
                     classPath: "/orders",
                     relations: [],
                     entrypoints: [
-                        {fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /"}
+                        {fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /", parameters: [], returnTypeRef: {fqn: "void"}}
                     ]
                 },
                 {
@@ -546,7 +368,7 @@ test.describe('inbound.js', () => {
                     classPath: "/users",
                     relations: [],
                     entrypoints: [
-                        {fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /"}
+                        {fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /", parameters: [], returnTypeRef: {fqn: "void"}}
                     ]
                 }
             ]
@@ -590,8 +412,8 @@ test.describe('inbound.js', () => {
                     classPath: "/orders",
                     relations: [],
                     entrypoints: [
-                        {fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /"},
-                        {fqn: "com.example.OrderController#get()", entrypointType: "HTTP_API", path: "GET /{id}"}
+                        {fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /", parameters: [], returnTypeRef: {fqn: "void"}},
+                        {fqn: "com.example.OrderController#get()", entrypointType: "HTTP_API", path: "GET /{id}", parameters: [], returnTypeRef: {fqn: "void"}}
                     ]
                 },
                 {
@@ -599,7 +421,7 @@ test.describe('inbound.js', () => {
                     classPath: "/users",
                     relations: [],
                     entrypoints: [
-                        {fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /"}
+                        {fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /", parameters: [], returnTypeRef: {fqn: "void"}}
                     ]
                 }
             ]
@@ -638,8 +460,8 @@ test.describe('inbound.js', () => {
                 classPath: "/api",
                 relations: [],
                 entrypoints: [
-                    {fqn: "com.example.ControllerA#methodA()", entrypointType: "HTTP_API", path: "GET /a"},
-                    {fqn: "com.example.ControllerA#methodB()", entrypointType: "HTTP_API", path: "GET /b"}
+                    {fqn: "com.example.ControllerA#methodA()", entrypointType: "HTTP_API", path: "GET /a", parameters: [], returnTypeRef: {fqn: "void"}},
+                    {fqn: "com.example.ControllerA#methodB()", entrypointType: "HTTP_API", path: "GET /b", parameters: [], returnTypeRef: {fqn: "void"}}
                 ]
             }]
         };
@@ -678,12 +500,12 @@ test.describe('inbound.js', () => {
                 {
                     fqn: "com.example.OrderController",
                     classPath: "/orders", relations: [],
-                    entrypoints: [{fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /"}]
+                    entrypoints: [{fqn: "com.example.OrderController#list()", entrypointType: "HTTP_API", path: "GET /", parameters: [], returnTypeRef: {fqn: "void"}}]
                 },
                 {
                     fqn: "com.example.UserController",
                     classPath: "/users", relations: [],
-                    entrypoints: [{fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /"}]
+                    entrypoints: [{fqn: "com.example.UserController#list()", entrypointType: "HTTP_API", path: "GET /", parameters: [], returnTypeRef: {fqn: "void"}}]
                 }
             ]
         };
@@ -733,7 +555,9 @@ test.describe('inbound.js', () => {
         const entrypoints = Array.from({length: 11}, (_, i) => ({
             fqn: `com.example.ControllerA#method${i}()`,
             entrypointType: "HTTP_API",
-            path: `GET /method${i}`
+            path: `GET /method${i}`,
+            parameters: [],
+            returnTypeRef: {fqn: "void"}
         }));
         globalThis.inboundData = {
             inboundAdapters: [{fqn: "com.example.ControllerA", classPath: "/api", relations: [], entrypoints}]
@@ -757,7 +581,9 @@ test.describe('inbound.js', () => {
         const entrypoints = Array.from({length: 10}, (_, i) => ({
             fqn: `com.example.ControllerA#method${i}()`,
             entrypointType: "HTTP_API",
-            path: `GET /method${i}`
+            path: `GET /method${i}`,
+            parameters: [],
+            returnTypeRef: {fqn: "void"}
         }));
         globalThis.inboundData = {
             inboundAdapters: [{fqn: "com.example.ControllerA", classPath: "/api", relations: [], entrypoints}]
@@ -779,7 +605,9 @@ test.describe('inbound.js', () => {
         const makeEntrypoints = (prefix, n) => Array.from({length: n}, (_, i) => ({
             fqn: `com.example.${prefix}#method${i}()`,
             entrypointType: "HTTP_API",
-            path: `GET /${prefix.toLowerCase()}/${i}`
+            path: `GET /${prefix.toLowerCase()}/${i}`,
+            parameters: [],
+            returnTypeRef: {fqn: "void"}
         }));
         const ep1 = makeEntrypoints("ControllerA", 6);
         const ep2 = makeEntrypoints("ControllerB", 6);
@@ -811,8 +639,8 @@ test.describe('inbound.js', () => {
                     classPath: "",
                     relations: [],
                     entrypoints: [
-                        {fqn: "com.example.OrderListener#onOrder()", entrypointType: "QUEUE_LISTENER", path: "order-queue"},
-                        {fqn: "com.example.OrderListener#onCancel()", entrypointType: "QUEUE_LISTENER", path: "cancel-queue"}
+                        {fqn: "com.example.OrderListener#onOrder()", entrypointType: "QUEUE_LISTENER", path: "order-queue", parameters: [], returnTypeRef: {fqn: "void"}},
+                        {fqn: "com.example.OrderListener#onCancel()", entrypointType: "QUEUE_LISTENER", path: "cancel-queue", parameters: [], returnTypeRef: {fqn: "void"}}
                     ]
                 },
                 {
@@ -820,7 +648,7 @@ test.describe('inbound.js', () => {
                     classPath: "",
                     relations: [],
                     entrypoints: [
-                        {fqn: "com.example.UserListener#onUser()", entrypointType: "QUEUE_LISTENER", path: "user-queue"}
+                        {fqn: "com.example.UserListener#onUser()", entrypointType: "QUEUE_LISTENER", path: "user-queue", parameters: [], returnTypeRef: {fqn: "void"}}
                     ]
                 }
             ]
@@ -952,12 +780,12 @@ test.describe('inbound.js', () => {
                 {
                     fqn: "com.example.HttpController",
                     classPath: "/api", relations: [],
-                    entrypoints: [{fqn: "com.example.HttpController#get()", entrypointType: "HTTP_API", path: "GET /items"}]
+                    entrypoints: [{fqn: "com.example.HttpController#get()", entrypointType: "HTTP_API", path: "GET /items", parameters: [], returnTypeRef: {fqn: "void"}}]
                 },
                 {
                     fqn: "com.example.QueueListener",
                     classPath: "", relations: [],
-                    entrypoints: [{fqn: "com.example.QueueListener#onMessage()", entrypointType: "QUEUE_LISTENER", path: "my-queue"}]
+                    entrypoints: [{fqn: "com.example.QueueListener#onMessage()", entrypointType: "QUEUE_LISTENER", path: "my-queue", parameters: [], returnTypeRef: {fqn: "void"}}]
                 }
             ]
         };
@@ -1031,7 +859,7 @@ test.describe('inbound.js', () => {
 
         const fieldItem = orderItemCard.querySelector('.field-item');
         assert.ok(fieldItem, 'フィールドアイテムが存在する');
-        assert.equal(fieldItem.textContent, 'id');
+        assert.equal(fieldItem.textContent, 'id:Long');
     });
 
     test('deprecatedなルート型カードのタイトルにdeprecatedクラスが付く', () => {
@@ -1104,7 +932,7 @@ test.describe('inbound.js', () => {
         // OrderIdの内部にフィールドが展開される
         const nestedFieldItem = orderIdSection.querySelector('.field-item');
         assert.ok(nestedFieldItem, 'OrderIdのフィールドアイテムが存在する');
-        assert.equal(nestedFieldItem.textContent, 'value');
+        assert.equal(nestedFieldItem.textContent, 'value:Long');
 
         // OrderIdは独立したトップレベルカードとして存在しない（ルートでないため）
         const orderIdTopLevel = mainList.querySelector('#io-types > #' + Jig.util.fqnToId('io-type', 'com.example.OrderId'));
@@ -1124,7 +952,7 @@ test.describe('inbound.js', () => {
             inboundAdapters: [{
                 fqn: "com.example.Ctrl",
                 classPath: "/api", relations: [],
-                entrypoints: [{fqn: "com.example.Ctrl#a()", entrypointType: "HTTP_API", path: "GET /a"}]
+                entrypoints: [{fqn: "com.example.Ctrl#a()", entrypointType: "HTTP_API", path: "GET /a", parameters: [], returnTypeRef: {fqn: "void"}}]
             }],
             ioTypes: [
                 {fqn: "com.example.TypeA", fields: [{name: "b", typeRef: {fqn: "com.example.TypeB"}, isDeprecated: false}], isDeprecated: false},
@@ -1225,7 +1053,7 @@ test.describe('inbound.js', () => {
             inboundAdapters: [{
                 fqn: "com.example.OrderController",
                 classPath: "/api", relations: [],
-                entrypoints: [{fqn: "com.example.OrderController#order()", entrypointType: "HTTP_API", path: "GET /order"}]
+                entrypoints: [{fqn: "com.example.OrderController#order()", entrypointType: "HTTP_API", path: "GET /order", parameters: [], returnTypeRef: {fqn: "void"}}]
             }],
             ioTypes: [],
             rootIoTypeFqns: []

@@ -253,10 +253,9 @@ const InboundApp = (() => {
             if (!filterText) return true;
             return Jig.glossary.getTypeTerm(adapter.fqn).title.toLowerCase().includes(filterText);
         });
-        const byPackage = Jig.util.groupByPackageFqn(filteredAdapters, adapter => adapter.fqn);
-
-        Jig.dom.sidebar.renderPackageGrouped(sidebar, byPackage, pkgAdapters =>
-            pkgAdapters.map(adapter =>
+        Jig.dom.sidebar.renderPackageTree(sidebar, filteredAdapters, {
+            getFqn: adapter => adapter.fqn,
+            renderItem: adapter =>
                 Jig.dom.createElement("li", {
                     className: "in-page-sidebar__item",
                     children: [
@@ -267,8 +266,7 @@ const InboundApp = (() => {
                         })
                     ]
                 })
-            )
-        );
+        });
     }
 
     function buildEntrypointItem(ep) {

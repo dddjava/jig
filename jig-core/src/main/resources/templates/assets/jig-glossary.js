@@ -16,14 +16,15 @@ globalThis.Jig.glossary = (() => {
     /**
      * 型/パッケージ/メソッド等のFQNからソース（GitHub等）へのリンク要素を生成する。
      * sourcePath と blobUrlPrefix が揃う場合のみ要素を返し、それ以外は null。
-     * メソッドFQN等で用語が見つからない場合は型FQNにフォールバックして解決する。
+     * メソッドFQNは型FQNにフォールバックして解決する。
      * @param {string} fqn
      * @return {HTMLElement | null}
      */
     function sourceLink(fqn) {
         const blobUrlPrefix = globalThis.Jig.data.summary.getGit()?.blobUrlPrefix;
         if (!blobUrlPrefix) return null;
-        const sourcePath = findTerm(fqn)?.sourcePath ?? findTerm(fqn.split('#')[0])?.sourcePath;
+        const getSourcePath = globalThis.Jig.data.glossary.getSourcePath;
+        const sourcePath = getSourcePath(fqn) ?? getSourcePath(fqn.split('#')[0]);
         if (!sourcePath) return null;
         return globalThis.Jig.dom.createElement("a", {
             className: "source-link",

@@ -156,29 +156,36 @@ test.describe('jig-dom.js', () => {
 
         test('blobUrlPrefix と sourcePath が揃う場合はリンク要素を返す', () => {
             globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
-            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass', sourcePath: 'src/main/java/com/example/MyClass.java'}}};
+            globalThis.glossaryData = {terms: {}, sourcePaths: {'com.example.MyClass': 'src/main/java/com/example/MyClass.java'}};
             const link = Jig.glossary.sourceLink('com.example.MyClass');
             assert.equal(link.tagName, 'A');
             assert.equal(link.getAttribute('href'), 'https://github.com/foo/bar/blob/abc1234/src/main/java/com/example/MyClass.java');
             assert.equal(link.getAttribute('target'), '_blank');
         });
 
+        test('用語がない型でも sourcePath があればリンク要素を返す', () => {
+            globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
+            globalThis.glossaryData = {terms: {}, sourcePaths: {'com.example.NoJavadocClass': 'src/main/java/com/example/NoJavadocClass.java'}};
+            const link = Jig.glossary.sourceLink('com.example.NoJavadocClass');
+            assert.equal(link.getAttribute('href'), 'https://github.com/foo/bar/blob/abc1234/src/main/java/com/example/NoJavadocClass.java');
+        });
+
         test('メソッド FQN は型の sourcePath にフォールバックして解決する', () => {
             globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
-            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass', sourcePath: 'src/main/java/com/example/MyClass.java'}}};
+            globalThis.glossaryData = {terms: {}, sourcePaths: {'com.example.MyClass': 'src/main/java/com/example/MyClass.java'}};
             const link = Jig.glossary.sourceLink('com.example.MyClass#doSomething()');
             assert.equal(link.getAttribute('href'), 'https://github.com/foo/bar/blob/abc1234/src/main/java/com/example/MyClass.java');
         });
 
         test('blobUrlPrefix がない場合は null を返す', () => {
             globalThis.summaryData = {git: {}};
-            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass', sourcePath: 'src/main/java/com/example/MyClass.java'}}};
+            globalThis.glossaryData = {terms: {}, sourcePaths: {'com.example.MyClass': 'src/main/java/com/example/MyClass.java'}};
             assert.equal(Jig.glossary.sourceLink('com.example.MyClass'), null);
         });
 
         test('sourcePath がない場合は null を返す', () => {
             globalThis.summaryData = {git: {blobUrlPrefix: 'https://github.com/foo/bar/blob/abc1234'}};
-            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass'}}};
+            globalThis.glossaryData = {terms: {'com.example.MyClass': {title: 'MyClass'}}, sourcePaths: {}};
             assert.equal(Jig.glossary.sourceLink('com.example.MyClass'), null);
         });
     });

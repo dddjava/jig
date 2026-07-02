@@ -112,6 +112,9 @@ globalThis.Jig.data = (() => {
         getTerm(fqn) {
             return globalThis.glossaryData?.terms?.[fqn];
         },
+        getSourcePath(fqn) {
+            return globalThis.glossaryData?.sourcePaths?.[fqn];
+        },
     };
 
     const usecase = {

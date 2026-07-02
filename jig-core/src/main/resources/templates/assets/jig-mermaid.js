@@ -1226,7 +1226,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle} = {}) {
+        function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle, showControls = true} = {}) {
             if (!targetEl) return;
 
             let diagramEl = null;
@@ -1256,17 +1256,19 @@ globalThis.Jig.mermaid = (() => {
                 const generation = ++renderGeneration;
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
-                ensureCopySourceButton(container, currentSource);
-                ensureDownloadButton(container);
-                ensureZoomButton(container);
-                if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
-                    ensureDirectionButton(container, newDirection, renderDiagram);
-                }
-                if (enableLabelToggle) {
-                    ensureLabelToggleButton(container, showPhysicalName, () => {
-                        showPhysicalName = !showPhysicalName;
-                        renderDiagram(newDirection);
-                    });
+                if (showControls) {
+                    ensureCopySourceButton(container, currentSource);
+                    ensureDownloadButton(container);
+                    ensureZoomButton(container);
+                    if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
+                        ensureDirectionButton(container, newDirection, renderDiagram);
+                    }
+                    if (enableLabelToggle) {
+                        ensureLabelToggleButton(container, showPhysicalName, () => {
+                            showPhysicalName = !showPhysicalName;
+                            renderDiagram(newDirection);
+                        });
+                    }
                 }
 
                 if (isTooLarge(currentSource)) {
@@ -1608,7 +1610,7 @@ globalThis.Jig.mermaid = (() => {
             code.parentElement.replaceWith(container);
             diagram.register(container, () => {
                 container.innerHTML = "";
-                render.renderWithControls(container, () => source);
+                render.renderWithControls(container, () => source, {showControls: false});
             });
         });
     }

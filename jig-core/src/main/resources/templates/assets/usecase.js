@@ -503,57 +503,40 @@ const UsecaseApp = (() => {
             return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
         });
 
-        const byPackage = Jig.util.groupByPackageFqn(filteredItems, item => item.usecase.fqn);
-
-        byPackage.forEach((items, packageFqn) => {
-            const typeList = Jig.dom.createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: items.map(({usecase, methods}) => {
-                    const methodList = Jig.dom.createElement("ul", {
-                        className: "in-page-sidebar__links",
-                        children: methods.map(method =>
-                            Jig.dom.createElement("li", {
-                                className: "in-page-sidebar__item",
-                                children: [
-                                    Jig.dom.createElement("a", {
-                                        className: "in-page-sidebar__link in-page-sidebar__link--sub",
-                                        attributes: {href: "#" + fqnToMethodId(method.fqn)},
-                                        textContent: Jig.glossary.getMethodTerm(method.fqn).title
-                                    })
-                                ]
-                            })
-                        )
-                    });
-                    const header = Jig.dom.createElement("div", {
-                        className: "in-page-sidebar__item-header",
-                        children: [
-                            Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
-                                textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
-                            }),
-                            Jig.dom.sidebar.createToggle(methodList)
-                        ]
-                    });
-                    return Jig.dom.createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [header, methodList]
-                    });
-                })
-            });
-
-            const packageTitle = Jig.dom.createElement("p", {
-                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                children: [
-                    Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
-                    Jig.dom.sidebar.createToggle(typeList)
-                ]
-            });
-
-            sidebar.appendChild(Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [packageTitle, typeList]
-            }));
+        Jig.dom.sidebar.renderPackageTree(sidebar, filteredItems, {
+            getFqn: item => item.usecase.fqn,
+            renderItem: ({usecase, methods}) => {
+                const methodList = Jig.dom.createElement("ul", {
+                    className: "in-page-sidebar__links",
+                    children: methods.map(method =>
+                        Jig.dom.createElement("li", {
+                            className: "in-page-sidebar__item",
+                            children: [
+                                Jig.dom.createElement("a", {
+                                    className: "in-page-sidebar__link in-page-sidebar__link--sub",
+                                    attributes: {href: "#" + fqnToMethodId(method.fqn)},
+                                    textContent: Jig.glossary.getMethodTerm(method.fqn).title
+                                })
+                            ]
+                        })
+                    )
+                });
+                const header = Jig.dom.createElement("div", {
+                    className: "in-page-sidebar__item-header",
+                    children: [
+                        Jig.dom.createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
+                            textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
+                        }),
+                        Jig.dom.sidebar.createToggle(methodList)
+                    ]
+                });
+                return Jig.dom.createElement("li", {
+                    className: "in-page-sidebar__item",
+                    children: [header, methodList]
+                });
+            }
         });
     }
 

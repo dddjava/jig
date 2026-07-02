@@ -188,4 +188,58 @@ test.describe('jig-util.js', () => {
         assert.equal(jigUtil.getAggregatedFqn('com.example.domain', 0), 'com.example.domain');
         assert.equal(jigUtil.getAggregatedFqn('(default)', 2), '(default)');
     });
+
+    test.describe('buildPackageTree', () => {
+        const sut = jigUtil.buildPackageTree;
+        const getFqn = item => item.fqn;
+
+        test('空配列を渡すと空配列を返す', () => {
+            assert.deepEqual(sut([], getFqn), []);
+        });
+
+        test('同一パッケージの複数アイテムを1ノードにまとめる', () => {
+            const items = [{fqn: 'com.example.A'}, {fqn: 'com.example.B'}];
+            const roots = sut(items, getFqn);
+            assert.equal(roots.length, 1);
+            assert.equal(roots[0].fqn, 'com');
+            assert.equal(roots[0].children.length, 1);
+            const example = roots[0].children[0];
+            assert.equal(example.fqn, 'com.example');
+            assert.deepEqual(example.items.map(getFqn), ['com.example.A', 'com.example.B']);
+        });
+
+        test('中間パッケージノードを補完する', () => {
+            const items = [{fqn: 'com.example.app.service.A'}, {fqn: 'com.example.B'}];
+            const roots = sut(items, getFqn);
+            assert.equal(roots.length, 1);
+            const example = roots[0].children[0];
+            assert.equal(example.fqn, 'com.example');
+            assert.deepEqual(example.items.map(getFqn), ['com.example.B']);
+            assert.equal(example.children.length, 1);
+            const app = example.children[0];
+            assert.equal(app.fqn, 'com.example.app');
+            assert.deepEqual(app.items, []);
+            assert.equal(app.children[0].fqn, 'com.example.app.service');
+            assert.deepEqual(app.children[0].items.map(getFqn), ['com.example.app.service.A']);
+        });
+
+        test('複数ルートをfqn昇順で返す', () => {
+            const items = [{fqn: 'org.example.A'}, {fqn: 'com.example.B'}];
+            const roots = sut(items, getFqn);
+            assert.deepEqual(roots.map(r => r.fqn), ['com', 'org']);
+        });
+
+        test('子パッケージはfqn昇順に並ぶ', () => {
+            const items = [{fqn: 'com.zebra.A'}, {fqn: 'com.alpha.B'}];
+            const roots = sut(items, getFqn);
+            assert.deepEqual(roots[0].children.map(c => c.fqn), ['com.alpha', 'com.zebra']);
+        });
+
+        test('デフォルトパッケージは (default) ノードになる', () => {
+            const items = [{fqn: 'TopLevelClass'}, {fqn: 'com.example.A'}];
+            const roots = sut(items, getFqn);
+            assert.deepEqual(roots.map(r => r.fqn), ['(default)', 'com']);
+            assert.deepEqual(roots[0].items.map(getFqn), ['TopLevelClass']);
+        });
+    });
 });

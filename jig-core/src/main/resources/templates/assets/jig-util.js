@@ -170,6 +170,52 @@ globalThis.Jig.util = (() => {
         return byPackage;
     }
 
+    /**
+     * items の型FQNからパッケージ階層ツリーを構築する。
+     * 各itemのパッケージFQNから最上位セグメントまでの中間パッケージノードを補完して親子連結する。
+     * パッケージのないFQN（ドットなし）は "(default)" ノードに属する。
+     *
+     * @template T
+     * @param {T[]} items
+     * @param {function(T): string} getFqn - アイテムの型FQNを返す関数
+     * @returns {{fqn: string, items: T[], children: Object[]}[]} ルートノード配列（fqn昇順、childrenもfqn昇順）
+     */
+    function buildPackageTree(items, getFqn) {
+        const nodes = new Map();
+        const ensureNode = (fqn) => {
+            if (!nodes.has(fqn)) nodes.set(fqn, {fqn, items: [], children: []});
+            return nodes.get(fqn);
+        };
+        const roots = new Map();
+        items.forEach(item => {
+            const fqn = getFqn(item);
+            const dotIdx = fqn.lastIndexOf('.');
+            const packageFqn = dotIdx === -1 ? '(default)' : fqn.slice(0, dotIdx);
+            ensureNode(packageFqn).items.push(item);
+
+            let currentFqn = packageFqn;
+            while (true) {
+                const parentIdx = currentFqn.lastIndexOf('.');
+                if (parentIdx === -1) {
+                    roots.set(currentFqn, nodes.get(currentFqn));
+                    break;
+                }
+                const parentFqn = currentFqn.slice(0, parentIdx);
+                const parentExisted = nodes.has(parentFqn);
+                const parent = ensureNode(parentFqn);
+                const child = nodes.get(currentFqn);
+                if (parent.children.includes(child)) break;
+                parent.children.push(child);
+                // 親が既存なら祖先への連結は完了している
+                if (parentExisted) break;
+                currentFqn = parentFqn;
+            }
+        });
+        const sortByFqn = nodeList => nodeList.sort((a, b) => a.fqn.localeCompare(b.fqn));
+        nodes.forEach(node => sortByFqn(node.children));
+        return sortByFqn([...roots.values()]);
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -182,6 +228,7 @@ globalThis.Jig.util = (() => {
         pushToMap,
         addToSetMap,
         groupByPackageFqn,
+        buildPackageTree,
     }
 })();
 

@@ -365,11 +365,10 @@ const OutboundApp = (() => {
         });
 
         if (sidebar && grouped.length > 0) {
-            const byPackage = Jig.util.groupByPackageFqn(grouped, group => group.outboundPort.fqn);
-
             const packageContainer = Jig.dom.createElement("div", {});
-            Jig.dom.sidebar.renderPackageGrouped(packageContainer, byPackage, pkgGroups =>
-                pkgGroups.map(group => {
+            Jig.dom.sidebar.renderPackageTree(packageContainer, grouped, {
+                getFqn: group => group.outboundPort.fqn,
+                renderItem: group => {
                     const fqn = group.outboundPort.fqn;
                     return Jig.dom.createElement("li", {
                         className: "in-page-sidebar__item",
@@ -379,9 +378,9 @@ const OutboundApp = (() => {
                             textContent: Jig.glossary.getTypeTerm(fqn).title
                         })]
                     });
-                }),
-                {titleClass: "in-page-sidebar__title--sub"}
-            );
+                },
+                rootAsSection: false
+            });
 
             const portTitle = Jig.dom.createElement("p", {
                 className: "in-page-sidebar__title in-page-sidebar__title--collapsible",

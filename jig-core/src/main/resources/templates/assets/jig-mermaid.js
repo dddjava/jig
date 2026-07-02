@@ -1083,6 +1083,32 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
+        function openMermaidSvgInNewTab(container, button) {
+            const svg = findRenderedMermaidSvg(container);
+            if (!svg) {
+                flashButtonLabel(button, "SVG未生成");
+                return;
+            }
+
+            const serializer = new XMLSerializer();
+            const svgText = serializer.serializeToString(svg);
+            const blob = new Blob([svgText], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(blob);
+            const newTab = window.open(url, "_blank");
+            if (!newTab) {
+                flashButtonLabel(button, "ポップアップがブロックされました");
+            }
+            // 新しいタブの読み込みには時間がかかるため、即時revokeせず遅延して解放する
+            window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+        }
+
+        function ensureZoomButton(container) {
+            const button = ensureMermaidControlButton(container, "mermaid-zoom-button", "Open in New Tab", "⤢");
+            if (!button) return null;
+            button.onclick = () => openMermaidSvgInNewTab(container, button);
+            return button;
+        }
+
         function ensureDirectionButton(container, currentDirection, onUpdate) {
             if (!container || !currentDirection) return null;
             const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
@@ -1232,6 +1258,7 @@ globalThis.Jig.mermaid = (() => {
 
                 ensureCopySourceButton(container, currentSource);
                 ensureDownloadButton(container);
+                ensureZoomButton(container);
                 if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
                     ensureDirectionButton(container, newDirection, renderDiagram);
                 }

@@ -2052,7 +2052,8 @@ table td.number {
 .mermaid-copy-button,
 .mermaid-download-button,
 .mermaid-direction-button,
-.mermaid-label-toggle-button {
+.mermaid-label-toggle-button,
+.mermaid-zoom-button {
     position: absolute;
     top: 6px;
     width: 28px;
@@ -2073,7 +2074,8 @@ table td.number {
 .mermaid-diagram:hover > .mermaid-copy-button,
 .mermaid-diagram:hover > .mermaid-download-button,
 .mermaid-diagram:hover > .mermaid-direction-button,
-.mermaid-diagram:hover > .mermaid-label-toggle-button {
+.mermaid-diagram:hover > .mermaid-label-toggle-button,
+.mermaid-diagram:hover > .mermaid-zoom-button {
     opacity: 0.6;
     pointer-events: auto;
 }
@@ -2081,7 +2083,8 @@ table td.number {
 .mermaid-copy-button::after,
 .mermaid-download-button::after,
 .mermaid-direction-button::after,
-.mermaid-label-toggle-button::after {
+.mermaid-label-toggle-button::after,
+.mermaid-zoom-button::after {
     content: attr(data-tooltip);
     position: absolute;
     right: 0;
@@ -2102,7 +2105,8 @@ table td.number {
 .mermaid-copy-button:hover,
 .mermaid-download-button:hover,
 .mermaid-direction-button:hover,
-.mermaid-label-toggle-button:hover {
+.mermaid-label-toggle-button:hover,
+.mermaid-zoom-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
 }
@@ -2114,7 +2118,9 @@ table td.number {
 .mermaid-direction-button:hover::after,
 .mermaid-direction-button:focus-visible::after,
 .mermaid-label-toggle-button:hover::after,
-.mermaid-label-toggle-button:focus-visible::after {
+.mermaid-label-toggle-button:focus-visible::after,
+.mermaid-zoom-button:hover::after,
+.mermaid-zoom-button:focus-visible::after {
     opacity: 1;
     transform: translateY(0);
 }
@@ -2135,6 +2141,10 @@ table td.number {
     right: 108px;
     font-size: 12px;
     font-weight: bold;
+}
+
+.mermaid-zoom-button {
+    right: 142px;
 }
 
 .outbound-interface .outbound-crud-panel {

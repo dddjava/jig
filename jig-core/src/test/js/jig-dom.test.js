@@ -587,9 +587,10 @@ test.describe('jig-dom.js', () => {
             container.dispatchEvent(new window.Event('scroll'));
             assert.ok(title.classList.contains('in-page-sidebar__title--pinned'));
 
-            // クリックで見出しが上部に来る位置までスクロールする（500 - 0 - 32 - 12 = 456）
+            // クリックで見出しが上部に来る位置までスクロールする
+            // （リスト位置500 - 領域上端0 - 見出し高さ32 - gap（jsdomでは算出不可のため0） = 468）
             title.dispatchEvent(new window.Event('click'));
-            assert.equal(container.scrollTop, 456);
+            assert.equal(container.scrollTop, 468);
         });
 
         test('折りたたまれたグループは見出しクリックで展開される', () => {
@@ -637,6 +638,24 @@ test.describe('jig-dom.js', () => {
             location.hash = '#zzz';
             Jig.dom.sidebar.syncActiveLink();
             assert.equal(document.querySelector('.in-page-sidebar__link--active'), null);
+        });
+
+        test('パッケージリンクにも active を付与する', () => {
+            setupSidebar('<a class="in-page-sidebar__package-link" href="#package_x">pkg</a>'
+                + '<a class="in-page-sidebar__link" href="#a">A</a>');
+            location.hash = '#package_x';
+            Jig.dom.sidebar.syncActiveLink();
+            const active = document.querySelectorAll('.in-page-sidebar__link--active');
+            assert.equal(active.length, 1);
+            assert.equal(active[0].getAttribute('href'), '#package_x');
+        });
+
+        test('同一アンカーへの複数リンクは全て active になる', () => {
+            setupSidebar('<a class="in-page-sidebar__link" href="#a">A(グループ1)</a>'
+                + '<a class="in-page-sidebar__link" href="#a">A(グループ2)</a>');
+            location.hash = '#a';
+            Jig.dom.sidebar.syncActiveLink();
+            assert.equal(document.querySelectorAll('.in-page-sidebar__link--active').length, 2);
         });
 
         test('再同期で以前の active を解除する', () => {

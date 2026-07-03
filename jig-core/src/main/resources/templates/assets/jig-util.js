@@ -154,6 +154,7 @@ globalThis.Jig.util = (() => {
 
     /**
      * items をパッケージFQN単位でグループ化する。
+     * パッケージのないFQN（ドットなし）は "(default)" にグループ化される。
      * @template T
      * @param {T[]} items
      * @param {function(T): string} getFqn - アイテムのFQNを返す関数
@@ -162,10 +163,7 @@ globalThis.Jig.util = (() => {
     function groupByPackageFqn(items, getFqn) {
         const byPackage = new Map();
         items.forEach(item => {
-            const fqn = getFqn(item);
-            const dotIdx = fqn.lastIndexOf('.');
-            const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
-            pushToMap(byPackage, pkg, item);
+            pushToMap(byPackage, getPackageFqnFromTypeFqn(getFqn(item)), item);
         });
         return byPackage;
     }
@@ -189,8 +187,7 @@ globalThis.Jig.util = (() => {
         const roots = new Map();
         items.forEach(item => {
             const fqn = getFqn(item);
-            const dotIdx = fqn.lastIndexOf('.');
-            const packageFqn = dotIdx === -1 ? '(default)' : fqn.slice(0, dotIdx);
+            const packageFqn = getPackageFqnFromTypeFqn(fqn);
             ensureNode(packageFqn).items.push(item);
 
             let currentFqn = packageFqn;

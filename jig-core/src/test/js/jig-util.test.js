@@ -189,6 +189,17 @@ test.describe('jig-util.js', () => {
         assert.equal(jigUtil.getAggregatedFqn('(default)', 2), '(default)');
     });
 
+    test('groupByPackageFqn: パッケージFQN単位でグループ化し、パッケージなしは "(default)" になる', () => {
+        const grouped = jigUtil.groupByPackageFqn([
+            {fqn: 'com.example.A'},
+            {fqn: 'com.example.B'},
+            {fqn: 'TopLevel'},
+        ], item => item.fqn);
+        assert.deepEqual([...grouped.keys()], ['com.example', '(default)']);
+        assert.equal(grouped.get('com.example').length, 2);
+        assert.equal(grouped.get('(default)').length, 1);
+    });
+
     test.describe('buildPackageTree', () => {
         const sut = jigUtil.buildPackageTree;
         const getFqn = item => item.fqn;

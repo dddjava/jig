@@ -519,7 +519,6 @@ const InboundApp = (() => {
         // パッケージごとに見出しを置き、アダプターカードをまとめる。サイドバーのパッケージノードのリンク先になる
         const byPackage = Jig.util.groupByPackageFqn(adapters, adapter => adapter.fqn);
         [...byPackage.entries()]
-            .map(([packageFqn, packageAdapters]) => [packageFqn === '' ? '(default)' : packageFqn, packageAdapters])
             .sort(([a], [b]) => a.localeCompare(b))
             .forEach(([packageFqn, packageAdapters]) => {
                 container.appendChild(buildPackageHeading(packageFqn));

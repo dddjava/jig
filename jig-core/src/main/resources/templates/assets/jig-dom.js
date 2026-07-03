@@ -321,6 +321,13 @@ globalThis.Jig.dom = (() => {
 
     // --- Sidebar ---
 
+    // 折りたたみ状態の表現（hiddenクラスとトグルのaria）を一箇所で扱う
+    function setSidebarListExpanded(list, toggle, expanded) {
+        list.classList.toggle("in-page-sidebar__links--hidden", !expanded);
+        toggle.setAttribute("aria-expanded", String(expanded));
+        toggle.setAttribute("aria-label", expanded ? "折りたたむ" : "展開");
+    }
+
     function createSidebarToggle(targetEl) {
         const toggle = createElement("button", {
             className: "in-page-sidebar__toggle",
@@ -328,9 +335,7 @@ globalThis.Jig.dom = (() => {
         });
         toggle.addEventListener("click", () => {
             const collapsing = toggle.getAttribute("aria-expanded") === "true";
-            toggle.setAttribute("aria-expanded", String(!collapsing));
-            toggle.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
-            targetEl.classList.toggle("in-page-sidebar__links--hidden", collapsing);
+            setSidebarListExpanded(targetEl, toggle, !collapsing);
         });
         return toggle;
     }
@@ -499,11 +504,9 @@ globalThis.Jig.dom = (() => {
         const list = createElement("ul", {className: "in-page-sidebar__links"});
         roots.forEach(root => list.appendChild(renderNode(root)));
 
-        const toggle = createSidebarToggle(list);
-        const titleEl = createElement("p", {
-            className: "in-page-sidebar__title in-page-sidebar__title--collapsible in-page-sidebar__title--group",
-            children: [i18nText("span", title), toggle]
-        });
+        const titleEl = buildCollapsibleTitle(title, list);
+        titleEl.classList.add("in-page-sidebar__title--group");
+        const toggle = titleEl.querySelector(".in-page-sidebar__toggle");
 
         container.appendChild(createElement("section", {
             className: "in-page-sidebar__section in-page-sidebar__section--group",
@@ -511,42 +514,48 @@ globalThis.Jig.dom = (() => {
         }));
 
         // グループ見出しがスクロール範囲外に押し出された場合も下部に積み重なって留まるよう、
-        // container内の全グループ見出しの積み重ねオフセットを再計算する
-        const groupTitles = [...container.querySelectorAll(".in-page-sidebar__title--group")];
+        // スクロール領域内の全グループ見出しの積み重ねオフセットを再計算する
+        const scroller = sidebarScrollerOf(container);
+        const groupTitles = [...scroller.querySelectorAll(".in-page-sidebar__title--group")];
         groupTitles.forEach((groupTitle, index) => {
             groupTitle.style.bottom = `calc(${groupTitles.length - 1 - index} * var(--group-title-height))`;
         });
 
-        initGroupTitlePinning(container, titleEl, toggle, list);
+        initGroupTitlePinning(scroller, titleEl, toggle, list);
     }
 
-    // .in-page-sidebar__list の grid gap。ピン留め解除時のスクロール位置計算に使う
-    const SIDEBAR_LIST_GAP_PX = 12;
     const GROUP_TITLE_PINNED_CLASS = "in-page-sidebar__title--pinned";
+    // ピン留めのscrollリスナーをスクロール領域ごとに1つに保つ
+    const pinningInitializedScrollers = new WeakSet();
+
+    // グループ見出しの sticky / ピン留めの基準となるスクロール領域。
+    // 描画先がスクロール領域内のネストした要素でも動作するよう closest で解決する
+    function sidebarScrollerOf(container) {
+        return container.closest(".in-page-sidebar__list") ?? container;
+    }
+
+    function isContentBelowView(scroller, list) {
+        if (typeof scroller.getBoundingClientRect !== "function") return false;
+        const scrollerRect = scroller.getBoundingClientRect();
+        if (!scrollerRect.height) return false;
+        if (!list || list.classList.contains("in-page-sidebar__links--hidden")) return false;
+        return list.getBoundingClientRect().top >= scrollerRect.bottom - 1;
+    }
+
+    // スクロール領域内の全グループ見出しのピン留め状態を更新する。
+    // 見出しの次の要素がそのグループの内容リスト（renderTreeSectionの構造）
+    function updatePinnedStates(scroller) {
+        scroller.querySelectorAll(".in-page-sidebar__title--group").forEach(titleEl => {
+            titleEl.classList.toggle(GROUP_TITLE_PINNED_CLASS, isContentBelowView(scroller, titleEl.nextElementSibling));
+        });
+    }
 
     /**
      * グループ内容がスクロール範囲外（下）にあり見出しだけが下部に留まっている状態を
      * 「閉じている」扱いにする。閉じた見た目のクラスを付け、クリックで展開して
      * グループが見える位置までスクロールする。
      */
-    function initGroupTitlePinning(container, titleEl, toggle, list) {
-        function isContentBelowView() {
-            if (typeof container.getBoundingClientRect !== "function") return false;
-            const containerRect = container.getBoundingClientRect();
-            if (!containerRect.height) return false;
-            if (list.classList.contains("in-page-sidebar__links--hidden")) return false;
-            return list.getBoundingClientRect().top >= containerRect.bottom - 1;
-        }
-
-        function updatePinnedState() {
-            if (titleEl.isConnected === false) {
-                // 再描画で破棄された見出しのリスナーは片付ける
-                container.removeEventListener("scroll", updatePinnedState);
-                return;
-            }
-            titleEl.classList.toggle(GROUP_TITLE_PINNED_CLASS, isContentBelowView());
-        }
-
+    function initGroupTitlePinning(scroller, titleEl, toggle, list) {
         // ピン留め中はトグルの折りたたみ動作より優先するため、captureで処理する
         titleEl.addEventListener("click", (e) => {
             const collapsed = list.classList.contains("in-page-sidebar__links--hidden");
@@ -555,23 +564,27 @@ globalThis.Jig.dom = (() => {
             e.stopPropagation();
 
             if (collapsed) {
-                list.classList.remove("in-page-sidebar__links--hidden");
-                toggle.setAttribute("aria-expanded", "true");
-                toggle.setAttribute("aria-label", "折りたたむ");
+                setSidebarListExpanded(list, toggle, true);
             }
 
             // グループ見出しが上部に来る位置までスクロールして内容を見せる
-            if (typeof container.getBoundingClientRect === "function") {
-                const containerRect = container.getBoundingClientRect();
+            if (typeof scroller.getBoundingClientRect === "function") {
+                const scrollerRect = scroller.getBoundingClientRect();
                 const titleRect = titleEl.getBoundingClientRect();
-                container.scrollTop += list.getBoundingClientRect().top
-                    - containerRect.top - titleRect.height - SIDEBAR_LIST_GAP_PX;
+                const listGap = typeof globalThis.getComputedStyle === "function"
+                    ? parseFloat(globalThis.getComputedStyle(scroller).rowGap) || 0
+                    : 0;
+                scroller.scrollTop += list.getBoundingClientRect().top
+                    - scrollerRect.top - titleRect.height - listGap;
             }
-            updatePinnedState();
+            updatePinnedStates(scroller);
         }, true);
 
-        container.addEventListener("scroll", updatePinnedState);
-        updatePinnedState();
+        if (!pinningInitializedScrollers.has(scroller)) {
+            pinningInitializedScrollers.add(scroller);
+            scroller.addEventListener("scroll", () => updatePinnedStates(scroller));
+        }
+        updatePinnedStates(scroller);
     }
 
     function initSidebarTextFilter(inputId, onChange) {
@@ -585,11 +598,11 @@ globalThis.Jig.dom = (() => {
         let el = link.parentElement;
         while (el && el !== sidebar) {
             if (el.classList.contains("in-page-sidebar__links--hidden")) {
-                el.classList.remove("in-page-sidebar__links--hidden");
                 const toggle = el.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
                 if (toggle) {
-                    toggle.setAttribute("aria-expanded", "true");
-                    toggle.setAttribute("aria-label", "折りたたむ");
+                    setSidebarListExpanded(el, toggle, true);
+                } else {
+                    el.classList.remove("in-page-sidebar__links--hidden");
                 }
             }
             el = el.parentElement;
@@ -618,13 +631,18 @@ globalThis.Jig.dom = (() => {
         const hash = location.hash;
         if (!hash || hash === "#") return;
 
-        const link = [...sidebar.querySelectorAll(".in-page-sidebar__link")]
-            .find(a => a.getAttribute("href") === hash);
-        if (!link) return;
+        // 同一アンカーへのリンクが複数グループに現れることがあるため、全て同期する
+        const links = [
+            ...sidebar.querySelectorAll(".in-page-sidebar__link"),
+            ...sidebar.querySelectorAll(".in-page-sidebar__package-link"),
+        ].filter(a => a.getAttribute("href") === hash);
+        if (links.length === 0) return;
 
-        link.classList.add("in-page-sidebar__link--active");
-        expandSidebarAncestors(sidebar, link);
-        if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, link);
+        links.forEach(link => {
+            link.classList.add("in-page-sidebar__link--active");
+            expandSidebarAncestors(sidebar, link);
+        });
+        if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, links[0]);
     }
 
     function initSidebarCollapseBtn() {

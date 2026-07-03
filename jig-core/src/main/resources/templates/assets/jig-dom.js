@@ -405,8 +405,11 @@ globalThis.Jig.dom = (() => {
      * @param {function(T): Element} options.renderLeaf - リーフのli要素を生成する関数
      * @param {function({fqn: string, items: T[], children: Object[]}): (string|null)} [options.packageHref]
      *        パッケージノードのリンク先を返す関数。nullを返すとリンクなしのラベルになる
+     * @param {boolean} [options.showTitle=true] - falseの場合、グループ見出し（背景色・積み重ね
+     *        ピン留め含む）を描画せず、パッケージ階層のulを直接containerへ追加する。
+     *        グループが1つしかなく見出しが冗長なページで使う
      */
-    function renderTreeSection(container, {title, items, getFqn, renderLeaf, packageHref}) {
+    function renderTreeSection(container, {title, items, getFqn, renderLeaf, packageHref, showTitle = true}) {
         if (!container || !items || items.length === 0) return;
         const glossary = globalThis.Jig.glossary;
         const roots = globalThis.Jig.util.buildPackageTree(items, getFqn);
@@ -450,6 +453,13 @@ globalThis.Jig.dom = (() => {
             roots[0].items.forEach(item => list.appendChild(renderLeaf(item)));
         } else {
             roots.forEach(root => list.appendChild(renderNode(root)));
+        }
+
+        if (!showTitle) {
+            // グループが1つしかなく見出しが冗長な場合、見出し・背景色・ピン留めなしで
+            // パッケージ階層のulをそのまま追加する
+            container.appendChild(list);
+            return;
         }
 
         const titleEl = buildCollapsibleTitle(title, list);

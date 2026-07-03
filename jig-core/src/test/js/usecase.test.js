@@ -138,10 +138,12 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const sidebar = document.getElementById('usecase-sidebar-list');
-            assert.equal(sidebar.children.length, 1); // ユースケースグループ
-            const group = sidebar.children[0];
-            assert.ok(group.classList.contains('in-page-sidebar__section--group'));
-            assert.equal(group.querySelector('p span').textContent, 'ユースケース');
+            // グループが「ユースケース」の1つしかないため見出しは表示せず、
+            // パッケージ階層のulを直接並べる
+            assert.equal(sidebar.children.length, 1);
+            assert.equal(sidebar.children[0].tagName, 'ul');
+            assert.equal(sidebar.querySelectorAll('.in-page-sidebar__section--group').length, 0);
+            assert.equal(sidebar.querySelectorAll('.in-page-sidebar__title--group').length, 0);
             const sidebarLinks = sidebar.querySelectorAll('a');
             // 用語のないパッケージは省略され、メインのパッケージ見出しへのリンクになる
             assert.equal(sidebarLinks[0].textContent, 'example');

@@ -505,7 +505,8 @@ const UsecaseApp = (() => {
         });
 
         Jig.dom.sidebar.renderTreeSection(sidebar, {
-            title: "ユースケース",
+            // グループが「ユースケース」の1つしかなく見出しが冗長なため非表示にする
+            showTitle: false,
             items: filteredItems,
             getFqn: item => item.usecase.fqn,
             renderLeaf: ({usecase, methods}) => {

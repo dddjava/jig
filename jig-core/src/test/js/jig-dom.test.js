@@ -402,6 +402,19 @@ test.describe('jig-dom.js', () => {
             assert.equal(container.children.length, 0);
         });
 
+        test('showTitle: false の場合、見出し・背景色・ピン留めなしでul.in-page-sidebar__linksを直接追加する', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, showTitle: false, items: [{fqn: 'com.example.A'}]});
+
+            assert.equal(container.children.length, 1);
+            const list = container.children[0];
+            assert.equal(list.tagName, 'UL');
+            assert.equal(list.className, 'in-page-sidebar__links');
+            assert.equal(container.querySelectorAll('.in-page-sidebar__section--group').length, 0);
+            assert.equal(container.querySelectorAll('.in-page-sidebar__title--group').length, 0);
+            assert.ok(container.querySelector('a[href="#com.example.A"]'));
+        });
+
         test('グループは背景区別用のクラスを持つ折りたたみ可能なsectionになる', () => {
             const container = Jig.dom.createElement('div');
             Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.A'}]});

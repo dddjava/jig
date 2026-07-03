@@ -365,7 +365,7 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createSection(title, items, {collapsible = false} = {}) {
+    function createSection(items) {
         if (!items || items.length === 0) return null;
 
         const links = createElement("ul", {
@@ -373,19 +373,15 @@ globalThis.Jig.dom = (() => {
             children: items.map(({id, label}) => createSidebarLeaf("#" + id, label))
         });
 
-        const titleEl = !title ? null
-            : collapsible ? buildCollapsibleTitle(title, links)
-            : i18nText("p", title, {className: "in-page-sidebar__title"});
-
         return createElement("section", {
             className: "in-page-sidebar__section",
-            children: [titleEl, links]
+            children: [links]
         });
     }
 
-    function renderSection(container, items, options) {
+    function renderSection(container, items) {
         if (!container) return;
-        const section = createSection(null, items, options);
+        const section = createSection(items);
         if (section) {
             container.appendChild(section);
         }

@@ -314,29 +314,25 @@ test.describe('jig-dom.js', () => {
 
     test.describe('sidebar.section', () => {
         test('空の items 配列は null を返す', () => {
-            const section = Jig.dom.sidebar.section('Title', []);
+            const section = Jig.dom.sidebar.section([]);
             assert.equal(section, null);
         });
 
         test('null items は null を返す', () => {
-            const section = Jig.dom.sidebar.section('Title', null);
+            const section = Jig.dom.sidebar.section(null);
             assert.equal(section, null);
         });
 
-        test('正常系で <section> を生成', () => {
+        test('正常系で見出しなしの <section> を生成', () => {
             const items = [
                 {id: 'sec1', label: 'Section 1'},
                 {id: 'sec2', label: 'Section 2'}
             ];
-            const section = Jig.dom.sidebar.section('Sections', items);
+            const section = Jig.dom.sidebar.section(items);
 
             assert.equal(section.tagName, 'SECTION');
             assert.equal(section.className, 'in-page-sidebar__section');
-
-            const title = section.querySelector('p');
-            assert.ok(title);
-            assert.equal(title.className, 'in-page-sidebar__title');
-            assert.equal(title.textContent, 'Sections');
+            assert.equal(section.querySelector('p'), null);
 
             const ul = section.querySelector('ul');
             assert.ok(ul);

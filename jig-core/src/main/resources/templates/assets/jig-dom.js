@@ -506,6 +506,13 @@ globalThis.Jig.dom = (() => {
             className: "in-page-sidebar__section in-page-sidebar__section--group",
             children: [titleEl, list]
         }));
+
+        // グループ見出しがスクロール範囲外に押し出された場合も下部に積み重なって留まるよう、
+        // container内の全グループ見出しの積み重ねオフセットを再計算する
+        const groupTitles = [...container.querySelectorAll(".in-page-sidebar__title--group")];
+        groupTitles.forEach((groupTitle, index) => {
+            groupTitle.style.bottom = `calc(${groupTitles.length - 1 - index} * var(--group-title-height))`;
+        });
     }
 
     function initSidebarTextFilter(inputId, onChange) {

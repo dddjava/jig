@@ -559,6 +559,17 @@ test.describe('jig-dom.js', () => {
             assert.ok(list.classList.contains('in-page-sidebar__links--hidden'));
             assert.equal(toggle.getAttribute('aria-expanded'), 'false');
         });
+
+        test('グループ見出しに下部積み重ね用のオフセットが設定される', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.a.A'}]});
+            Jig.dom.sidebar.renderTreeSection(container, {...options, title: 'グループ2', items: [{fqn: 'com.b.B'}]});
+
+            const titles = container.querySelectorAll('.in-page-sidebar__title--group');
+            assert.equal(titles.length, 2);
+            assert.equal(titles[0].style.bottom, 'calc(1 * var(--group-title-height))');
+            assert.equal(titles[1].style.bottom, 'calc(0 * var(--group-title-height))');
+        });
     });
 
     test.describe('sidebar.syncActiveLink', () => {

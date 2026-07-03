@@ -466,6 +466,11 @@ test.describe('jig-mermaid.js', () => {
                         this.className = Array.from(this._classSet).join(' ');
                     },
                     contains: (name) => this._classSet.has(name),
+                    toggle: (name, force) => {
+                        const shouldAdd = force !== undefined ? force : !this._classSet.has(name);
+                        if (shouldAdd) this._classSet.add(name); else this._classSet.delete(name);
+                        this.className = Array.from(this._classSet).join(' ');
+                    },
                 };
             }
 
@@ -542,6 +547,22 @@ test.describe('jig-mermaid.js', () => {
             assert.equal(message.textContent, '関連数が多いため表示を制限しています（エッジ数: 42）');
         });
 
+        test.describe('setRendering', () => {
+            test('is-renderingクラスをトグルする', () => {
+                setupGlobals();
+                const container = new Element('div');
+                sut.setRendering(container, true);
+                assert.equal(container.classList.contains('is-rendering'), true);
+                sut.setRendering(container, false);
+                assert.equal(container.classList.contains('is-rendering'), false);
+            });
+
+            test('containerがnullやclassListを持たない場合は何もしない', () => {
+                assert.doesNotThrow(() => sut.setRendering(null, true));
+                assert.doesNotThrow(() => sut.setRendering({}, true));
+            });
+        });
+
         test('flashButtonLabelはラベルを戻す', () => {
             setupGlobals();
 
@@ -612,6 +633,43 @@ test.describe('jig-mermaid.js', () => {
         test('root が無効でも例外にならない', () => {
             assert.doesNotThrow(() => mermaid.renderMarkdownDiagrams(null));
             assert.doesNotThrow(() => mermaid.renderMarkdownDiagrams({}));
+        });
+    });
+
+    test.describe('setupLazyMermaidRender', () => {
+        const {JSDOM} = require('jsdom');
+
+        function setupGlobals(html) {
+            const dom = new JSDOM(`<!DOCTYPE html><body>${html}</body></html>`);
+            global.window = dom.window;
+            global.document = dom.window.document;
+            // IntersectionObserver不使用の分岐（全diagramを即時キューに積む）を使う
+            delete global.window.IntersectionObserver;
+            return dom.window.document;
+        }
+
+        test('1件の描画がmermaid.runの同期例外で失敗しても、キューは後続の図の描画を続ける', () => {
+            const doc = setupGlobals('<div class="mermaid">bad</div><div class="mermaid">good</div>');
+            const diagrams = Array.from(doc.querySelectorAll('.mermaid'));
+
+            let callCount = 0;
+            const mermaidStub = {
+                run: () => {
+                    callCount++;
+                    if (callCount === 1) throw new Error('boom');
+                    return {}; // 同期完了（then/catchを持たない）
+                }
+            };
+            global.window.mermaid = mermaidStub;
+            globalThis.mermaid = mermaidStub;
+
+            assert.doesNotThrow(() => mermaid.render.setupLazyMermaidRender());
+
+            assert.equal(callCount, 2, '1件目の同期例外でキューが停止せず2件目まで描画される');
+            diagrams.forEach(d => {
+                const container = d.closest('.mermaid-diagram') || d;
+                assert.equal(container.classList.contains('is-rendering'), false, 'is-renderingが残留しない');
+            });
         });
     });
 });

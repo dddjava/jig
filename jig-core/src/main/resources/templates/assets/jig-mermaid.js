@@ -952,15 +952,9 @@ globalThis.Jig.mermaid = (() => {
             diagram.innerHTML = source;
 
             const container = ensureMermaidDiagramContainer(diagram) || diagram;
-            setRendering(container, true);
-            const renderResult = renderMermaidDiagram(diagram);
-            if (renderResult && typeof renderResult.then === "function") {
-                renderResult.then(() => setRendering(container, false)).catch(() => {
-                    setRendering(container, false);
-                    flashButtonLabel(button, "描画に失敗しました");
-                });
-            } else {
-                setRendering(container, false);
+            const renderResult = withRenderingIndicator(container, () => renderMermaidDiagram(diagram));
+            if (renderResult && typeof renderResult.catch === "function") {
+                renderResult.catch(() => flashButtonLabel(button, "描画に失敗しました"));
             }
         }
 
@@ -1010,6 +1004,36 @@ globalThis.Jig.mermaid = (() => {
         function setRendering(container, isRendering) {
             if (!container || !container.classList) return;
             container.classList.toggle("is-rendering", isRendering);
+        }
+
+        /**
+         * container の is-rendering を work() の実行中 true にし、成功・失敗・同期例外
+         * いずれの場合も完了時に確実に false へ戻す。work() は同期値・undefined・Promise の
+         * いずれを返してもよい。同期例外は is-rendering を戻したうえで呼び出し元へ再送出する。
+         *
+         * @param {Element} container
+         * @param {function(): *} work
+         * @param {function(): boolean} [isStale] - 完了時に true を返す場合、より新しい描画に
+         *        置き換わっているとみなし is-rendering を外さない（世代管理との競合を避ける）
+         */
+        function withRenderingIndicator(container, work, isStale) {
+            setRendering(container, true);
+            const clear = () => {
+                if (!isStale || !isStale()) setRendering(container, false);
+            };
+            let result;
+            try {
+                result = work();
+            } catch (err) {
+                clear();
+                throw err;
+            }
+            if (result && typeof result.then === "function") {
+                result.then(clear, clear);
+            } else {
+                clear();
+            }
+            return result;
         }
 
         function ensureMermaidDiagramContainer(targetEl) {
@@ -1192,20 +1216,13 @@ globalThis.Jig.mermaid = (() => {
         }
 
         // 「上限を上げて描画する」等のユーザー起因の再描画ボタンから使う。
-        // renderWithControls の世代管理とは独立した一回限りの描画なので、
-        // 完了時に無条件で is-rendering を外す。
-        function renderMermaidNodeTracked(diagramEl, source, maxEdges, container) {
-            setRendering(container, true);
-            const result = renderMermaidNode(diagramEl, source, maxEdges, container);
-            if (result && typeof result.then === "function") {
-                result.then(() => setRendering(container, false), () => setRendering(container, false));
-            } else {
-                setRendering(container, false);
-            }
-            return result;
+        // isStale が与えられれば、完了時により新しい世代の描画に置き換わっていないか確認してから
+        // is-rendering を外す（同一 container を共有する renderWithControls の描画と競合しうるため）。
+        function renderMermaidNodeTracked(diagramEl, source, maxEdges, container, isStale) {
+            return withRenderingIndicator(container, () => renderMermaidNode(diagramEl, source, maxEdges, container, isStale), isStale);
         }
 
-        function renderMermaidNode(diagramEl, source, maxEdges, container) {
+        function renderMermaidNode(diagramEl, source, maxEdges, container, isStale) {
             if (!diagramEl || !globalThis.mermaid || typeof globalThis.mermaid.run !== "function") return;
 
             const text = source != null ? String(source) : "";
@@ -1234,7 +1251,7 @@ globalThis.Jig.mermaid = (() => {
                             const actionEdges = Math.max(edgeCount, DEFAULT_MAX_EDGES * 2);
                             renderTooLargeDiagram(diagramEl, text, {
                                 messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
-                                onRender: () => renderMermaidNodeTracked(diagramEl, text, actionEdges, container)
+                                onRender: () => renderMermaidNodeTracked(diagramEl, text, actionEdges, container, isStale)
                             });
                         } else {
                             diagramEl.style.display = "none";
@@ -1309,7 +1326,7 @@ globalThis.Jig.mermaid = (() => {
                     setEdgeWarning(container, {visible: false});
                     renderTooLargeDiagram(diagramEl, currentSource, {
                         messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
-                        onRender: () => renderMermaidNodeTracked(diagramEl, currentSource, edgeCount, container)
+                        onRender: () => renderMermaidNodeTracked(diagramEl, currentSource, edgeCount, container, () => generation !== renderGeneration)
                     });
                     setRendering(container, false);
                     return;
@@ -1330,7 +1347,7 @@ globalThis.Jig.mermaid = (() => {
                     return;
                 }
 
-                const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
+                const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container, () => generation !== renderGeneration);
                 const finishRendering = () => {
                     if (generation === renderGeneration) setRendering(container, false);
                 };
@@ -1412,16 +1429,23 @@ globalThis.Jig.mermaid = (() => {
                 }
 
                 const diagramContainer = ensureMermaidDiagramContainer(diagram) || diagram;
-                setRendering(diagramContainer, true);
                 diagram.innerHTML = source;
-                const renderResult = renderMermaidDiagram(diagram);
                 const handleFinish = () => {
                     rendered.add(diagram);
                     queued.delete(diagram);
                     isRendering = false;
-                    setRendering(diagramContainer, false);
                     processRenderQueue();
                 };
+                // mermaid.run が同期的に例外を投げても is-rendering が残留したままキューが
+                // 永久に止まらないよう、例外時も handleFinish でキューを進める。
+                let renderResult;
+                try {
+                    renderResult = withRenderingIndicator(diagramContainer, () => renderMermaidDiagram(diagram));
+                } catch (err) {
+                    console.error('Mermaid rendering error:', err);
+                    handleFinish();
+                    return;
+                }
                 if (renderResult && typeof renderResult.then === "function") {
                     renderResult.then(handleFinish).catch(handleFinish);
                 } else {

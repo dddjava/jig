@@ -1702,6 +1702,29 @@ table td.number {
     padding-bottom: 0;
 }
 
+/* ツリーのルートグループ見出し（リクエストハンドラ等の大分類）。背景色で他の要素と区別する */
+.in-page-sidebar__title--group {
+    background-color: #e3ecf7;
+    border-bottom: none;
+    border-radius: 6px;
+    padding: 6px 8px;
+}
+
+/* ツリーのパッケージノード。メインセクションへのリンク */
+.in-page-sidebar__package-link {
+    color: #31455f;
+    text-decoration: none;
+    font-size: 0.85em;
+    word-break: break-word;
+    white-space: nowrap;
+}
+
+.in-page-sidebar__package-link:hover,
+.in-page-sidebar__package-link:focus-visible {
+    color: #10253f;
+    text-decoration: underline;
+}
+
 .in-page-sidebar__title .in-page-sidebar__link {
     font-size: inherit;
     padding: 0;

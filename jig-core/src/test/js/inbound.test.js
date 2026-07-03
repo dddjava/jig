@@ -144,11 +144,17 @@ test.describe('inbound.js', () => {
         InboundApp.init();
 
         const sidebar = document.getElementById('inbound-sidebar-list');
-        assert.equal(sidebar.children.length, 2); // エントリーポイント一覧リンク + com.example パッケージ
+        assert.equal(sidebar.children.length, 2); // 固定リンクセクション + リクエストハンドラグループ
         assert.equal(sidebar.children[0].querySelector('a').textContent, 'エントリーポイント一覧');
         assert.equal(sidebar.children[0].querySelector('a').getAttribute('href'), '#entrypoint-summary');
-        assert.equal(sidebar.children[1].querySelector('p span').textContent, 'com/example'); // 階層を連結したパッケージ名
-        assert.equal(sidebar.children[1].querySelector('a').textContent, 'ControllerA');
+        const group = sidebar.children[1];
+        assert.ok(group.classList.has('in-page-sidebar__section--group'), 'エントリーポイント種別のグループセクション');
+        assert.equal(group.querySelector('p span').textContent, 'リクエストハンドラ');
+        // パッケージノードは省略・連結され、メインセクションへのリンクになる
+        const packageLink = group.querySelector('.in-page-sidebar__package-link');
+        assert.equal(packageLink.textContent, 'com.example');
+        assert.ok(packageLink.getAttribute('href').startsWith('#'));
+        assert.equal(group.querySelector('.in-page-sidebar__link').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
         assert.equal(mainList.children.length, 2); // サマリーセクション + コントローラーセクション
@@ -817,10 +823,49 @@ test.describe('inbound.js', () => {
 
         // サイドバーには HttpController のリンクのみ表示
         const sidebar = document.getElementById('inbound-sidebar-list');
-        const fixedLabels = new Set(['エントリーポイント一覧', '入出力オブジェクト一覧']);
-        const adapterLinks = Array.from(sidebar.querySelectorAll('a'))
-            .filter(a => !fixedLabels.has(a.textContent));
+        const adapterLinks = Array.from(sidebar.querySelectorAll('a.in-page-sidebar__link'))
+            .filter(a => !a.getAttribute('href').match(/^#(entrypoint-summary|io-types)$/));
         assert.deepEqual(adapterLinks.map(a => a.textContent), ['HttpController'], 'HttpControllerのみ表示');
+        // グループもリクエストハンドラのみ表示
+        const groupTitles = sidebar.querySelectorAll('.in-page-sidebar__section--group p span');
+        assert.deepEqual(groupTitles.map(el => el.textContent), ['リクエストハンドラ']);
+    });
+
+    test('サイドバーはエントリーポイント種別ごとのグループに分かれ、複数種別を持つアダプターは両方に現れる', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.MixedAdapter",
+                    classPath: "", relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.MixedAdapter#get()", entrypointType: "HTTP_API", path: "GET /items", parameters: [], returnTypeRef: {fqn: "void"}},
+                        {fqn: "com.example.MixedAdapter#onMessage()", entrypointType: "QUEUE_LISTENER", path: "my-queue", parameters: [], returnTypeRef: {fqn: "void"}}
+                    ]
+                },
+                {
+                    fqn: "com.example.Scheduler",
+                    classPath: "", relations: [],
+                    entrypoints: [{fqn: "com.example.Scheduler#run()", entrypointType: "SCHEDULER", path: "cron", parameters: [], returnTypeRef: {fqn: "void"}}]
+                }
+            ]
+        };
+        setGlossaryData({});
+        InboundApp.init();
+
+        const sidebar = document.getElementById('inbound-sidebar-list');
+        const groups = sidebar.querySelectorAll('.in-page-sidebar__section--group');
+        assert.deepEqual(
+            groups.map(g => g.querySelector('p span').textContent),
+            ['リクエストハンドラ', 'メッセージリスナー', 'スケジューラー']
+        );
+        assert.equal(groups[0].querySelector('.in-page-sidebar__link').textContent, 'MixedAdapter');
+        assert.equal(groups[1].querySelector('.in-page-sidebar__link').textContent, 'MixedAdapter');
+        assert.equal(groups[2].querySelector('.in-page-sidebar__link').textContent, 'Scheduler');
+        // パッケージノードはグループ内の最初のアダプターカードへリンクする
+        assert.equal(
+            groups[2].querySelector('.in-page-sidebar__package-link').getAttribute('href'),
+            '#' + Jig.util.fqnToId('adapter', 'com.example.Scheduler')
+        );
     });
 
     test('ioTypesがある場合はルート型カードが描画されフィールドを展開する', () => {

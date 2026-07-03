@@ -249,24 +249,45 @@ const InboundApp = (() => {
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
-        const filteredAdapters = adapters.filter(adapter => {
+        const visibleAdapters = adapters.filter(adapter => {
             if (!filterText) return true;
             return Jig.glossary.getTypeTerm(adapter.fqn).title.toLowerCase().includes(filterText);
         });
-        Jig.dom.sidebar.renderPackageTree(sidebar, filteredAdapters, {
-            getFqn: adapter => adapter.fqn,
-            renderItem: adapter =>
-                Jig.dom.createElement("li", {
-                    className: "in-page-sidebar__item",
-                    children: [
-                        Jig.dom.createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
-                            textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
-                        })
-                    ]
-                })
+
+        // エントリーポイント種別ごとのグループ → パッケージ階層 → クラスのツリー
+        TYPE_CONFIG.forEach(({type, label}) => {
+            if (state.displayType !== 'all' && state.displayType !== type) return;
+            Jig.dom.sidebar.renderTreeSection(sidebar, {
+                title: label,
+                items: visibleAdapters.filter(adapter => adapter.entrypoints?.some(ep => ep.entrypointType === type)),
+                getFqn: adapter => adapter.fqn,
+                renderLeaf: adapter =>
+                    Jig.dom.createElement("li", {
+                        className: "in-page-sidebar__item",
+                        children: [
+                            Jig.dom.createElement("a", {
+                                className: "in-page-sidebar__link",
+                                attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
+                                textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
+                            })
+                        ]
+                    }),
+                packageHref: node => {
+                    const first = firstAdapterIn(node);
+                    return first ? "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, first.fqn) : null;
+                }
+            });
         });
+    }
+
+    // パッケージノード配下で最初に現れるアダプター。パッケージリンクの飛び先に使う
+    function firstAdapterIn(node) {
+        if (node.items.length > 0) return node.items[0];
+        for (const child of node.children) {
+            const found = firstAdapterIn(child);
+            if (found) return found;
+        }
+        return null;
     }
 
     function buildEntrypointItem(ep) {

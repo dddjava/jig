@@ -464,6 +464,103 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.renderTreeSection', () => {
+        const renderLeaf = item => Jig.dom.createElement('li', {
+            className: 'in-page-sidebar__item',
+            children: [Jig.dom.createElement('a', {
+                className: 'in-page-sidebar__link',
+                attributes: {href: '#' + item.fqn},
+                textContent: item.fqn
+            })]
+        });
+        const options = {title: 'グループ', getFqn: item => item.fqn, renderLeaf};
+
+        test('container が null または items が空の場合、何もしない', () => {
+            assert.doesNotThrow(() => Jig.dom.sidebar.renderTreeSection(null, {...options, items: [{fqn: 'com.example.A'}]}));
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: []});
+            assert.equal(container.children.length, 0);
+        });
+
+        test('グループは背景区別用のクラスを持つ折りたたみ可能なsectionになる', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.A'}]});
+
+            assert.equal(container.children.length, 1);
+            const section = container.children[0];
+            assert.equal(section.tagName, 'SECTION');
+            assert.equal(section.className, 'in-page-sidebar__section in-page-sidebar__section--group');
+            const title = section.querySelector('p.in-page-sidebar__title--group');
+            assert.ok(title);
+            assert.ok(title.classList.contains('in-page-sidebar__title--collapsible'));
+            assert.equal(title.querySelector('span').textContent, 'グループ');
+            assert.ok(title.querySelector('button.in-page-sidebar__toggle'));
+        });
+
+        test('用語のない単児チェーンのパッケージは "." 連結で1ノードに省略される', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.app.A'}]});
+
+            const headers = container.querySelectorAll('.in-page-sidebar__item-header');
+            assert.equal(headers.length, 1);
+            assert.equal(headers[0].querySelector('span').textContent, 'com.example.app');
+            assert.ok(container.querySelector('a[href="#com.example.app.A"]'));
+        });
+
+        test('用語が設定された中間パッケージは省略されず階層が分かれる', () => {
+            globalThis.glossaryData = {terms: {'com.example': {title: '用語パッケージ', kind: 'パッケージ', description: ''}}};
+            try {
+                const container = Jig.dom.createElement('div');
+                Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.app.A'}]});
+
+                const headers = container.querySelectorAll('.in-page-sidebar__item-header');
+                assert.equal(headers.length, 2);
+                assert.equal(headers[0].querySelector('span').textContent, 'com.用語パッケージ');
+                assert.equal(headers[1].querySelector('span').textContent, 'app');
+            } finally {
+                delete globalThis.glossaryData;
+            }
+        });
+
+        test('分岐するパッケージはネストしたliになる', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [
+                {fqn: 'com.example.foo.A'},
+                {fqn: 'com.example.bar.B'},
+            ]});
+
+            const headers = container.querySelectorAll('.in-page-sidebar__item-header');
+            assert.equal(headers[0].querySelector('span').textContent, 'com.example');
+            assert.equal(headers[1].querySelector('span').textContent, 'bar');
+            assert.equal(headers[2].querySelector('span').textContent, 'foo');
+        });
+
+        test('packageHref を指定するとパッケージノードがリンクになる', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {
+                ...options,
+                items: [{fqn: 'com.example.A'}],
+                packageHref: node => '#pkg-' + node.fqn
+            });
+
+            const link = container.querySelector('.in-page-sidebar__item-header a.in-page-sidebar__package-link');
+            assert.ok(link);
+            assert.equal(link.getAttribute('href'), '#pkg-com.example');
+            assert.equal(link.textContent, 'com.example');
+        });
+
+        test('トグルで子リストを折りたたむ', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.A'}]});
+
+            const toggle = container.querySelector('.in-page-sidebar__title--group .in-page-sidebar__toggle');
+            const list = container.querySelector('ul');
+            toggle.dispatchEvent(new window.Event('click'));
+            assert.ok(list.classList.contains('in-page-sidebar__links--hidden'));
+            assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+        });
+    });
+
     test.describe('sidebar.syncActiveLink', () => {
         function setupSidebar(innerHtml) {
             document.body.innerHTML =

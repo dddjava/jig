@@ -439,6 +439,79 @@ globalThis.Jig.dom = (() => {
         }
     }
 
+    /**
+     * サイドバーのツリーセクションを描画する。3種類の要素で構成する:
+     * - グループ: ページ内の大きな塊（例: リクエストハンドラ）。折りたたみ可能で、背景色で他と区別する
+     * - パッケージ: FQNの1階層。折りたたみと、packageHref によるメインセクションへのリンクを持つ。
+     *   用語のない単一子パッケージ（item無し）は省略し、名前を "." 連結で子のラベルに引き継ぐ
+     * - リーフ: renderLeaf で描画されるアイテム（クラスやメソッド）
+     *
+     * items が空の場合は何も描画しない。
+     *
+     * @template T
+     * @param {Element} container
+     * @param {Object} options
+     * @param {string} options.title - グループ名
+     * @param {T[]} options.items
+     * @param {function(T): string} options.getFqn - itemの型FQNを返す関数
+     * @param {function(T): Element} options.renderLeaf - リーフのli要素を生成する関数
+     * @param {function({fqn: string, items: T[], children: Object[]}): (string|null)} [options.packageHref]
+     *        パッケージノードのリンク先を返す関数。nullを返すとリンクなしのラベルになる
+     */
+    function renderTreeSection(container, {title, items, getFqn, renderLeaf, packageHref}) {
+        if (!container || !items || items.length === 0) return;
+        const glossary = globalThis.Jig.glossary;
+        const roots = globalThis.Jig.util.buildPackageTree(items, getFqn);
+
+        const simpleName = fqn => fqn.substring(fqn.lastIndexOf('.') + 1);
+
+        function renderNode(node) {
+            // 用語のない単一子パッケージ（item無し）は省略し、名前を子のラベルに引き継ぐ
+            let current = node;
+            const omittedNames = [];
+            while (current.children.length === 1 && current.items.length === 0 && !glossary.findTerm(current.fqn)) {
+                omittedNames.push(simpleName(current.fqn));
+                current = current.children[0];
+            }
+
+            const childList = createElement("ul", {className: "in-page-sidebar__links"});
+            current.children.forEach(child => childList.appendChild(renderNode(child)));
+            current.items.forEach(item => childList.appendChild(renderLeaf(item)));
+
+            const labelText = [...omittedNames, glossary.getPackageTerm(current.fqn).title].join('.');
+            const href = packageHref ? packageHref(current) : null;
+            const label = href
+                ? createElement("a", {
+                    className: "in-page-sidebar__package-link",
+                    attributes: {href},
+                    textContent: labelText
+                })
+                : createElement("span", {textContent: labelText});
+
+            return createElement("li", {
+                className: "in-page-sidebar__item",
+                children: [
+                    createElement("div", {
+                        className: "in-page-sidebar__item-header",
+                        children: [label, createSidebarToggle(childList)]
+                    }),
+                    childList
+                ]
+            });
+        }
+
+        const list = createElement("ul", {className: "in-page-sidebar__links"});
+        roots.forEach(root => list.appendChild(renderNode(root)));
+
+        const titleEl = buildCollapsibleTitle(title, list);
+        titleEl.classList.add("in-page-sidebar__title--group");
+
+        container.appendChild(createElement("section", {
+            className: "in-page-sidebar__section in-page-sidebar__section--group",
+            children: [titleEl, list]
+        }));
+    }
+
     function initSidebarTextFilter(inputId, onChange) {
         const input = document.getElementById(inputId);
         if (!input) return;
@@ -835,6 +908,7 @@ globalThis.Jig.dom = (() => {
             section: createSection,
             renderSection,
             renderPackageTree,
+            renderTreeSection,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,

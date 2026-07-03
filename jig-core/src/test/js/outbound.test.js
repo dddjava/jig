@@ -40,8 +40,8 @@ function setupDom() {
     doc.body.classList.add("outbound-interface");
     for (const id of [
         "outbound-port-list", "outbound-sidebar-list",
-        "outbound-persistence-list", "persistence-sidebar-list",
-        "outbound-external-list", "external-sidebar-list",
+        "outbound-persistence-list",
+        "outbound-external-list",
         "outbound-crud-panel"
     ]) {
         const el = doc.createElement("div");
@@ -790,6 +790,65 @@ test.describe("outbound.js", () => {
             const h3 = section.children.find(c => c.tagName === "h3");
             assert.ok(h3, "h3が見つからない");
             assert.equal(h3.textContent, "Port");
+        });
+    });
+
+    // ----- renderSidebar -----
+
+    test.describe("renderSidebar", () => {
+        test("グループのツリーでサイドバーを描画する", () => {
+            const doc = setupDom();
+            OutboundApp.renderSidebar(
+                [simpleGroup],
+                [{persistenceTarget: "ORDERS"}],
+                [{externalType: {fqn: "com.example.external.ExtService"}}]
+            );
+            const sidebar = doc.getElementById("outbound-sidebar-list");
+            const groups = sidebar.querySelectorAll(".in-page-sidebar__section--group");
+            assert.deepEqual(
+                groups.map(g => g.querySelector("p span").textContent),
+                ["出力ポート", "永続化操作対象", "外部型"]
+            );
+            // 出力ポートはパッケージ階層＋リーフ
+            assert.equal(groups[0].querySelectorAll(".in-page-sidebar__item-header").length, 1);
+            assert.ok(groups[0].querySelector(`a[href="#${Jig.util.fqnToId("port", "com.example.Port")}"]`));
+            // 永続化操作対象はパッケージを持たないため、階層を挟まずリーフが直接並ぶ
+            assert.equal(groups[1].querySelectorAll(".in-page-sidebar__item-header").length, 0);
+            assert.ok(groups[1].querySelector(`a[href="#${Jig.util.fqnToId("persistence", "ORDERS")}"]`));
+            assert.ok(groups[2].querySelector(`a[href="#${Jig.util.fqnToId("external", "com.example.external.ExtService")}"]`));
+        });
+
+        test("空のグループはサイドバーに表示しない", () => {
+            const doc = setupDom();
+            OutboundApp.renderSidebar([simpleGroup], [], []);
+            const sidebar = doc.getElementById("outbound-sidebar-list");
+            const groups = sidebar.querySelectorAll(".in-page-sidebar__section--group");
+            assert.deepEqual(groups.map(g => g.querySelector("p span").textContent), ["出力ポート"]);
+        });
+
+        test("永続化操作がある場合はCRUDリンクを表示する", () => {
+            const doc = setupDom();
+            const crudGroup = {
+                outboundPort: {fqn: "com.example.Port"},
+                operations: [{
+                    outboundPortOperation: makeMethodData("com.example.Port#save()"),
+                    persistenceAccessors: [{targetOperationTypes: {"ORDERS": "INSERT"}}],
+                    externalAccessors: []
+                }]
+            };
+            OutboundApp.renderSidebar([crudGroup], [], []);
+            const crudLink = doc.getElementById("outbound-sidebar-list")
+                .querySelector('a[href="#outbound-crud-panel"]');
+            assert.ok(crudLink, 'CRUDリンクが存在する');
+            assert.equal(crudLink.textContent, "永続化(CRUD)");
+        });
+
+        test("永続化操作がない場合はCRUDリンクを表示しない", () => {
+            const doc = setupDom();
+            OutboundApp.renderSidebar([simpleGroup], [], []);
+            const crudLink = doc.getElementById("outbound-sidebar-list")
+                .querySelector('a[href="#outbound-crud-panel"]');
+            assert.equal(crudLink, null);
         });
     });
 

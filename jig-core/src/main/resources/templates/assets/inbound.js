@@ -262,17 +262,10 @@ const InboundApp = (() => {
                 title: label,
                 items: visibleAdapters.filter(adapter => adapter.entrypoints?.some(ep => ep.entrypointType === type)),
                 getFqn: adapter => adapter.fqn,
-                renderLeaf: adapter =>
-                    Jig.dom.createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [
-                            Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
-                                textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
-                            })
-                        ]
-                    }),
+                renderLeaf: adapter => Jig.dom.sidebar.leaf(
+                    "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
+                    Jig.glossary.getTypeTerm(adapter.fqn).title
+                ),
                 // クラスを直接持つパッケージのみメインに見出しがあるため、それ以外はリンクなし
                 packageHref: node => node.items.length > 0
                     ? "#" + Jig.util.fqnToId(PACKAGE_ID_PREFIX, node.fqn)

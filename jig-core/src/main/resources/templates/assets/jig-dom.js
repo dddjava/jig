@@ -347,21 +347,30 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    /**
+     * サイドバーのリーフ（リンク1つのli）を生成する
+     * @param {string} href
+     * @param {string} label
+     */
+    function createSidebarLeaf(href, label) {
+        return createElement("li", {
+            className: "in-page-sidebar__item",
+            children: [
+                createElement("a", {
+                    className: "in-page-sidebar__link",
+                    attributes: {href},
+                    textContent: label
+                })
+            ]
+        });
+    }
+
     function createSection(title, items, {collapsible = false} = {}) {
         if (!items || items.length === 0) return null;
 
         const links = createElement("ul", {
             className: "in-page-sidebar__links",
-            children: items.map(({id, label}) => createElement("li", {
-                className: "in-page-sidebar__item",
-                children: [
-                    createElement("a", {
-                        className: "in-page-sidebar__link",
-                        attributes: {href: "#" + id},
-                        textContent: label
-                    })
-                ]
-            }))
+            children: items.map(({id, label}) => createSidebarLeaf("#" + id, label))
         });
 
         const titleEl = !title ? null
@@ -502,7 +511,12 @@ globalThis.Jig.dom = (() => {
         }
 
         const list = createElement("ul", {className: "in-page-sidebar__links"});
-        roots.forEach(root => list.appendChild(renderNode(root)));
+        if (roots.length === 1 && roots[0].fqn === "(default)" && roots[0].children.length === 0) {
+            // パッケージを持たない項目（テーブル名など）だけの場合は、階層を挟まずリーフを直接並べる
+            roots[0].items.forEach(item => list.appendChild(renderLeaf(item)));
+        } else {
+            roots.forEach(root => list.appendChild(renderNode(root)));
+        }
 
         const titleEl = buildCollapsibleTitle(title, list);
         titleEl.classList.add("in-page-sidebar__title--group");
@@ -986,6 +1000,7 @@ globalThis.Jig.dom = (() => {
         },
         sidebar: {
             section: createSection,
+            leaf: createSidebarLeaf,
             renderSection,
             renderPackageTree,
             renderTreeSection,

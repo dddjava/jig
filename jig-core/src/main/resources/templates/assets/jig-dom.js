@@ -551,8 +551,14 @@ globalThis.Jig.dom = (() => {
         titleEl.addEventListener("click", (e) => {
             const collapsed = list.classList.contains("in-page-sidebar__links--hidden");
             const pinned = titleEl.classList.contains(GROUP_TITLE_PINNED_CLASS);
-            if (!collapsed && !pinned) return; // 内容が見えている場合は通常のトグル操作に任せる
             e.stopPropagation();
+
+            if (!collapsed && !pinned) {
+                // 内容が見えている状態でのクリックは折りたたむ（展開時のクリックと対称にする）
+                setSidebarListExpanded(list, toggle, false);
+                updatePinnedStates(scroller);
+                return;
+            }
 
             if (collapsed) {
                 setSidebarListExpanded(list, toggle, true);

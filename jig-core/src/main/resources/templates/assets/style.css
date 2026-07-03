@@ -1726,8 +1726,11 @@ table td.number {
     z-index: 1;
 }
 
-/* ツリーのパッケージノード行。リーフ（in-page-sidebar__link）と縦幅を揃える */
-.in-page-sidebar__section--group .in-page-sidebar__item-header {
+/* ツリーのパッケージノード行。リーフ（in-page-sidebar__link）と縦幅を揃える。
+   renderTreeSection の showTitle:false（グループ見出しなし）や domain.js の
+   独自ツリーなど、in-page-sidebar__section--group に包まれない場合もあるため、
+   サイドバーのスクロール領域全体を基準にスコープする */
+.in-page-sidebar__list .in-page-sidebar__item-header {
     padding: 6px 8px;
     font-size: 0.9em;
     line-height: 1.4;

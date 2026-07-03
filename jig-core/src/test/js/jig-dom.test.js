@@ -570,6 +570,43 @@ test.describe('jig-dom.js', () => {
             assert.equal(titles[0].style.bottom, 'calc(1 * var(--group-title-height))');
             assert.equal(titles[1].style.bottom, 'calc(0 * var(--group-title-height))');
         });
+
+        test('内容がスクロール範囲外のグループ見出しはピン留め状態になり、クリックで展開位置へスクロールする', () => {
+            const container = Jig.dom.createElement('div');
+            document.body.appendChild(container);
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.A'}]});
+
+            const title = container.querySelector('.in-page-sidebar__title--group');
+            const list = container.querySelector('ul.in-page-sidebar__links');
+
+            // 内容（ul）がスクロール範囲の下にあるレイアウトを再現
+            container.getBoundingClientRect = () => ({top: 0, bottom: 300, height: 300});
+            title.getBoundingClientRect = () => ({top: 268, bottom: 300, height: 32});
+            list.getBoundingClientRect = () => ({top: 500, bottom: 600, height: 100});
+
+            container.dispatchEvent(new window.Event('scroll'));
+            assert.ok(title.classList.contains('in-page-sidebar__title--pinned'));
+
+            // クリックで見出しが上部に来る位置までスクロールする（500 - 0 - 32 - 12 = 456）
+            title.dispatchEvent(new window.Event('click'));
+            assert.equal(container.scrollTop, 456);
+        });
+
+        test('折りたたまれたグループは見出しクリックで展開される', () => {
+            const container = Jig.dom.createElement('div');
+            document.body.appendChild(container);
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.A'}]});
+
+            const title = container.querySelector('.in-page-sidebar__title--group');
+            const toggle = title.querySelector('.in-page-sidebar__toggle');
+            const list = container.querySelector('ul.in-page-sidebar__links');
+            toggle.dispatchEvent(new window.Event('click'));
+            assert.ok(list.classList.contains('in-page-sidebar__links--hidden'));
+
+            title.dispatchEvent(new window.Event('click'));
+            assert.ok(!list.classList.contains('in-page-sidebar__links--hidden'));
+            assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+        });
     });
 
     test.describe('sidebar.syncActiveLink', () => {

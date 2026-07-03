@@ -499,8 +499,11 @@ globalThis.Jig.dom = (() => {
         const list = createElement("ul", {className: "in-page-sidebar__links"});
         roots.forEach(root => list.appendChild(renderNode(root)));
 
-        const titleEl = buildCollapsibleTitle(title, list);
-        titleEl.classList.add("in-page-sidebar__title--group");
+        const toggle = createSidebarToggle(list);
+        const titleEl = createElement("p", {
+            className: "in-page-sidebar__title in-page-sidebar__title--collapsible in-page-sidebar__title--group",
+            children: [i18nText("span", title), toggle]
+        });
 
         container.appendChild(createElement("section", {
             className: "in-page-sidebar__section in-page-sidebar__section--group",
@@ -513,6 +516,62 @@ globalThis.Jig.dom = (() => {
         groupTitles.forEach((groupTitle, index) => {
             groupTitle.style.bottom = `calc(${groupTitles.length - 1 - index} * var(--group-title-height))`;
         });
+
+        initGroupTitlePinning(container, titleEl, toggle, list);
+    }
+
+    // .in-page-sidebar__list の grid gap。ピン留め解除時のスクロール位置計算に使う
+    const SIDEBAR_LIST_GAP_PX = 12;
+    const GROUP_TITLE_PINNED_CLASS = "in-page-sidebar__title--pinned";
+
+    /**
+     * グループ内容がスクロール範囲外（下）にあり見出しだけが下部に留まっている状態を
+     * 「閉じている」扱いにする。閉じた見た目のクラスを付け、クリックで展開して
+     * グループが見える位置までスクロールする。
+     */
+    function initGroupTitlePinning(container, titleEl, toggle, list) {
+        function isContentBelowView() {
+            if (typeof container.getBoundingClientRect !== "function") return false;
+            const containerRect = container.getBoundingClientRect();
+            if (!containerRect.height) return false;
+            if (list.classList.contains("in-page-sidebar__links--hidden")) return false;
+            return list.getBoundingClientRect().top >= containerRect.bottom - 1;
+        }
+
+        function updatePinnedState() {
+            if (titleEl.isConnected === false) {
+                // 再描画で破棄された見出しのリスナーは片付ける
+                container.removeEventListener("scroll", updatePinnedState);
+                return;
+            }
+            titleEl.classList.toggle(GROUP_TITLE_PINNED_CLASS, isContentBelowView());
+        }
+
+        // ピン留め中はトグルの折りたたみ動作より優先するため、captureで処理する
+        titleEl.addEventListener("click", (e) => {
+            const collapsed = list.classList.contains("in-page-sidebar__links--hidden");
+            const pinned = titleEl.classList.contains(GROUP_TITLE_PINNED_CLASS);
+            if (!collapsed && !pinned) return; // 内容が見えている場合は通常のトグル操作に任せる
+            e.stopPropagation();
+
+            if (collapsed) {
+                list.classList.remove("in-page-sidebar__links--hidden");
+                toggle.setAttribute("aria-expanded", "true");
+                toggle.setAttribute("aria-label", "折りたたむ");
+            }
+
+            // グループ見出しが上部に来る位置までスクロールして内容を見せる
+            if (typeof container.getBoundingClientRect === "function") {
+                const containerRect = container.getBoundingClientRect();
+                const titleRect = titleEl.getBoundingClientRect();
+                container.scrollTop += list.getBoundingClientRect().top
+                    - containerRect.top - titleRect.height - SIDEBAR_LIST_GAP_PX;
+            }
+            updatePinnedState();
+        }, true);
+
+        container.addEventListener("scroll", updatePinnedState);
+        updatePinnedState();
     }
 
     function initSidebarTextFilter(inputId, onChange) {

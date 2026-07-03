@@ -1780,10 +1780,21 @@ table td.number {
     margin-top: -3px;
 }
 
-.in-page-sidebar__toggle[aria-expanded="false"]::before {
+.in-page-sidebar__toggle[aria-expanded="false"]::before,
+.in-page-sidebar__title--pinned .in-page-sidebar__toggle::before {
     transform: rotate(-45deg);
     margin-top: 0;
     margin-right: -3px;
+}
+
+/* 下部に積み重なって内容が見えていないグループは閉じた見た目にする。
+   クリックで展開位置までスクロールする（jig-dom.js の initGroupTitlePinning） */
+.in-page-sidebar__title--pinned {
+    cursor: pointer;
+}
+
+.in-page-sidebar__title--pinned .in-page-sidebar__toggle {
+    opacity: 1;
 }
 
 .in-page-sidebar__title--collapsible:hover .in-page-sidebar__toggle,

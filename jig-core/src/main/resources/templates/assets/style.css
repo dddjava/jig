@@ -907,6 +907,19 @@ pre.mermaid {
     position: relative;
 }
 
+.mermaid-diagram.is-rendering {
+    min-height: 2em;
+}
+
+.mermaid-diagram.is-rendering::after {
+    content: "レンダリング中…";
+    display: block;
+    color: #888;
+    font-size: 13px;
+    font-style: italic;
+    padding: 8px 0;
+}
+
 .mermaid.too-large {
     font-size: 14px;
     white-space: normal;

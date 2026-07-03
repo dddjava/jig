@@ -1002,6 +1002,11 @@ globalThis.Jig.mermaid = (() => {
             diagram.appendChild(container);
         }
 
+        function setRendering(container, isRendering) {
+            if (!container || !container.classList) return;
+            container.classList.toggle("is-rendering", isRendering);
+        }
+
         function ensureMermaidDiagramContainer(targetEl) {
             if (!targetEl) return null;
             if (targetEl.classList && targetEl.classList.contains("mermaid-diagram")) return targetEl;
@@ -1254,6 +1259,7 @@ globalThis.Jig.mermaid = (() => {
 
             const renderDiagram = (newDirection) => {
                 const generation = ++renderGeneration;
+                setRendering(container, true);
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 if (showControls) {
@@ -1275,6 +1281,7 @@ globalThis.Jig.mermaid = (() => {
                     diagramEl.style.display = "";
                     setEdgeWarning(container, {visible: false});
                     renderTooLargeDiagram(diagramEl, currentSource);
+                    setRendering(container, false);
                     return;
                 }
 
@@ -1285,6 +1292,7 @@ globalThis.Jig.mermaid = (() => {
                         messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
                         onRender: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
                     });
+                    setRendering(container, false);
                     return;
                 }
 
@@ -1299,11 +1307,13 @@ globalThis.Jig.mermaid = (() => {
                     setEdgeWarning(container, {visible: false});
                     diagramEl.innerHTML = cachedSvg;
                     diagramEl.setAttribute("data-processed", "true");
+                    setRendering(container, false);
                     return;
                 }
 
                 const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
                 const cacheRendered = () => {
+                    if (generation === renderGeneration) setRendering(container, false);
                     // 後続の描画が始まっていれば diagramEl.innerHTML は別ソースの SVG になっている。
                     // 旧ソースのキーで誤キャッシュしないよう、最新の描画でなければ何もしない。
                     if (generation !== renderGeneration) return;
@@ -1312,7 +1322,7 @@ globalThis.Jig.mermaid = (() => {
                     }
                 };
                 if (result && typeof result.then === "function") {
-                    result.then(cacheRendered).catch(() => {});
+                    result.then(cacheRendered).catch(cacheRendered);
                 } else {
                     cacheRendered();
                 }
@@ -1502,6 +1512,7 @@ globalThis.Jig.mermaid = (() => {
             if (!container || typeof renderFn !== 'function') return;
 
             diagramRegistry.push({container, renderFn});
+            if (container.classList) container.classList.add('is-rendering');
 
             // IntersectionObserver で自動レンダリング（各コンテナごとに独立した observer）
             if ('IntersectionObserver' in window) {
@@ -1544,6 +1555,7 @@ globalThis.Jig.mermaid = (() => {
                     } else {
                         // 表示範囲外は削除のみで、スクロール時に自動再レンダリング
                         container.innerHTML = "";
+                        if (container.classList) container.classList.add('is-rendering');
                         renderedContainers.delete(container);
                     }
                 });

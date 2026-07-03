@@ -1755,6 +1755,10 @@ table td.number {
 }
 
 .in-page-sidebar__title .in-page-sidebar__link {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    align-self: stretch;
     font-size: inherit;
     padding: 0;
 }

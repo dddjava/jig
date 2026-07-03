@@ -243,7 +243,7 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        Jig.dom.sidebar.renderSection(sidebar, null, [
+        Jig.dom.sidebar.renderSection(sidebar, [
             {id: "entrypoint-summary", label: "エントリーポイント一覧"},
             {id: "io-types", label: "入出力オブジェクト一覧"},
         ]);

@@ -364,24 +364,25 @@ test.describe('jig-dom.js', () => {
     test.describe('sidebar.renderSection', () => {
         test('container が null の場合、何もしない', () => {
             const items = [{id: 'item1', label: 'Item'}];
-            Jig.dom.sidebar.renderSection(null, 'Title', items);
+            Jig.dom.sidebar.renderSection(null, items);
             // エラーが発生しないことを確認
             assert.ok(true);
         });
 
-        test('container に section を追加', () => {
+        test('container に見出しなしの section を追加', () => {
             const container = Jig.dom.createElement('div');
             const items = [{id: 'item1', label: 'Item 1'}];
-            Jig.dom.sidebar.renderSection(container, 'Items', items);
+            Jig.dom.sidebar.renderSection(container, items);
 
             assert.equal(container.children.length, 1);
             assert.equal(container.children[0].tagName, 'SECTION');
+            assert.equal(container.children[0].querySelector('p'), null);
         });
 
         test('複数回呼び出すと複数セクションが追加', () => {
             const container = Jig.dom.createElement('div');
-            Jig.dom.sidebar.renderSection(container, 'First', [{id: 'a', label: 'A'}]);
-            Jig.dom.sidebar.renderSection(container, 'Second', [{id: 'b', label: 'B'}]);
+            Jig.dom.sidebar.renderSection(container, [{id: 'a', label: 'A'}]);
+            Jig.dom.sidebar.renderSection(container, [{id: 'b', label: 'B'}]);
 
             assert.equal(container.children.length, 2);
         });

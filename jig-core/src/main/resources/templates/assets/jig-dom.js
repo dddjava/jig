@@ -383,9 +383,9 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function renderSection(container, title, items, options) {
+    function renderSection(container, items, options) {
         if (!container) return;
-        const section = createSection(title, items, options);
+        const section = createSection(null, items, options);
         if (section) {
             container.appendChild(section);
         }

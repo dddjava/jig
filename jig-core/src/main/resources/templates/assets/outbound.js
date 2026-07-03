@@ -317,7 +317,7 @@ const OutboundApp = (() => {
         });
 
         if (collectAllTargets(grouped).length > 0) {
-            Jig.dom.sidebar.renderSection(sidebar, null, [
+            Jig.dom.sidebar.renderSection(sidebar, [
                 {id: "outbound-crud-panel", label: "永続化(CRUD)"},
             ]);
         }

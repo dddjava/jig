@@ -951,11 +951,16 @@ globalThis.Jig.mermaid = (() => {
             diagram.classList.remove("too-large");
             diagram.innerHTML = source;
 
+            const container = ensureMermaidDiagramContainer(diagram) || diagram;
+            setRendering(container, true);
             const renderResult = renderMermaidDiagram(diagram);
-            if (renderResult && typeof renderResult.catch === "function") {
-                renderResult.catch(() => {
+            if (renderResult && typeof renderResult.then === "function") {
+                renderResult.then(() => setRendering(container, false)).catch(() => {
+                    setRendering(container, false);
                     flashButtonLabel(button, "描画に失敗しました");
                 });
+            } else {
+                setRendering(container, false);
             }
         }
 
@@ -1186,6 +1191,20 @@ globalThis.Jig.mermaid = (() => {
             };
         }
 
+        // 「上限を上げて描画する」等のユーザー起因の再描画ボタンから使う。
+        // renderWithControls の世代管理とは独立した一回限りの描画なので、
+        // 完了時に無条件で is-rendering を外す。
+        function renderMermaidNodeTracked(diagramEl, source, maxEdges, container) {
+            setRendering(container, true);
+            const result = renderMermaidNode(diagramEl, source, maxEdges, container);
+            if (result && typeof result.then === "function") {
+                result.then(() => setRendering(container, false), () => setRendering(container, false));
+            } else {
+                setRendering(container, false);
+            }
+            return result;
+        }
+
         function renderMermaidNode(diagramEl, source, maxEdges, container) {
             if (!diagramEl || !globalThis.mermaid || typeof globalThis.mermaid.run !== "function") return;
 
@@ -1215,7 +1234,7 @@ globalThis.Jig.mermaid = (() => {
                             const actionEdges = Math.max(edgeCount, DEFAULT_MAX_EDGES * 2);
                             renderTooLargeDiagram(diagramEl, text, {
                                 messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
-                                onRender: () => renderMermaidNode(diagramEl, text, actionEdges, container)
+                                onRender: () => renderMermaidNodeTracked(diagramEl, text, actionEdges, container)
                             });
                         } else {
                             diagramEl.style.display = "none";
@@ -1290,7 +1309,7 @@ globalThis.Jig.mermaid = (() => {
                     setEdgeWarning(container, {visible: false});
                     renderTooLargeDiagram(diagramEl, currentSource, {
                         messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
-                        onRender: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
+                        onRender: () => renderMermaidNodeTracked(diagramEl, currentSource, edgeCount, container)
                     });
                     setRendering(container, false);
                     return;
@@ -1312,8 +1331,14 @@ globalThis.Jig.mermaid = (() => {
                 }
 
                 const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
-                const cacheRendered = () => {
+                const finishRendering = () => {
                     if (generation === renderGeneration) setRendering(container, false);
+                };
+                // 描画が成功した場合のみキャッシュする。失敗時にキャッシュすると、
+                // 壊れた内容が data-processed="true" のまま保存され、次回以降その
+                // ソースを警告なしに復元してしまう。
+                const cacheRendered = () => {
+                    finishRendering();
                     // 後続の描画が始まっていれば diagramEl.innerHTML は別ソースの SVG になっている。
                     // 旧ソースのキーで誤キャッシュしないよう、最新の描画でなければ何もしない。
                     if (generation !== renderGeneration) return;
@@ -1322,7 +1347,7 @@ globalThis.Jig.mermaid = (() => {
                     }
                 };
                 if (result && typeof result.then === "function") {
-                    result.then(cacheRendered).catch(cacheRendered);
+                    result.then(cacheRendered).catch(finishRendering);
                 } else {
                     cacheRendered();
                 }
@@ -1386,12 +1411,15 @@ globalThis.Jig.mermaid = (() => {
                     return;
                 }
 
+                const diagramContainer = ensureMermaidDiagramContainer(diagram) || diagram;
+                setRendering(diagramContainer, true);
                 diagram.innerHTML = source;
                 const renderResult = renderMermaidDiagram(diagram);
                 const handleFinish = () => {
                     rendered.add(diagram);
                     queued.delete(diagram);
                     isRendering = false;
+                    setRendering(diagramContainer, false);
                     processRenderQueue();
                 };
                 if (renderResult && typeof renderResult.then === "function") {
@@ -1456,7 +1484,8 @@ globalThis.Jig.mermaid = (() => {
             renderTooLargeDiagram,
             renderWithControls,
             setupLazyMermaidRender,
-            initializeMermaid
+            initializeMermaid,
+            setRendering
         }
     })();
 
@@ -1512,7 +1541,7 @@ globalThis.Jig.mermaid = (() => {
             if (!container || typeof renderFn !== 'function') return;
 
             diagramRegistry.push({container, renderFn});
-            if (container.classList) container.classList.add('is-rendering');
+            Jig.mermaid.render.setRendering(container, true);
 
             // IntersectionObserver で自動レンダリング（各コンテナごとに独立した observer）
             if ('IntersectionObserver' in window) {
@@ -1555,7 +1584,7 @@ globalThis.Jig.mermaid = (() => {
                     } else {
                         // 表示範囲外は削除のみで、スクロール時に自動再レンダリング
                         container.innerHTML = "";
-                        if (container.classList) container.classList.add('is-rendering');
+                        Jig.mermaid.render.setRendering(container, true);
                         renderedContainers.delete(container);
                     }
                 });

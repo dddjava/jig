@@ -497,13 +497,13 @@ test.describe('jig-dom.js', () => {
             assert.ok(title.querySelector('button.in-page-sidebar__toggle'));
         });
 
-        test('用語のない単児チェーンのパッケージは "." 連結で1ノードに省略される', () => {
+        test('用語のない単児チェーンのパッケージは最深の1ノードのみ表示される', () => {
             const container = Jig.dom.createElement('div');
             Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.example.app.A'}]});
 
             const headers = container.querySelectorAll('.in-page-sidebar__item-header');
             assert.equal(headers.length, 1);
-            assert.equal(headers[0].querySelector('span').textContent, 'com.example.app');
+            assert.equal(headers[0].querySelector('span').textContent, 'app');
             assert.ok(container.querySelector('a[href="#com.example.app.A"]'));
         });
 
@@ -515,7 +515,7 @@ test.describe('jig-dom.js', () => {
 
                 const headers = container.querySelectorAll('.in-page-sidebar__item-header');
                 assert.equal(headers.length, 2);
-                assert.equal(headers[0].querySelector('span').textContent, 'com.用語パッケージ');
+                assert.equal(headers[0].querySelector('span').textContent, '用語パッケージ');
                 assert.equal(headers[1].querySelector('span').textContent, 'app');
             } finally {
                 delete globalThis.glossaryData;
@@ -530,7 +530,7 @@ test.describe('jig-dom.js', () => {
             ]});
 
             const headers = container.querySelectorAll('.in-page-sidebar__item-header');
-            assert.equal(headers[0].querySelector('span').textContent, 'com.example');
+            assert.equal(headers[0].querySelector('span').textContent, 'example');
             assert.equal(headers[1].querySelector('span').textContent, 'bar');
             assert.equal(headers[2].querySelector('span').textContent, 'foo');
         });
@@ -546,7 +546,7 @@ test.describe('jig-dom.js', () => {
             const link = container.querySelector('.in-page-sidebar__item-header a.in-page-sidebar__package-link');
             assert.ok(link);
             assert.equal(link.getAttribute('href'), '#pkg-com.example');
-            assert.equal(link.textContent, 'com.example');
+            assert.equal(link.textContent, 'example');
         });
 
         test('トグルで子リストを折りたたむ', () => {

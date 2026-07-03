@@ -2354,6 +2354,19 @@ p.jig-data-warning {
     margin-bottom: 0;
 }
 
+/* メインのパッケージ見出し。サイドバーのパッケージノードのリンク先 */
+.package-heading {
+    margin-top: 8px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #d4d9e5;
+}
+
+.package-heading h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #31455f;
+}
+
 .entrypoint-summary {
     width: 100%;
     max-width: 100%;

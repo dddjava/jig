@@ -150,14 +150,21 @@ test.describe('inbound.js', () => {
         const group = sidebar.children[1];
         assert.ok(group.classList.has('in-page-sidebar__section--group'), 'エントリーポイント種別のグループセクション');
         assert.equal(group.querySelector('p span').textContent, 'リクエストハンドラ');
-        // パッケージノードは省略・連結され、メインセクションへのリンクになる
+        // 用語のない中間パッケージは省略され、メインのパッケージ見出しへのリンクになる
         const packageLink = group.querySelector('.in-page-sidebar__package-link');
-        assert.equal(packageLink.textContent, 'com.example');
-        assert.ok(packageLink.getAttribute('href').startsWith('#'));
+        assert.equal(packageLink.textContent, 'example');
+        assert.equal(packageLink.getAttribute('href'), '#' + Jig.util.fqnToId('package', 'com.example'));
         assert.equal(group.querySelector('.in-page-sidebar__link').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
-        assert.equal(mainList.children.length, 2); // サマリーセクション + コントローラーセクション
+        assert.equal(mainList.children.length, 3); // サマリーセクション + パッケージ見出し + コントローラーセクション
+
+        // パッケージ見出しはサイドバーのリンク先IDを持つ
+        const packageHeading = mainList.children[1];
+        assert.equal(packageHeading.id, Jig.util.fqnToId('package', 'com.example'));
+        assert.ok(packageHeading.classList.has('package-heading'));
+        assert.equal(packageHeading.querySelector('h2').textContent, 'example');
+        assert.equal(packageHeading.querySelector('.fully-qualified-name').textContent, 'com.example');
 
         // サマリーカード（エントリーポイント一覧）
         const summaryCard = mainList.children[0];
@@ -185,7 +192,7 @@ test.describe('inbound.js', () => {
         assert.equal(link.textContent, 'method1'); // Controller名なしのメソッド名のみ
         assert.ok(link.getAttribute('href').startsWith('#'));
 
-        const controllerSection = mainList.children[1];
+        const controllerSection = mainList.children[2]; // [1]はパッケージ見出し
         assert.equal(controllerSection.id, globalThis.Jig.util.fqnToId("adapter", 'com.example.ControllerA'));
         assert.equal(controllerSection.querySelector('h3 span').textContent, 'ControllerA');
         assert.equal(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
@@ -297,7 +304,7 @@ test.describe('inbound.js', () => {
         };
         InboundApp.init();
 
-        const mermaidPre = document.getElementById('inbound-list').children[1].querySelector('.mermaid');
+        const mermaidPre = document.getElementById('inbound-list').children[2].querySelector('.mermaid');
         assert.ok(mermaidPre);
         const mermaidCode = mermaidPre.textContent;
         // method2 (depth=1, maxDepth=2) からのエッジは ---> になる
@@ -311,7 +318,7 @@ test.describe('inbound.js', () => {
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
-        const mermaidPre = mainList.children[1].querySelector('.mermaid');
+        const mermaidPre = mainList.children[2].querySelector('.mermaid');
         assert.ok(mermaidPre);
         // entrypointおよびmethodのsubgraphが生成される
         assert.ok(mermaidPre.textContent.includes('subgraph'));
@@ -804,7 +811,7 @@ test.describe('inbound.js', () => {
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
-        assert.equal(mainList.children.length, 3); // サマリー(2タイプ) + カード2枚
+        assert.equal(mainList.children.length, 4); // サマリー(2タイプ) + パッケージ見出し + カード2枚
 
         // HTTP_API のみに絞り込む（動的生成されたラジオボタンを取得）
         const radios = document.querySelectorAll('input[name="display-type"]');
@@ -819,7 +826,7 @@ test.describe('inbound.js', () => {
         assert.equal(summaryCard.querySelector('h4').textContent, 'リクエストハンドラ');
 
         // カードは1枚（HttpController のみ）
-        assert.equal(mainList.children.length, 2); // サマリー + HttpController カード
+        assert.equal(mainList.children.length, 3); // サマリー + パッケージ見出し + HttpController カード
 
         // サイドバーには HttpController のリンクのみ表示
         const sidebar = document.getElementById('inbound-sidebar-list');
@@ -861,10 +868,10 @@ test.describe('inbound.js', () => {
         assert.equal(groups[0].querySelector('.in-page-sidebar__link').textContent, 'MixedAdapter');
         assert.equal(groups[1].querySelector('.in-page-sidebar__link').textContent, 'MixedAdapter');
         assert.equal(groups[2].querySelector('.in-page-sidebar__link').textContent, 'Scheduler');
-        // パッケージノードはグループ内の最初のアダプターカードへリンクする
+        // パッケージノードはメインのパッケージ見出しへリンクする
         assert.equal(
             groups[2].querySelector('.in-page-sidebar__package-link').getAttribute('href'),
-            '#' + Jig.util.fqnToId('adapter', 'com.example.Scheduler')
+            '#' + Jig.util.fqnToId('package', 'com.example')
         );
     });
 

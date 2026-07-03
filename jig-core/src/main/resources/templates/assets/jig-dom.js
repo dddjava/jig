@@ -443,7 +443,7 @@ globalThis.Jig.dom = (() => {
      * サイドバーのツリーセクションを描画する。3種類の要素で構成する:
      * - グループ: ページ内の大きな塊（例: リクエストハンドラ）。折りたたみ可能で、背景色で他と区別する
      * - パッケージ: FQNの1階層。折りたたみと、packageHref によるメインセクションへのリンクを持つ。
-     *   用語のない単一子パッケージ（item無し）は省略し、名前を "." 連結で子のラベルに引き継ぐ
+     *   用語のない単一子パッケージ（item無し）は省略し、最深のパッケージのみ表示する
      * - リーフ: renderLeaf で描画されるアイテム（クラスやメソッド）
      *
      * items が空の場合は何も描画しない。
@@ -463,14 +463,10 @@ globalThis.Jig.dom = (() => {
         const glossary = globalThis.Jig.glossary;
         const roots = globalThis.Jig.util.buildPackageTree(items, getFqn);
 
-        const simpleName = fqn => fqn.substring(fqn.lastIndexOf('.') + 1);
-
         function renderNode(node) {
-            // 用語のない単一子パッケージ（item無し）は省略し、名前を子のラベルに引き継ぐ
+            // 用語のない単一子パッケージ（item無し）は省略し、最深のパッケージのみ表示する
             let current = node;
-            const omittedNames = [];
             while (current.children.length === 1 && current.items.length === 0 && !glossary.findTerm(current.fqn)) {
-                omittedNames.push(simpleName(current.fqn));
                 current = current.children[0];
             }
 
@@ -478,7 +474,7 @@ globalThis.Jig.dom = (() => {
             current.children.forEach(child => childList.appendChild(renderNode(child)));
             current.items.forEach(item => childList.appendChild(renderLeaf(item)));
 
-            const labelText = [...omittedNames, glossary.getPackageTerm(current.fqn).title].join('.');
+            const labelText = glossary.getPackageTerm(current.fqn).title;
             const href = packageHref ? packageHref(current) : null;
             const label = href
                 ? createElement("a", {

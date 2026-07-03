@@ -138,12 +138,18 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const sidebar = document.getElementById('usecase-sidebar-list');
-            assert.equal(sidebar.children.length, 1);
+            assert.equal(sidebar.children.length, 1); // ユースケースグループ
+            const group = sidebar.children[0];
+            assert.ok(group.classList.contains('in-page-sidebar__section--group'));
+            assert.equal(group.querySelector('p span').textContent, 'ユースケース');
             const sidebarLinks = sidebar.querySelectorAll('a');
-            assert.equal(sidebarLinks[0].textContent, 'ServiceA');
-            assert.ok(sidebarLinks[1].classList.contains('in-page-sidebar__link--sub'));
-            assert.equal(sidebarLinks[1].textContent, 'method1');
-            assert.equal(sidebarLinks[2].textContent, 'otherMethod');
+            // 用語のないパッケージは省略され、メインのパッケージ見出しへのリンクになる
+            assert.equal(sidebarLinks[0].textContent, 'example');
+            assert.equal(sidebarLinks[0].getAttribute('href'), '#' + globalThis.Jig.util.fqnToId('package', 'com.example'));
+            assert.equal(sidebarLinks[1].textContent, 'ServiceA');
+            assert.ok(sidebarLinks[2].classList.contains('in-page-sidebar__link--sub'));
+            assert.equal(sidebarLinks[2].textContent, 'method1');
+            assert.equal(sidebarLinks[3].textContent, 'otherMethod');
 
             const mainList = document.getElementById('usecase-list');
             assert.equal(mainList.children.length, 1);

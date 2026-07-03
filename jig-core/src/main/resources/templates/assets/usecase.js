@@ -15,6 +15,7 @@ const UsecaseApp = (() => {
     const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
     const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
     const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
+    const fqnToPackageId = (fqn) => Jig.util.fqnToId("package", fqn); // パッケージ見出しのHTML id
 
     // 有向エッジを Set でユニーク化するためのキー。FQNには現れない区切り文字を使用する。
     const makeEdgeKey = (from, to) => `${from} ${to}`;
@@ -503,9 +504,11 @@ const UsecaseApp = (() => {
             return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
         });
 
-        Jig.dom.sidebar.renderPackageTree(sidebar, filteredItems, {
+        Jig.dom.sidebar.renderTreeSection(sidebar, {
+            title: "ユースケース",
+            items: filteredItems,
             getFqn: item => item.usecase.fqn,
-            renderItem: ({usecase, methods}) => {
+            renderLeaf: ({usecase, methods}) => {
                 const methodList = Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
                     children: methods.map(method =>
@@ -536,7 +539,9 @@ const UsecaseApp = (() => {
                     className: "in-page-sidebar__item",
                     children: [header, methodList]
                 });
-            }
+            },
+            // クラスを直接持たない中間パッケージノードはメインに見出しがないためリンクなし
+            packageHref: node => node.items.length > 0 ? "#" + fqnToPackageId(node.fqn) : null
         });
     }
 
@@ -790,7 +795,10 @@ const UsecaseApp = (() => {
             if (cards.length === 0) return;
 
             const pkgTerm = Jig.glossary.getPackageTerm(packageFqn);
-            const pkgSection = Jig.dom.createElement("section", {className: "package-section"});
+            const pkgSection = Jig.dom.createElement("section", {
+                id: fqnToPackageId(packageFqn),
+                className: "package-section"
+            });
 
             const header = Jig.dom.createElement("header", {
                 className: "package-header",

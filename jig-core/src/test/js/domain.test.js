@@ -117,6 +117,64 @@ test.describe('domain.js', () => {
             assert.ok(childPackageNames.includes('sub1'), 'example should have sub1 as child');
             assert.ok(childPackageNames.includes('sub2'), 'example should have sub2 as child');
         });
+
+        test('トップレベルのパッケージもネストしたパッケージと同じ<li>構造で描画する（見た目を統一するため）', () => {
+            const comPkg = {fqn: 'com', types: [{fqn: 'com.MyClass'}]};
+            const childPackagesMap = new Map([['com', []]]);
+            const typesMap = new Map([
+                ['com.MyClass', {fqn: 'com.MyClass', isDeprecated: false}]
+            ]);
+
+            const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
+
+            assert.equal(result.tagName, 'li');
+            assert.ok(result.className.includes('in-page-sidebar__item'));
+            const header = result.children[0];
+            assert.equal(header.tagName, 'div');
+            assert.ok(header.className.includes('in-page-sidebar__item-header'));
+        });
+    });
+
+    test.describe('renderSidebar（トップレベルパッケージの見た目）', () => {
+        test('トップレベルのパッケージを単一のulにまとめ、ネストしたパッケージと同じCSSクラスで描画する', () => {
+            const types = [
+                {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []},
+            ];
+            setupDomainData(['org.example'], types);
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.User': {title: 'User'},
+            });
+            globalThis.typeRelationsData = {relations: []};
+
+            const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            const sidebarList = doc.createElement("div");
+            doc.elementsById.set("domain-sidebar-list", sidebarList);
+
+            DomainApp.init();
+
+            // トップレベルは section/p.in-page-sidebar__title ではなく、
+            // ネストしたパッケージと同じ ul > li > div.item-header になる
+            assert.equal(sidebarList.children.length, 1);
+            const list = sidebarList.children[0];
+            assert.equal(list.tagName, 'ul');
+            assert.ok(list.className.includes('in-page-sidebar__links'));
+
+            const topItem = list.children[0];
+            assert.equal(topItem.tagName, 'li');
+            assert.ok(topItem.className.includes('in-page-sidebar__item'));
+            assert.equal(sidebarList.querySelectorAll('section').length, 0, 'トップレベル用のsectionは生成されない');
+            assert.equal(sidebarList.querySelectorAll('p.in-page-sidebar__title').length, 0, 'トップレベル用の見出しは生成されない');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
     });
 
     test.describe('getDirectChildPackages', () => {

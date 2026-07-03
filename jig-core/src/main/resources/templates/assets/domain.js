@@ -477,13 +477,14 @@ const DomainApp = (() => {
     // ----- DOM レンダリング -----
 
     /**
+     * トップレベルかどうかはたまたま親を持たないだけの違いでしかないため、
+     * ネストしたパッケージと同じ見た目（li > div.item-header）で描画する。
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
-     * @param {boolean} isTopLevel
      * @returns {HTMLElement}
      */
-    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false, kindsMemo = new Map()) {
+    function renderPackageNavItem(pkg, childPackagesMap, typesMap, kindsMemo = new Map()) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
         const mergedNames = [Jig.glossary.getPackageTerm(pkg.fqn).title];
@@ -503,7 +504,7 @@ const DomainApp = (() => {
         // 子パッケージを表示（統合後の currentPkg の直下のみ）
         const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
         childPackages.forEach(childPkg => {
-            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap, false, kindsMemo));
+            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap, kindsMemo));
         });
 
         // 子タイプを表示
@@ -539,31 +540,17 @@ const DomainApp = (() => {
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
         const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap, kindsMemo)].join(' ')};
 
-        if (isTopLevel) {
-            return Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                attributes: wrapperAttrs,
-                children: [
-                    Jig.dom.createElement("p", {
-                        className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                        children: headerChildren
-                    }),
-                    childList
-                ]
-            });
-        } else {
-            return Jig.dom.createElement("li", {
-                className: "in-page-sidebar__item",
-                attributes: wrapperAttrs,
-                children: [
-                    Jig.dom.createElement("div", {
-                        className: "in-page-sidebar__item-header",
-                        children: headerChildren
-                    }),
-                    childList
-                ]
-            });
-        }
+        return Jig.dom.createElement("li", {
+            className: "in-page-sidebar__item",
+            attributes: wrapperAttrs,
+            children: [
+                Jig.dom.createElement("div", {
+                    className: "in-page-sidebar__item-header",
+                    children: headerChildren
+                }),
+                childList
+            ]
+        });
     }
 
     /**
@@ -585,14 +572,17 @@ const DomainApp = (() => {
             });
         });
 
-        // トップレベルのパッケージのみを表示（直接の親を持たないもの）
+        // トップレベルのパッケージのみを表示（直接の親を持たないもの）。
+        // ネストしたパッケージと同じ見た目にするため、単一の ul にまとめる
         // pkgKinds の再帰計算結果は同一 render 中で何度も参照されるためメモ化を共有する
         const kindsMemo = new Map();
+        const list = Jig.dom.createElement("ul", {className: "in-page-sidebar__links"});
         packages.forEach(pkg => {
             if (!childPackageFqns.has(pkg.fqn)) {
-                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true, kindsMemo));
+                list.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, kindsMemo));
             }
         });
+        container.appendChild(list);
     }
 
     /**

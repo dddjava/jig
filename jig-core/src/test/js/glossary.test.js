@@ -321,9 +321,8 @@ test.describe('glossary.js', () => {
             assert.equal(sidebar.children.length, 1);
             const section = sidebar.children[0];
             assert.equal(section.tagName, 'section');
-            assert.equal(section.children[0].tagName, 'p');
-            assert.equal(section.children[0].textContent, '用語一覧');
-            const ul = section.children[1];
+            // 用語一覧しか表示しないサイドバーなので見出しは付けない
+            const ul = section.children[0];
             assert.equal(ul.tagName, 'ul');
             const link = ul.children[0].children[0];
             assert.equal(link.tagName, 'a');
@@ -340,7 +339,7 @@ test.describe('glossary.js', () => {
                 glossary.renderTermSidebar([{title: 'Acc', fqn: 'app.Acc', kind: 'クラス'}]);
             });
 
-            const link = sidebar.children[0].children[1].children[0].children[0];
+            const link = sidebar.children[0].children[0].children[0].children[0];
             assert.equal(link.tagName, 'a');
             assert.equal(link.textContent, 'Acc');
         });

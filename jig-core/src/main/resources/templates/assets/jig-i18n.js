@@ -76,7 +76,6 @@ globalThis.Jig.i18n = (() => {
             "クラス": "Class",
             "属性情報を表示する": "Show attributes",
             "CSV出力": "Export CSV",
-            "用語一覧": "Terms",
             "絞り込み": "Filter",
             // タブ見出し
             "パッケージ関連図": "Package relation diagram",

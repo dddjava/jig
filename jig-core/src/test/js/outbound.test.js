@@ -837,10 +837,15 @@ test.describe("outbound.js", () => {
                 }]
             };
             OutboundApp.renderSidebar([crudGroup], [], []);
-            const crudLink = doc.getElementById("outbound-sidebar-list")
-                .querySelector('a[href="#outbound-crud-panel"]');
+            const sidebar = doc.getElementById("outbound-sidebar-list");
+            const crudLink = sidebar.querySelector('a[href="#outbound-crud-panel"]');
             assert.ok(crudLink, 'CRUDリンクが存在する');
             assert.equal(crudLink.textContent, "永続化(CRUD)");
+
+            // 他のグループ（出力ポート等）と同じ並び・見た目・ピン留めにする
+            const crudTitle = crudLink.closest('.in-page-sidebar__title--group');
+            assert.ok(crudTitle, 'グループと同じ見出しスタイルを持つ');
+            assert.ok(crudTitle.closest('.in-page-sidebar__section--group'), 'グループと同じsectionに属する');
         });
 
         test("永続化操作がない場合はCRUDリンクを表示しない", () => {

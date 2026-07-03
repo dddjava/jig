@@ -543,6 +543,47 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.renderLinkGroup', () => {
+        test('containerがnullの場合、何もしない', () => {
+            assert.doesNotThrow(() => Jig.dom.sidebar.renderLinkGroup(null, {title: 'A', href: '#a'}));
+        });
+
+        test('他のグループと同じ見出しクラスを持つ単一リンクのsectionを追加する', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderLinkGroup(container, {title: '永続化(CRUD)', href: '#outbound-crud-panel'});
+
+            assert.equal(container.children.length, 1);
+            const section = container.children[0];
+            assert.equal(section.className, 'in-page-sidebar__section in-page-sidebar__section--group');
+            const title = section.querySelector('p.in-page-sidebar__title--group');
+            assert.ok(title);
+            const link = title.querySelector('a.in-page-sidebar__link');
+            assert.ok(link);
+            assert.equal(link.getAttribute('href'), '#outbound-crud-panel');
+            assert.equal(link.textContent, '永続化(CRUD)');
+            // 開閉トグルやサブリストは持たない（単一リンクなので展開の必要がない）
+            assert.equal(section.querySelector('.in-page-sidebar__toggle'), null);
+            assert.equal(section.querySelector('ul'), null);
+        });
+
+        test('renderTreeSectionのグループと積み重ねオフセットを共有する', () => {
+            const container = Jig.dom.createElement('div');
+            document.body.appendChild(container);
+            Jig.dom.sidebar.renderTreeSection(container, {
+                title: 'グループ1',
+                items: [{fqn: 'com.example.A'}],
+                getFqn: item => item.fqn,
+                renderLeaf: item => Jig.dom.sidebar.leaf('#' + item.fqn, item.fqn)
+            });
+            Jig.dom.sidebar.renderLinkGroup(container, {title: 'リンクグループ', href: '#link'});
+
+            const titles = container.querySelectorAll('.in-page-sidebar__title--group');
+            assert.equal(titles.length, 2);
+            assert.equal(titles[0].style.bottom, 'calc(1 * var(--group-title-height))');
+            assert.equal(titles[1].style.bottom, 'calc(0 * var(--group-title-height))');
+        });
+    });
+
     test.describe('sidebar.syncActiveLink', () => {
         function setupSidebar(innerHtml) {
             document.body.innerHTML =

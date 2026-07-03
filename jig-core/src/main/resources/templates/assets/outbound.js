@@ -317,9 +317,9 @@ const OutboundApp = (() => {
         });
 
         if (collectAllTargets(grouped).length > 0) {
-            Jig.dom.sidebar.renderSection(sidebar, [
-                {id: "outbound-crud-panel", label: "永続化(CRUD)"},
-            ]);
+            // 他のグループ（出力ポート等）と同じ並び・見た目・ピン留めにするため
+            // renderTreeSection ではなく単一リンクのグループとして描画する
+            Jig.dom.sidebar.renderLinkGroup(sidebar, {title: "永続化(CRUD)", href: "#outbound-crud-panel"});
         }
 
         Jig.dom.sidebar.renderTreeSection(sidebar, {

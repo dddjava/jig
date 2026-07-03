@@ -471,15 +471,48 @@ globalThis.Jig.dom = (() => {
             children: [titleEl, list]
         }));
 
-        // グループ見出しがスクロール範囲外に押し出された場合も下部に積み重なって留まるよう、
-        // スクロール領域内の全グループ見出しの積み重ねオフセットを再計算する
         const scroller = sidebarScrollerOf(container);
+        recomputeGroupTitleOffsets(scroller);
+        initGroupTitlePinning(scroller, titleEl, toggle, list);
+    }
+
+    /**
+     * 開閉可能な子リストを持たない、単一リンクのグループをサイドバーに追加する。
+     * 他のグループ（renderTreeSection）と同じ背景色・積み重ねピン留めの並びにしたい、
+     * ツリー展開の必要がない項目（例: 単一ページへのリンクのみのセクション）で使う。
+     *
+     * @param {Element} container
+     * @param {Object} options
+     * @param {string} options.title - リンクのラベル
+     * @param {string} options.href
+     */
+    function renderLinkGroup(container, {title, href}) {
+        if (!container) return;
+
+        const titleEl = createElement("p", {
+            className: "in-page-sidebar__title in-page-sidebar__title--group",
+            children: [createElement("a", {
+                className: "in-page-sidebar__link",
+                attributes: {href},
+                textContent: title
+            })]
+        });
+
+        container.appendChild(createElement("section", {
+            className: "in-page-sidebar__section in-page-sidebar__section--group",
+            children: [titleEl]
+        }));
+
+        recomputeGroupTitleOffsets(sidebarScrollerOf(container));
+    }
+
+    // グループ見出しがスクロール範囲外に押し出された場合も下部に積み重なって留まるよう、
+    // スクロール領域内の全グループ見出しの積み重ねオフセットを再計算する
+    function recomputeGroupTitleOffsets(scroller) {
         const groupTitles = [...scroller.querySelectorAll(".in-page-sidebar__title--group")];
         groupTitles.forEach((groupTitle, index) => {
             groupTitle.style.bottom = `calc(${groupTitles.length - 1 - index} * var(--group-title-height))`;
         });
-
-        initGroupTitlePinning(scroller, titleEl, toggle, list);
     }
 
     const GROUP_TITLE_PINNED_CLASS = "in-page-sidebar__title--pinned";
@@ -947,6 +980,7 @@ globalThis.Jig.dom = (() => {
             leaf: createSidebarLeaf,
             renderSection,
             renderTreeSection,
+            renderLinkGroup,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,

@@ -1713,6 +1713,8 @@ table td.number {
    積み重ねオフセット（style.bottom）は renderTreeSection が設定する */
 .in-page-sidebar__title--group {
     --group-title-height: 32px;
+    display: flex;
+    align-items: center;
     background-color: #e3ecf7;
     border-bottom: none;
     border-radius: 6px;

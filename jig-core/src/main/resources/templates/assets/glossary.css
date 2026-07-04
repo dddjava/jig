@@ -13,7 +13,7 @@
 .glossary .kind-option-title {
     margin: 0 0 8px 0;
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .glossary .kind-option.checkbox-options {
@@ -38,7 +38,7 @@
 .glossary .radio-options .kind-badge {
     width: 1.1em;
     height: 1.1em;
-    font-size: 0.6em;
+    font-size: var(--jig-font-size-2xs);
     margin-right: 0;
 }
 
@@ -69,7 +69,7 @@
 }
 
 .glossary .sorting-controls label {
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     white-space: nowrap;
 }
 

@@ -2,6 +2,12 @@
     --sidebar-width: 260px;
     --sidebar-collapsed-width: 28px;
     --color-text-secondary: #666;
+    /* フォントサイズは以下の5段階に統一する。値が近いだけの独自指定を増やさないこと */
+    --jig-font-size-2xs: 0.7rem;
+    --jig-font-size-xs: 0.8rem;
+    --jig-font-size-sm: 0.9rem;
+    --jig-font-size-base: 1rem;
+    --jig-font-size-lg: 1.125rem;
     /* 種別バッジ（kind-badge、サイドバーリンクの data-kind-char バッジ）共通の色 */
     --kind-color-package: #5a7a3a;
     --kind-color-class: #1b3a66;
@@ -54,7 +60,7 @@ header.top {
 
 header.top a {
     color: #FFF;
-    font-size: 0.8em;
+    font-size: var(--jig-font-size-xs);
 }
 
 .jig-header-nav {
@@ -79,7 +85,7 @@ header.top a {
 
 .jig-header-nav__trigger::after {
     content: "▾";
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     opacity: 0.7;
 }
 
@@ -116,7 +122,7 @@ header.top a {
 .jig-header-nav__item span {
     display: block;
     padding: 0.35em 0.8em;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     color: #FFF;
     text-decoration: none;
 }
@@ -133,7 +139,7 @@ header.top a {
 
 .jig-lang-switcher {
     margin-left: auto;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .jig-lang-switcher__dropdown {
@@ -199,7 +205,7 @@ header:not(.top) > .jig-lang-switcher .jig-header-nav__item span {
 
 #jig-document-help-panel h2 {
     margin-top: 0;
-    font-size: 1.2em;
+    font-size: var(--jig-font-size-lg);
     border-bottom: 2px solid #243D1E;
     padding-bottom: 0.3em;
 }
@@ -234,30 +240,30 @@ aside.notice {
 }
 
 .weak {
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     color: gray;
 }
 
 .declaration,
 .fully-qualified-name {
-    font-size: 0.8em;
+    font-size: var(--jig-font-size-xs);
     color: silver;
 }
 
 .meta-label {
-    font-size: 0.8em;
+    font-size: var(--jig-font-size-xs);
     color: silver;
     margin-right: 4px;
 }
 
 .meta-value {
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     color: gray;
 }
 
 .term-attributes-toggle {
     display: inline-block;
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     color: #aaa;
     cursor: pointer;
     user-select: none;
@@ -308,7 +314,7 @@ main table thead {
 
 .markdown {
     margin: 0.5em;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .markdown table thead {
@@ -400,7 +406,7 @@ main table thead {
     align-items: baseline;
     flex-wrap: wrap;
     gap: 2px;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .method-name {
@@ -437,7 +443,7 @@ main table thead {
 }
 
 .simplified-toggle-btn {
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     padding: 2px 8px;
     cursor: pointer;
     border: 1px solid #1b3a66;
@@ -466,7 +472,7 @@ main table thead {
     display: flex;
     gap: 12px;
     align-items: baseline;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     margin-bottom: 4px;
 }
 
@@ -478,7 +484,7 @@ main table thead {
 .entrypoint-item__path {
     color: #666;
     font-family: monospace;
-    font-size: 0.95em;
+    font-size: var(--jig-font-size-sm);
 }
 
 /* stylelint-disable no-descending-specificity -- entrypoint-section--simplified併用時にdisplay:noneで隠す意図的な上書きであり実害はない */
@@ -487,7 +493,7 @@ main table thead {
     display: grid;
     grid-template-columns: 3em 1fr;
     gap: 2px 8px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     margin: 0;
     padding-left: 1em;
 }
@@ -559,7 +565,7 @@ td.fqn {
     list-style: none;
     cursor: pointer;
     user-select: none;
-    font-size: 1.1em;
+    font-size: var(--jig-font-size-lg);
     font-weight: bold;
     margin-top: 0;
     margin-bottom: 0;
@@ -581,7 +587,7 @@ td.fqn {
 .jig-card--type h3 .card-title-anchor::after {
     content: " #";
     opacity: 0;
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     font-weight: normal;
     transition: opacity 0.15s;
     color: #5577aa;
@@ -643,14 +649,14 @@ td.fqn {
 }
 
 .io-type-usages-label {
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     font-weight: 600;
     color: #666;
     white-space: nowrap;
 }
 
 .io-type-usage-link {
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     color: #2d5fa8;
     text-decoration: none;
     background-color: #ebf0fb;
@@ -671,7 +677,7 @@ td.fqn {
 
 .io-type-nested-label {
     display: inline-block;
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     font-weight: 600;
     color: #2d5fa8;
     background-color: #ebf0fb;
@@ -740,7 +746,7 @@ body.hide-usecase-members .tab-member-section {
 }
 
 .mutual-dependency-title {
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     font-weight: bold;
     white-space: nowrap;
     flex-shrink: 0;
@@ -796,7 +802,7 @@ body.hide-usecase-details .depends {
     border-radius: 4px 4px 0 0;
     background-color: #f0f0f0;
     cursor: pointer;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     margin-bottom: -1px;
 }
 
@@ -830,7 +836,7 @@ body.hide-usecase-details .depends {
 
 .diagram-panel-options > legend {
     width: 100%;
-    font-size: 0.8em;
+    font-size: var(--jig-font-size-xs);
     color: var(--color-text-secondary, #666);
 }
 
@@ -838,7 +844,7 @@ body.hide-usecase-details .depends {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     cursor: pointer;
 }
 
@@ -873,13 +879,13 @@ pre.mermaid {
     content: "レンダリング中…";
     display: block;
     color: #888;
-    font-size: 13px;
+    font-size: var(--jig-font-size-xs);
     font-style: italic;
     padding: 8px 0;
 }
 
 .mermaid.too-large {
-    font-size: 14px;
+    font-size: var(--jig-font-size-sm);
     white-space: normal;
     background-color: #f7f7f7;
     border: 1px solid #ddd;
@@ -888,7 +894,7 @@ pre.mermaid {
 }
 
 .mermaid.too-large * {
-    font-size: 14px;
+    font-size: var(--jig-font-size-sm);
 }
 
 .mermaid-too-large__message {
@@ -947,7 +953,7 @@ pre.mermaid {
     border-radius: 4px;
     background: #f2f2f2;
     color: #111;
-    font-size: 12px;
+    font-size: var(--jig-font-size-2xs);
     line-height: 1.4;
     pointer-events: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -989,7 +995,7 @@ label {
     background-color: #fff;
     border: 1px solid #d1d9e6;
     border-radius: 4px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     font-weight: bold;
     color: #1b3a66;
     text-decoration: none;
@@ -1017,7 +1023,7 @@ label {
     width: 1.4em;
     height: 1.4em;
     border-radius: 3px;
-    font-size: 0.7em;
+    font-size: var(--jig-font-size-2xs);
     font-weight: bold;
     line-height: 1;
     color: #fff;
@@ -1044,7 +1050,7 @@ label {
 }
 
 .jig-card--type h3 .kind-badge {
-    font-size: 0.65em;
+    font-size: var(--jig-font-size-2xs);
 }
 
 .glossary-group-header {
@@ -1056,7 +1062,7 @@ label {
     margin: 0 0 1rem 0;
     border-radius: 4px;
     z-index: 15;
-    font-size: 1.1rem;
+    font-size: var(--jig-font-size-lg);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -1101,7 +1107,7 @@ label {
     padding: 0.3em 0.5em;
     background-color: #f0f0f0;
     border-bottom: 1px solid #ccc;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
 }
 
 #insight-section-nav a {
@@ -1136,7 +1142,7 @@ label {
 .metric-description h3 {
     margin-top: 1em;
     margin-bottom: 0.5em;
-    font-size: 1.1em;
+    font-size: var(--jig-font-size-lg);
     border-bottom: 1px solid #ddd;
 }
 
@@ -1247,7 +1253,7 @@ table td.number {
     box-sizing: border-box;
     height: var(--group-title-height);
     color: #4b5768;
-    font-size: 0.82rem;
+    font-size: var(--jig-font-size-xs);
     position: sticky;
     bottom: 0;
     z-index: 1;
@@ -1261,7 +1267,7 @@ table td.number {
    行全体に効かせるため、item-header ではなく子要素（package-link/ラベル）側に持たせる */
 
 .in-page-sidebar__list .in-page-sidebar__item-header {
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     line-height: 1.4;
 }
 
@@ -1415,7 +1421,7 @@ table td.number {
     border-radius: 6px;
     color: #1b3a66;
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     line-height: 1.4;
     overflow-wrap: break-word;
     white-space: nowrap;
@@ -1450,7 +1456,7 @@ table td.number {
     width: 1.3em;
     height: 1.3em;
     border-radius: 3px;
-    font-size: 0.7em;
+    font-size: var(--jig-font-size-2xs);
     font-weight: bold;
     color: #fff;
     background-color: #888;
@@ -1477,7 +1483,7 @@ table td.number {
 
 .in-page-sidebar__link--sub {
     padding-left: 20px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
 }
 
 /* サイドバー ヘッダー（表示設定＋折りたたみボタン） */
@@ -1504,7 +1510,7 @@ table td.number {
     cursor: pointer;
     padding: 0;
     color: #5a7a9a;
-    font-size: 10px;
+    font-size: var(--jig-font-size-2xs);
 }
 
 .sidebar-collapse-btn:hover {
@@ -1534,7 +1540,7 @@ table td.number {
 /* stylelint-disable no-descending-specificity -- サイドバー設定と用語カードのsummaryは別のDOM subtreeで共存しないため実害はない */
 
 .sidebar-settings > summary {
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     color: #31455f;
     cursor: pointer;
     padding: 4px 2px;
@@ -1580,7 +1586,7 @@ table td.number {
     display: grid;
     gap: 6px;
     padding: 6px 4px 2px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .sidebar-settings-panel fieldset {
@@ -1594,7 +1600,7 @@ table td.number {
 }
 
 .sidebar-settings-panel legend {
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     color: #5a7099;
     font-weight: bold;
     text-transform: uppercase;
@@ -1631,7 +1637,7 @@ table td.number {
     padding: 4px 8px;
     border: 1px solid #d9e1ea;
     border-radius: 6px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     background: #fff;
     color: #1b3a66;
 }
@@ -1682,7 +1688,7 @@ table td.number {
     border-radius: 6px;
     background-color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
-    font-size: 16px;
+    font-size: var(--jig-font-size-base);
     line-height: 1;
     opacity: 0;
     pointer-events: none;
@@ -1713,7 +1719,7 @@ table td.number {
     border-radius: 4px;
     padding: 4px 6px;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: var(--jig-font-size-2xs);
     line-height: 1.2;
     opacity: 0;
     pointer-events: none;
@@ -1760,7 +1766,7 @@ table td.number {
 
 .mermaid-label-toggle-button {
     right: 108px;
-    font-size: 12px;
+    font-size: var(--jig-font-size-2xs);
     font-weight: bold;
 }
 
@@ -1810,7 +1816,7 @@ p.jig-data-warning {
 
 .package-heading h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--jig-font-size-lg);
     color: #31455f;
 }
 
@@ -1836,7 +1842,7 @@ p.jig-data-warning {
     margin-bottom: 8px;
     border: 1px solid #d4d9e5;
     border-radius: 4px;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .entrypoint-summary--http th:nth-child(2),
@@ -1863,7 +1869,7 @@ p.jig-data-warning {
     border-radius: 4px;
     cursor: pointer;
     padding: 3px 8px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     color: #5a7a9a;
 }
 
@@ -1876,7 +1882,7 @@ p.jig-data-warning {
 .controller-group-header > td {
     background-color: #edf1fa;
     padding: 4px 8px;
-    font-size: 0.85em;
+    font-size: var(--jig-font-size-sm);
     font-weight: 600;
 }
 
@@ -1916,7 +1922,7 @@ p.jig-data-warning {
     color: #1b3a66;
     border-radius: 10px;
     padding: 0 6px;
-    font-size: 0.8em;
+    font-size: var(--jig-font-size-xs);
     font-weight: normal;
 }
 

@@ -72,7 +72,7 @@
 
 .outbound-interface .outbound-visibility-panel__group-label {
     margin: 0 0 2px 0;
-    font-size: 0.8rem;
+    font-size: var(--jig-font-size-xs);
     color: #6b7280;
     font-weight: bold;
 }
@@ -91,7 +91,7 @@
 
 .outbound-interface .outbound-visibility-panel .checkbox-child {
     padding-left: 8px;
-    font-size: 0.95em;
+    font-size: var(--jig-font-size-sm);
     color: #374151;
 }
 
@@ -169,7 +169,7 @@
     display: inline-block;
     margin-right: 8px;
     transition: transform 0.2s;
-    font-size: 0.8em;
+    font-size: var(--jig-font-size-xs);
 }
 
 .outbound-interface .port-group-row.is-expanded .port-group-cell::before {
@@ -178,7 +178,7 @@
 
 .outbound-interface .operation-cell {
     padding-left: 32px !important;
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     color: #555;
 }
 

@@ -52,7 +52,7 @@
 .package-relation .controls #depth-down-button {
     padding: 4px 8px;
     min-width: 32px;
-    font-size: 14px;
+    font-size: var(--jig-font-size-sm);
     line-height: 1;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .package-relation .controls .note {
-    font-size: 0.9em;
+    font-size: var(--jig-font-size-sm);
     color: #555;
 }
 
@@ -152,7 +152,7 @@
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
-    font-size: 16px;
+    font-size: var(--jig-font-size-base);
     table-layout: fixed;
 }
 
@@ -194,7 +194,7 @@
     border-radius: 4px 4px 0 0;
     background-color: #f8f9fa;
     cursor: pointer;
-    font-size: 0.95em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .package-relation .tab-button:hover {
@@ -266,7 +266,7 @@
     border: none;
     cursor: pointer;
     padding: 0 2px;
-    font-size: 0.75em;
+    font-size: var(--jig-font-size-xs);
     color: #666;
     line-height: 1;
 }
@@ -281,5 +281,5 @@
     padding: 20px;
     display: block;
     text-align: center;
-    font-size: 1rem; /* pre.mermaid が font-size: 0 を設定するため上書きが必要 */
+    font-size: var(--jig-font-size-base); /* pre.mermaid が font-size: 0 を設定するため上書きが必要 */
 }

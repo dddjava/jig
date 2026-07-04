@@ -28,7 +28,7 @@
     margin: 0;
     font-weight: bold;
     color: #1b3a66;
-    font-size: 0.95em;
+    font-size: var(--jig-font-size-sm);
 }
 
 .usecase .depends-item {

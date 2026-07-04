@@ -1682,12 +1682,11 @@ table td.number {
     gap: 8px;
 }
 
+/* 現状このクラス単体（--group修飾なし）で使われる見出しはなく、
+   常に in-page-sidebar__title--group と併用されるため、
+   font-weight/letter-spacing/margin 以外の見た目は --group 側の値が使われる */
 .in-page-sidebar__title {
     margin: 0;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #d9e1ea;
-    color: #31455f;
-    font-size: 0.85rem;
     font-weight: bold;
     letter-spacing: 0.04em;
 }
@@ -1729,7 +1728,6 @@ table td.number {
     box-sizing: border-box;
     height: var(--group-title-height);
     color: #4b5768;
-    letter-spacing: 0.04em;
     font-size: 0.82rem;
     position: sticky;
     bottom: 0;
@@ -1897,7 +1895,9 @@ table td.number {
     font-weight: bold;
 }
 
-/* サイドバーリンクのバッジ（疑似要素） */
+/* サイドバーリンクのバッジ（疑似要素）。.kind-badge（実要素、domain.js のツリーが使用）と
+   役割は同じだが、サイズ（1.3em/1.4em）と実装方式（疑似要素/実要素）が異なる。
+   意図した差ではなく揃え漏れの可能性があるため、見た目の統一を検討する際は要確認 */
 .in-page-sidebar__link[data-kind-char]::before {
     content: attr(data-kind-char);
     display: inline-flex;

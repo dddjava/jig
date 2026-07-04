@@ -112,7 +112,7 @@ header.top a {
     padding: 0;
 }
 
-.jig-header-nav__item a,
+.jig-header-nav .jig-header-nav__item a,
 .jig-header-nav__item span {
     display: block;
     padding: 0.35em 0.8em;
@@ -476,6 +476,8 @@ main table thead {
     font-size: 0.95em;
 }
 
+/* stylelint-disable no-descending-specificity -- entrypoint-section--simplified併用時にdisplay:noneで隠す意図的な上書きであり実害はない */
+
 .entrypoint-item__io {
     display: grid;
     grid-template-columns: 3em 1fr;
@@ -484,6 +486,8 @@ main table thead {
     margin: 0;
     padding-left: 1em;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .entrypoint-item__io dt {
     grid-column: 1;
@@ -549,9 +553,13 @@ td.fqn {
     max-width: 800px;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .index > main > section h2 {
     border-bottom: solid 1px #000;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .index > main > section h3 {
     border-bottom: solid 1px #999;
@@ -845,6 +853,8 @@ body.hide-usecase-details .depends {
     display: none;
 }
 
+/* stylelint-disable no-descending-specificity -- tab-content-section配下でのテーマ別上書き(意図的)であり実害はない */
+
 .jig-tabs {
     display: flex;
     gap: 4px;
@@ -852,6 +862,10 @@ body.hide-usecase-details .depends {
     background-color: #f5f5f5;
     border-bottom: 1px solid #ccc;
 }
+
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- tab-content-section配下でのテーマ別上書き(意図的)であり実害はない */
 
 .jig-tab {
     padding: 4px 10px;
@@ -863,6 +877,10 @@ body.hide-usecase-details .depends {
     margin-bottom: -1px;
 }
 
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- tab-content-section配下でのテーマ別上書き(意図的)であり実害はない */
+
 .jig-tab.active {
     background-color: #fff;
     border-bottom-color: #fff;
@@ -870,6 +888,8 @@ body.hide-usecase-details .depends {
     position: relative;
     z-index: 1;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .jig-tab:hover:not(.active) {
     background-color: #eaeaea;
@@ -904,14 +924,22 @@ pre.mermaid {
     font-size: 0;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .mermaid svg a:hover {
     text-decoration: none;
 }
+
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
 
 .mermaid-diagram {
     margin-top: 10px;
     position: relative;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .mermaid-diagram.is-rendering {
     min-height: 2em;
@@ -1036,12 +1064,16 @@ label {
     gap: 8px 16px;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .checkbox-options label,
 .radio-options label {
     display: flex;
     align-items: center;
     gap: 8px;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 /* チェックボックス/ラジオボタン選択肢内のバッジサイズ調整 */
 .glossary .checkbox-options .kind-badge,
@@ -1143,6 +1175,7 @@ label {
 }
 
 /* 種類バッジ */
+/* stylelint-disable no-descending-specificity -- glossaryのチェックボックス/ラジオボタン内での縮小表示は意図的な上書きであり実害はない */
 .kind-badge {
     display: inline-flex;
     align-items: center;
@@ -1159,6 +1192,7 @@ label {
     background-color: #888;
     margin-right: 0.4em;
 }
+/* stylelint-enable no-descending-specificity */
 
 .kind-badge[data-kind="パッケージ"] {
     background-color: var(--kind-color-package);
@@ -1176,9 +1210,13 @@ label {
     background-color: var(--kind-color-field);
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .jig-card--type h3 .kind-badge {
     font-size: 0.65em;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .glossary-group-header {
     position: sticky;
@@ -1239,6 +1277,8 @@ label {
     max-width: 980px;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .package-relation .controls summary,
 .library-dependency .controls summary,
 .package-relation details.usage summary {
@@ -1247,6 +1287,8 @@ label {
     padding: 6px 0;
     font-weight: 600;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .package-relation .controls > *,
 .library-dependency .controls > *,
@@ -1313,12 +1355,6 @@ label {
     padding: 0;
 }
 
-.package-relation button.package-filter-icon:hover,
-.package-relation button.focus-icon:hover,
-.package-relation a.glossary-link-icon:hover {
-    background-color: #f5f5f5;
-}
-
 .package-relation button.package-filter-icon,
 .package-relation button.focus-icon {
     cursor: pointer;
@@ -1344,6 +1380,12 @@ label {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4A2.5 2.5 0 0 1 6.5 2z'/></svg>");
     text-decoration: none;
     vertical-align: middle;
+}
+
+.package-relation button.package-filter-icon:hover,
+.package-relation button.focus-icon:hover,
+.package-relation a.glossary-link-icon:hover {
+    background-color: #f5f5f5;
 }
 
 .package-relation .mutual-dependencies {
@@ -1585,12 +1627,16 @@ label {
     padding: 0.2em 0;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .metric-description h3 {
     margin-top: 1em;
     margin-bottom: 0.5em;
     font-size: 1.1em;
     border-bottom: 1px solid #ddd;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .metric-description ul {
     margin-top: 0;
@@ -1602,9 +1648,11 @@ label {
 }
 
 /* 一覧出力のヘッダは折り返さない */
+/* stylelint-disable no-descending-specificity -- list-outputとpackage-relationは別ページ(bodyのclassが排他)にのみ現れるため実際には同一要素に衝突しない */
 .list-output table thead th {
     white-space: nowrap;
 }
+/* stylelint-enable no-descending-specificity */
 
 .list-output .list-output-tabs {
     display: flex;
@@ -1613,12 +1661,16 @@ label {
     margin: 1.5rem 0 1rem;
 }
 
+/* stylelint-disable no-descending-specificity -- list-outputとpackage-relationは別ページ(bodyのclassが排他)にのみ現れるため実際には同一要素に衝突しない */
+
 .list-output .tab-button {
     border: 1px solid #ccc;
     background-color: #f4f4f4;
     padding: 0.4rem 0.8rem;
     cursor: pointer;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .list-output .tab-button.is-active {
     background-color: #2c2c2c;
@@ -1639,9 +1691,11 @@ label {
 }
 
 /* テーブルの行をゼブラスタイルにする */
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
 table.zebra tbody tr:nth-child(odd) {
     background-color: #f9f9f9;
 }
+/* stylelint-enable no-descending-specificity */
 
 table.zebra tbody tr:nth-child(even) {
     /* background-color: #ffffff; */
@@ -1663,6 +1717,8 @@ table td.number {
     flex-direction: column;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .in-page-sidebar__list {
     display: grid;
     gap: 12px;
@@ -1672,6 +1728,8 @@ table td.number {
     scrollbar-gutter: stable;
     align-content: start;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__section {
     display: grid;
@@ -1741,6 +1799,8 @@ table td.number {
     line-height: 1.4;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .in-page-sidebar__item-header > .in-page-sidebar__package-link,
 .in-page-sidebar__item-header > .in-page-sidebar__link,
 .in-page-sidebar__item-header > span {
@@ -1752,7 +1812,10 @@ table td.number {
     border-radius: 6px;
 }
 
+/* stylelint-enable no-descending-specificity */
+
 /* ツリーのパッケージノード。メインセクションへのリンク */
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
 .in-page-sidebar__package-link {
     color: #31455f;
     text-decoration: none;
@@ -1760,6 +1823,7 @@ table td.number {
     white-space: nowrap;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
+/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__package-link:hover,
 .in-page-sidebar__package-link:focus-visible {
@@ -1841,11 +1905,15 @@ table td.number {
     opacity: 1;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .in-page-sidebar__item-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__links {
     list-style: none;
@@ -1867,6 +1935,8 @@ table td.number {
     margin: 0;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .in-page-sidebar__link {
     display: flex;
     align-items: center;
@@ -1880,6 +1950,8 @@ table td.number {
     white-space: nowrap;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__link:hover,
 .in-page-sidebar__link:focus-visible {
@@ -1974,11 +2046,15 @@ table td.number {
 }
 
 /* サイドバー 表示設定パネル */
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
 .sidebar-settings {
     flex: 1;
     min-width: 0;
     border: 1px solid #d9e1ea;
 }
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
 
 .sidebar-settings > summary {
     font-size: 0.85em;
@@ -1993,13 +2069,23 @@ table td.number {
     gap: 8px;
 }
 
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .sidebar-settings > summary:hover {
     background-color: #e8f0fb;
 }
 
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .sidebar-settings > summary::-webkit-details-marker {
     display: none;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .sidebar-settings > summary::before {
     content: "";
@@ -2039,6 +2125,8 @@ table td.number {
     padding: 0;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .sidebar-settings-panel label {
     display: flex;
     align-items: center;
@@ -2046,16 +2134,20 @@ table td.number {
     color: #1b3a66;
 }
 
+/* stylelint-enable no-descending-specificity */
+
 .sidebar-settings-panel input[type="radio"],
 .sidebar-settings-panel input[type="checkbox"] {
     cursor: pointer;
 }
 
 /* サイドバー テキストフィルタ */
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
 .sidebar-filter {
     flex-shrink: 0;
     padding: 4px 0;
 }
+/* stylelint-enable no-descending-specificity */
 
 .sidebar-filter input[type="search"] {
     width: 100%;
@@ -2198,11 +2290,11 @@ table td.number {
     transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
-.mermaid-copy-button:hover,
-.mermaid-download-button:hover,
-.mermaid-direction-button:hover,
-.mermaid-label-toggle-button:hover,
-.mermaid-zoom-button:hover {
+.mermaid-diagram .mermaid-copy-button:hover,
+.mermaid-diagram .mermaid-download-button:hover,
+.mermaid-diagram .mermaid-direction-button:hover,
+.mermaid-diagram .mermaid-label-toggle-button:hover,
+.mermaid-diagram .mermaid-zoom-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
 }
@@ -2220,6 +2312,8 @@ table td.number {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* stylelint-disable no-descending-specificity -- .mermaid-diagram:hover側と設定するプロパティが重複しないため詳細度の逆転による実害はない */
 
 .mermaid-copy-button {
     right: 6px;
@@ -2242,6 +2336,8 @@ table td.number {
 .mermaid-zoom-button {
     right: 142px;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .outbound-interface .outbound-crud-panel {
     overflow: auto;
@@ -2307,11 +2403,17 @@ table td.number {
     min-width: 100%;
 }
 
+/* stylelint-disable no-descending-specificity -- outbound-interfaceとpackage-relationは別ページ(bodyのclassが排他)にのみ現れるため実際には同一要素に衝突しない */
+
 .outbound-interface .crud-table th, .outbound-interface .crud-table td {
     border: 1px solid #d4d9e5;
     padding: 8px;
     text-align: left;
 }
+
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- outbound-interfaceとpackage-relationは別ページ(bodyのclassが排他)にのみ現れるため実際には同一要素に衝突しない */
 
 .outbound-interface .crud-table th {
     white-space: normal;
@@ -2324,9 +2426,13 @@ table td.number {
     z-index: 2;
 }
 
+/* stylelint-enable no-descending-specificity */
+
 .outbound-interface .crud-table td {
     white-space: nowrap;
 }
+
+/* stylelint-disable no-descending-specificity -- outbound-interfaceとpackage-relationは別ページ(bodyのclassが排他)にのみ現れるため実際には同一要素に衝突しない */
 
 .outbound-interface .crud-table th:first-child,
 .outbound-interface .crud-table td:first-child {
@@ -2338,10 +2444,16 @@ table td.number {
     min-width: 200px;
 }
 
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- outbound-interfaceとpackage-relationは別ページ(bodyのclassが排他)にのみ現れるため実際には同一要素に衝突しない */
+
 .outbound-interface .crud-table th:first-child {
     z-index: 3;
     background-color: #e6ecff; /* 左上角はヘッダー色 */
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .outbound-interface .port-group-row td:first-child {
     background-color: #f3f6ff; /* ポート行の1列目 */
@@ -2418,11 +2530,15 @@ p.jig-data-warning {
     border-bottom: 2px solid #d4d9e5;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .package-heading h2 {
     margin: 0;
     font-size: 1.1rem;
     color: #31455f;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .entrypoint-summary {
     width: 100%;
@@ -2431,11 +2547,15 @@ p.jig-data-warning {
     table-layout: fixed;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .entrypoint-summary td, .entrypoint-summary th {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .entrypoint-filter {
     width: 100%;
@@ -2447,10 +2567,14 @@ p.jig-data-warning {
     font-size: 0.9em;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .entrypoint-summary--http th:nth-child(2),
 .entrypoint-summary--http td:nth-child(2) {
     width: 5em;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .entrypoint-filter-row {
     display: flex;
@@ -2479,6 +2603,8 @@ p.jig-data-warning {
     background-color: #edf1fa;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .controller-group-header > td {
     background-color: #edf1fa;
     padding: 4px 8px;
@@ -2486,20 +2612,30 @@ p.jig-data-warning {
     font-weight: 600;
 }
 
+/* stylelint-enable no-descending-specificity */
+
 .controller-group-header__inner {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .controller-group-header__inner > a {
     color: #1b3a66;
     text-decoration: none;
 }
 
+/* stylelint-enable no-descending-specificity */
+
+/* stylelint-disable no-descending-specificity -- 実際のDOM構造上ネストせず同一要素に適用されないため詳細度の逆転による実害はない */
+
 .controller-group-header__inner > a:hover {
     text-decoration: underline;
 }
+
+/* stylelint-enable no-descending-specificity */
 
 .controller-group-path {
     color: #5a7a9a;

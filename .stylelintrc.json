@@ -3,6 +3,6 @@
   "rules": {
     "declaration-block-no-duplicate-properties": true,
     "no-duplicate-selectors": true,
-    "no-descending-specificity": null
+    "no-descending-specificity": true
   }
 }

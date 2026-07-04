@@ -615,17 +615,12 @@ globalThis.Jig.dom = (() => {
         container.scrollTop += (linkRect.top + linkRect.bottom) / 2 - (containerRect.top + containerRect.bottom) / 2;
     }
 
-    // location.hash に対応するサイドバーリンクをハイライトし、折りたたまれた祖先を展開する。
+    // 指定したhashに対応するサイドバーリンクをハイライトし、折りたたまれた祖先を展開する。
     // scrollIntoSidebar が true なら該当リンクをサイドバー内に表示する。
-    function syncActiveSidebarLink(scrollIntoSidebar = false) {
-        if (typeof document === "undefined") return;
-        const sidebar = document.querySelector(".in-page-sidebar");
-        if (!sidebar) return;
-
+    function applyActiveSidebarLink(sidebar, hash, scrollIntoSidebar = false) {
         sidebar.querySelectorAll(".in-page-sidebar__link--active")
             .forEach(el => el.classList.remove("in-page-sidebar__link--active"));
 
-        const hash = location.hash;
         if (!hash || hash === "#") return;
 
         // 同一アンカーへのリンクが複数グループに現れることがあるため、全て同期する
@@ -640,6 +635,29 @@ globalThis.Jig.dom = (() => {
             expandSidebarAncestors(sidebar, link);
         });
         if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, links[0]);
+    }
+
+    // location.hash に対応するサイドバーリンクをハイライトする。hashchangeやブラウザの戻る/進み、
+    // 初回ロード時の同期に使う
+    function syncActiveSidebarLink(scrollIntoSidebar = false) {
+        if (typeof document === "undefined") return;
+        const sidebar = document.querySelector(".in-page-sidebar");
+        if (!sidebar) return;
+        applyActiveSidebarLink(sidebar, location.hash, scrollIntoSidebar);
+    }
+
+    // サイドバー内のリンククリックを即座にハイライトする。移動先のレンダリングが重い場合、
+    // hashchangeの発火（≒描画完了後）を待つとハイライトが遅れて見えるため、
+    // クリック時点でリンク自身のhrefを元に先行してハイライトする。
+    // hashchangeによる同期（syncActiveSidebarLink）はブラウザの戻る/進み用に引き続き動作する
+    function initSidebarClickHighlight(sidebar) {
+        if (!sidebar || sidebar.dataset.clickHighlightInitialized) return;
+        sidebar.dataset.clickHighlightInitialized = "true";
+        sidebar.addEventListener("click", (e) => {
+            const link = e.target.closest("a[href^='#']");
+            if (!link) return;
+            applyActiveSidebarLink(sidebar, link.getAttribute("href"));
+        });
     }
 
     function initSidebarCollapseBtn() {
@@ -936,7 +954,7 @@ globalThis.Jig.dom = (() => {
         // 動的挿入された data-i18n 要素は jig-i18n.js の MutationObserver が初期 locale に追従させる
 
         if (typeof window !== "undefined") {
-            // ページ内リンクやブラウザの戻る/進みに合わせてサイドバーの該当箇所を表示する
+            // ブラウザの戻る/進みに合わせてサイドバーの該当箇所を表示する
             window.addEventListener("hashchange", () => syncActiveSidebarLink(true));
             // 初回ロード時のサイドバー描画はこのあとの DOMContentLoaded ハンドラで行われるため、
             // 描画完了後に同期する
@@ -945,6 +963,10 @@ globalThis.Jig.dom = (() => {
             } else {
                 syncActiveSidebarLink(true);
             }
+        }
+        if (typeof document !== "undefined") {
+            // サイドバー内リンクのクリックは、移動先の描画完了（hashchange）を待たずに即座にハイライトする
+            initSidebarClickHighlight(document.querySelector(".in-page-sidebar"));
         }
     }
 
@@ -991,6 +1013,7 @@ globalThis.Jig.dom = (() => {
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
             syncActiveLink: syncActiveSidebarLink,
+            initClickHighlight: initSidebarClickHighlight,
         },
         tab: {
             buildSection: buildTabSection,

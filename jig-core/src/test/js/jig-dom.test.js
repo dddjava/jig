@@ -673,6 +673,40 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.initClickHighlight', () => {
+        function setupSidebar(innerHtml) {
+            document.body.innerHTML =
+                `<nav class="in-page-sidebar"><div class="in-page-sidebar__list">${innerHtml}</div></nav>`;
+            return document.querySelector('.in-page-sidebar');
+        }
+
+        test('クリック時、hashが未更新でもクリックしたリンクへ即座にactiveを付与する', () => {
+            const sidebar = setupSidebar('<a class="in-page-sidebar__link" href="#a">A</a>'
+                + '<a class="in-page-sidebar__link" href="#b">B</a>');
+            location.hash = '';
+            Jig.dom.sidebar.initClickHighlight(sidebar);
+
+            sidebar.querySelector('a[href="#b"]').click();
+
+            const active = document.querySelectorAll('.in-page-sidebar__link--active');
+            assert.equal(active.length, 1);
+            assert.equal(active[0].getAttribute('href'), '#b');
+        });
+
+        test('サイドバーが無くてもエラーにならない', () => {
+            assert.doesNotThrow(() => Jig.dom.sidebar.initClickHighlight(null));
+        });
+
+        test('同じサイドバーへ二重初期化してもリスナーは1つだけ登録される', () => {
+            const sidebar = setupSidebar('<a class="in-page-sidebar__link" href="#a">A</a>');
+            Jig.dom.sidebar.initClickHighlight(sidebar);
+            Jig.dom.sidebar.initClickHighlight(sidebar);
+
+            sidebar.querySelector('a[href="#a"]').click();
+            assert.equal(document.querySelectorAll('.in-page-sidebar__link--active').length, 1);
+        });
+    });
+
     test.describe('type.resolver', () => {
         test('デフォルトは null', () => {
             assert.equal(Jig.dom.type.getResolver(), null);

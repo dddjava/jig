@@ -1,0 +1,89 @@
+/* 用語集 */
+
+.glossary #glossary-main {
+    padding-top: 1rem;
+}
+
+.glossary .search-option label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.glossary .kind-option-title {
+    margin: 0 0 8px 0;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.glossary .kind-option.checkbox-options {
+    flex-direction: column;
+}
+
+.glossary .checkbox-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+}
+
+.glossary .radio-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+}
+
+/* チェックボックス/ラジオボタン選択肢内のバッジサイズ調整 */
+
+.glossary .checkbox-options .kind-badge,
+.glossary .radio-options .kind-badge {
+    width: 1.1em;
+    height: 1.1em;
+    font-size: 0.6em;
+    margin-right: 0;
+}
+
+.glossary input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.glossary .display-option {
+    margin-top: 0;
+    box-shadow: none;
+}
+
+.glossary .display-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.glossary .sorting-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.glossary .sorting-controls label {
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.glossary #export-csv {
+    padding: 8px 16px;
+    border: 1px solid #2980b9;
+    border-radius: 4px;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.glossary #export-csv:hover {
+    background-color: #2980b9;
+}

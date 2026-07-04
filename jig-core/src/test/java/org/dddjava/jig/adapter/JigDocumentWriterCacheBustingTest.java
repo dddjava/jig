@@ -24,7 +24,8 @@ class JigDocumentWriterCacheBustingTest {
         String html = Files.readString(tempDir.resolve("glossary.html"), StandardCharsets.UTF_8);
         String v = "?v=" + sut.assetVersion();
 
-        assertTrue(html.contains("./assets/style.css" + v), html);
+        assertTrue(html.contains("./assets/common.css" + v), html);
+        assertTrue(html.contains("./assets/glossary.css" + v), html);
         assertTrue(html.contains("./assets/jig-bundle.js" + v), html);
         assertTrue(html.contains("./data/glossary-data.js" + v), html);
         // CDN は対象外
@@ -44,11 +45,11 @@ class JigDocumentWriterCacheBustingTest {
 
     @Test
     void 非HTMLリソースはバイトコピーのまま変更しない() throws IOException {
-        new JigDocumentWriter(tempDir, Locale.JAPANESE).copyResourceTo("templates/assets/", "style.css", tempDir);
+        new JigDocumentWriter(tempDir, Locale.JAPANESE).copyResourceTo("templates/assets/", "common.css", tempDir);
 
-        byte[] copied = Files.readAllBytes(tempDir.resolve("style.css"));
+        byte[] copied = Files.readAllBytes(tempDir.resolve("common.css"));
         byte[] original;
-        try (var is = JigDocumentWriter.getResourceAsStream("templates/assets/style.css")) {
+        try (var is = JigDocumentWriter.getResourceAsStream("templates/assets/common.css")) {
             original = is.readAllBytes();
         }
         assertTrue(java.util.Arrays.equals(original, copied));

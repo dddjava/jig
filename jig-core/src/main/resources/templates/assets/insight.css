@@ -1,0 +1,19 @@
+.insight table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 拡大アイコンをクリックしたときに非表示にする行のスタイル */
+
+.insight table tr.hidden-by-zoom {
+    display: none;
+}
+
+.insight table i.zoom {
+    cursor: pointer;
+}
+
+.insight table i.zoom::before {
+    content: "🔍";
+}

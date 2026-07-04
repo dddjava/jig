@@ -71,7 +71,15 @@ public class JigDocumentGenerator {
         for (String fileName : List.of(
                 "favicon.ico",
                 "index.js",
-                "style.css",
+                "common.css",
+                "package-relation.css",
+                "outbound-interface.css",
+                "list-output.css",
+                "glossary.css",
+                "index.css",
+                "library-dependency.css",
+                "usecase.css",
+                "insight.css",
                 "jig-bundle.js"
 
                 // 開発用なので不要

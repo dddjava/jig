@@ -1,0 +1,285 @@
+/* パッケージ概要の表示設定 */
+
+.package-relation .controls,
+.package-relation details.usage {
+    background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    margin: 1em auto;
+    width: 95%;
+    max-width: 980px;
+}
+
+.package-relation .controls summary,
+.package-relation details.usage summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 6px 0;
+    font-weight: 600;
+}
+
+.package-relation .controls > *,
+.package-relation details.usage > :not(summary) {
+    display: block;
+    margin: 8px 0;
+}
+
+.package-relation .controls .radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.package-relation .controls input[type="text"],
+.package-relation .controls select {
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+.package-relation .controls button {
+    padding: 6px 10px;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+.package-relation .controls #depth-up-button,
+.package-relation .controls #depth-down-button {
+    padding: 4px 8px;
+    min-width: 32px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.package-relation .controls button:hover {
+    background-color: #e6e6e6;
+}
+
+.package-relation .controls .note {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.package-relation button.package-filter-icon,
+.package-relation button.focus-icon,
+.package-relation a.glossary-link-icon {
+    width: 1.8em;
+    height: 1.8em;
+    border-radius: 999px;
+    border: 1px solid #999;
+    background: #fff no-repeat center;
+    padding: 0;
+}
+
+.package-relation button.package-filter-icon,
+.package-relation button.focus-icon {
+    cursor: pointer;
+}
+
+.package-relation button.icon-only {
+    cursor: default;
+    pointer-events: none;
+    background-color: transparent;
+}
+
+.package-relation button.package-filter-icon {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>");
+}
+
+.package-relation button.focus-icon {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='6'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg>");
+}
+
+.package-relation a.glossary-link-icon {
+    display: inline-block;
+    box-sizing: border-box;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4A2.5 2.5 0 0 1 6.5 2z'/></svg>");
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.package-relation button.package-filter-icon:hover,
+.package-relation button.focus-icon:hover,
+.package-relation a.glossary-link-icon:hover {
+    background-color: #f5f5f5;
+}
+
+.package-relation .mutual-dependencies {
+    margin: 12px 0 16px 0;
+}
+
+.package-relation #package-relation-diagram,
+.package-relation #package-explore-diagram {
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    max-height: 50vh;
+}
+
+.package-relation #package-relation-diagram svg,
+.package-relation #package-explore-diagram svg {
+    margin: 0 auto;
+}
+
+.package-relation table .col-action {
+    width: 2.5em;
+}
+
+.package-relation table .col-glossary {
+    width: 2.5em;
+}
+
+.package-relation #hierarchy-package-table th:nth-child(n+4),
+.package-relation #explore-package-table th:nth-child(n+4) {
+    white-space: nowrap;
+    width: 1px;
+}
+
+.package-relation td.glossary-cell {
+    text-align: center;
+}
+
+.package-relation table th.no-sort {
+    cursor: default;
+}
+
+.package-relation table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 16px;
+    table-layout: fixed;
+}
+
+.package-relation td {
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.package-relation tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+@media (max-width: 720px) {
+    .package-relation .controls .control-row {
+        align-items: flex-start;
+    }
+
+    .package-relation .controls .control-label {
+        width: 100%;
+    }
+
+    .package-relation .controls input[type="text"],
+    .package-relation .controls select {
+        width: 100%;
+    }
+}
+
+.package-relation .package-mode-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.package-relation .tab-button {
+    padding: 8px 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px 4px 0 0;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+
+.package-relation .tab-button:hover {
+    background-color: #dee2e6;
+}
+
+.package-relation .tab-button.is-active {
+    background-color: #fff;
+    border-color: #dee2e6;
+    border-bottom-color: #fff;
+    font-weight: 600;
+}
+
+.package-relation .package-tab-panel {
+    display: none;
+}
+
+.package-relation .package-tab-panel.is-active {
+    display: block;
+}
+
+.package-relation .controls select[multiple] {
+    min-width: 30ch;
+    max-width: 60ch;
+}
+
+.package-relation .explore-list-filter-row {
+    margin-top: 12px;
+}
+
+.package-relation .explore-list-filter-row input[type="text"] {
+    min-width: 30ch;
+}
+
+.package-relation #explore-package-list,
+.package-relation #hierarchy-package-list {
+    margin-top: 8px;
+}
+
+.package-relation #explore-package-table,
+.package-relation #hierarchy-package-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.package-relation #explore-package-table tbody tr,
+.package-relation #hierarchy-package-table tbody tr {
+    cursor: pointer;
+}
+
+.package-relation #explore-package-table tbody tr:hover,
+.package-relation #hierarchy-package-table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+.package-relation #explore-package-table tbody tr.explore-target-selected,
+.package-relation #hierarchy-package-table tbody tr.explore-target-selected {
+    background-color: #ffffce;
+}
+
+.package-relation #explore-package-table tbody tr.hidden-by-collapse,
+.package-relation #hierarchy-package-table tbody tr.hidden-by-collapse {
+    display: none;
+}
+
+.package-relation .explore-collapse-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 0.75em;
+    color: #666;
+    line-height: 1;
+}
+
+.package-relation .explore-collapse-toggle:hover {
+    color: #000;
+}
+
+.package-relation .placeholder-text {
+    color: #888;
+    font-style: italic;
+    padding: 20px;
+    display: block;
+    text-align: center;
+    font-size: 1rem; /* pre.mermaid が font-size: 0 を設定するため上書きが必要 */
+}

@@ -43,7 +43,8 @@ class IndexAdapterTest {
         sut.render(List.of(), GitRepositoryInfo.empty());
 
         String actual = readIndex();
-        assertTrue(actual.contains("./assets/style.css?v="));
+        assertTrue(actual.contains("./assets/common.css?v="));
+        assertTrue(actual.contains("./assets/index.css?v="));
         assertTrue(actual.contains("./assets/jig-bundle.js?v="));
         assertTrue(actual.contains("./data/navigation-data.js?v="));
         // CDN にはクエリを付けない

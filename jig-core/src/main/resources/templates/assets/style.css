@@ -227,7 +227,7 @@ aside.notice {
     padding: 0;
     margin: -1px;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
     border: 0;
 }
 
@@ -570,6 +570,7 @@ td.fqn {
     padding: 16px;
     background: linear-gradient(180deg, #f9fbff, #f3f6ff);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
 }
 
 .jig-card.jig-card--type > h3 {
@@ -1192,10 +1193,6 @@ label {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.jig-card.jig-card--type {
-    scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
-}
-
 @keyframes jig-card-type-highlight {
     0% {
         box-shadow: 0 0 0 3px #3b82f6, 0 4px 16px rgba(59, 130, 246, 0.25);
@@ -1403,7 +1400,6 @@ label {
     text-align: left;
     vertical-align: top;
     overflow-wrap: anywhere;
-    word-break: break-word;
     white-space: normal;
 }
 
@@ -1760,7 +1756,7 @@ table td.number {
 .in-page-sidebar__package-link {
     color: #31455f;
     text-decoration: none;
-    word-break: break-word;
+    overflow-wrap: break-word;
     white-space: nowrap;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -1781,9 +1777,8 @@ table td.number {
     padding: 0;
 }
 
-.in-page-sidebar__toggle {
-    opacity: 0;
-    transition: opacity 0.15s;
+.in-page-sidebar__toggle,
+.controller-group-toggle {
     background: none;
     border: none;
     cursor: pointer;
@@ -1795,6 +1790,10 @@ table td.number {
     height: 16px;
     flex-shrink: 0;
     color: #5a7a9a;
+}
+
+.in-page-sidebar__toggle {
+    opacity: 0;
     position: sticky;
     right: 0;
     border-radius: 4px;
@@ -1807,7 +1806,8 @@ table td.number {
     color: #31455f;
 }
 
-.in-page-sidebar__toggle::before {
+.in-page-sidebar__toggle::before,
+.controller-group-toggle::before {
     content: "";
     display: block;
     width: 6px;
@@ -1876,7 +1876,7 @@ table td.number {
     text-decoration: none;
     font-size: 0.9em;
     line-height: 1.4;
-    word-break: break-word;
+    overflow-wrap: break-word;
     white-space: nowrap;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -2317,18 +2317,15 @@ table td.number {
     white-space: normal;
     word-break: break-all;
     min-width: 120px;
-}
-
-.outbound-interface .crud-table td {
-    white-space: nowrap;
-}
-
-.outbound-interface .crud-table th {
     background-color: #e6ecff;
     color: #1b3a66;
     position: sticky;
     top: 0;
     z-index: 2;
+}
+
+.outbound-interface .crud-table td {
+    white-space: nowrap;
 }
 
 .outbound-interface .crud-table th:first-child,
@@ -2517,32 +2514,6 @@ p.jig-data-warning {
     padding: 0 6px;
     font-size: 0.8em;
     font-weight: normal;
-}
-
-.controller-group-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    color: #5a7a9a;
-}
-
-.controller-group-toggle::before {
-    content: "";
-    display: block;
-    width: 6px;
-    height: 6px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: rotate(45deg);
-    transition: transform 0.2s;
-    margin-top: -3px;
 }
 
 .controller-group-toggle[aria-expanded="false"]::before {

@@ -2,6 +2,11 @@
     --sidebar-width: 260px;
     --sidebar-collapsed-width: 28px;
     --color-text-secondary: #666;
+    /* 種別バッジ（kind-badge、サイドバーリンクの data-kind-char バッジ）共通の色 */
+    --kind-color-package: #5a7a3a;
+    --kind-color-class: #1b3a66;
+    --kind-color-method: #6b3a8a;
+    --kind-color-field: #a05a20;
     --settings-icon-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'/></svg>");
 }
 
@@ -1155,19 +1160,19 @@ label {
 }
 
 .kind-badge[data-kind="パッケージ"] {
-    background-color: #5a7a3a;
+    background-color: var(--kind-color-package);
 }
 
 .kind-badge[data-kind="クラス"] {
-    background-color: #1b3a66;
+    background-color: var(--kind-color-class);
 }
 
 .kind-badge[data-kind="メソッド"] {
-    background-color: #6b3a8a;
+    background-color: var(--kind-color-method);
 }
 
 .kind-badge[data-kind="フィールド"] {
-    background-color: #a05a20;
+    background-color: var(--kind-color-field);
 }
 
 .jig-card--type h3 .kind-badge {
@@ -1703,14 +1708,6 @@ table td.number {
     background-color: #dde3ea;
 }
 
-.in-page-sidebar__title--sub {
-    border-bottom: none;
-    font-weight: normal;
-    color: #6b7280;
-    font-size: 0.8rem;
-    padding-bottom: 0;
-}
-
 /* グループ見出しの sticky をスクロール領域（in-page-sidebar__list）基準にするため、
    sectionをレイアウト上フラット化する */
 .in-page-sidebar__section--group {
@@ -1919,19 +1916,19 @@ table td.number {
 }
 
 .in-page-sidebar__link[data-kind="パッケージ"]::before {
-    background-color: #5a7a3a;
+    background-color: var(--kind-color-package);
 }
 
 .in-page-sidebar__link[data-kind="クラス"]::before {
-    background-color: #1b3a66;
+    background-color: var(--kind-color-class);
 }
 
 .in-page-sidebar__link[data-kind="メソッド"]::before {
-    background-color: #6b3a8a;
+    background-color: var(--kind-color-method);
 }
 
 .in-page-sidebar__link[data-kind="フィールド"]::before {
-    background-color: #a05a20;
+    background-color: var(--kind-color-field);
 }
 
 .in-page-sidebar__link--sub {
@@ -2015,17 +2012,6 @@ table td.number {
     -webkit-mask: var(--settings-icon-mask) no-repeat center / contain;
     mask: var(--settings-icon-mask) no-repeat center / contain;
     opacity: 0.7;
-}
-
-
-.sidebar-settings .chevron-icon {
-    margin-left: auto;
-    transition: transform 0.2s ease;
-    opacity: 0.5;
-}
-
-.sidebar-settings[open] .chevron-icon {
-    transform: rotate(180deg);
 }
 
 .sidebar-settings-panel {

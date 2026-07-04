@@ -1895,9 +1895,8 @@ table td.number {
     font-weight: bold;
 }
 
-/* サイドバーリンクのバッジ（疑似要素）。.kind-badge（実要素、domain.js のツリーが使用）と
-   役割は同じだが、サイズ（1.3em/1.4em）と実装方式（疑似要素/実要素）が異なる。
-   意図した差ではなく揃え漏れの可能性があるため、見た目の統一を検討する際は要確認 */
+/* サイドバーリンクのバッジ（疑似要素）。本文中で使う .kind-badge（実要素）とは異なり、
+   属性駆動でDOMノードを増やさずに描画する。サイドバーリンク用のバッジは常にこちらを使う */
 .in-page-sidebar__link[data-kind-char]::before {
     content: attr(data-kind-char);
     display: inline-flex;

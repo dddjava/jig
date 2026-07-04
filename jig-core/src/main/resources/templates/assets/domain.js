@@ -511,12 +511,13 @@ const DomainApp = (() => {
         currentPkg.types.forEach(child => {
             const domainType = typesMap?.get(child.fqn);
             const link = Jig.dom.createElement("a", {
-                attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
+                attributes: {
+                    href: "#" + Jig.util.fqnToId("domain", child.fqn),
+                    "data-kind": "クラス",
+                    "data-kind-char": Jig.dom.kind.badgeChar("クラス"),
+                },
                 className: "in-page-sidebar__link" + (domainType?.isDeprecated ? " deprecated" : ""),
-                children: [
-                    Jig.dom.kind.badgeElement("クラス"),
-                    Jig.dom.createElement("span", {textContent: Jig.glossary.getTypeTerm(child.fqn).title})
-                ]
+                textContent: Jig.glossary.getTypeTerm(child.fqn).title
             });
             childList.appendChild(Jig.dom.createElement("li", {
                 className: "in-page-sidebar__item",
@@ -531,11 +532,12 @@ const DomainApp = (() => {
 
         const summaryLink = Jig.dom.createElement("a", {
             className: "in-page-sidebar__link",
-            attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
-            children: [
-                Jig.dom.kind.badgeElement("パッケージ"),
-                Jig.dom.createElement("span", {textContent: mergedNames.join("/")})
-            ]
+            attributes: {
+                href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn),
+                "data-kind": "パッケージ",
+                "data-kind-char": Jig.dom.kind.badgeChar("パッケージ"),
+            },
+            textContent: mergedNames.join("/")
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
         const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap, kindsMemo)].join(' ')};
@@ -1184,7 +1186,7 @@ const DomainApp = (() => {
 
         sidebar.querySelectorAll('div[data-kind]').forEach(div => {
             const link = div.querySelector('a');
-            const text = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
+            const text = (link?.textContent ?? '').toLowerCase();
             div.closest('li').style.display = text.includes(filterText) ? '' : 'none';
         });
 
@@ -1192,7 +1194,7 @@ const DomainApp = (() => {
             .reverse()
             .forEach(item => {
                 const link = item.querySelector('a');
-                const packageText = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
+                const packageText = (link?.textContent ?? '').toLowerCase();
                 const packageMatches = packageText.includes(filterText);
                 const childList = item.querySelector('ul');
                 const hasVisible = childList && [...childList.children].some(child =>

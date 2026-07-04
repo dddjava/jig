@@ -1733,11 +1733,23 @@ table td.number {
 /* ツリーのパッケージノード行。リーフ（in-page-sidebar__link）と縦幅を揃える。
    renderTreeSection の showTitle:false（グループ見出しなし）や domain.js の
    独自ツリーなど、in-page-sidebar__section--group に包まれない場合もあるため、
-   サイドバーのスクロール領域全体を基準にスコープする */
+   サイドバーのスクロール領域全体を基準にスコープする。
+   padding はホバー／選択時の背景をリーフ（in-page-sidebar__link）と同じく
+   行全体に効かせるため、item-header ではなく子要素（package-link/ラベル）側に持たせる */
 .in-page-sidebar__list .in-page-sidebar__item-header {
-    padding: 6px 8px;
     font-size: 0.9em;
     line-height: 1.4;
+}
+
+.in-page-sidebar__item-header > .in-page-sidebar__package-link,
+.in-page-sidebar__item-header > .in-page-sidebar__link,
+.in-page-sidebar__item-header > span {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: 6px;
 }
 
 /* ツリーのパッケージノード。メインセクションへのリンク */
@@ -1746,12 +1758,14 @@ table td.number {
     text-decoration: none;
     word-break: break-word;
     white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .in-page-sidebar__package-link:hover,
 .in-page-sidebar__package-link:focus-visible {
+    background-color: #e8f0fb;
     color: #10253f;
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .in-page-sidebar__title .in-page-sidebar__link {

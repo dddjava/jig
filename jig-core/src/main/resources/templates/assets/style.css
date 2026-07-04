@@ -1687,11 +1687,20 @@ table td.number {
     letter-spacing: 0.04em;
 }
 
+/* 開閉トグル専用の見出し行。ページ内リンク（in-page-sidebar__link等）のホバーは
+   ナビゲーションを示す青系背景にしているため、区別できるよう開閉操作はグレー系に統一する */
 .in-page-sidebar__title--collapsible {
     display: flex;
     align-items: center;
     justify-content: space-between;
     user-select: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.in-page-sidebar__title--collapsible:hover {
+    background-color: #dde3ea;
 }
 
 .in-page-sidebar__title--sub {
@@ -1793,6 +1802,14 @@ table td.number {
     color: #5a7a9a;
     position: sticky;
     right: 0;
+    border-radius: 4px;
+    transition: opacity 0.15s, background-color 0.15s ease, color 0.15s ease;
+}
+
+/* トグル自体にカーソルが当たっている場合も見出し行と同じグレー系で開閉操作であることを示す */
+.in-page-sidebar__toggle:hover {
+    background-color: #dde3ea;
+    color: #31455f;
 }
 
 .in-page-sidebar__toggle::before {

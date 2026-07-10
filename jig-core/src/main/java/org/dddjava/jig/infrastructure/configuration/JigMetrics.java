@@ -32,9 +32,7 @@ public class JigMetrics {
 
     public JigResult record(Supplier<JigResult> supplier) {
         try {
-            // Metrics.globalRegistry経由（Metrics.timer(...)）で記録すると、同一JVM内で並行実行している
-            // 他のJigMetricsインスタンスのregistryにも同じ名前のタイマーとして値が転送され、
-            // 実行時間が混入してしまう。このインスタンス専有のregistryに直接記録することでそれを防ぐ。
+            // Metrics.timer(...)経由だと並行実行中の他インスタンスに記録が混入するためregistryに直接記録する
             var result = registry.timer("jig.execution.time", "phase", "total_execution").record(supplier);
             return Objects.requireNonNull(result);
         } finally {
@@ -50,9 +48,7 @@ public class JigMetrics {
                 jigDocumentGenerator.close(outputDirectory -> {
                     var text = registry.scrape();
 
-                    // このインスタンス専有のレジストリのみを解除・close する。
-                    // globalRegistryそのものを閉じると、同一JVM内で並行または後続する他の実行の
-                    // メトリクス出力まで巻き込んで壊してしまうため触らない。
+                    // globalRegistry自体は他の実行も使うため触らず、専有レジストリのみ解除・close する
                     Metrics.globalRegistry.remove(registry);
                     registry.close();
 
@@ -85,11 +81,7 @@ public class JigMetrics {
     }
 
     public static JigMetrics init(Configuration configuration) {
-        // このインスタンス専有のレジストリを生成し、globalRegistryには実行中のみ登録する。
-        // globalRegistryそのものやJVMメトリクスバインダーをこのインスタンスの外まで共有すると、
-        // 同一Meter.Id（name+tags）への再登録はMicrometerでは無視されるため、
-        // 実行を重ねたときに後続の実行のバインドが無視され、先の実行の（すでにclose済みの）
-        // バインダーに紐づいたままの値が出力されてしまう（単なるメモリ肥大化ではなく結果不正）。
+        // 専有レジストリを生成し、globalRegistryには実行中のみ登録する（他実行と共有すると値が混線する）
         var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         Metrics.globalRegistry.add(registry);
 

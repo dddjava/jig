@@ -71,7 +71,7 @@ globalThis.Jig.mermaid = (() => {
                 const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
                 if (!this.edgeSet.has(edgeKey)) {
                     this.edgeSet.add(edgeKey);
-                    const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
+                    const edgeLine = label ? `  ${from} -- "${escapeMermaidText(label)}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
                     this.edges.push(edgeLine);
                 }
             }

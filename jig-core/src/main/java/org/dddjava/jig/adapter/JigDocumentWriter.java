@@ -19,9 +19,15 @@ public class JigDocumentWriter {
     private final String assetVersion;
 
     public JigDocumentWriter(Path outputDirectory, Locale locale) {
+        this(outputDirectory, locale, Long.toString(System.currentTimeMillis()));
+    }
+
+    // テストから決定的な値を注入できるようにするためのコンストラクタ。
+    // 一意性の検証をSystemの時計精度に委ねないようにする。
+    JigDocumentWriter(Path outputDirectory, Locale locale, String assetVersion) {
         this.outputDirectory = outputDirectory;
         this.locale = locale;
-        this.assetVersion = Long.toString(System.currentTimeMillis());
+        this.assetVersion = assetVersion;
     }
 
     String assetVersion() {

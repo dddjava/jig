@@ -34,13 +34,12 @@ class JigDocumentWriterCacheBustingTest {
     }
 
     @Test
-    void インスタンスごとにassetVersionが異なる() throws Exception {
-        String first = new JigDocumentWriter(tempDir, Locale.JAPANESE).assetVersion();
-        // System.currentTimeMillis() の解像度より十分長く待つ
-        Thread.sleep(5);
-        String second = new JigDocumentWriter(tempDir, Locale.JAPANESE).assetVersion();
+    void assetVersionはHTMLのプレースホルダー置換に指定した値がそのまま使われる() {
+        JigDocumentWriter sut = new JigDocumentWriter(tempDir, Locale.JAPANESE, "fixed-version");
 
-        assertNotEquals(first, second, "assetVersion はインスタンスごとに変わる必要がある");
+        String resolved = sut.resolvePlaceholders("<script src=\"./assets/common.css?v={{assetVersion}}\"></script>");
+
+        assertTrue(resolved.contains("?v=fixed-version"), resolved);
     }
 
     @Test

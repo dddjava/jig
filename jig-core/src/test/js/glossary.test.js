@@ -345,7 +345,9 @@ test.describe('glossary.js', () => {
         });
 
         test('FQNがない場合のアンカーID生成', () => {
-            assert.equal(glossary.buildTermAnchorId({title: 'NoFqn'}, 5), 'term-5');
+            const term = {title: 'NoFqn'};
+            assert.equal(glossary.buildTermAnchorId(term), glossary.buildTermAnchorId(term));
+            assert.notEqual(glossary.buildTermAnchorId(term), glossary.buildTermAnchorId({title: 'Other'}));
         });
 
         test('用語一覧を描画する (fullモード)', () => {

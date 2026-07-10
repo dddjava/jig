@@ -23,7 +23,9 @@ public class PackageId implements Comparable<PackageId> {
         return cache.computeIfAbsent(value, PackageId::new);
     }
 
-    // equals/hashCodeが値ベースなので解放後も既存の参照は有効
+    /**
+     * インターンキャッシュを解放する（equals/hashCodeが値ベースなので解放後も既存の参照は有効）。
+     */
     public static void clearCache() {
         cache.clear();
     }

@@ -30,6 +30,21 @@ class JsonSupportTest {
     }
 
     @Test
+    void escape_タブをエスケープする() {
+        assertEquals("\\t", JsonSupport.escape("\t"));
+    }
+
+    @Test
+    void escape_C0制御文字をユニコードエスケープする() {
+        assertEquals("\\u0001", JsonSupport.escape(""));
+    }
+
+    @Test
+    void escape_行区切りと段落区切りをユニコードエスケープする() {
+        assertEquals("\\u2028\\u2029", JsonSupport.escape("  "));
+    }
+
+    @Test
     void escape_複数文字を同時にエスケープする() {
         assertEquals("a\\\\b\\\"c\\r\\nd", JsonSupport.escape("a\\b\"c\r\nd"));
     }

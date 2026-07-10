@@ -1,4 +1,4 @@
-(() => {
+const LibraryDependencyApp = (() => {
     const Jig = globalThis.Jig;
 
     const selectedLibraryIds = new Set();
@@ -300,5 +300,19 @@
         });
     }
 
-    Jig.bootstrap.register("library-dependency", init);
+    return {
+        init,
+        toggleSelection,
+        computeMaxDepth,
+        computeInitialDepth,
+        buildMermaidText,
+        nodeId,
+        escape,
+    };
 })();
+
+Jig.bootstrap.register("library-dependency", LibraryDependencyApp.init);
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = LibraryDependencyApp;
+}

@@ -512,7 +512,12 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('ハッシュによる強制表示', () => {
-        test('フィルタで非表示の用語でもハッシュで指定されていれば表示される', () => {
+        test('フィルタで非表示の用語でもハッシュで指定されていれば表示される', (t) => {
+            t.after(() => {
+                delete globalThis.glossaryData;
+                delete global.location;
+            });
+
             const doc = setupDocument();
             doc.body.classList.add('glossary');
             const list = doc.createElement('div');
@@ -562,9 +567,6 @@ test.describe('glossary.js', () => {
                 return null;
             })(list, targetId);
             assert.ok(found, 'フィルタで非表示の用語がハッシュ指定時に表示されること');
-
-            delete globalThis.glossaryData;
-            delete global.location;
         });
     });
 

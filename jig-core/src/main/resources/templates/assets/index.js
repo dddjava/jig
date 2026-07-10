@@ -164,3 +164,7 @@ const IndexApp = (() => {
 })();
 
 Jig.bootstrap.register("index", IndexApp.init);
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = IndexApp;
+}

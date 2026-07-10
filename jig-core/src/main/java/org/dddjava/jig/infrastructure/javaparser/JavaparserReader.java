@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
+import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
@@ -27,8 +27,10 @@ public class JavaparserReader {
 
     private static final Logger logger = LoggerFactory.getLogger(JavaparserReader.class);
 
+    private final JavaParser javaParser;
+
     public JavaparserReader() {
-        ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
+        ParserConfiguration configuration = new ParserConfiguration();
         configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
         if (Runtime.version().feature() >= 25) {
             configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_25);
@@ -39,12 +41,13 @@ public class JavaparserReader {
 
         // TODO プロパティで指定してる場合だけ上書きするようにする
         // configuration.setCharacterEncoding(properties.inputEncoding());
+        this.javaParser = new JavaParser(configuration);
     }
 
     public ParseResult parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
-            // StaticJavaParserを変えるときはテストも変えること
-            CompilationUnit cu = StaticJavaParser.parse(path);
+            CompilationUnit cu = javaParser.parse(path).getResult()
+                    .orElseThrow(() -> new IllegalStateException(path + " のパースに失敗しました"));
 
             String packageName = cu.getPackageDeclaration()
                     .map(PackageDeclaration::getNameAsString)
@@ -70,8 +73,8 @@ public class JavaparserReader {
 
     public Optional<PackageId> loadPackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
-            // StaticJavaParserを変えるときはテストも変えること
-            CompilationUnit cu = StaticJavaParser.parse(path);
+            CompilationUnit cu = javaParser.parse(path).getResult()
+                    .orElseThrow(() -> new IllegalStateException(path + " のパースに失敗しました"));
 
             return loadPackageInfoJavaFile(cu, glossaryRepository);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする

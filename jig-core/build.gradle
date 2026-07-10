@@ -117,4 +117,8 @@ sourceSets.main.resources.srcDir(bundleJsOutputDir)
 processResources.dependsOn(bundleJsTask)
 sourcesJar.dependsOn(bundleJsTask)
 
-build.dependsOn(publishToMavenLocal)
+tasks.register('installLocal') {
+    group = 'publishing'
+    description = 'Publish to mavenLocal for local consumption by other projects'
+    dependsOn publishToMavenLocal
+}

@@ -21,8 +21,8 @@ public class TypesQueryService {
     private final CoreDomainCondition coreDomainCondition;
     private final JigEventRepository jigEventRepository;
 
-    private final Cache<String, JigTypes> jigTypesCache;
-    private final Cache<String, CoreDomainJigTypes> coreDomainJigTypesCache;
+    private final Cache<JigRepository, JigTypes> jigTypesCache;
+    private final Cache<JigRepository, CoreDomainJigTypes> coreDomainJigTypesCache;
 
     public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
         this.coreDomainCondition = coreDomainCondition;
@@ -48,7 +48,7 @@ public class TypesQueryService {
     }
 
     public CoreDomainJigTypes coreDomainJigTypes(JigRepository jigRepository) {
-        return coreDomainJigTypesCache.get("coreDomainJigTypes", key -> {
+        return coreDomainJigTypesCache.get(jigRepository, key -> {
             var jigTypes = jigTypes(jigRepository);
             var coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
             if (coreDomainJigTypes.isEmpty()) jigEventRepository.registerコアドメインが見つからない();
@@ -61,7 +61,7 @@ public class TypesQueryService {
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("serviceTypes", key ->
+        return jigTypesCache.get(jigRepository, key ->
                 jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.InboundPort)
         );
     }

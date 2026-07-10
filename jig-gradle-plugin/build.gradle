@@ -57,11 +57,6 @@ task setupPluginUpload doLast {
 }
 
 tasks.publishPlugins.dependsOn tasks.setupPluginUpload
-tasks.register('installLocal') {
-    group = 'publishing'
-    description = 'Publish to mavenLocal for local consumption by other projects'
-    dependsOn publishToMavenLocal
-}
 
 static String findSettingValue(String envName, String propertyName) {
     def env = System.getenv().get(envName)

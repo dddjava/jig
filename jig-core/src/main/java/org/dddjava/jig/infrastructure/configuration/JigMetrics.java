@@ -22,10 +22,12 @@ public class JigMetrics {
 
     private final Configuration configuration;
     private final JvmGcMetrics jvmGcMetrics;
+    private final PrometheusMeterRegistry registry;
 
-    public JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics) {
+    public JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics, PrometheusMeterRegistry registry) {
         this.configuration = configuration;
         this.jvmGcMetrics = jvmGcMetrics;
+        this.registry = registry;
     }
 
     public JigResult record(Supplier<JigResult> supplier) {
@@ -43,17 +45,12 @@ public class JigMetrics {
                 // メトリクスを出力
                 JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
                 jigDocumentGenerator.close(outputDirectory -> {
-                    var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
-                    var metricsText = new StringBuilder();
-                    globalRegistry.getRegistries().forEach(it -> {
-                        if (it instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
-                            metricsText.append(prometheusMeterRegistry.scrape());
-                        }
-                    });
-                    // このclose以降は記録されない
-                    globalRegistry.close();
+                    var text = registry.scrape();
 
-                    var text = metricsText.toString();
+                    // このインスタンス専有のレジストリのみを解除・close する。
+                    // globalRegistryは他の実行(Gradleデーモン等の長寿命JVM)でも使われ続けるため触らない。
+                    Metrics.globalRegistry.remove(registry);
+                    registry.close();
 
                     // jig-metrics.txt に書き出す
                     var txtPath = outputDirectory.resolve("jig-metrics.txt");
@@ -84,8 +81,11 @@ public class JigMetrics {
     }
 
     public static JigMetrics init(Configuration configuration) {
-        var registry = Metrics.globalRegistry;
-        registry.add(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
+        // このインスタンス専有のレジストリを生成し、globalRegistryには実行中のみ登録する。
+        // globalRegistryそのものやJVMメトリクスバインダーをこのインスタンスの外まで共有すると、
+        // Gradleデーモン等の長寿命JVMで実行を重ねるたびにメーターが積み上がってしまう。
+        var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        Metrics.globalRegistry.add(registry);
 
         new UptimeMetrics().bindTo(registry);
         new JvmMemoryMetrics().bindTo(registry);
@@ -93,6 +93,6 @@ public class JigMetrics {
         var jvmGcMetrics = new JvmGcMetrics();
         jvmGcMetrics.bindTo(registry);
 
-        return new JigMetrics(configuration, jvmGcMetrics);
+        return new JigMetrics(configuration, jvmGcMetrics, registry);
     }
 }

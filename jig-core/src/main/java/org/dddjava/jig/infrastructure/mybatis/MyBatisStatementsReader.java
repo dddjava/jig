@@ -43,6 +43,10 @@ public class MyBatisStatementsReader {
 
     private static final Logger logger = LoggerFactory.getLogger(MyBatisStatementsReader.class);
 
+    // Resources.defaultClassLoaderはJVM全体で単一のstaticフィールドで排他制御がないため、
+    // 同一JVM内（Gradleの並列ビルド等）での同時読み取りによる退避・復元の競合を防ぐ
+    private static final Object RESOURCES_DEFAULT_CLASS_LOADER_LOCK = new Object();
+
     public MyBatisReadResult readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         // Mapperアノテーションがついているクラスを対象にする
         Collection<String> classNames = jigTypeHeaders.stream()
@@ -65,23 +69,26 @@ public class MyBatisStatementsReader {
                     }
                 })
                 .toArray(URL[]::new);
-        // Gradleデーモン等の長寿命JVMでも他コードのMyBatis利用に影響しないよう、既存のデフォルトClassLoaderを退避・復元する
-        ClassLoader previousDefaultClassLoader = Resources.getDefaultClassLoader();
-        try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, Configuration.class.getClassLoader())) {
-            Resources.setDefaultClassLoader(classLoader);
+        // Gradleデーモン等の長寿命JVMでも他コードのMyBatis利用に影響しないよう、既存のデフォルトClassLoaderを退避・復元する。
+        // 退避から復元までを同期化し、同一JVM内での並行実行（Gradleの並列ビルド等）による競合を防ぐ。
+        synchronized (RESOURCES_DEFAULT_CLASS_LOADER_LOCK) {
+            ClassLoader previousDefaultClassLoader = Resources.getDefaultClassLoader();
+            try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, Configuration.class.getClassLoader())) {
+                Resources.setDefaultClassLoader(classLoader);
 
-            return extractSql(classNames, classLoader);
-        } catch (IOException e) {
-            logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
-                    "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
-            return new MyBatisReadResult(SqlReadStatus.失敗);
-        } catch (PersistenceException e) {
-            logger.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
-                    "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
-                    "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
-            return new MyBatisReadResult(SqlReadStatus.失敗);
-        } finally {
-            Resources.setDefaultClassLoader(previousDefaultClassLoader);
+                return extractSql(classNames, classLoader);
+            } catch (IOException e) {
+                logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
+                        "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
+                return new MyBatisReadResult(SqlReadStatus.失敗);
+            } catch (PersistenceException e) {
+                logger.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
+                        "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
+                        "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
+                return new MyBatisReadResult(SqlReadStatus.失敗);
+            } finally {
+                Resources.setDefaultClassLoader(previousDefaultClassLoader);
+            }
         }
     }
 

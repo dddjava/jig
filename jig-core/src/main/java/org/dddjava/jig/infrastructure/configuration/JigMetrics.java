@@ -32,7 +32,10 @@ public class JigMetrics {
 
     public JigResult record(Supplier<JigResult> supplier) {
         try {
-            var result = Metrics.timer("jig.execution.time", "phase", "total_execution").record(supplier);
+            // Metrics.globalRegistry経由（Metrics.timer(...)）で記録すると、同一JVM内で並行実行している
+            // 他のJigMetricsインスタンスのregistryにも同じ名前のタイマーとして値が転送され、
+            // 実行時間が混入してしまう。このインスタンス専有のregistryに直接記録することでそれを防ぐ。
+            var result = registry.timer("jig.execution.time", "phase", "total_execution").record(supplier);
             return Objects.requireNonNull(result);
         } finally {
             try {

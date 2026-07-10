@@ -24,7 +24,7 @@ public class JigMetrics {
     private final JvmGcMetrics jvmGcMetrics;
     private final PrometheusMeterRegistry registry;
 
-    public JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics, PrometheusMeterRegistry registry) {
+    private JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics, PrometheusMeterRegistry registry) {
         this.configuration = configuration;
         this.jvmGcMetrics = jvmGcMetrics;
         this.registry = registry;

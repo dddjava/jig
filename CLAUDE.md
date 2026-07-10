@@ -117,20 +117,22 @@ Conventional Commits 形式で **日本語** で記述する。
 
 使用可能な type: `feat`, `fix`, `refactor`, `docs`, `test`, `other`
 
-フッターは該当する場合のみ `--trailer` オプションで付与する。該当しないフッターは付けない（空値のトレーラーを作らない）。
+フッターは該当する場合のみ付与する。該当しないフッターは付けない（空値のトレーラーを作らない）。
 
 - 変更対象の JigDocument が特定できる場合のみ: `--trailer "JIG-DOCUMENT: <documentName>"`（例: `Insight`）
 - 自動エージェントがコミットする場合のみ: `--trailer "AGENT: <agentName>"`（例: `Claude`）
+- issue を解消する場合のみ: `Closes #<番号>`（GitHubの自動close書式のためコロンなし。`--trailer` ではなく本文末尾に直接書く。`gh issue close` で直接クローズしない。close専用の別コミット・空コミットも作らない）
 
 ```bash
-# 両方該当する例
+# 該当するフッターだけ付与する
 git commit -m "feat: ..." --trailer "JIG-DOCUMENT: Insight" --trailer "AGENT: Claude"
 
-# JigDocument が特定できない場合はAGENTのみ
-git commit -m "fix: ..." --trailer "AGENT: Claude"
-```
+git commit -m "$(cat <<'EOF'
+fix: ...
 
-issue を解消するコミットは、`gh issue close` で直接クローズせず、本文に `Closes #<番号>` を記述して close する。
-**`Closes #<番号>` は修正内容と同じコミットの本文に書くこと。close専用の別コミット（空コミット等）を後から作らない。**
+Closes #1134
+EOF
+)" --trailer "AGENT: Claude"
+```
 
 テンプレートファイル `templates/<name>.html` と `JigDocument` の enum 名の対応は `JigDocument.java` を参照。

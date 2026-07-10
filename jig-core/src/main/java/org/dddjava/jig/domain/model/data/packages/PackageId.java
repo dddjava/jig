@@ -16,10 +16,20 @@ public class PackageId implements Comparable<PackageId> {
         this.value = value;
     }
 
+    /**
+     * インターンキャッシュ。実行境界でclearCache()により明示的に解放する。
+     */
     private static final Map<String, PackageId> cache = new ConcurrentHashMap<>();
 
     public static PackageId valueOf(String value) {
         return cache.computeIfAbsent(value, PackageId::new);
+    }
+
+    /**
+     * インターンキャッシュを解放する（equals/hashCodeが値ベースなので解放後も既存の参照は有効）。
+     */
+    public static void clearCache() {
+        cache.clear();
     }
 
     public static PackageId defaultPackage() {

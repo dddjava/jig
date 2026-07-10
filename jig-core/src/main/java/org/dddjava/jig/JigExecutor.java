@@ -2,6 +2,8 @@ package org.dddjava.jig;
 
 import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.application.JigRepository;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigMetrics;
@@ -24,8 +26,13 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static JigResult standard(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        return JigMetrics.init(configuration)
-                .record(() -> new JigExecutor(configuration).execute(sourceBasePaths));
+        try {
+            return JigMetrics.init(configuration)
+                    .record(() -> new JigExecutor(configuration).execute(sourceBasePaths));
+        } finally {
+            TypeId.clearCache();
+            PackageId.clearCache();
+        }
     }
 
     private JigResult execute(SourceBasePaths sourceBasePaths) {

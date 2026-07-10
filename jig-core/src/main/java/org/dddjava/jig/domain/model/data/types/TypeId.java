@@ -11,7 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public record TypeId(String value) implements Comparable<TypeId> {
 
-    // 定数初期化は定義順なので、これを先頭にしておかないと以降の定数の valueOf メソッド呼び出しで落ちる
+    /**
+     * インターンキャッシュ。実行境界でclearCache()により明示的に解放する。
+     * 定数初期化は定義順なので、これを先頭にしておかないと以降の定数の valueOf メソッド呼び出しで落ちる。
+     */
     private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
 
     // 判定に使用する型
@@ -29,6 +32,13 @@ public record TypeId(String value) implements Comparable<TypeId> {
      */
     public static TypeId valueOf(String value) {
         return cache.computeIfAbsent(value, TypeId::new);
+    }
+
+    /**
+     * インターンキャッシュを解放する（equals/hashCodeが値ベースなので解放後も既存の参照は有効）。
+     */
+    public static void clearCache() {
+        cache.clear();
     }
 
     /**

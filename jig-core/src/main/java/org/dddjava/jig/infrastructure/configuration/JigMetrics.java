@@ -22,15 +22,18 @@ public class JigMetrics {
 
     private final Configuration configuration;
     private final JvmGcMetrics jvmGcMetrics;
+    private final PrometheusMeterRegistry registry;
 
-    public JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics) {
+    private JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics, PrometheusMeterRegistry registry) {
         this.configuration = configuration;
         this.jvmGcMetrics = jvmGcMetrics;
+        this.registry = registry;
     }
 
     public JigResult record(Supplier<JigResult> supplier) {
         try {
-            var result = Metrics.timer("jig.execution.time", "phase", "total_execution").record(supplier);
+            // Metrics.timer(...)経由だと並行実行中の他インスタンスに記録が混入するためregistryに直接記録する
+            var result = registry.timer("jig.execution.time", "phase", "total_execution").record(supplier);
             return Objects.requireNonNull(result);
         } finally {
             try {
@@ -43,17 +46,11 @@ public class JigMetrics {
                 // メトリクスを出力
                 JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
                 jigDocumentGenerator.close(outputDirectory -> {
-                    var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
-                    var metricsText = new StringBuilder();
-                    globalRegistry.getRegistries().forEach(it -> {
-                        if (it instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
-                            metricsText.append(prometheusMeterRegistry.scrape());
-                        }
-                    });
-                    // このclose以降は記録されない
-                    globalRegistry.close();
+                    var text = registry.scrape();
 
-                    var text = metricsText.toString();
+                    // globalRegistry自体は他の実行も使うため触らず、専有レジストリのみ解除・close する
+                    Metrics.globalRegistry.remove(registry);
+                    registry.close();
 
                     // jig-metrics.txt に書き出す
                     var txtPath = outputDirectory.resolve("jig-metrics.txt");
@@ -84,8 +81,9 @@ public class JigMetrics {
     }
 
     public static JigMetrics init(Configuration configuration) {
-        var registry = Metrics.globalRegistry;
-        registry.add(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
+        // 専有レジストリを生成し、globalRegistryには実行中のみ登録する（他実行と共有すると値が混線する）
+        var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+        Metrics.globalRegistry.add(registry);
 
         new UptimeMetrics().bindTo(registry);
         new JvmMemoryMetrics().bindTo(registry);
@@ -93,6 +91,6 @@ public class JigMetrics {
         var jvmGcMetrics = new JvmGcMetrics();
         jvmGcMetrics.bindTo(registry);
 
-        return new JigMetrics(configuration, jvmGcMetrics);
+        return new JigMetrics(configuration, jvmGcMetrics, registry);
     }
 }

@@ -16,6 +16,9 @@ public class PackageId implements Comparable<PackageId> {
         this.value = value;
     }
 
+    // 値そのものがすべてのintrinsic stateであるFlyweight（インターンキャッシュ）。
+    // 実行中は共有インスタンスとして参照され続けるためWeakHashMap等のGC任せの解放にはなじまず、
+    // 実行境界でclearCache()により明示的に解放する。
     private static final Map<String, PackageId> cache = new ConcurrentHashMap<>();
 
     public static PackageId valueOf(String value) {

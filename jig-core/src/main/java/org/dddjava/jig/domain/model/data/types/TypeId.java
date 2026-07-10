@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public record TypeId(String value) implements Comparable<TypeId> {
 
     // 定数初期化は定義順なので、これを先頭にしておかないと以降の定数の valueOf メソッド呼び出しで落ちる
+    // 値そのものがすべてのintrinsic stateであるFlyweight（インターンキャッシュ）。
+    // 実行中は共有インスタンスとして参照され続けるためWeakHashMap等のGC任せの解放にはなじまず、
+    // 実行境界でclearCache()により明示的に解放する。
     private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
 
     // 判定に使用する型

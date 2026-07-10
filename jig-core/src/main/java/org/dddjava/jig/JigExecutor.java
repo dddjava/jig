@@ -31,7 +31,7 @@ public class JigExecutor {
                     .record(() -> new JigExecutor(configuration).execute(sourceBasePaths));
         } finally {
             // TypeId/PackageIdのインターンキャッシュはJVMグローバルな静的状態のため、
-            // Gradleデーモン等の長寿命JVMで実行を重ねても無制限に肥大化しないよう実行終了ごとに解放する。
+            // 同一JVM内で実行を重ねてもキャッシュが無制限に肥大化しないよう実行終了ごとに解放する。
             TypeId.clearCache();
             PackageId.clearCache();
         }

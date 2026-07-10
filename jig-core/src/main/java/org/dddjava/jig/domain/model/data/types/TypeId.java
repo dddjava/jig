@@ -34,7 +34,7 @@ public record TypeId(String value) implements Comparable<TypeId> {
     /**
      * インターンキャッシュを解放する。
      * TypeIdはrecordでequals/hashCodeが値ベースのため、既存のインスタンス参照はキャッシュ解放後も有効。
-     * Gradleデーモン等の長寿命JVMで実行を重ねてもキャッシュが無制限に肥大化しないよう、1実行の完了ごとに呼び出す想定。
+     * 同一JVM内で実行を重ねてもキャッシュが無制限に肥大化しないよう、1実行の完了ごとに呼び出す想定。
      */
     public static void clearCache() {
         cache.clear();

@@ -51,7 +51,7 @@ public class JigMetrics {
                     var text = registry.scrape();
 
                     // このインスタンス専有のレジストリのみを解除・close する。
-                    // globalRegistryは他の実行(Gradleデーモン等の長寿命JVM)でも使われ続けるため触らない。
+                    // globalRegistryは同一JVM内の他の実行でも使われ続けるため触らない。
                     Metrics.globalRegistry.remove(registry);
                     registry.close();
 
@@ -86,7 +86,7 @@ public class JigMetrics {
     public static JigMetrics init(Configuration configuration) {
         // このインスタンス専有のレジストリを生成し、globalRegistryには実行中のみ登録する。
         // globalRegistryそのものやJVMメトリクスバインダーをこのインスタンスの外まで共有すると、
-        // Gradleデーモン等の長寿命JVMで実行を重ねるたびにメーターが積み上がってしまう。
+        // 同一JVM内で実行を重ねるたびにメーターが積み上がってしまう。
         var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         Metrics.globalRegistry.add(registry);
 

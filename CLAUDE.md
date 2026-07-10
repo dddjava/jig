@@ -126,4 +126,6 @@ Conventional Commits 形式で **日本語** で記述する。
 git commit -m "feat: ..." --trailer "JIG-DOCUMENT: Insight" --trailer "AGENT: Claude"
 ```
 
+issue を解消するコミットは、`gh issue close` で直接クローズせず、コミット本文に `Closes #<番号>` を記述して close する。
+
 テンプレートファイル `templates/<name>.html` と `JigDocument` の enum 名の対応は `JigDocument.java` を参照。

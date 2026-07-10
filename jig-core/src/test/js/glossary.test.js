@@ -582,13 +582,20 @@ test.describe('glossary.js', () => {
             // (本来は再読み込みが必要だが、ロジックの導通確認を優先)
         });
 
-        test('renderJumpBar: ジャンプバーリンククリック時にスクロール', () => {
-            setupDocument();
-            const doc = global.document;
+        test('renderJumpBar: リンクに href が付与される', () => {
+            const doc = setupDocument();
+            const jumpBar = doc.getElementById('jump-bar');
 
-            const jumpBar = doc.createElement('div');
-            jumpBar.id = 'jump-bar';
-            doc.elementsById.set('jump-bar', jumpBar);
+            glossary.renderJumpBar(['A', 'B']);
+
+            assert.equal(jumpBar.children.length, 2);
+            assert.equal(jumpBar.children[0].getAttribute('href'), '#group-A');
+            assert.equal(jumpBar.children[1].getAttribute('href'), '#group-B');
+        });
+
+        test('renderJumpBar: ジャンプバーリンククリック時にスクロール', () => {
+            const doc = setupDocument();
+            const jumpBar = doc.getElementById('jump-bar');
 
             const targetSection = doc.createElement('section');
             targetSection.id = 'group-A';
@@ -600,22 +607,23 @@ test.describe('glossary.js', () => {
                 scrollCalled = true;
             };
 
-            // リンク作成とクリックイベントのシミュレーション
-            const link = doc.createElement('a');
-            link.href = '#group-A';
-            link.textContent = 'A';
+            global.history = {pushState: () => {}};
 
-            const clickEvent = new Event('click');
-            Object.defineProperty(clickEvent, 'target', {value: link, enumerable: true});
-            Object.defineProperty(clickEvent, 'preventDefault', {
-                value: () => {
-                }, enumerable: true
+            glossary.renderJumpBar(['A']);
+            const link = jumpBar.children[0];
+
+            let prevented = false;
+            link.dispatchEvent({
+                type: 'click',
+                preventDefault: () => {
+                    prevented = true;
+                }
             });
 
-            // 実際のイベントハンドラ実行の代わりにロジック確認
-            const hash = '#group-A';
-            const el = doc.getElementById(hash.substring(1));
-            assert.ok(el);
+            assert.ok(prevented, 'デフォルト動作がキャンセルされること');
+            assert.ok(scrollCalled, 'スクロールが実行されること');
+
+            delete global.history;
         });
     });
 });

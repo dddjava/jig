@@ -104,7 +104,7 @@ const GlossaryApp = (() => {
         chars.forEach(char => {
             const link = Jig.dom.createElement("a", {
                 className: "glossary-jump-link",
-                href: `#group-${char}`,
+                attributes: {href: `#group-${char}`},
                 textContent: char
             });
             link.addEventListener("click", (e) => {

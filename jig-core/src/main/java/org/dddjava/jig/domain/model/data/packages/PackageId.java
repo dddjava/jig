@@ -16,7 +16,9 @@ public class PackageId implements Comparable<PackageId> {
         this.value = value;
     }
 
-    // インターンキャッシュ。実行境界でclearCache()により明示的に解放する
+    /**
+     * インターンキャッシュ。実行境界でclearCache()により明示的に解放する。
+     */
     private static final Map<String, PackageId> cache = new ConcurrentHashMap<>();
 
     public static PackageId valueOf(String value) {

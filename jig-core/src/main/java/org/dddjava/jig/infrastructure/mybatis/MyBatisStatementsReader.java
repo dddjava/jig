@@ -43,7 +43,9 @@ public class MyBatisStatementsReader {
 
     private static final Logger logger = LoggerFactory.getLogger(MyBatisStatementsReader.class);
 
-    // Resources.defaultClassLoaderはJVM全体で単一のstaticフィールドのため排他制御に使う
+    /**
+     * Resources.defaultClassLoaderはJVM全体で単一のstaticフィールドのため排他制御に使う。
+     */
     private static final Object RESOURCES_DEFAULT_CLASS_LOADER_LOCK = new Object();
 
     public MyBatisReadResult readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {

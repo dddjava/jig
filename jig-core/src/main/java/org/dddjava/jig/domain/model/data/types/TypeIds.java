@@ -27,7 +27,7 @@ public record TypeIds(Set<TypeId> values) {
     }
 
     public String asSimpleText() {
-        return values.stream().distinct().toList().stream()
+        return values.stream()
                 .map(TypeId::asSimpleText)
                 .sorted()
                 .collect(joining(", ", "[", "]"));

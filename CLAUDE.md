@@ -117,13 +117,17 @@ Conventional Commits 形式で **日本語** で記述する。
 
 使用可能な type: `feat`, `fix`, `refactor`, `docs`, `test`, `other`
 
-フッター:
-- `JIG-DOCUMENT: <documentName>` — 変更対象の JigDocument が特定できる場合
-- `AGENT: <agentName>` — 自動エージェントがコミットする場合（例: `Claude`）
+フッターは該当する場合のみ `--trailer` オプションで付与する。該当しないフッターは付けない（空値のトレーラーを作らない）。
 
-フッターは `--trailer` オプションで付与:
+- 変更対象の JigDocument が特定できる場合のみ: `--trailer "JIG-DOCUMENT: <documentName>"`（例: `Insight`）
+- 自動エージェントがコミットする場合のみ: `--trailer "AGENT: <agentName>"`（例: `Claude`）
+
 ```bash
+# 両方該当する例
 git commit -m "feat: ..." --trailer "JIG-DOCUMENT: Insight" --trailer "AGENT: Claude"
+
+# JigDocument が特定できない場合はAGENTのみ
+git commit -m "fix: ..." --trailer "AGENT: Claude"
 ```
 
 issue を解消するコミットは、`gh issue close` で直接クローズせず、本文に `Closes #<番号>` を記述して close する。

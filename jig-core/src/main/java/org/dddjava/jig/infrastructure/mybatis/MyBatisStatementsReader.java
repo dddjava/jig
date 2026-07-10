@@ -65,6 +65,8 @@ public class MyBatisStatementsReader {
                     }
                 })
                 .toArray(URL[]::new);
+        // Gradleデーモン等の長寿命JVMでも他コードのMyBatis利用に影響しないよう、既存のデフォルトClassLoaderを退避・復元する
+        ClassLoader previousDefaultClassLoader = Resources.getDefaultClassLoader();
         try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
@@ -78,6 +80,8 @@ public class MyBatisStatementsReader {
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
                     "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
             return new MyBatisReadResult(SqlReadStatus.失敗);
+        } finally {
+            Resources.setDefaultClassLoader(previousDefaultClassLoader);
         }
     }
 

@@ -15,6 +15,7 @@ const UsecaseApp = (() => {
     const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
     const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
     const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
+    const fqnToPackageId = (fqn) => Jig.util.fqnToId("package", fqn); // パッケージ見出しのHTML id
 
     // 有向エッジを Set でユニーク化するためのキー。FQNには現れない区切り文字を使用する。
     const makeEdgeKey = (from, to) => `${from} ${to}`;
@@ -503,57 +504,46 @@ const UsecaseApp = (() => {
             return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
         });
 
-        const byPackage = Jig.util.groupByPackageFqn(filteredItems, item => item.usecase.fqn);
-
-        byPackage.forEach((items, packageFqn) => {
-            const typeList = Jig.dom.createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: items.map(({usecase, methods}) => {
-                    const methodList = Jig.dom.createElement("ul", {
-                        className: "in-page-sidebar__links",
-                        children: methods.map(method =>
-                            Jig.dom.createElement("li", {
-                                className: "in-page-sidebar__item",
-                                children: [
-                                    Jig.dom.createElement("a", {
-                                        className: "in-page-sidebar__link in-page-sidebar__link--sub",
-                                        attributes: {href: "#" + fqnToMethodId(method.fqn)},
-                                        textContent: Jig.glossary.getMethodTerm(method.fqn).title
-                                    })
-                                ]
-                            })
-                        )
-                    });
-                    const header = Jig.dom.createElement("div", {
-                        className: "in-page-sidebar__item-header",
-                        children: [
-                            Jig.dom.createElement("a", {
-                                className: "in-page-sidebar__link",
-                                attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
-                                textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
-                            }),
-                            Jig.dom.sidebar.createToggle(methodList)
-                        ]
-                    });
-                    return Jig.dom.createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [header, methodList]
-                    });
-                })
-            });
-
-            const packageTitle = Jig.dom.createElement("p", {
-                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                children: [
-                    Jig.dom.createElement("span", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
-                    Jig.dom.sidebar.createToggle(typeList)
-                ]
-            });
-
-            sidebar.appendChild(Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [packageTitle, typeList]
-            }));
+        Jig.dom.sidebar.renderTreeSection(sidebar, {
+            // グループが「ユースケース」の1つしかなく見出しが冗長なため非表示にする
+            showTitle: false,
+            title: "usecase", // 表示されないが定義しておく
+            items: filteredItems,
+            getFqn: item => item.usecase.fqn,
+            renderLeaf: ({usecase, methods}) => {
+                const methodList = Jig.dom.createElement("ul", {
+                    className: "in-page-sidebar__links",
+                    children: methods.map(method =>
+                        Jig.dom.createElement("li", {
+                            className: "in-page-sidebar__item",
+                            children: [
+                                Jig.dom.createElement("a", {
+                                    className: "in-page-sidebar__link in-page-sidebar__link--sub",
+                                    attributes: {href: "#" + fqnToMethodId(method.fqn)},
+                                    textContent: Jig.glossary.getMethodTerm(method.fqn).title
+                                })
+                            ]
+                        })
+                    )
+                });
+                const header = Jig.dom.createElement("div", {
+                    className: "in-page-sidebar__item-header",
+                    children: [
+                        Jig.dom.createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
+                            textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
+                        }),
+                        Jig.dom.sidebar.createToggle(methodList)
+                    ]
+                });
+                return Jig.dom.createElement("li", {
+                    className: "in-page-sidebar__item",
+                    children: [header, methodList]
+                });
+            },
+            // クラスを直接持たない中間パッケージノードはメインに見出しがないためリンクなし
+            packageHref: node => node.items.length > 0 ? "#" + fqnToPackageId(node.fqn) : null
         });
     }
 
@@ -807,7 +797,10 @@ const UsecaseApp = (() => {
             if (cards.length === 0) return;
 
             const pkgTerm = Jig.glossary.getPackageTerm(packageFqn);
-            const pkgSection = Jig.dom.createElement("section", {className: "package-section"});
+            const pkgSection = Jig.dom.createElement("section", {
+                id: fqnToPackageId(packageFqn),
+                className: "package-section"
+            });
 
             const header = Jig.dom.createElement("header", {
                 className: "package-header",

@@ -155,6 +155,7 @@ globalThis.Jig.util = (() => {
 
     /**
      * items をパッケージFQN単位でグループ化する。
+     * パッケージのないFQN（ドットなし）は "(default)" にグループ化される。
      * @template T
      * @param {T[]} items
      * @param {function(T): string} getFqn - アイテムのFQNを返す関数
@@ -163,12 +164,54 @@ globalThis.Jig.util = (() => {
     function groupByPackageFqn(items, getFqn) {
         const byPackage = new Map();
         items.forEach(item => {
-            const fqn = getFqn(item);
-            const dotIdx = fqn.lastIndexOf('.');
-            const pkg = dotIdx === -1 ? '' : fqn.slice(0, dotIdx);
-            pushToMap(byPackage, pkg, item);
+            pushToMap(byPackage, getPackageFqnFromTypeFqn(getFqn(item)), item);
         });
         return byPackage;
+    }
+
+    /**
+     * items の型FQNからパッケージ階層ツリーを構築する。
+     * 各itemのパッケージFQNから最上位セグメントまでの中間パッケージノードを補完して親子連結する。
+     * パッケージのないFQN（ドットなし）は "(default)" ノードに属する。
+     *
+     * @template T
+     * @param {T[]} items
+     * @param {function(T): string} getFqn - アイテムの型FQNを返す関数
+     * @returns {{fqn: string, items: T[], children: Object[]}[]} ルートノード配列（fqn昇順、childrenもfqn昇順）
+     */
+    function buildPackageTree(items, getFqn) {
+        const nodes = new Map();
+        const ensureNode = (fqn) => {
+            if (!nodes.has(fqn)) nodes.set(fqn, {fqn, items: [], children: []});
+            return nodes.get(fqn);
+        };
+        const roots = new Map();
+        items.forEach(item => {
+            const fqn = getFqn(item);
+            const packageFqn = getPackageFqnFromTypeFqn(fqn);
+            ensureNode(packageFqn).items.push(item);
+
+            let currentFqn = packageFqn;
+            while (true) {
+                const parentIdx = currentFqn.lastIndexOf('.');
+                if (parentIdx === -1) {
+                    roots.set(currentFqn, nodes.get(currentFqn));
+                    break;
+                }
+                const parentFqn = currentFqn.slice(0, parentIdx);
+                const parentExisted = nodes.has(parentFqn);
+                const parent = ensureNode(parentFqn);
+                const child = nodes.get(currentFqn);
+                if (parent.children.includes(child)) break;
+                parent.children.push(child);
+                // 親が既存なら祖先への連結は完了している
+                if (parentExisted) break;
+                currentFqn = parentFqn;
+            }
+        });
+        const sortByFqn = nodeList => nodeList.sort((a, b) => a.fqn.localeCompare(b.fqn));
+        nodes.forEach(node => sortByFqn(node.children));
+        return sortByFqn([...roots.values()]);
     }
 
     return {
@@ -183,6 +226,7 @@ globalThis.Jig.util = (() => {
         pushToMap,
         addToSetMap,
         groupByPackageFqn,
+        buildPackageTree,
     }
 })();
 
@@ -304,6 +348,9 @@ globalThis.Jig.data = (() => {
         },
         getTerm(fqn) {
             return globalThis.glossaryData?.terms?.[fqn];
+        },
+        getSourcePath(fqn) {
+            return globalThis.glossaryData?.sourcePaths?.[fqn];
         },
     };
 
@@ -484,14 +531,15 @@ globalThis.Jig.glossary = (() => {
     /**
      * 型/パッケージ/メソッド等のFQNからソース（GitHub等）へのリンク要素を生成する。
      * sourcePath と blobUrlPrefix が揃う場合のみ要素を返し、それ以外は null。
-     * メソッドFQN等で用語が見つからない場合は型FQNにフォールバックして解決する。
+     * メソッドFQNは型FQNにフォールバックして解決する。
      * @param {string} fqn
      * @return {HTMLElement | null}
      */
     function sourceLink(fqn) {
         const blobUrlPrefix = globalThis.Jig.data.summary.getGit()?.blobUrlPrefix;
         if (!blobUrlPrefix) return null;
-        const sourcePath = findTerm(fqn)?.sourcePath ?? findTerm(fqn.split('#')[0])?.sourcePath;
+        const getSourcePath = globalThis.Jig.data.glossary.getSourcePath;
+        const sourcePath = getSourcePath(fqn) ?? getSourcePath(fqn.split('#')[0]);
         if (!sourcePath) return null;
         return globalThis.Jig.dom.createElement("a", {
             className: "source-link",
@@ -952,6 +1000,13 @@ globalThis.Jig.dom = (() => {
 
     // --- Sidebar ---
 
+    // 折りたたみ状態の表現（hiddenクラスとトグルのaria）を一箇所で扱う
+    function setSidebarListExpanded(list, toggle, expanded) {
+        list.classList.toggle("in-page-sidebar__links--hidden", !expanded);
+        toggle.setAttribute("aria-expanded", String(expanded));
+        toggle.setAttribute("aria-label", expanded ? "折りたたむ" : "展開");
+    }
+
     function createSidebarToggle(targetEl) {
         const toggle = createElement("button", {
             className: "in-page-sidebar__toggle",
@@ -959,9 +1014,7 @@ globalThis.Jig.dom = (() => {
         });
         toggle.addEventListener("click", () => {
             const collapsing = toggle.getAttribute("aria-expanded") === "true";
-            toggle.setAttribute("aria-expanded", String(!collapsing));
-            toggle.setAttribute("aria-label", collapsing ? "展開" : "折りたたむ");
-            targetEl.classList.toggle("in-page-sidebar__links--hidden", collapsing);
+            setSidebarListExpanded(targetEl, toggle, !collapsing);
         });
         return toggle;
     }
@@ -973,61 +1026,241 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function createSection(title, items, {collapsible = false} = {}) {
+    /**
+     * サイドバーのリーフ（リンク1つのli）を生成する
+     * @param {string} href
+     * @param {string} label
+     */
+    function createSidebarLeaf(href, label) {
+        return createElement("li", {
+            className: "in-page-sidebar__item",
+            children: [
+                createElement("a", {
+                    className: "in-page-sidebar__link",
+                    attributes: {href},
+                    textContent: label
+                })
+            ]
+        });
+    }
+
+    function createSection(items) {
         if (!items || items.length === 0) return null;
 
         const links = createElement("ul", {
             className: "in-page-sidebar__links",
-            children: items.map(({id, label}) => createElement("li", {
-                className: "in-page-sidebar__item",
-                children: [
-                    createElement("a", {
-                        className: "in-page-sidebar__link",
-                        attributes: {href: "#" + id},
-                        textContent: label
-                    })
-                ]
-            }))
+            children: items.map(({id, label}) => createSidebarLeaf("#" + id, label))
         });
-
-        const titleEl = !title ? null
-            : collapsible ? buildCollapsibleTitle(title, links)
-            : i18nText("p", title, {className: "in-page-sidebar__title"});
 
         return createElement("section", {
             className: "in-page-sidebar__section",
-            children: [titleEl, links]
+            children: [links]
         });
     }
 
-    function renderSection(container, title, items, options) {
+    function renderSection(container, items) {
         if (!container) return;
-        const section = createSection(title, items, options);
+        const section = createSection(items);
         if (section) {
             container.appendChild(section);
         }
     }
 
-    function renderPackageGrouped(container, byPackage, buildListItems, {titleClass} = {}) {
-        const packageTitleClass = ["in-page-sidebar__title", "in-page-sidebar__title--collapsible", titleClass]
-            .filter(Boolean).join(" ");
-        byPackage.forEach((items, packageFqn) => {
-            const typeList = createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: buildListItems(items)
-            });
-            const packageTitle = createElement("p", {
-                className: packageTitleClass,
+    /**
+     * サイドバーのツリーセクションを描画する。3種類の要素で構成する:
+     * - グループ: ページ内の大きな塊（例: リクエストハンドラ）。折りたたみ可能で、背景色で他と区別する
+     * - パッケージ: FQNの1階層。折りたたみと、packageHref によるメインセクションへのリンクを持つ。
+     *   用語のない単一子パッケージ（item無し）は省略し、最深のパッケージのみ表示する
+     * - リーフ: renderLeaf で描画されるアイテム（クラスやメソッド）
+     *
+     * items が空の場合は何も描画しない。
+     *
+     * @template T
+     * @param {Element} container
+     * @param {Object} options
+     * @param {string} options.title - グループ名
+     * @param {T[]} options.items
+     * @param {function(T): string} options.getFqn - itemの型FQNを返す関数
+     * @param {function(T): Element} options.renderLeaf - リーフのli要素を生成する関数
+     * @param {function({fqn: string, items: T[], children: Object[]}): (string|null)} [options.packageHref]
+     *        パッケージノードのリンク先を返す関数。nullを返すとリンクなしのラベルになる
+     * @param {boolean} [options.showTitle=true] - falseの場合、グループ見出し（背景色・積み重ね
+     *        ピン留め含む）を描画せず、パッケージ階層のulを直接containerへ追加する。
+     *        グループが1つしかなく見出しが冗長なページで使う
+     */
+    function renderTreeSection(container, {title, items, getFqn, renderLeaf, packageHref, showTitle = true}) {
+        if (!container || !items || items.length === 0) return;
+        const glossary = globalThis.Jig.glossary;
+        const roots = globalThis.Jig.util.buildPackageTree(items, getFqn);
+
+        function renderNode(node) {
+            // 用語のない単一子パッケージ（item無し）は省略し、最深のパッケージのみ表示する
+            let current = node;
+            while (current.children.length === 1 && current.items.length === 0 && !glossary.findTerm(current.fqn)) {
+                current = current.children[0];
+            }
+
+            const childList = createElement("ul", {className: "in-page-sidebar__links"});
+            current.children.forEach(child => childList.appendChild(renderNode(child)));
+            current.items.forEach(item => childList.appendChild(renderLeaf(item)));
+
+            const labelText = glossary.getPackageTerm(current.fqn).title;
+            const href = packageHref ? packageHref(current) : null;
+            const label = href
+                ? createElement("a", {
+                    className: "in-page-sidebar__package-link",
+                    attributes: {href},
+                    textContent: labelText
+                })
+                : createElement("span", {textContent: labelText});
+
+            return createElement("li", {
+                className: "in-page-sidebar__item",
                 children: [
-                    createElement("span", {textContent: globalThis.Jig.glossary.getPackageTerm(packageFqn).title}),
-                    createSidebarToggle(typeList)
+                    createElement("div", {
+                        className: "in-page-sidebar__item-header",
+                        children: [label, createSidebarToggle(childList)]
+                    }),
+                    childList
                 ]
             });
-            container.appendChild(createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [packageTitle, typeList]
-            }));
+        }
+
+        const list = createElement("ul", {className: "in-page-sidebar__links"});
+        if (roots.length === 1 && roots[0].fqn === "(default)" && roots[0].children.length === 0) {
+            // パッケージを持たない項目（テーブル名など）だけの場合は、階層を挟まずリーフを直接並べる
+            roots[0].items.forEach(item => list.appendChild(renderLeaf(item)));
+        } else {
+            roots.forEach(root => list.appendChild(renderNode(root)));
+        }
+
+        if (!showTitle) {
+            // グループが1つしかなく見出しが冗長な場合、見出し・背景色・ピン留めなしで
+            // パッケージ階層のulをそのまま追加する
+            container.appendChild(list);
+            return;
+        }
+
+        const titleEl = buildCollapsibleTitle(title, list);
+        titleEl.classList.add("in-page-sidebar__title--group");
+        const toggle = titleEl.querySelector(".in-page-sidebar__toggle");
+
+        container.appendChild(createElement("section", {
+            className: "in-page-sidebar__section in-page-sidebar__section--group",
+            children: [titleEl, list]
+        }));
+
+        const scroller = sidebarScrollerOf(container);
+        recomputeGroupTitleOffsets(scroller);
+        initGroupTitlePinning(scroller, titleEl, toggle, list);
+    }
+
+    /**
+     * 開閉可能な子リストを持たない、単一リンクのグループをサイドバーに追加する。
+     * 他のグループ（renderTreeSection）と同じ背景色・積み重ねピン留めの並びにしたい、
+     * ツリー展開の必要がない項目（例: 単一ページへのリンクのみのセクション）で使う。
+     *
+     * @param {Element} container
+     * @param {Object} options
+     * @param {string} options.title - リンクのラベル
+     * @param {string} options.href
+     */
+    function renderLinkGroup(container, {title, href}) {
+        if (!container) return;
+
+        const titleEl = createElement("p", {
+            className: "in-page-sidebar__title in-page-sidebar__title--group",
+            children: [createElement("a", {
+                className: "in-page-sidebar__link",
+                attributes: {href},
+                textContent: title
+            })]
         });
+
+        container.appendChild(createElement("section", {
+            className: "in-page-sidebar__section in-page-sidebar__section--group",
+            children: [titleEl]
+        }));
+
+        recomputeGroupTitleOffsets(sidebarScrollerOf(container));
+    }
+
+    // グループ見出しがスクロール範囲外に押し出された場合も下部に積み重なって留まるよう、
+    // スクロール領域内の全グループ見出しの積み重ねオフセットを再計算する
+    function recomputeGroupTitleOffsets(scroller) {
+        const groupTitles = [...scroller.querySelectorAll(".in-page-sidebar__title--group")];
+        groupTitles.forEach((groupTitle, index) => {
+            groupTitle.style.bottom = `calc(${groupTitles.length - 1 - index} * var(--group-title-height))`;
+        });
+    }
+
+    const GROUP_TITLE_PINNED_CLASS = "in-page-sidebar__title--pinned";
+    // ピン留めのscrollリスナーをスクロール領域ごとに1つに保つ
+    const pinningInitializedScrollers = new WeakSet();
+
+    // グループ見出しの sticky / ピン留めの基準となるスクロール領域。
+    // 描画先がスクロール領域内のネストした要素でも動作するよう closest で解決する
+    function sidebarScrollerOf(container) {
+        return container.closest(".in-page-sidebar__list") ?? container;
+    }
+
+    function isContentBelowView(scroller, list) {
+        if (typeof scroller.getBoundingClientRect !== "function") return false;
+        const scrollerRect = scroller.getBoundingClientRect();
+        if (!scrollerRect.height) return false;
+        if (!list || list.classList.contains("in-page-sidebar__links--hidden")) return false;
+        return list.getBoundingClientRect().top >= scrollerRect.bottom - 1;
+    }
+
+    // スクロール領域内の全グループ見出しのピン留め状態を更新する。
+    // 見出しの次の要素がそのグループの内容リスト（renderTreeSectionの構造）
+    function updatePinnedStates(scroller) {
+        scroller.querySelectorAll(".in-page-sidebar__title--group").forEach(titleEl => {
+            titleEl.classList.toggle(GROUP_TITLE_PINNED_CLASS, isContentBelowView(scroller, titleEl.nextElementSibling));
+        });
+    }
+
+    /**
+     * グループ内容がスクロール範囲外（下）にあり見出しだけが下部に留まっている状態を
+     * 「閉じている」扱いにする。閉じた見た目のクラスを付け、クリックで展開して
+     * グループが見える位置までスクロールする。
+     */
+    function initGroupTitlePinning(scroller, titleEl, toggle, list) {
+        // ピン留め中はトグルの折りたたみ動作より優先するため、captureで処理する
+        titleEl.addEventListener("click", (e) => {
+            const collapsed = list.classList.contains("in-page-sidebar__links--hidden");
+            const pinned = titleEl.classList.contains(GROUP_TITLE_PINNED_CLASS);
+            e.stopPropagation();
+
+            if (!collapsed && !pinned) {
+                // 内容が見えている状態でのクリックは折りたたむ（展開時のクリックと対称にする）
+                setSidebarListExpanded(list, toggle, false);
+                updatePinnedStates(scroller);
+                return;
+            }
+
+            if (collapsed) {
+                setSidebarListExpanded(list, toggle, true);
+            }
+
+            // グループ見出しが上部に来る位置までスクロールして内容を見せる
+            if (typeof scroller.getBoundingClientRect === "function") {
+                const scrollerRect = scroller.getBoundingClientRect();
+                const titleRect = titleEl.getBoundingClientRect();
+                const listGap = typeof globalThis.getComputedStyle === "function"
+                    ? parseFloat(globalThis.getComputedStyle(scroller).rowGap) || 0
+                    : 0;
+                scroller.scrollTop += list.getBoundingClientRect().top
+                    - scrollerRect.top - titleRect.height - listGap;
+            }
+            updatePinnedStates(scroller);
+        }, true);
+
+        if (!pinningInitializedScrollers.has(scroller)) {
+            pinningInitializedScrollers.add(scroller);
+            scroller.addEventListener("scroll", () => updatePinnedStates(scroller));
+        }
+        updatePinnedStates(scroller);
     }
 
     function initSidebarTextFilter(inputId, onChange) {
@@ -1041,11 +1274,11 @@ globalThis.Jig.dom = (() => {
         let el = link.parentElement;
         while (el && el !== sidebar) {
             if (el.classList.contains("in-page-sidebar__links--hidden")) {
-                el.classList.remove("in-page-sidebar__links--hidden");
                 const toggle = el.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
                 if (toggle) {
-                    toggle.setAttribute("aria-expanded", "true");
-                    toggle.setAttribute("aria-label", "折りたたむ");
+                    setSidebarListExpanded(el, toggle, true);
+                } else {
+                    el.classList.remove("in-page-sidebar__links--hidden");
                 }
             }
             el = el.parentElement;
@@ -1061,26 +1294,49 @@ globalThis.Jig.dom = (() => {
         container.scrollTop += (linkRect.top + linkRect.bottom) / 2 - (containerRect.top + containerRect.bottom) / 2;
     }
 
-    // location.hash に対応するサイドバーリンクをハイライトし、折りたたまれた祖先を展開する。
+    // 指定したhashに対応するサイドバーリンクをハイライトし、折りたたまれた祖先を展開する。
     // scrollIntoSidebar が true なら該当リンクをサイドバー内に表示する。
+    function applyActiveSidebarLink(sidebar, hash, scrollIntoSidebar = false) {
+        sidebar.querySelectorAll(".in-page-sidebar__link--active")
+            .forEach(el => el.classList.remove("in-page-sidebar__link--active"));
+
+        if (!hash || hash === "#") return;
+
+        // 同一アンカーへのリンクが複数グループに現れることがあるため、全て同期する
+        const links = [
+            ...sidebar.querySelectorAll(".in-page-sidebar__link"),
+            ...sidebar.querySelectorAll(".in-page-sidebar__package-link"),
+        ].filter(a => a.getAttribute("href") === hash);
+        if (links.length === 0) return;
+
+        links.forEach(link => {
+            link.classList.add("in-page-sidebar__link--active");
+            expandSidebarAncestors(sidebar, link);
+        });
+        if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, links[0]);
+    }
+
+    // location.hash に対応するサイドバーリンクをハイライトする。hashchangeやブラウザの戻る/進み、
+    // 初回ロード時の同期に使う
     function syncActiveSidebarLink(scrollIntoSidebar = false) {
         if (typeof document === "undefined") return;
         const sidebar = document.querySelector(".in-page-sidebar");
         if (!sidebar) return;
+        applyActiveSidebarLink(sidebar, location.hash, scrollIntoSidebar);
+    }
 
-        sidebar.querySelectorAll(".in-page-sidebar__link--active")
-            .forEach(el => el.classList.remove("in-page-sidebar__link--active"));
-
-        const hash = location.hash;
-        if (!hash || hash === "#") return;
-
-        const link = [...sidebar.querySelectorAll(".in-page-sidebar__link")]
-            .find(a => a.getAttribute("href") === hash);
-        if (!link) return;
-
-        link.classList.add("in-page-sidebar__link--active");
-        expandSidebarAncestors(sidebar, link);
-        if (scrollIntoSidebar) scrollSidebarLinkIntoView(sidebar, link);
+    // サイドバー内のリンククリックを即座にハイライトする。移動先のレンダリングが重い場合、
+    // hashchangeの発火（≒描画完了後）を待つとハイライトが遅れて見えるため、
+    // クリック時点でリンク自身のhrefを元に先行してハイライトする。
+    // hashchangeによる同期（syncActiveSidebarLink）はブラウザの戻る/進み用に引き続き動作する
+    function initSidebarClickHighlight(sidebar) {
+        if (!sidebar || sidebar.dataset.clickHighlightInitialized) return;
+        sidebar.dataset.clickHighlightInitialized = "true";
+        sidebar.addEventListener("click", (e) => {
+            const link = e.target.closest("a[href^='#']");
+            if (!link) return;
+            applyActiveSidebarLink(sidebar, link.getAttribute("href"));
+        });
     }
 
     function initSidebarCollapseBtn() {
@@ -1377,7 +1633,7 @@ globalThis.Jig.dom = (() => {
         // 動的挿入された data-i18n 要素は jig-i18n.js の MutationObserver が初期 locale に追従させる
 
         if (typeof window !== "undefined") {
-            // ページ内リンクやブラウザの戻る/進みに合わせてサイドバーの該当箇所を表示する
+            // ブラウザの戻る/進みに合わせてサイドバーの該当箇所を表示する
             window.addEventListener("hashchange", () => syncActiveSidebarLink(true));
             // 初回ロード時のサイドバー描画はこのあとの DOMContentLoaded ハンドラで行われるため、
             // 描画完了後に同期する
@@ -1386,6 +1642,10 @@ globalThis.Jig.dom = (() => {
             } else {
                 syncActiveSidebarLink(true);
             }
+        }
+        if (typeof document !== "undefined") {
+            // サイドバー内リンクのクリックは、移動先の描画完了（hashchange）を待たずに即座にハイライトする
+            initSidebarClickHighlight(document.querySelector(".in-page-sidebar"));
         }
     }
 
@@ -1424,12 +1684,15 @@ globalThis.Jig.dom = (() => {
         },
         sidebar: {
             section: createSection,
+            leaf: createSidebarLeaf,
             renderSection,
-            renderPackageGrouped,
+            renderTreeSection,
+            renderLinkGroup,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
             syncActiveLink: syncActiveSidebarLink,
+            initClickHighlight: initSidebarClickHighlight,
         },
         tab: {
             buildSection: buildTabSection,
@@ -2397,11 +2660,10 @@ globalThis.Jig.mermaid = (() => {
             diagram.classList.remove("too-large");
             diagram.innerHTML = source;
 
-            const renderResult = renderMermaidDiagram(diagram);
+            const container = ensureMermaidDiagramContainer(diagram) || diagram;
+            const renderResult = withRenderingIndicator(container, () => renderMermaidDiagram(diagram));
             if (renderResult && typeof renderResult.catch === "function") {
-                renderResult.catch(() => {
-                    flashButtonLabel(button, "描画に失敗しました");
-                });
+                renderResult.catch(() => flashButtonLabel(button, "描画に失敗しました"));
             }
         }
 
@@ -2446,6 +2708,41 @@ globalThis.Jig.mermaid = (() => {
 
             container.appendChild(actions);
             diagram.appendChild(container);
+        }
+
+        function setRendering(container, isRendering) {
+            if (!container || !container.classList) return;
+            container.classList.toggle("is-rendering", isRendering);
+        }
+
+        /**
+         * container の is-rendering を work() の実行中 true にし、成功・失敗・同期例外
+         * いずれの場合も完了時に確実に false へ戻す。work() は同期値・undefined・Promise の
+         * いずれを返してもよい。同期例外は is-rendering を戻したうえで呼び出し元へ再送出する。
+         *
+         * @param {Element} container
+         * @param {function(): *} work
+         * @param {function(): boolean} [isStale] - 完了時に true を返す場合、より新しい描画に
+         *        置き換わっているとみなし is-rendering を外さない（世代管理との競合を避ける）
+         */
+        function withRenderingIndicator(container, work, isStale) {
+            setRendering(container, true);
+            const clear = () => {
+                if (!isStale || !isStale()) setRendering(container, false);
+            };
+            let result;
+            try {
+                result = work();
+            } catch (err) {
+                clear();
+                throw err;
+            }
+            if (result && typeof result.then === "function") {
+                result.then(clear, clear);
+            } else {
+                clear();
+            }
+            return result;
         }
 
         function ensureMermaidDiagramContainer(targetEl) {
@@ -2529,6 +2826,32 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
+        function openMermaidSvgInNewTab(container, button) {
+            const svg = findRenderedMermaidSvg(container);
+            if (!svg) {
+                flashButtonLabel(button, "SVG未生成");
+                return;
+            }
+
+            const serializer = new XMLSerializer();
+            const svgText = serializer.serializeToString(svg);
+            const blob = new Blob([svgText], {type: "image/svg+xml;charset=utf-8"});
+            const url = URL.createObjectURL(blob);
+            const newTab = window.open(url, "_blank");
+            if (!newTab) {
+                flashButtonLabel(button, "ポップアップがブロックされました");
+            }
+            // 新しいタブの読み込みには時間がかかるため、即時revokeせず遅延して解放する
+            window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+        }
+
+        function ensureZoomButton(container) {
+            const button = ensureMermaidControlButton(container, "mermaid-zoom-button", "Open in New Tab", "⤢");
+            if (!button) return null;
+            button.onclick = () => openMermaidSvgInNewTab(container, button);
+            return button;
+        }
+
         function ensureDirectionButton(container, currentDirection, onUpdate) {
             if (!container || !currentDirection) return null;
             const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
@@ -2601,7 +2924,14 @@ globalThis.Jig.mermaid = (() => {
             };
         }
 
-        function renderMermaidNode(diagramEl, source, maxEdges, container) {
+        // 「上限を上げて描画する」等のユーザー起因の再描画ボタンから使う。
+        // isStale が与えられれば、完了時により新しい世代の描画に置き換わっていないか確認してから
+        // is-rendering を外す（同一 container を共有する renderWithControls の描画と競合しうるため）。
+        function renderMermaidNodeTracked(diagramEl, source, maxEdges, container, isStale) {
+            return withRenderingIndicator(container, () => renderMermaidNode(diagramEl, source, maxEdges, container, isStale), isStale);
+        }
+
+        function renderMermaidNode(diagramEl, source, maxEdges, container, isStale) {
             if (!diagramEl || !globalThis.mermaid || typeof globalThis.mermaid.run !== "function") return;
 
             const text = source != null ? String(source) : "";
@@ -2630,7 +2960,7 @@ globalThis.Jig.mermaid = (() => {
                             const actionEdges = Math.max(edgeCount, DEFAULT_MAX_EDGES * 2);
                             renderTooLargeDiagram(diagramEl, text, {
                                 messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
-                                onRender: () => renderMermaidNode(diagramEl, text, actionEdges, container)
+                                onRender: () => renderMermaidNodeTracked(diagramEl, text, actionEdges, container, isStale)
                             });
                         } else {
                             diagramEl.style.display = "none";
@@ -2646,7 +2976,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle} = {}) {
+        function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle, showControls = true} = {}) {
             if (!targetEl) return;
 
             let diagramEl = null;
@@ -2674,24 +3004,29 @@ globalThis.Jig.mermaid = (() => {
 
             const renderDiagram = (newDirection) => {
                 const generation = ++renderGeneration;
+                setRendering(container, true);
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
-                ensureCopySourceButton(container, currentSource);
-                ensureDownloadButton(container);
-                if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
-                    ensureDirectionButton(container, newDirection, renderDiagram);
-                }
-                if (enableLabelToggle) {
-                    ensureLabelToggleButton(container, showPhysicalName, () => {
-                        showPhysicalName = !showPhysicalName;
-                        renderDiagram(newDirection);
-                    });
+                if (showControls) {
+                    ensureCopySourceButton(container, currentSource);
+                    ensureDownloadButton(container);
+                    ensureZoomButton(container);
+                    if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
+                        ensureDirectionButton(container, newDirection, renderDiagram);
+                    }
+                    if (enableLabelToggle) {
+                        ensureLabelToggleButton(container, showPhysicalName, () => {
+                            showPhysicalName = !showPhysicalName;
+                            renderDiagram(newDirection);
+                        });
+                    }
                 }
 
                 if (isTooLarge(currentSource)) {
                     diagramEl.style.display = "";
                     setEdgeWarning(container, {visible: false});
                     renderTooLargeDiagram(diagramEl, currentSource);
+                    setRendering(container, false);
                     return;
                 }
 
@@ -2700,8 +3035,9 @@ globalThis.Jig.mermaid = (() => {
                     setEdgeWarning(container, {visible: false});
                     renderTooLargeDiagram(diagramEl, currentSource, {
                         messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
-                        onRender: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
+                        onRender: () => renderMermaidNodeTracked(diagramEl, currentSource, edgeCount, container, () => generation !== renderGeneration)
                     });
+                    setRendering(container, false);
                     return;
                 }
 
@@ -2716,11 +3052,19 @@ globalThis.Jig.mermaid = (() => {
                     setEdgeWarning(container, {visible: false});
                     diagramEl.innerHTML = cachedSvg;
                     diagramEl.setAttribute("data-processed", "true");
+                    setRendering(container, false);
                     return;
                 }
 
-                const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
+                const result = renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container, () => generation !== renderGeneration);
+                const finishRendering = () => {
+                    if (generation === renderGeneration) setRendering(container, false);
+                };
+                // 描画が成功した場合のみキャッシュする。失敗時にキャッシュすると、
+                // 壊れた内容が data-processed="true" のまま保存され、次回以降その
+                // ソースを警告なしに復元してしまう。
                 const cacheRendered = () => {
+                    finishRendering();
                     // 後続の描画が始まっていれば diagramEl.innerHTML は別ソースの SVG になっている。
                     // 旧ソースのキーで誤キャッシュしないよう、最新の描画でなければ何もしない。
                     if (generation !== renderGeneration) return;
@@ -2729,7 +3073,7 @@ globalThis.Jig.mermaid = (() => {
                     }
                 };
                 if (result && typeof result.then === "function") {
-                    result.then(cacheRendered).catch(() => {});
+                    result.then(cacheRendered).catch(finishRendering);
                 } else {
                     cacheRendered();
                 }
@@ -2793,14 +3137,24 @@ globalThis.Jig.mermaid = (() => {
                     return;
                 }
 
+                const diagramContainer = ensureMermaidDiagramContainer(diagram) || diagram;
                 diagram.innerHTML = source;
-                const renderResult = renderMermaidDiagram(diagram);
                 const handleFinish = () => {
                     rendered.add(diagram);
                     queued.delete(diagram);
                     isRendering = false;
                     processRenderQueue();
                 };
+                // mermaid.run が同期的に例外を投げても is-rendering が残留したままキューが
+                // 永久に止まらないよう、例外時も handleFinish でキューを進める。
+                let renderResult;
+                try {
+                    renderResult = withRenderingIndicator(diagramContainer, () => renderMermaidDiagram(diagram));
+                } catch (err) {
+                    console.error('Mermaid rendering error:', err);
+                    handleFinish();
+                    return;
+                }
                 if (renderResult && typeof renderResult.then === "function") {
                     renderResult.then(handleFinish).catch(handleFinish);
                 } else {
@@ -2863,7 +3217,8 @@ globalThis.Jig.mermaid = (() => {
             renderTooLargeDiagram,
             renderWithControls,
             setupLazyMermaidRender,
-            initializeMermaid
+            initializeMermaid,
+            setRendering
         }
     })();
 
@@ -2919,6 +3274,7 @@ globalThis.Jig.mermaid = (() => {
             if (!container || typeof renderFn !== 'function') return;
 
             diagramRegistry.push({container, renderFn});
+            Jig.mermaid.render.setRendering(container, true);
 
             // IntersectionObserver で自動レンダリング（各コンテナごとに独立した observer）
             if ('IntersectionObserver' in window) {
@@ -2961,6 +3317,7 @@ globalThis.Jig.mermaid = (() => {
                     } else {
                         // 表示範囲外は削除のみで、スクロール時に自動再レンダリング
                         container.innerHTML = "";
+                        Jig.mermaid.render.setRendering(container, true);
                         renderedContainers.delete(container);
                     }
                 });
@@ -3027,7 +3384,7 @@ globalThis.Jig.mermaid = (() => {
             code.parentElement.replaceWith(container);
             diagram.register(container, () => {
                 container.innerHTML = "";
-                render.renderWithControls(container, () => source);
+                render.renderWithControls(container, () => source, {showControls: false});
             });
         });
     }
@@ -3261,7 +3618,6 @@ globalThis.Jig.i18n = (() => {
             "クラス": "Class",
             "属性情報を表示する": "Show attributes",
             "CSV出力": "Export CSV",
-            "用語一覧": "Terms",
             "絞り込み": "Filter",
             // タブ見出し
             "パッケージ関連図": "Package relation diagram",

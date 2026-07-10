@@ -1,0 +1,187 @@
+/* 出力インタフェース概要 */
+
+.outbound-interface .outbound-group-list {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+    padding-bottom: 20px;
+    align-content: start;
+}
+
+.outbound-interface .jig-card--type > h3 {
+    margin: 0;
+}
+
+.outbound-interface .jig-card--type > .fully-qualified-name {
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+.outbound-interface .jig-card--type > .weak {
+    margin-top: 4px;
+    margin-bottom: 10px;
+}
+
+.outbound-interface .outbound-operation-list {
+    display: grid;
+    gap: 10px;
+}
+
+.outbound-interface .outbound-operation-list-summary {
+    cursor: pointer;
+    padding: 6px 0;
+    color: #31455f;
+    font-weight: bold;
+}
+
+.outbound-interface .outbound-operation-item {
+    margin-top: 0;
+}
+
+.outbound-interface .outbound-operation-item > h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1b3a66;
+}
+
+.outbound-interface .outbound-crud-panel {
+    overflow: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.outbound-interface .outbound-visibility-panel {
+    padding: 6px;
+    background-color: #eef4ff;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+.outbound-interface .outbound-visibility-panel__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.outbound-interface .outbound-visibility-panel__group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.outbound-interface .outbound-visibility-panel__group-label {
+    margin: 0 0 2px 0;
+    font-size: var(--jig-font-size-xs);
+    color: #6b7280;
+    font-weight: bold;
+}
+
+.outbound-interface .outbound-visibility-panel label {
+    cursor: pointer;
+}
+
+.outbound-interface .outbound-visibility-panel .checkbox-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 2px solid #aac4f0;
+    padding-left: 6px;
+}
+
+.outbound-interface .outbound-visibility-panel .checkbox-child {
+    padding-left: 8px;
+    font-size: var(--jig-font-size-sm);
+    color: #374151;
+}
+
+.outbound-interface .outbound-visibility-panel__group--grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 4px 12px;
+    align-items: center;
+}
+
+.outbound-interface .crud-table {
+    border-collapse: collapse;
+    width: auto;
+    min-width: 100%;
+}
+
+.outbound-interface .crud-table th, .outbound-interface .crud-table td {
+    border: 1px solid #d4d9e5;
+    padding: 8px;
+    text-align: left;
+}
+
+.outbound-interface .crud-table th {
+    white-space: normal;
+    word-break: break-all;
+    min-width: 120px;
+    background-color: #e6ecff;
+    color: #1b3a66;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.outbound-interface .crud-table td {
+    white-space: nowrap;
+}
+
+.outbound-interface .crud-table th:first-child,
+.outbound-interface .crud-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: #fff; /* 通常のセルは白背景 */
+    border-right: 2px solid #d4d9e5;
+    min-width: 200px;
+}
+
+.outbound-interface .crud-table th:first-child {
+    z-index: 3;
+    background-color: #e6ecff; /* 左上角はヘッダー色 */
+}
+
+.outbound-interface .port-group-row td:first-child {
+    background-color: #f3f6ff; /* ポート行の1列目 */
+}
+
+.outbound-interface .operation-row td:first-child {
+    background-color: #fff; /* 操作行の1列目 */
+}
+
+.outbound-interface .crud-cell {
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.outbound-interface .port-group-row {
+    background-color: #f3f6ff !important;
+    font-weight: bold;
+}
+
+.outbound-interface .port-group-cell::before {
+    content: '▶';
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.2s;
+    font-size: var(--jig-font-size-xs);
+}
+
+.outbound-interface .port-group-row.is-expanded .port-group-cell::before {
+    transform: rotate(90deg);
+}
+
+.outbound-interface .operation-cell {
+    padding-left: 32px !important;
+    font-size: var(--jig-font-size-sm);
+    color: #555;
+}
+
+.outbound-interface .port-crud-cell {
+    color: #1b3a66;
+}

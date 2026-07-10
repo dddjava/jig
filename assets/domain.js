@@ -477,13 +477,14 @@ const DomainApp = (() => {
     // ----- DOM レンダリング -----
 
     /**
+     * トップレベルかどうかはたまたま親を持たないだけの違いでしかないため、
+     * ネストしたパッケージと同じ見た目（li > div.item-header）で描画する。
      * @param {PackageType} pkg
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {Map<string, DomainType>} typesMap
-     * @param {boolean} isTopLevel
      * @returns {HTMLElement}
      */
-    function renderPackageNavItem(pkg, childPackagesMap, typesMap, isTopLevel = false, kindsMemo = new Map()) {
+    function renderPackageNavItem(pkg, childPackagesMap, typesMap, kindsMemo = new Map()) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
         const mergedNames = [Jig.glossary.getPackageTerm(pkg.fqn).title];
@@ -503,19 +504,20 @@ const DomainApp = (() => {
         // 子パッケージを表示（統合後の currentPkg の直下のみ）
         const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
         childPackages.forEach(childPkg => {
-            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap, false, kindsMemo));
+            childList.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap, kindsMemo));
         });
 
         // 子タイプを表示
         currentPkg.types.forEach(child => {
             const domainType = typesMap?.get(child.fqn);
             const link = Jig.dom.createElement("a", {
-                attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
+                attributes: {
+                    href: "#" + Jig.util.fqnToId("domain", child.fqn),
+                    "data-kind": "クラス",
+                    "data-kind-char": Jig.dom.kind.badgeChar("クラス"),
+                },
                 className: "in-page-sidebar__link" + (domainType?.isDeprecated ? " deprecated" : ""),
-                children: [
-                    Jig.dom.kind.badgeElement("クラス"),
-                    Jig.dom.createElement("span", {textContent: Jig.glossary.getTypeTerm(child.fqn).title})
-                ]
+                textContent: Jig.glossary.getTypeTerm(child.fqn).title
             });
             childList.appendChild(Jig.dom.createElement("li", {
                 className: "in-page-sidebar__item",
@@ -530,40 +532,27 @@ const DomainApp = (() => {
 
         const summaryLink = Jig.dom.createElement("a", {
             className: "in-page-sidebar__link",
-            attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
-            children: [
-                Jig.dom.kind.badgeElement("パッケージ"),
-                Jig.dom.createElement("span", {textContent: mergedNames.join("/")})
-            ]
+            attributes: {
+                href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn),
+                "data-kind": "パッケージ",
+                "data-kind-char": Jig.dom.kind.badgeChar("パッケージ"),
+            },
+            textContent: mergedNames.join("/")
         });
         const headerChildren = [summaryLink, Jig.dom.sidebar.createToggle(childList)];
         const wrapperAttrs = {"data-kind-children": [...pkgKinds(currentPkg, childPackagesMap, typesMap, kindsMemo)].join(' ')};
 
-        if (isTopLevel) {
-            return Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                attributes: wrapperAttrs,
-                children: [
-                    Jig.dom.createElement("p", {
-                        className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                        children: headerChildren
-                    }),
-                    childList
-                ]
-            });
-        } else {
-            return Jig.dom.createElement("li", {
-                className: "in-page-sidebar__item",
-                attributes: wrapperAttrs,
-                children: [
-                    Jig.dom.createElement("div", {
-                        className: "in-page-sidebar__item-header",
-                        children: headerChildren
-                    }),
-                    childList
-                ]
-            });
-        }
+        return Jig.dom.createElement("li", {
+            className: "in-page-sidebar__item",
+            attributes: wrapperAttrs,
+            children: [
+                Jig.dom.createElement("div", {
+                    className: "in-page-sidebar__item-header",
+                    children: headerChildren
+                }),
+                childList
+            ]
+        });
     }
 
     /**
@@ -585,14 +574,17 @@ const DomainApp = (() => {
             });
         });
 
-        // トップレベルのパッケージのみを表示（直接の親を持たないもの）
+        // トップレベルのパッケージのみを表示（直接の親を持たないもの）。
+        // ネストしたパッケージと同じ見た目にするため、単一の ul にまとめる
         // pkgKinds の再帰計算結果は同一 render 中で何度も参照されるためメモ化を共有する
         const kindsMemo = new Map();
+        const list = Jig.dom.createElement("ul", {className: "in-page-sidebar__links"});
         packages.forEach(pkg => {
             if (!childPackageFqns.has(pkg.fqn)) {
-                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, true, kindsMemo));
+                list.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap, kindsMemo));
             }
         });
+        container.appendChild(list);
     }
 
     /**
@@ -1194,7 +1186,7 @@ const DomainApp = (() => {
 
         sidebar.querySelectorAll('div[data-kind]').forEach(div => {
             const link = div.querySelector('a');
-            const text = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
+            const text = (link?.textContent ?? '').toLowerCase();
             div.closest('li').style.display = text.includes(filterText) ? '' : 'none';
         });
 
@@ -1202,7 +1194,7 @@ const DomainApp = (() => {
             .reverse()
             .forEach(item => {
                 const link = item.querySelector('a');
-                const packageText = link ? (link.querySelector('span:last-child')?.textContent ?? link.textContent).toLowerCase() : '';
+                const packageText = (link?.textContent ?? '').toLowerCase();
                 const packageMatches = packageText.includes(filterText);
                 const childList = item.querySelector('ul');
                 const hasVisible = childList && [...childList.children].some(child =>

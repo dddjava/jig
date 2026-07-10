@@ -74,7 +74,7 @@ const GlossaryApp = (() => {
 
         list.innerHTML = "";
         const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
-        const section = Jig.dom.sidebar.section("用語一覧", items);
+        const section = Jig.dom.sidebar.section(items);
         if (!section) return;
 
         const links = section.querySelectorAll(".in-page-sidebar__link");

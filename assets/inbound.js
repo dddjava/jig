@@ -2,6 +2,7 @@ const InboundApp = (() => {
     const Jig = globalThis.Jig;
 
     const ADAPTER_ID_PREFIX = "adapter";
+    const PACKAGE_ID_PREFIX = "package";
     const SIMPLIFIED_CLASS = 'entrypoint-section--simplified';
 
     const TYPE_CONFIG = [
@@ -242,33 +243,35 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        Jig.dom.sidebar.renderSection(sidebar, null, [
+        Jig.dom.sidebar.renderSection(sidebar, [
             {id: "entrypoint-summary", label: "エントリーポイント一覧"},
             {id: "io-types", label: "入出力オブジェクト一覧"},
         ]);
 
         const filterText = state.sidebarFilterText.toLowerCase();
 
-        const filteredAdapters = adapters.filter(adapter => {
+        const visibleAdapters = adapters.filter(adapter => {
             if (!filterText) return true;
             return Jig.glossary.getTypeTerm(adapter.fqn).title.toLowerCase().includes(filterText);
         });
-        const byPackage = Jig.util.groupByPackageFqn(filteredAdapters, adapter => adapter.fqn);
 
-        Jig.dom.sidebar.renderPackageGrouped(sidebar, byPackage, pkgAdapters =>
-            pkgAdapters.map(adapter =>
-                Jig.dom.createElement("li", {
-                    className: "in-page-sidebar__item",
-                    children: [
-                        Jig.dom.createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn)},
-                            textContent: Jig.glossary.getTypeTerm(adapter.fqn).title
-                        })
-                    ]
-                })
-            )
-        );
+        // エントリーポイント種別ごとのグループ → パッケージ階層 → クラスのツリー
+        TYPE_CONFIG.forEach(({type, label}) => {
+            if (state.displayType !== 'all' && state.displayType !== type) return;
+            Jig.dom.sidebar.renderTreeSection(sidebar, {
+                title: label,
+                items: visibleAdapters.filter(adapter => adapter.entrypoints?.some(ep => ep.entrypointType === type)),
+                getFqn: adapter => adapter.fqn,
+                renderLeaf: adapter => Jig.dom.sidebar.leaf(
+                    "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
+                    Jig.glossary.getTypeTerm(adapter.fqn).title
+                ),
+                // クラスを直接持つパッケージのみメインに見出しがあるため、それ以外はリンクなし
+                packageHref: node => node.items.length > 0
+                    ? "#" + Jig.util.fqnToId(PACKAGE_ID_PREFIX, node.fqn)
+                    : null
+            });
+        });
     }
 
     function buildEntrypointItem(ep) {
@@ -506,66 +509,86 @@ const InboundApp = (() => {
         const summaryCard = renderSummaryTable(adapters);
         if (summaryCard) container.appendChild(summaryCard);
 
-        adapters.forEach(adapter => {
-            const typeTerm = Jig.glossary.getTypeTerm(adapter.fqn);
-
-            const jigCard = Jig.dom.card.type({
-                id: Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
-                title: typeTerm.title,
-                fqn: adapter.fqn,
-                titleSuffix: Jig.glossary.sourceLink(adapter.fqn)
+        // パッケージごとに見出しを置き、アダプターカードをまとめる。サイドバーのパッケージノードのリンク先になる
+        const byPackage = Jig.util.groupByPackageFqn(adapters, adapter => adapter.fqn);
+        [...byPackage.entries()]
+            .sort(([a], [b]) => a.localeCompare(b))
+            .forEach(([packageFqn, packageAdapters]) => {
+                container.appendChild(buildPackageHeading(packageFqn));
+                packageAdapters.forEach(adapter => container.appendChild(buildAdapterCard(adapter, usecaseData)));
             });
-
-            if (typeTerm.description) {
-                jigCard.appendChild(Jig.dom.createMarkdownElement(typeTerm.description));
-            }
-
-            if (adapter.classPath) {
-                jigCard.appendChild(Jig.dom.createElement("div", {
-                    className: "class-path",
-                    textContent: adapter.classPath
-                }));
-            }
-
-            if (adapter.entrypoints && adapter.entrypoints.length > 0) {
-                const epSection = Jig.dom.card.item({title: "エントリーポイント", extraClass: "entrypoint-section"});
-
-                if (state.simplified) {
-                    epSection.classList.add(SIMPLIFIED_CLASS);
-                }
-
-                const btnSpan = Jig.dom.i18nText('span', '簡略表示');
-                const toggleBtn = Jig.dom.createElement('button', {
-                    className: 'simplified-toggle-btn',
-                    attributes: {'aria-pressed': String(state.simplified)},
-                    children: [btnSpan]
-                });
-                toggleBtn.addEventListener('click', () => {
-                    epSection.classList.toggle(SIMPLIFIED_CLASS);
-                    const isNowSimplified = epSection.classList.contains(SIMPLIFIED_CLASS);
-                    toggleBtn.setAttribute('aria-pressed', String(isNowSimplified));
-                });
-                epSection.querySelector('h4').appendChild(toggleBtn);
-
-                adapter.entrypoints.forEach(ep => epSection.appendChild(buildEntrypointItem(ep)));
-                jigCard.appendChild(epSection);
-            }
-
-            Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
-                const diagramGenerator = (dir, opts) => {
-                    const data = prepareDiagramData(adapter, usecaseData);
-                    const builder = Jig.mermaid.createBuilder();
-                    buildDiagramBuilder(data, builder, opts?.showPhysicalName);
-                    return builder.build(dir);
-                };
-                Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR', enableLabelToggle: true});
-            });
-
-            container.appendChild(jigCard);
-        });
 
         const ioTypesSection = renderIoTypesSection(state.data.ioTypes || [], state.data.rootIoTypeFqns || [], adapters);
         if (ioTypesSection) container.appendChild(ioTypesSection);
+    }
+
+    function buildPackageHeading(packageFqn) {
+        return Jig.dom.createElement("section", {
+            id: Jig.util.fqnToId(PACKAGE_ID_PREFIX, packageFqn),
+            className: "package-heading",
+            children: [
+                Jig.dom.createElement("h2", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
+                Jig.dom.createElement("div", {className: "fully-qualified-name", textContent: packageFqn})
+            ]
+        });
+    }
+
+    function buildAdapterCard(adapter, usecaseData) {
+        const typeTerm = Jig.glossary.getTypeTerm(adapter.fqn);
+
+        const jigCard = Jig.dom.card.type({
+            id: Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
+            title: typeTerm.title,
+            fqn: adapter.fqn,
+            titleSuffix: Jig.glossary.sourceLink(adapter.fqn)
+        });
+
+        if (typeTerm.description) {
+            jigCard.appendChild(Jig.dom.createMarkdownElement(typeTerm.description));
+        }
+
+        if (adapter.classPath) {
+            jigCard.appendChild(Jig.dom.createElement("div", {
+                className: "class-path",
+                textContent: adapter.classPath
+            }));
+        }
+
+        if (adapter.entrypoints && adapter.entrypoints.length > 0) {
+            const epSection = Jig.dom.card.item({title: "エントリーポイント", extraClass: "entrypoint-section"});
+
+            if (state.simplified) {
+                epSection.classList.add(SIMPLIFIED_CLASS);
+            }
+
+            const btnSpan = Jig.dom.i18nText('span', '簡略表示');
+            const toggleBtn = Jig.dom.createElement('button', {
+                className: 'simplified-toggle-btn',
+                attributes: {'aria-pressed': String(state.simplified)},
+                children: [btnSpan]
+            });
+            toggleBtn.addEventListener('click', () => {
+                epSection.classList.toggle(SIMPLIFIED_CLASS);
+                const isNowSimplified = epSection.classList.contains(SIMPLIFIED_CLASS);
+                toggleBtn.setAttribute('aria-pressed', String(isNowSimplified));
+            });
+            epSection.querySelector('h4').appendChild(toggleBtn);
+
+            adapter.entrypoints.forEach(ep => epSection.appendChild(buildEntrypointItem(ep)));
+            jigCard.appendChild(epSection);
+        }
+
+        Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
+            const diagramGenerator = (dir, opts) => {
+                const data = prepareDiagramData(adapter, usecaseData);
+                const builder = Jig.mermaid.createBuilder();
+                buildDiagramBuilder(data, builder, opts?.showPhysicalName);
+                return builder.build(dir);
+            };
+            Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR', enableLabelToggle: true});
+        });
+
+        return jigCard;
     }
 
     function buildIoTypeUsageMap(rootIoTypeFqns, adapters) {

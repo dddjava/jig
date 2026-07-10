@@ -284,14 +284,59 @@ const OutboundApp = (() => {
         renderExternalList(externalGrouped, visibility);
         renderOutboundList(grouped, visibility);
         renderCrudTable(grouped);
+        renderSidebar(grouped, persistenceGrouped, externalGrouped);
+    }
+
+    /**
+     * サイドバーをグループ（出力ポート/永続化操作対象/永続化(CRUD)/外部型）のツリーで描画する。
+     * メインセクションの並び順と揃える
+     */
+    function renderSidebar(grouped, persistenceGrouped, externalGrouped) {
+        const sidebar = document.getElementById("outbound-sidebar-list");
+        if (!sidebar) return;
+        sidebar.innerHTML = "";
+
+        Jig.dom.sidebar.renderTreeSection(sidebar, {
+            title: "出力ポート",
+            items: grouped,
+            getFqn: group => group.outboundPort.fqn,
+            renderLeaf: group => Jig.dom.sidebar.leaf(
+                "#" + Jig.util.fqnToId("port", group.outboundPort.fqn),
+                Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
+            )
+        });
+
+        Jig.dom.sidebar.renderTreeSection(sidebar, {
+            title: "永続化操作対象",
+            items: persistenceGrouped,
+            getFqn: group => group.persistenceTarget,
+            renderLeaf: group => Jig.dom.sidebar.leaf(
+                "#" + Jig.util.fqnToId("persistence", group.persistenceTarget),
+                group.persistenceTarget
+            )
+        });
+
+        if (collectAllTargets(grouped).length > 0) {
+            // 他のグループ（出力ポート等）と同じ並び・見た目・ピン留めにするため
+            // renderTreeSection ではなく単一リンクのグループとして描画する
+            Jig.dom.sidebar.renderLinkGroup(sidebar, {title: "永続化(CRUD)", href: "#outbound-crud-panel"});
+        }
+
+        Jig.dom.sidebar.renderTreeSection(sidebar, {
+            title: "外部型",
+            items: externalGrouped,
+            getFqn: group => group.externalType.fqn,
+            renderLeaf: group => Jig.dom.sidebar.leaf(
+                "#" + Jig.util.fqnToId("external", group.externalType.fqn),
+                Jig.glossary.getTypeTerm(group.externalType.fqn).title
+            )
+        });
     }
 
     function renderOutboundList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-port-list");
-        const sidebar = document.getElementById("outbound-sidebar-list");
         if (!container) return;
         container.innerHTML = "";
-        if (sidebar) sidebar.innerHTML = "";
 
         grouped.forEach(group => {
             const portMermaidCode = generatePortMermaidCode(group, visibility);
@@ -364,47 +409,13 @@ const OutboundApp = (() => {
             container.appendChild(portCard);
         });
 
-        if (sidebar && grouped.length > 0) {
-            const byPackage = Jig.util.groupByPackageFqn(grouped, group => group.outboundPort.fqn);
-
-            const packageContainer = Jig.dom.createElement("div", {});
-            Jig.dom.sidebar.renderPackageGrouped(packageContainer, byPackage, pkgGroups =>
-                pkgGroups.map(group => {
-                    const fqn = group.outboundPort.fqn;
-                    return Jig.dom.createElement("li", {
-                        className: "in-page-sidebar__item",
-                        children: [Jig.dom.createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + Jig.util.fqnToId("port", fqn)},
-                            textContent: Jig.glossary.getTypeTerm(fqn).title
-                        })]
-                    });
-                }),
-                {titleClass: "in-page-sidebar__title--sub"}
-            );
-
-            const portTitle = Jig.dom.createElement("p", {
-                className: "in-page-sidebar__title in-page-sidebar__title--collapsible",
-                children: [
-                    Jig.dom.createElement("span", {textContent: "出力ポート"}),
-                    Jig.dom.sidebar.createToggle(packageContainer)
-                ]
-            });
-            sidebar.appendChild(Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [portTitle, packageContainer]
-            }));
-        }
-
         if (grouped.length === 0) renderNoData(container);
     }
 
     function renderPersistenceList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-persistence-list");
-        const sidebar = document.getElementById("persistence-sidebar-list");
         if (!container) return;
         container.innerHTML = "";
-        if (sidebar) sidebar.innerHTML = "";
 
         grouped.forEach(group => {
             const persistenceMermaidCode = generatePersistenceMermaidCode(group, visibility);
@@ -425,20 +436,13 @@ const OutboundApp = (() => {
             container.appendChild(persistenceCard);
         });
 
-        Jig.dom.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
-            id: Jig.util.fqnToId("persistence", group.persistenceTarget),
-            label: group.persistenceTarget
-        })), {collapsible: true});
-
         if (grouped.length === 0) renderNoData(container);
     }
 
     function renderExternalList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-external-list");
-        const sidebar = document.getElementById("external-sidebar-list");
         if (!container) return;
         container.innerHTML = "";
-        if (sidebar) sidebar.innerHTML = "";
 
         grouped.forEach(group => {
             const externalMermaidCode = generateExternalTypeMermaidCode(group, visibility);
@@ -463,39 +467,18 @@ const OutboundApp = (() => {
             container.appendChild(externalCard);
         });
 
-        Jig.dom.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
-            id: Jig.util.fqnToId("external", group.externalType.fqn),
-            label: Jig.glossary.getTypeTerm(group.externalType.fqn).title
-        })), {collapsible: true});
-
         if (grouped.length === 0) renderNoData(container);
     }
 
     function renderCrudTable(grouped) {
         const container = document.getElementById("outbound-crud-panel");
-        const sidebar = document.getElementById("crud-sidebar-list");
         if (!container) return;
         container.innerHTML = "";
-        if (sidebar) sidebar.innerHTML = "";
 
         const allPersistenceTargets = collectAllTargets(grouped);
         if (allPersistenceTargets.length === 0) {
             container.textContent = "永続化操作なし";
             return;
-        }
-
-        if (sidebar) {
-            sidebar.appendChild(Jig.dom.createElement("section", {
-                className: "in-page-sidebar__section",
-                children: [Jig.dom.createElement("p", {
-                    className: "in-page-sidebar__title",
-                    children: [Jig.dom.createElement("a", {
-                        className: "in-page-sidebar__link",
-                        attributes: {href: "#outbound-crud-panel"},
-                        textContent: "永続化(CRUD)"
-                    })]
-                })]
-            }));
         }
 
         const headerRow = Jig.dom.createElement("tr", {
@@ -955,6 +938,7 @@ const OutboundApp = (() => {
         renderPersistenceList,
         renderExternalList,
         renderCrudTable,
+        renderSidebar,
         generateOperationMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,

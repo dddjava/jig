@@ -6,11 +6,21 @@ updates:
     interval: daily
     time: "07:00"
   open-pull-requests-limit: 10
+  cooldown:
+    default-days: 7
+    semver-major-days: 14
+    semver-minor-days: 7
+    semver-patch-days: 3
 - package-ecosystem: github-actions
   directory: ".github/workflows"
   schedule:
     interval: daily
     time: "07:00"
+  cooldown:
+    default-days: 7
+    semver-major-days: 14
+    semver-minor-days: 7
+    semver-patch-days: 3
 - package-ecosystem: npm
   directory: "/"
   schedule:

@@ -39,6 +39,7 @@ public final class JsonSupport {
                 case '\r' -> sb.append("\\r");
                 case '\t' -> sb.append("\\t");
                 default -> {
+                    // 0x20未満のC0制御文字と、JS文字列リテラルで改行扱いされるU+2028(LINE SEPARATOR)/U+2029(PARAGRAPH SEPARATOR)をユニコードエスケープする
                     if (c < 0x20 || c == ' ' || c == ' ') {
                         sb.append("\\u%04x".formatted((int) c));
                     } else {

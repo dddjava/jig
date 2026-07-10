@@ -1,47 +1,35 @@
 package org.dddjava.jig.adapter.json;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JsonSupportTest {
 
-    @Test
-    void escape_バックスラッシュをエスケープする() {
-        assertEquals("\\\\", JsonSupport.escape("\\"));
+    static Stream<Arguments> escape_単一文字のエスケープ() {
+        return Stream.of(
+                Arguments.of("バックスラッシュ", "\\", "\\\\"),
+                Arguments.of("ダブルクォート", "\"", "\\\""),
+                Arguments.of("復帰", "\r", "\\r"),
+                Arguments.of("改行", "\n", "\\n"),
+                Arguments.of("タブ", "\t", "\\t"),
+                Arguments.of("C0制御文字", "", "\\u0001"),
+                Arguments.of("行区切り(U+2028)", " ", "\\u2028"),
+                Arguments.of("段落区切り(U+2029)", " ", "\\u2029")
+        );
     }
 
-    @Test
-    void escape_ダブルクォートをエスケープする() {
-        assertEquals("\\\"", JsonSupport.escape("\""));
-    }
-
-    @Test
-    void escape_復帰をエスケープする() {
-        assertEquals("\\r", JsonSupport.escape("\r"));
-    }
-
-    @Test
-    void escape_改行をエスケープする() {
-        assertEquals("\\n", JsonSupport.escape("\n"));
-    }
-
-    @Test
-    void escape_タブをエスケープする() {
-        assertEquals("\\t", JsonSupport.escape("\t"));
-    }
-
-    @Test
-    void escape_C0制御文字をユニコードエスケープする() {
-        assertEquals("\\u0001", JsonSupport.escape(""));
-    }
-
-    @Test
-    void escape_行区切りと段落区切りをユニコードエスケープする() {
-        assertEquals("\\u2028\\u2029", JsonSupport.escape("  "));
+    @ParameterizedTest(name = "{0}をエスケープする")
+    @MethodSource
+    void escape_単一文字のエスケープ(String label, String input, String expected) {
+        assertEquals(expected, JsonSupport.escape(input));
     }
 
     @Test

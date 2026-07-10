@@ -20,10 +20,10 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
     }
 
     public int numberOfUsingTypes() {
-        return (int) methodInsights.stream()
+        return Math.toIntExact(methodInsights.stream()
                 .flatMap(methodInsight -> methodInsight.jigMethod().usingTypes().values().stream())
                 .distinct()
-                .count();
+                .count());
     }
 
     public int cyclomaticComplexity() {

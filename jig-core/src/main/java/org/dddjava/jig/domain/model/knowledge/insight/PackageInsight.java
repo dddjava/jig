@@ -18,11 +18,11 @@ public record PackageInsight(PackageId packageId, Collection<TypeInsight> typeIn
     }
 
     public int numberOfUsingTypes() {
-        return (int) typeInsights.stream()
+        return Math.toIntExact(typeInsights.stream()
                 .flatMap(typeInsight -> typeInsight.methodInsights().stream())
                 .flatMap(methodInsight -> methodInsight.jigMethod().usingTypes().values().stream())
                 .distinct()
-                .count();
+                .count());
     }
 
     public int cyclomaticComplexity() {

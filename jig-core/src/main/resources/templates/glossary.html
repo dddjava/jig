@@ -51,7 +51,7 @@
                 </div>
             </div>
         </details>
-        <button id="sidebar-collapse-btn" class="sidebar-collapse-btn" aria-expanded="true" title="サイドバーを折りたたむ/展開する"></button>
+        {{include:sidebar-collapse-button}}
         </div>
         <div class="sidebar-filter">
             <input type="search" id="glossary-sidebar-filter" placeholder="絞り込み" data-i18n-attr="placeholder" autocomplete="off">
@@ -65,8 +65,7 @@
     </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+{{include:cdn-scripts}}
 <script src="./assets/jig-bundle.js?v={{assetVersion}}"></script>
 <script src="./data/navigation-data.js?v={{assetVersion}}"></script>
 <script src="./data/summary-data.js?v={{assetVersion}}"></script>

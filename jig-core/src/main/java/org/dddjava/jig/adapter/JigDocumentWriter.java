@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
@@ -76,15 +78,38 @@ public class JigDocumentWriter {
         }
     }
 
+    private static final Pattern INCLUDE_PATTERN = Pattern.compile("\\{\\{include:([a-zA-Z0-9_-]+)}}");
+
     /**
      * テンプレートのプレースホルダー処理
      *
      * テンプレート HTML 中の {@code {{assetVersion}}} プレースホルダを現在のバージョン値で置換する。
      * 各テンプレートはローカルアセット参照に明示的に {@code ?v={{assetVersion}}} を書いておく。
+     * {@code {{include:name}}} は {@code templates/partials/name.html} の内容にそのまま置換する。
+     * CDN スクリプトタグなど、複数テンプレートに同一内容がコピペされがちな断片を一箇所にまとめるために使う。
      */
     String resolvePlaceholders(String html) {
-        return html.replace("{{lang}}", locale.getLanguage())
+        String replaced = html.replace("{{lang}}", locale.getLanguage())
                 .replace("{{assetVersion}}", assetVersion);
+        return resolveIncludes(replaced);
+    }
+
+    private String resolveIncludes(String html) {
+        Matcher matcher = INCLUDE_PATTERN.matcher(html);
+        StringBuilder result = new StringBuilder();
+        while (matcher.find()) {
+            matcher.appendReplacement(result, Matcher.quoteReplacement(readPartial(matcher.group(1))));
+        }
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    private String readPartial(String name) {
+        try (InputStream is = getResourceAsStream("templates/partials/" + name + ".html")) {
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8).stripTrailing();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public static InputStream getResourceAsStream(String absolutePath) {

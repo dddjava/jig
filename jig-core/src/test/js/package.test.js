@@ -691,16 +691,6 @@ test.describe('package.js', () => {
                 assert.ok(lines.includes('org_dddjava_jig_adapter_JigResultData["JigResultData"]'));
             });
 
-            test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
-                const options = PackageApp.buildAggregationDepthOptions(2);
-
-                assert.deepEqual(options, [
-                    {value: '0', text: '集約なし'},
-                    {value: '1', text: '深さ1'},
-                    {value: '2', text: '深さ2'},
-                ]);
-            });
-
         });
 
         test.describe('UI', () => {

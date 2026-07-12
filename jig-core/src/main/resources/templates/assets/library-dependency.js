@@ -22,8 +22,8 @@ const LibraryDependencyApp = (() => {
 
         const maxDepth = computeMaxDepth(data.internalPackages);
         const initialDepth = computeInitialDepth(data.internalPackages, maxDepth);
-        populateDepthSelect(depthSelect, maxDepth, initialDepth);
-        updateDepthButtonStates(depthSelect, depthUp, depthDown);
+        Jig.dom.depthControl.renderOptions(depthSelect, maxDepth, initialDepth);
+        Jig.dom.depthControl.updateButtonStates(depthSelect, depthUp, depthDown);
 
         const librariesById = new Map((data.libraries || []).map(g => [g.id, g]));
 
@@ -61,11 +61,11 @@ const LibraryDependencyApp = (() => {
         if (javaStandardToggle) javaStandardToggle.addEventListener("change", renderDiagram);
         if (depthSelect) depthSelect.addEventListener("change", () => {
             renderDiagram();
-            updateDepthButtonStates(depthSelect, depthUp, depthDown);
+            Jig.dom.depthControl.updateButtonStates(depthSelect, depthUp, depthDown);
         });
-        // パッケージ関連と揃える: ▲は集約解除側（index-1）、▼は集約強化側（index+1）
-        if (depthUp) depthUp.addEventListener("click", () => stepDepthByIndex(depthSelect, -1));
-        if (depthDown) depthDown.addEventListener("click", () => stepDepthByIndex(depthSelect, +1));
+        // ▲は集約解除側（index-1）、▼は集約強化側（index+1）
+        if (depthUp) depthUp.addEventListener("click", () => Jig.dom.depthControl.step(depthSelect, -1));
+        if (depthDown) depthDown.addEventListener("click", () => Jig.dom.depthControl.step(depthSelect, +1));
         if (clearSelection) clearSelection.addEventListener("click", () => {
             selectedLibraryIds.clear();
             onSelectionChanged();
@@ -93,16 +93,6 @@ const LibraryDependencyApp = (() => {
         return max;
     }
 
-    function populateDepthSelect(select, maxDepth, initialDepth) {
-        if (!select) return;
-        select.innerHTML = "";
-        select.appendChild(Jig.dom.createElement("option", {textContent: "集約なし", attributes: {value: "0"}}));
-        for (let d = 1; d <= maxDepth; d++) {
-            select.appendChild(Jig.dom.createElement("option", {textContent: `深さ${d}`, attributes: {value: String(d)}}));
-        }
-        select.value = String(initialDepth != null ? initialDepth : maxDepth);
-    }
-
     // 集約後の内部パッケージが複数になる最も浅い階層を選ぶ
     function computeInitialDepth(internalPackages, maxDepth) {
         const fqns = internalPackages || [];
@@ -112,24 +102,6 @@ const LibraryDependencyApp = (() => {
             if (aggregated.size >= 2) return d;
         }
         return maxDepth;
-    }
-
-    function stepDepthByIndex(select, delta) {
-        if (!select) return;
-        const options = Array.from(select.options);
-        const currentIndex = options.findIndex(opt => opt.value === select.value);
-        const nextIndex = currentIndex + delta;
-        if (nextIndex < 0 || nextIndex >= options.length) return;
-        select.value = options[nextIndex].value;
-        select.dispatchEvent(new Event("change"));
-    }
-
-    function updateDepthButtonStates(select, upButton, downButton) {
-        if (!select || !upButton || !downButton) return;
-        const options = Array.from(select.options);
-        const currentIndex = options.findIndex(opt => opt.value === select.value);
-        upButton.disabled = currentIndex <= 0;
-        downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
     }
 
     function buildMermaidText(data, librariesById, depth, includeJavaStandard, selected, direction, showPhysicalName) {

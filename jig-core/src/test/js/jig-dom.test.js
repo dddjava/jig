@@ -36,6 +36,8 @@ test.describe('jig-dom.js', () => {
         global.window = dom.window;
         global.document = dom.window.document;
         global.location = dom.window.location;
+        // jig-dom.js 内の `new Event(...)` が jsdom の EventTarget と同じレルムになるようにする
+        global.Event = dom.window.Event;
 
         global.marked = {
             parse: (text) => `<p>${text}</p>`
@@ -1279,6 +1281,58 @@ test.describe('jig-dom.js', () => {
         test('CSV値はクォートし、改行とダブルクォートを処理する', () => {
             assert.equal(Jig.dom.escapeCsvValue('"a"\r\nline'), '"""a""\nline"');
             assert.equal(Jig.dom.escapeCsvValue(null), '""');
+        });
+    });
+
+    test.describe('depthControl', () => {
+        test('buildOptions: 集約オプションを組み立てる', () => {
+            const options = Jig.dom.depthControl.buildOptions(2);
+
+            assert.deepEqual(options, [
+                {value: '0', text: '集約なし'},
+                {value: '1', text: '深さ1'},
+                {value: '2', text: '深さ2'},
+            ]);
+        });
+
+        test('renderOptions: 選択肢を描画し値を範囲内に丸める', () => {
+            const select = document.createElement('select');
+            Jig.dom.depthControl.renderOptions(select, 2, 5);
+
+            assert.deepEqual(Array.from(select.options).map(o => o.value), ['0', '1', '2']);
+            assert.equal(select.value, '2');
+        });
+
+        test('updateButtonStates: 両端でボタンを無効化する', () => {
+            const select = document.createElement('select');
+            Jig.dom.depthControl.renderOptions(select, 2, 0);
+            const upButton = document.createElement('button');
+            const downButton = document.createElement('button');
+
+            Jig.dom.depthControl.updateButtonStates(select, upButton, downButton);
+            assert.equal(upButton.disabled, true);
+            assert.equal(downButton.disabled, false);
+
+            select.value = '2';
+            Jig.dom.depthControl.updateButtonStates(select, upButton, downButton);
+            assert.equal(upButton.disabled, false);
+            assert.equal(downButton.disabled, true);
+        });
+
+        test('step: インデックスを移動してchangeイベントを発火する', () => {
+            const select = document.createElement('select');
+            Jig.dom.depthControl.renderOptions(select, 2, 1);
+            let changed = false;
+            select.addEventListener('change', () => {
+                changed = true;
+            });
+
+            Jig.dom.depthControl.step(select, 1);
+            assert.equal(select.value, '2');
+            assert.equal(changed, true);
+
+            Jig.dom.depthControl.step(select, 1);
+            assert.equal(select.value, '2', '範囲外へは移動しない');
         });
     });
 });

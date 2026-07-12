@@ -617,8 +617,8 @@ const PackageApp = (() => {
             packages.get(packageFqn).nodes.add(node);
         });
 
-        const escapeId = id => id.replace(/\./g, '_');
-        const escapeLabel = label => `"${label.replace(/"/g, '#quot;')}"`;
+        const escapeId = Jig.mermaid.builder.escapeId;
+        const escapeLabel = Jig.mermaid.builder.escapeLabel;
         const outerRoots = selectOuterRoots(mutualPairLabel);
         const adjacency = buildPackageAdjacency(edges);
         const appendClassNodes = (targetLines, classNodes) => {
@@ -1119,16 +1119,6 @@ const PackageApp = (() => {
         context.packageFilterFqn = candidate;
     }
 
-    function updateDepthButtonStates(select, upButton, downButton) {
-        if (!select || !upButton || !downButton) return;
-        const currentValue = normalizeAggregationDepthValue(select.value);
-        const options = Array.from(select.options).map(opt => Number(opt.value));
-        const currentIndex = options.indexOf(currentValue);
-
-        upButton.disabled = currentIndex <= 0;
-        downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
-    }
-
     function setupAggregationDepthControl(context) {
         const select = dom.getDepthSelect();
         if (!select) return;
@@ -1143,64 +1133,17 @@ const PackageApp = (() => {
             context.aggregationDepth = normalizeAggregationDepthValue(select.value);
             renderHierarchyDiagramAndTable(context);
             renderAggregationDepthSelectOptions(maxDepth, context);
-            updateDepthButtonStates(select, upButton, downButton);
         });
 
-        if (upButton) {
-            upButton.addEventListener('click', () => {
-                const currentValue = normalizeAggregationDepthValue(select.value);
-                const options = Array.from(select.options).map(opt => Number(opt.value));
-                const currentIndex = options.indexOf(currentValue);
-                if (currentIndex > 0) {
-                    select.value = String(options[currentIndex - 1]);
-                    select.dispatchEvent(new Event('change'));
-                }
-            });
-        }
-        if (downButton) {
-            downButton.addEventListener('click', () => {
-                const currentValue = normalizeAggregationDepthValue(select.value);
-                const options = Array.from(select.options).map(opt => Number(opt.value));
-                const currentIndex = options.indexOf(currentValue);
-                if (currentIndex >= 0 && currentIndex < options.length - 1) {
-                    select.value = String(options[currentIndex + 1]);
-                    select.dispatchEvent(new Event('change'));
-                }
-            });
-        }
-
-        updateDepthButtonStates(select, upButton, downButton);
+        if (upButton) upButton.addEventListener('click', () => Jig.dom.depthControl.step(select, -1));
+        if (downButton) downButton.addEventListener('click', () => Jig.dom.depthControl.step(select, +1));
     }
 
     function renderAggregationDepthSelectOptions(maxDepth, context) {
         const select = dom.getDepthSelect();
         if (!select) return;
-        const options = buildAggregationDepthOptions(maxDepth);
-        renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
-
-        const upButton = dom.getDepthUpButton();
-        const downButton = dom.getDepthDownButton();
-        updateDepthButtonStates(select, upButton, downButton);
-    }
-
-    function buildAggregationDepthOptions(maxDepth) {
-        const options = [{value: '0', text: '集約なし'}];
-        for (let depth = 1; depth <= maxDepth; depth += 1) {
-            options.push({value: String(depth), text: `深さ${depth}`});
-        }
-        return options;
-    }
-
-    function renderAggregationDepthOptionsIntoSelect(select, options, aggregationDepth, maxDepth) {
-        select.innerHTML = '';
-        options.forEach(option => {
-            select.appendChild(Jig.dom.createElement('option', {
-                textContent: option.text,
-                attributes: {value: option.value},
-            }));
-        });
-        const value = Math.min(aggregationDepth, maxDepth);
-        select.value = String(value);
+        Jig.dom.depthControl.renderOptions(select, maxDepth, context.aggregationDepth);
+        Jig.dom.depthControl.updateButtonStates(select, dom.getDepthUpButton(), dom.getDepthDownButton());
     }
 
     function setupTransitiveReductionControl(context) {
@@ -1516,8 +1459,6 @@ const PackageApp = (() => {
         setupPackageFilterControl,
         setupAggregationDepthControl,
         renderAggregationDepthSelectOptions,
-        buildAggregationDepthOptions,
-        renderAggregationDepthOptionsIntoSelect,
         setupTransitiveReductionControl,
         setupExploreControl,
         setupTabControl,

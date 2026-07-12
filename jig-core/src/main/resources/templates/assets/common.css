@@ -1,3 +1,7 @@
+/* 意図的に上書きされる側のスタイルをレイヤーに置き、上書きする側は非レイヤー（常にレイヤーに勝つ）に置く。
+   詳細は docs/adr/css_cascade_layer_policy.md を参照 */
+@layer base, components;
+
 :root {
     --sidebar-width: 260px;
     --sidebar-collapsed-width: 28px;
@@ -33,13 +37,15 @@ main, nav {
     padding: 0 1em;
 }
 
-a {
-    color: #000;
-    text-decoration-line: none;
-}
+@layer base {
+    a {
+        color: #000;
+        text-decoration-line: none;
+    }
 
-a:hover {
-    text-decoration-line: underline;
+    a:hover {
+        text-decoration-line: underline;
+    }
 }
 
 header.top {
@@ -487,18 +493,16 @@ main table thead {
     font-size: var(--jig-font-size-sm);
 }
 
-/* stylelint-disable no-descending-specificity -- entrypoint-section--simplified併用時にdisplay:noneで隠す意図的な上書きであり実害はない */
-
-.entrypoint-item__io {
-    display: grid;
-    grid-template-columns: 3em 1fr;
-    gap: 2px 8px;
-    font-size: var(--jig-font-size-sm);
-    margin: 0;
-    padding-left: 1em;
+@layer components {
+    .entrypoint-item__io {
+        display: grid;
+        grid-template-columns: 3em 1fr;
+        gap: 2px 8px;
+        font-size: var(--jig-font-size-sm);
+        margin: 0;
+        padding-left: 1em;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .entrypoint-item__io dt {
     grid-column: 1;
@@ -782,43 +786,33 @@ body.hide-usecase-details .depends {
     display: none;
 }
 
-/* stylelint-disable no-descending-specificity -- tab-content-section配下でのテーマ別上書き(意図的)であり実害はない */
+@layer components {
+    .jig-tabs {
+        display: flex;
+        gap: 4px;
+        padding: 8px 12px 0;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ccc;
+    }
 
-.jig-tabs {
-    display: flex;
-    gap: 4px;
-    padding: 8px 12px 0;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ccc;
+    .jig-tab {
+        padding: 4px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px 4px 0 0;
+        background-color: #f0f0f0;
+        cursor: pointer;
+        font-size: var(--jig-font-size-sm);
+        margin-bottom: -1px;
+    }
+
+    .jig-tab.active {
+        background-color: #fff;
+        border-bottom-color: #fff;
+        font-weight: bold;
+        position: relative;
+        z-index: 1;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
-
-/* stylelint-disable no-descending-specificity -- tab-content-section配下でのテーマ別上書き(意図的)であり実害はない */
-
-.jig-tab {
-    padding: 4px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px 4px 0 0;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    font-size: var(--jig-font-size-sm);
-    margin-bottom: -1px;
-}
-
-/* stylelint-enable no-descending-specificity */
-
-/* stylelint-disable no-descending-specificity -- tab-content-section配下でのテーマ別上書き(意図的)であり実害はない */
-
-.jig-tab.active {
-    background-color: #fff;
-    border-bottom-color: #fff;
-    font-weight: bold;
-    position: relative;
-    z-index: 1;
-}
-
-/* stylelint-enable no-descending-specificity */
 
 .jig-tab:hover:not(.active) {
     background-color: #eaeaea;
@@ -862,14 +856,12 @@ pre.mermaid {
 
 /* stylelint-enable no-descending-specificity */
 
-/* stylelint-disable no-descending-specificity -- hide-domain-diagrams併用時にdisplay:noneで隠す意図的な上書きであり実害はない */
-
-.mermaid-diagram {
-    margin-top: 10px;
-    position: relative;
+@layer components {
+    .mermaid-diagram {
+        margin-top: 10px;
+        position: relative;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .mermaid-diagram.is-rendering {
     min-height: 2em;
@@ -1184,19 +1176,17 @@ table td.number {
     flex-direction: column;
 }
 
-/* stylelint-disable no-descending-specificity -- サイドバー折りたたみ時にdisplay:noneで隠す意図的な上書きであり実害はない */
-
-.in-page-sidebar__list {
-    display: grid;
-    gap: 12px;
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    scrollbar-gutter: stable;
-    align-content: start;
+@layer components {
+    .in-page-sidebar__list {
+        display: grid;
+        gap: 12px;
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        scrollbar-gutter: stable;
+        align-content: start;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__section {
     display: grid;
@@ -1286,19 +1276,18 @@ table td.number {
 
 /* stylelint-enable no-descending-specificity */
 
-/* ツリーのパッケージノード。メインセクションへのリンク */
+/* ツリーのパッケージノード。メインセクションへのリンク。
+   レイアウトはjig-dom.jsで常に生成されるitem-header配下（非レイヤー）の指定が優先される */
 
-/* stylelint-disable no-descending-specificity -- item-header配下でのレイアウト用上書き(意図的、jig-dom.jsで常にitem-header配下に生成される)であり実害はない */
-
-.in-page-sidebar__package-link {
-    color: #31455f;
-    text-decoration: none;
-    overflow-wrap: break-word;
-    white-space: nowrap;
-    transition: background-color 0.2s ease, color 0.2s ease;
+@layer components {
+    .in-page-sidebar__package-link {
+        color: #31455f;
+        text-decoration: none;
+        overflow-wrap: break-word;
+        white-space: nowrap;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__package-link:hover,
 .in-page-sidebar__package-link:focus-visible {
@@ -1382,15 +1371,13 @@ table td.number {
     opacity: 1;
 }
 
-/* stylelint-disable no-descending-specificity -- スクロール領域内でのfont-size調整(意図的な上書き)であり実害はない */
-
-.in-page-sidebar__item-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+@layer components {
+    .in-page-sidebar__item-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__links {
     list-style: none;
@@ -1412,23 +1399,21 @@ table td.number {
     margin: 0;
 }
 
-/* stylelint-disable no-descending-specificity -- item-header配下でのレイアウト用上書き(意図的)であり実害はない */
-
-.in-page-sidebar__link {
-    display: flex;
-    align-items: center;
-    padding: 6px 8px;
-    border-radius: 6px;
-    color: #1b3a66;
-    text-decoration: none;
-    font-size: var(--jig-font-size-sm);
-    line-height: 1.4;
-    overflow-wrap: break-word;
-    white-space: nowrap;
-    transition: background-color 0.2s ease, color 0.2s ease;
+@layer components {
+    .in-page-sidebar__link {
+        display: flex;
+        align-items: center;
+        padding: 6px 8px;
+        border-radius: 6px;
+        color: #1b3a66;
+        text-decoration: none;
+        font-size: var(--jig-font-size-sm);
+        line-height: 1.4;
+        overflow-wrap: break-word;
+        white-space: nowrap;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .in-page-sidebar__link:hover,
 .in-page-sidebar__link:focus-visible {
@@ -1527,15 +1512,13 @@ table td.number {
 
 /* サイドバー 表示設定パネル */
 
-/* stylelint-disable no-descending-specificity -- サイドバー折りたたみ時にdisplay:noneで隠す意図的な上書きであり実害はない */
-
-.sidebar-settings {
-    flex: 1;
-    min-width: 0;
-    border: 1px solid #d9e1ea;
+@layer components {
+    .sidebar-settings {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid #d9e1ea;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 /* stylelint-disable no-descending-specificity -- サイドバー設定と用語カードのsummaryは別のDOM subtreeで共存しないため実害はない */
 
@@ -1552,17 +1535,9 @@ table td.number {
     gap: 8px;
 }
 
-/* stylelint-enable no-descending-specificity */
-
-/* stylelint-disable no-descending-specificity -- サイドバー設定と用語カードのsummaryは別のDOM subtreeで共存しないため実害はない */
-
 .sidebar-settings > summary:hover {
     background-color: #e8f0fb;
 }
-
-/* stylelint-enable no-descending-specificity */
-
-/* stylelint-disable no-descending-specificity -- サイドバー設定と用語カードのsummaryは別のDOM subtreeで共存しないため実害はない */
 
 .sidebar-settings > summary::-webkit-details-marker {
     display: none;
@@ -1622,14 +1597,12 @@ table td.number {
 
 /* サイドバー テキストフィルタ */
 
-/* stylelint-disable no-descending-specificity -- サイドバー折りたたみ時にdisplay:noneで隠す意図的な上書きであり実害はない */
-
-.sidebar-filter {
-    flex-shrink: 0;
-    padding: 4px 0;
+@layer components {
+    .sidebar-filter {
+        flex-shrink: 0;
+        padding: 4px 0;
+    }
 }
-
-/* stylelint-enable no-descending-specificity */
 
 .sidebar-filter input[type="search"] {
     width: 100%;
@@ -1674,26 +1647,28 @@ table td.number {
     height: 20px;
 }
 
-.mermaid-copy-button,
-.mermaid-download-button,
-.mermaid-direction-button,
-.mermaid-label-toggle-button,
-.mermaid-zoom-button {
-    position: absolute;
-    top: 6px;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 1px solid #888;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.85);
-    cursor: pointer;
-    font-size: var(--jig-font-size-base);
-    line-height: 1;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-    z-index: 1;
+@layer components {
+    .mermaid-copy-button,
+    .mermaid-download-button,
+    .mermaid-direction-button,
+    .mermaid-label-toggle-button,
+    .mermaid-zoom-button {
+        position: absolute;
+        top: 6px;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 1px solid #888;
+        border-radius: 6px;
+        background-color: rgba(255, 255, 255, 0.85);
+        cursor: pointer;
+        font-size: var(--jig-font-size-base);
+        line-height: 1;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s;
+        z-index: 1;
+    }
 }
 
 .mermaid-diagram:hover > .mermaid-copy-button,
@@ -1750,31 +1725,29 @@ table td.number {
     transform: translateY(0);
 }
 
-/* stylelint-disable no-descending-specificity -- .mermaid-diagram:hover側と設定するプロパティが重複しないため詳細度の逆転による実害はない */
+@layer components {
+    .mermaid-copy-button {
+        right: 6px;
+    }
 
-.mermaid-copy-button {
-    right: 6px;
+    .mermaid-download-button {
+        right: 40px;
+    }
+
+    .mermaid-direction-button {
+        right: 74px;
+    }
+
+    .mermaid-label-toggle-button {
+        right: 108px;
+        font-size: var(--jig-font-size-2xs);
+        font-weight: bold;
+    }
+
+    .mermaid-zoom-button {
+        right: 142px;
+    }
 }
-
-.mermaid-download-button {
-    right: 40px;
-}
-
-.mermaid-direction-button {
-    right: 74px;
-}
-
-.mermaid-label-toggle-button {
-    right: 108px;
-    font-size: var(--jig-font-size-2xs);
-    font-weight: bold;
-}
-
-.mermaid-zoom-button {
-    right: 142px;
-}
-
-/* stylelint-enable no-descending-specificity */
 
 /* エラーメッセージ（必須データ欠落） */
 

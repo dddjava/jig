@@ -76,7 +76,7 @@ public record MethodRelations(Collection<MethodRelation> relations) implements C
      */
     public MethodRelations inlineLambda() {
 
-        Map<JigMethodId, JigMethodId> replace = new HashMap<>();
+        Map<JigMethodId, JigMethodId> lambdaCaller = new HashMap<>();
 
         List<MethodRelation> inlined = new ArrayList<>();
         List<MethodRelation> pending = new ArrayList<>();
@@ -85,7 +85,7 @@ public record MethodRelations(Collection<MethodRelation> relations) implements C
             if (methodRelation.to().isLambda()) {
                 // lambdaへの関連
                 // この関連自体は残らない。ここで示されるfromにlambdaからの関連を置き換える
-                replace.put(methodRelation.to(), methodRelation.from());
+                lambdaCaller.put(methodRelation.to(), methodRelation.from());
             } else if (methodRelation.from().isLambda()) {
                 // lambdaからの関連
                 // 置き換え対象だが、この時点では何に置き換えたらいいか確定しないので一旦据え置く
@@ -96,22 +96,34 @@ public record MethodRelations(Collection<MethodRelation> relations) implements C
             }
         }
 
-        // 置き換え先がlambdaのものを展開する
-        for (var entry : replace.entrySet()) {
-            if (entry.getValue().isLambda()) {
-                replace.replace(entry.getKey(), replace.get(entry.getValue()));
-            }
-        }
+        // pendingのtoはlambdaでない（lambdaへの関連は最初の分岐で除かれている）ので、fromの解決だけでよい
+        pending.stream()
+                .map(methodRelation -> MethodRelation.from(
+                        resolveLambdaCaller(methodRelation.from(), lambdaCaller),
+                        methodRelation.to()))
+                .forEach(inlined::add);
 
-        var list2 = pending.stream()
-                .map(methodRelation ->
-                        MethodRelation.from(
-                                replace.getOrDefault(methodRelation.from(), methodRelation.from()),
-                                replace.getOrDefault(methodRelation.to(), methodRelation.to())
-                        ))
-                .toList();
-
-        inlined.addAll(list2);
         return new MethodRelations(inlined);
+    }
+
+    /**
+     * lambdaでなくなるまで呼び出し元を辿る。解決できない場合（呼び出し元の欠落や循環）は据え置く。
+     */
+    private JigMethodId resolveLambdaCaller(JigMethodId jigMethodId, Map<JigMethodId, JigMethodId> lambdaCaller) {
+        var visited = new HashSet<JigMethodId>();
+        var current = jigMethodId;
+        while (current.isLambda()) {
+            if (!visited.add(current)) {
+                logger.debug("lambdaの呼び出し元の解決が循環したため据え置きます: {}", jigMethodId.value());
+                return jigMethodId;
+            }
+            var caller = lambdaCaller.get(current);
+            if (caller == null) {
+                logger.debug("lambdaの呼び出し元が見つからないため据え置きます: {}", jigMethodId.value());
+                return jigMethodId;
+            }
+            current = caller;
+        }
+        return current;
     }
 }

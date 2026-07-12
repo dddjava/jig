@@ -53,6 +53,47 @@ class MethodRelationsTest {
         assertEquals(4, actual.relations().size());
     }
 
+    @Test
+    void 多段ネストしたlambdaが呼び出し元まで解決される() {
+        // A → lambda$0 → lambda$1 → lambda$2 → B のチェーン
+        var source = new MethodRelations(List.of(
+                relationOf("A", "lambda$adapter$0"),
+                relationOf("lambda$adapter$0", "lambda$adapter$1"),
+                relationOf("lambda$adapter$1", "lambda$adapter$2"),
+                relationOf("lambda$adapter$2", "B")
+        ));
+
+        var actual = source.inlineLambda();
+
+        assertEquals(List.of(relationOf("A", "B")), List.copyOf(actual.relations()));
+    }
+
+    @Test
+    void 呼び出し元が解決できないlambdaは据え置かれてnullにならない() {
+        // lambda$x への関連が存在しない（フィルタで除去された等）ケース
+        var source = new MethodRelations(List.of(
+                relationOf("lambda$x$0", "lambda$a$0"),
+                relationOf("lambda$a$0", "C")
+        ));
+
+        var actual = source.inlineLambda();
+
+        assertEquals(List.of(relationOf("lambda$a$0", "C")), List.copyOf(actual.relations()));
+    }
+
+    @Test
+    void lambdaの解決が循環しても停止して据え置かれる() {
+        var source = new MethodRelations(List.of(
+                relationOf("lambda$a$0", "lambda$b$0"),
+                relationOf("lambda$b$0", "lambda$a$0"),
+                relationOf("lambda$a$0", "C")
+        ));
+
+        var actual = source.inlineLambda();
+
+        assertEquals(List.of(relationOf("lambda$a$0", "C")), List.copyOf(actual.relations()));
+    }
+
     private static MethodRelation relationOf(String from, String to) {
         return MethodRelation.from(
                 JigMethodId.from(TypeId.valueOf("dummy"), from, List.of()),

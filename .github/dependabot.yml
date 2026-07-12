@@ -11,6 +11,7 @@ updates:
     semver-major-days: 14
     semver-minor-days: 7
     semver-patch-days: 3
+# github-actionsのcooldownはdefault-daysのみサポート（semver-*-daysを書くと設定全体が無効になる）
 - package-ecosystem: github-actions
   directory: ".github/workflows"
   schedule:
@@ -18,9 +19,6 @@ updates:
     time: "07:00"
   cooldown:
     default-days: 7
-    semver-major-days: 14
-    semver-minor-days: 7
-    semver-patch-days: 3
 - package-ecosystem: npm
   directory: "/"
   schedule:

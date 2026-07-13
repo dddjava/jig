@@ -241,6 +241,88 @@ test.describe('usecase.js', () => {
             assert.ok(!headerNext || !headerNext.classList.has('description'), 'descriptionセクションが存在しないこと');
         });
 
+        test.describe('サイドバーテキストフィルター', () => {
+            const filterTestData = {
+                usecases: [
+                    {
+                        fqn: "com.example.pkga.ServiceA",
+                        fields: [],
+                        staticMethods: [],
+                        methods: [
+                            {
+                                fqn: "com.example.pkga.ServiceA#method1()",
+                                visibility: "PUBLIC",
+                                parameters: [],
+                                returnTypeRef: {fqn: "void"},
+                                declaration: "method1():void",
+                                isDeprecated: false,
+                                callMethods: []
+                            }
+                        ]
+                    },
+                    {
+                        fqn: "com.example.pkgb.ServiceB",
+                        fields: [],
+                        staticMethods: [],
+                        methods: [
+                            {
+                                fqn: "com.example.pkgb.ServiceB#method2()",
+                                visibility: "PUBLIC",
+                                parameters: [],
+                                returnTypeRef: {fqn: "void"},
+                                declaration: "method2():void",
+                                isDeprecated: false,
+                                callMethods: []
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            function setupFilterTest() {
+                setGlossaryData({
+                    "com.example.pkga": {title: "アルファ機能"},
+                    "com.example.pkga.ServiceA": {title: "ServiceA"},
+                    "com.example.pkga.ServiceA#method1()": {title: "method1"},
+                    "com.example.pkgb": {title: "ベータ機能"},
+                    "com.example.pkgb.ServiceB": {title: "ServiceB"},
+                    "com.example.pkgb.ServiceB#method2()": {title: "method2"},
+                });
+                globalThis.usecaseData = filterTestData;
+
+                const filterInput = document.createElement('input');
+                filterInput.id = 'usecase-sidebar-filter';
+
+                UsecaseApp.init();
+                return filterInput;
+            }
+
+            test('所属パッケージ名で一致する場合、そのクラスの全メソッドがサイドバーに表示される', () => {
+                const filterInput = setupFilterTest();
+
+                filterInput.value = 'アルファ';
+                filterInput.dispatchEvent({type: 'input'});
+
+                const sidebar = document.getElementById('usecase-sidebar-list');
+                const linkTexts = [...sidebar.querySelectorAll('a')].map(a => a.textContent);
+                assert.ok(linkTexts.includes('ServiceA'), 'アルファ機能配下のServiceAが表示されること');
+                assert.ok(linkTexts.includes('method1'), 'ServiceAのメソッドが表示されること');
+                assert.ok(!linkTexts.includes('ServiceB'), 'ベータ機能配下のServiceBは表示されないこと');
+            });
+
+            test('パッケージ名に一致しない場合はクラス名・メソッド名の一致判定にフォールバックする', () => {
+                const filterInput = setupFilterTest();
+
+                filterInput.value = 'method2';
+                filterInput.dispatchEvent({type: 'input'});
+
+                const sidebar = document.getElementById('usecase-sidebar-list');
+                const linkTexts = [...sidebar.querySelectorAll('a')].map(a => a.textContent);
+                assert.ok(linkTexts.includes('ServiceB'), 'method2を持つServiceBが表示されること');
+                assert.ok(!linkTexts.includes('ServiceA'), 'method2を持たないServiceAは表示されないこと');
+            });
+        });
+
         test('クラス単位の図では内部メソッド（非PUBLIC）は表示されない', () => {
             const usecaseDataWithInternal = {
                 usecases: [{

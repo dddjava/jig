@@ -55,6 +55,22 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * typeFqnが属するパッケージ階層（自身から最上位まで）のいずれかの用語名がfilterTextを含むか判定する
+     * @param {string} typeFqn
+     * @param {string} filterText 小文字化済みの検索文字列
+     * @returns {boolean}
+     */
+    function packageHierarchyMatchesFilter(typeFqn, filterText) {
+        let packageFqn = Jig.util.getPackageFqnFromTypeFqn(typeFqn);
+        while (true) {
+            if (Jig.glossary.getPackageTerm(packageFqn).title.toLowerCase().includes(filterText)) return true;
+            const dotIdx = packageFqn.lastIndexOf('.');
+            if (dotIdx === -1) return false;
+            packageFqn = packageFqn.slice(0, dotIdx);
+        }
+    }
+
+    /**
      * @param {string} fqn
      * @returns {string}
      */
@@ -489,7 +505,7 @@ const UsecaseApp = (() => {
         const filterText = state.sidebarFilterText.toLowerCase();
         const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
 
-        // テキストフィルタ: クラス名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
+        // テキストフィルタ: クラス名/所属パッケージ名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
         const filteredItems = usecases.flatMap(usecase => {
             const visibleMethods = usecase.methods.filter(isVisibleMethod);
             if (visibleMethods.length === 0) return [];
@@ -497,6 +513,8 @@ const UsecaseApp = (() => {
 
             const classTitle = Jig.glossary.getTypeTerm(usecase.fqn).title.toLowerCase();
             if (classTitle.includes(filterText)) return [{usecase, methods: visibleMethods}];
+
+            if (packageHierarchyMatchesFilter(usecase.fqn, filterText)) return [{usecase, methods: visibleMethods}];
 
             const matchingMethods = visibleMethods.filter(m =>
                 Jig.glossary.getMethodTerm(m.fqn).title.toLowerCase().includes(filterText)

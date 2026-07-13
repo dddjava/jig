@@ -70,16 +70,28 @@ public class GlossaryDataAdapter implements DataAdapter {
      * 型・パッケージのFQNからリポジトリルート相対のソースパスへのマップを作る。
      * 用語（Javadoc）の有無に関わらず、ソースを解析した全ての型・パッケージを対象とする。
      */
-    private static Map<String, String> sourcePaths(TypeSourcePaths typeSourcePaths, Optional<Path> repositoryRoot) {
+    static Map<String, String> sourcePaths(TypeSourcePaths typeSourcePaths, Optional<Path> repositoryRoot) {
         if (repositoryRoot.isEmpty()) {
             return Map.of();
         }
-        Path root = repositoryRoot.get();
+        Path root = repositoryRoot.get().toAbsolutePath().normalize();
         var map = new TreeMap<String, String>();
         typeSourcePaths.typeMap().forEach((typeId, path) ->
-                map.put(typeId.fqn(), root.relativize(path).toString().replace('\\', '/')));
+                relativePath(root, path).ifPresent(relative -> map.put(typeId.fqn(), relative)));
         typeSourcePaths.packageMap().forEach((packageId, path) ->
-                map.put(packageId.asText(), root.relativize(path).toString().replace('\\', '/')));
+                relativePath(root, path).ifPresent(relative -> map.put(packageId.asText(), relative)));
         return map;
+    }
+
+    /**
+     * リポジトリ配下のパスのみ相対化する。別ドライブなど relativize できないパスや、
+     * リポジトリ外のパス（blob URL にできない）は empty を返す。
+     */
+    private static Optional<String> relativePath(Path root, Path path) {
+        Path normalized = path.toAbsolutePath().normalize();
+        if (!normalized.startsWith(root)) {
+            return Optional.empty();
+        }
+        return Optional.of(root.relativize(normalized).toString().replace('\\', '/'));
     }
 }

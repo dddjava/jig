@@ -16,10 +16,10 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
-import org.dddjava.jig.domain.model.knowledge.library.LibraryDependencyDiagram;
-import org.dddjava.jig.domain.model.knowledge.library.LibraryGroupingRule;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
+import org.dddjava.jig.domain.model.knowledge.library.LibraryDependencyDiagram;
+import org.dddjava.jig.domain.model.knowledge.library.LibraryGroupingRule;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
@@ -83,8 +83,8 @@ public class JigService {
         return usecaseQueryService.inboundAdapters(jigRepository);
     }
 
-    public AllMethodRelations methodRelations(JigRepository jigRepository) {
-        return typesQueryService.methodRelations(jigRepository);
+    public AllMethodRelations allMethodRelations(JigRepository jigRepository) {
+        return typesQueryService.allMethodRelations(jigRepository);
     }
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {

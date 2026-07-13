@@ -42,13 +42,13 @@ public class InboundDataAdapter implements DataAdapter {
     public String buildJson(JigRepository jigRepository) {
         var contextJigTypes = jigService.jigTypes(jigRepository);
         var inboundAdapters = jigService.inboundAdapters(jigRepository);
-        return buildInboundJson(inboundAdapters, contextJigTypes, jigService.methodRelations(jigRepository));
+        return buildInboundJson(inboundAdapters, contextJigTypes, jigService.allMethodRelations(jigRepository));
     }
 
-    public static String buildInboundJson(InboundAdapters inboundAdapters, JigTypes jigTypes, AllMethodRelations methodRelations) {
+    public static String buildInboundJson(InboundAdapters inboundAdapters, JigTypes jigTypes, AllMethodRelations allMethodRelations) {
         List<JsonObjectBuilder> controllerList = new ArrayList<>();
 
-        MethodRelations springComponentMethodRelations = methodRelations.filterApplicationComponent(jigTypes).inlineLambda();
+        MethodRelations springComponentMethodRelations = allMethodRelations.filterApplicationComponent(jigTypes).inlineLambda();
 
         inboundAdapters.groups().forEach(inboundAdapter -> {
             var jigType = inboundAdapter.jigType();

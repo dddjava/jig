@@ -24,7 +24,7 @@ public class TypesQueryService {
 
     private final Cache<JigRepository, JigTypes> jigTypesCache;
     private final Cache<JigRepository, CoreDomainJigTypes> coreDomainJigTypesCache;
-    private final Cache<JigRepository, AllMethodRelations> methodRelationsCache;
+    private final Cache<JigRepository, AllMethodRelations> allMethodRelationsCache;
 
     public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
         this.coreDomainCondition = coreDomainCondition;
@@ -33,14 +33,14 @@ public class TypesQueryService {
         if (System.getProperty("jig.debug", "false").equals("true")) {
             this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().recordStats().build();
-            this.methodRelationsCache = Caffeine.newBuilder().recordStats().build();
+            this.allMethodRelationsCache = Caffeine.newBuilder().recordStats().build();
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, coreDomainJigTypesCache, "coreDomainJigTypesCache");
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, methodRelationsCache, "methodRelationsCache");
+            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, allMethodRelationsCache, "allMethodRelationsCache");
         } else {
             this.jigTypesCache = Caffeine.newBuilder().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().build();
-            this.methodRelationsCache = Caffeine.newBuilder().build();
+            this.allMethodRelationsCache = Caffeine.newBuilder().build();
         }
     }
 
@@ -70,8 +70,8 @@ public class TypesQueryService {
      *
      * 全命令の走査を伴うため、キャッシュして経路ごとの再計算を避ける。
      */
-    public AllMethodRelations methodRelations(JigRepository jigRepository) {
-        return methodRelationsCache.get(jigRepository, key -> AllMethodRelations.from(jigTypes(jigRepository)));
+    public AllMethodRelations allMethodRelations(JigRepository jigRepository) {
+        return allMethodRelationsCache.get(jigRepository, key -> AllMethodRelations.from(jigTypes(jigRepository)));
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {

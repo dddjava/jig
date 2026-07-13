@@ -73,8 +73,7 @@ public class JigDocumentWriter {
                 Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            logger.error("リソースのコピーに失敗したため、ドキュメントの一部もしくはすべてが欠落します。" +
-                    "通常は起こらない例外なので環境を確認してみてください。(from:{} to:{})", resourcePath, outputPath, e);
+            throw new UncheckedIOException("リソースのコピーに失敗しました。(from:%s to:%s)".formatted(resourcePath, outputPath), e);
         }
     }
 

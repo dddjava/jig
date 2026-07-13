@@ -12,10 +12,6 @@ public record MethodRelation(JigMethodId from, JigMethodId to) {
         return new MethodRelation(from, to);
     }
 
-    public boolean calleeMethodIs(JigMethodId jigMethodId) {
-        return to().equals(jigMethodId);
-    }
-
     public TypeId toType() {
         return to().tuple().declaringTypeId();
     }

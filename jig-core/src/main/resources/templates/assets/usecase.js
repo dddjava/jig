@@ -496,9 +496,9 @@ const UsecaseApp = (() => {
             if (!filterText) return [{usecase, methods: visibleMethods}];
 
             const classTitle = Jig.glossary.getTypeTerm(usecase.fqn).title.toLowerCase();
-            if (classTitle.includes(filterText)) return [{usecase, methods: visibleMethods}];
-
-            if (Jig.glossary.packageHierarchyMatchesFilter(usecase.fqn, filterText)) return [{usecase, methods: visibleMethods}];
+            if (classTitle.includes(filterText) || Jig.glossary.packageHierarchyMatchesFilter(usecase.fqn, filterText)) {
+                return [{usecase, methods: visibleMethods}];
+            }
 
             const matchingMethods = visibleMethods.filter(m =>
                 Jig.glossary.getMethodTerm(m.fqn).title.toLowerCase().includes(filterText)

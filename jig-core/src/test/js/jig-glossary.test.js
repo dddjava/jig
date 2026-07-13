@@ -152,6 +152,34 @@ test.describe('jig-glossary.js', () => {
         });
     });
 
+// ----- packageHierarchyMatchesFilter -----
+
+    test.describe("packageHierarchyMatchesFilter", () => {
+        test.afterEach(() => {
+            delete globalThis.glossaryData;
+        });
+
+        test("直属パッケージの用語名が一致する場合はtrueを返す", () => {
+            setGlossaryData({"com.example": {title: "サンプル機能"}});
+            assert.equal(sut.packageHierarchyMatchesFilter("com.example.MyClass", "サンプル"), true);
+        });
+
+        test("祖先パッケージの用語名が一致する場合はtrueを返す", () => {
+            setGlossaryData({"com.example": {title: "ルート機能"}});
+            assert.equal(sut.packageHierarchyMatchesFilter("com.example.sub.MyClass", "ルート"), true);
+        });
+
+        test("どの階層の用語名にも一致しない場合はfalseを返す", () => {
+            setGlossaryData({"com.example": {title: "サンプル機能"}});
+            assert.equal(sut.packageHierarchyMatchesFilter("com.example.MyClass", "ベータ"), false);
+        });
+
+        test("デフォルトパッケージ（ドットなしFQN）の場合はfalseを返す（内部センチネル文字列 (default) が検索文字列に誤ヒットしないこと）", () => {
+            setGlossaryData({});
+            assert.equal(sut.packageHierarchyMatchesFilter("MyClass", "default"), false);
+        });
+    });
+
 // ----- getFieldTerm -----
 
     test.describe("getFieldTerm", () => {

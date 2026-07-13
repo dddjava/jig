@@ -72,13 +72,12 @@ globalThis.Jig.glossary = (() => {
      * @returns {boolean}
      */
     function packageHierarchyMatchesFilter(typeFqn, filterText) {
-        let packageFqn = globalThis.Jig.util.getPackageFqnFromTypeFqn(typeFqn);
-        while (true) {
-            if (getPackageTerm(packageFqn).title.toLowerCase().includes(filterText)) return true;
-            const dotIdx = packageFqn.lastIndexOf('.');
-            if (dotIdx === -1) return false;
-            packageFqn = packageFqn.slice(0, dotIdx);
-        }
+        const packageFqn = globalThis.Jig.util.getPackageFqnFromTypeFqn(typeFqn);
+        if (packageFqn === '(default)') return false;
+        const segments = packageFqn.split('.');
+        return segments.some((_, i) =>
+            getPackageTerm(segments.slice(0, i + 1).join('.')).title.toLowerCase().includes(filterText)
+        );
     }
 
     function getTypeTerm(fqn) {

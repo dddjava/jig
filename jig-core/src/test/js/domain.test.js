@@ -1000,5 +1000,23 @@ test.describe('domain.js', () => {
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
         });
+
+        test('所属パッケージ階層名がマッチすれば、クラス名自体が一致しなくても配下の型アイテムが表示される', () => {
+            const {sidebar, filterInput} = setupFilterTest();
+
+            filterInput.value = 'example';
+            filterInput.dispatchEvent({type: 'input'});
+
+            const typeItems = [...sidebar.querySelectorAll('div[data-kind]')];
+            const fooLi = typeItems.find(div => div.querySelector('a')?.textContent.includes('FooClass'))?.closest('li');
+            const barLi = typeItems.find(div => div.querySelector('a')?.textContent.includes('BarClass'))?.closest('li');
+
+            assert.equal(fooLi.style.display, '', 'パッケージ名にマッチする場合、FooClassも表示されること');
+            assert.equal(barLi.style.display, '', 'パッケージ名にマッチする場合、BarClassも表示されること');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
     });
 });

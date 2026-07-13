@@ -515,6 +515,7 @@ const DomainApp = (() => {
                     href: "#" + Jig.util.fqnToId("domain", child.fqn),
                     "data-kind": "クラス",
                     "data-kind-char": Jig.dom.kind.badgeChar("クラス"),
+                    "data-fqn": child.fqn,
                 },
                 className: "in-page-sidebar__link" + (domainType?.isDeprecated ? " deprecated" : ""),
                 textContent: Jig.glossary.getTypeTerm(child.fqn).title
@@ -1187,7 +1188,10 @@ const DomainApp = (() => {
         sidebar.querySelectorAll('div[data-kind]').forEach(div => {
             const link = div.querySelector('a');
             const text = (link?.textContent ?? '').toLowerCase();
-            div.closest('li').style.display = text.includes(filterText) ? '' : 'none';
+            const fqn = link?.dataset.fqn;
+            const matches = text.includes(filterText)
+                || (fqn && Jig.glossary.packageHierarchyMatchesFilter(fqn, filterText));
+            div.closest('li').style.display = matches ? '' : 'none';
         });
 
         [...sidebar.querySelectorAll('[data-kind-children]')]

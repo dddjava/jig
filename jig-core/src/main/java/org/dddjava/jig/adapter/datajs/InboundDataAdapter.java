@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.relation.methods.AllMethodRelations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -44,7 +45,7 @@ public class InboundDataAdapter implements DataAdapter {
         return buildInboundJson(inboundAdapters, contextJigTypes, jigService.methodRelations(jigRepository));
     }
 
-    public static String buildInboundJson(InboundAdapters inboundAdapters, JigTypes jigTypes, MethodRelations methodRelations) {
+    public static String buildInboundJson(InboundAdapters inboundAdapters, JigTypes jigTypes, AllMethodRelations methodRelations) {
         List<JsonObjectBuilder> controllerList = new ArrayList<>();
 
         MethodRelations springComponentMethodRelations = methodRelations.filterApplicationComponent(jigTypes).inlineLambda();

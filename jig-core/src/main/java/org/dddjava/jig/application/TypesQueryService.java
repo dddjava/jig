@@ -8,7 +8,7 @@ import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
-import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
+import org.dddjava.jig.domain.model.information.relation.methods.AllMethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
@@ -24,7 +24,7 @@ public class TypesQueryService {
 
     private final Cache<JigRepository, JigTypes> jigTypesCache;
     private final Cache<JigRepository, CoreDomainJigTypes> coreDomainJigTypesCache;
-    private final Cache<JigRepository, MethodRelations> methodRelationsCache;
+    private final Cache<JigRepository, AllMethodRelations> methodRelationsCache;
 
     public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
         this.coreDomainCondition = coreDomainCondition;
@@ -70,8 +70,8 @@ public class TypesQueryService {
      *
      * 全命令の走査を伴うため、キャッシュして経路ごとの再計算を避ける。
      */
-    public MethodRelations methodRelations(JigRepository jigRepository) {
-        return methodRelationsCache.get(jigRepository, key -> MethodRelations.from(jigTypes(jigRepository)));
+    public AllMethodRelations methodRelations(JigRepository jigRepository) {
+        return methodRelationsCache.get(jigRepository, key -> AllMethodRelations.from(jigTypes(jigRepository)));
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {

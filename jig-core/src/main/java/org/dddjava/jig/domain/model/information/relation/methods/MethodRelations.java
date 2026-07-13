@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,36 +9,16 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
  * メソッドの関連一覧
+ *
+ * 特定条件で絞り込まれた関連の集合。全体集合は {@link AllMethodRelations} が扱う。
  */
-public class MethodRelations implements CallerMethodsFactory {
+public record MethodRelations(Collection<MethodRelation> relations) {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
-
-    private final Collection<MethodRelation> relations;
-
-    /** calleeで引くためのインデックス。callerMethodsOfで必要になったときに構築する */
-    private volatile Map<JigMethodId, Set<JigMethodId>> calleeIndex = null;
-
-    public MethodRelations(Collection<MethodRelation> relations) {
-        this.relations = relations;
-    }
-
-    public Collection<MethodRelation> relations() {
-        return relations;
-    }
-
-    public static MethodRelations from(JigTypes jigTypes) {
-        return new MethodRelations(jigTypes.orderedStream()
-                .flatMap(jigType -> jigType.allJigMethodStream())
-                .flatMap(jigMethod -> jigMethod.instructions().methodCallStream()
-                        .filter(toMethod -> toMethod.isNotJSL()) // JSLを除く
-                        .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                        .map(toMethod -> MethodRelation.from(jigMethod.jigMethodId(), toMethod.jigMethodId())))
-                .toList());
-    }
 
     public MethodRelations filterApplicationComponent(JigTypes jigTypes) {
         return relations().stream()
@@ -48,21 +27,6 @@ public class MethodRelations implements CallerMethodsFactory {
                                 && jigTypes.isApplicationComponent(methodRelation.toType())
                 )
                 .collect(collectingAndThen(toList(), MethodRelations::new));
-    }
-
-    /**
-     * 呼び出し元メソッドのフィルタリング
-     */
-    @Override
-    public CallerMethods callerMethodsOf(JigMethodId jigMethodId) {
-        var index = calleeIndex;
-        if (index == null) {
-            // 競合しても同じ結果になるので排他はしない
-            index = relations.stream()
-                    .collect(groupingBy(MethodRelation::to, mapping(MethodRelation::from, toSet())));
-            calleeIndex = index;
-        }
-        return new CallerMethods(index.getOrDefault(jigMethodId, Set.of()));
     }
 
     public MethodRelations filterFromRecursive(JigMethodId baseMethod, Predicate<JigMethodId> stopper) {

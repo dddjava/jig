@@ -9,13 +9,28 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 /**
  * サービスメソッド一覧
  */
-public record ServiceMethods(List<Entry> entries) {
+public class ServiceMethods {
+
+    private final List<Entry> entries;
+    private final Set<JigMethodId> jigMethodIds;
+
+    private ServiceMethods(List<Entry> entries) {
+        this.entries = entries;
+        this.jigMethodIds = entries.stream()
+                .flatMap(entry -> entry.serviceMethodList().stream())
+                .map(serviceMethod -> serviceMethod.method().jigMethodId())
+                .collect(toUnmodifiableSet());
+    }
+
     public <T> Stream<T> streamAndMap(BiFunction<JigType, List<ServiceMethod>, T> biFunction) {
         return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.serviceMethodList));
     }
@@ -37,12 +52,11 @@ public record ServiceMethods(List<Entry> entries) {
     }
 
     public boolean isEmpty() {
-        return list().isEmpty();
+        return jigMethodIds.isEmpty();
     }
 
     public boolean contains(JigMethodId jigMethodId) {
-        return list().stream()
-                .anyMatch(serviceMethod -> serviceMethod.method().jigMethodId().equals(jigMethodId));
+        return jigMethodIds.contains(jigMethodId);
     }
 
     public List<ServiceMethod> list() {

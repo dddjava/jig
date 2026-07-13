@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -80,6 +81,10 @@ public class JigService {
 
     public InboundAdapters inboundAdapters(JigRepository jigRepository) {
         return usecaseQueryService.inboundAdapters(jigRepository);
+    }
+
+    public MethodRelations methodRelations(JigRepository jigRepository) {
+        return typesQueryService.methodRelations(jigRepository);
     }
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {

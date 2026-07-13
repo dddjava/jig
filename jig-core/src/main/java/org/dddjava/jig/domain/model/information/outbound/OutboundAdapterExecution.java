@@ -47,11 +47,6 @@ public record OutboundAdapterExecution(
                 .toList();
     }
 
-    public boolean uses(PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        return persistenceAccessorOperations.stream()
-                .anyMatch(persistenceAccessor -> persistenceAccessor.id().equals(persistenceAccessorOperationId));
-    }
-
     /**
      * 呼び出している永続化アクセサ操作を収集する
      */

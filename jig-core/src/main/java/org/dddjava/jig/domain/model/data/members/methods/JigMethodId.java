@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.data.members.methods;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -27,22 +26,25 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
     }
 
     public String name() {
-        return value.split("[#()]")[1];
+        return value.substring(value.indexOf('#') + 1, value.indexOf('('));
     }
 
     /**
      * メソッドの名前空間（＝定義されたクラスのFQN）を取得する
      */
     public String namespace() {
-        return value.split("#")[0];
+        return value.substring(0, value.indexOf('#'));
     }
 
     public Tuple tuple() {
-        String[] split = value.split("[#()]");
-        if (split.length == 2) {
-            return new Tuple(split[0], split[1], List.of());
-        }
-        return new Tuple(split[0], split[1], Arrays.stream(split[2].split(",")).toList());
+        // ホットパスなので正規表現splitでなくindexOfで分解する
+        int hashIndex = value.indexOf('#');
+        int parenIndex = value.indexOf('(', hashIndex);
+        String parametersText = value.substring(parenIndex + 1, value.length() - 1);
+        return new Tuple(
+                value.substring(0, hashIndex),
+                value.substring(hashIndex + 1, parenIndex),
+                parametersText.isEmpty() ? List.of() : List.of(parametersText.split(",")));
     }
 
     public boolean isLambda() {

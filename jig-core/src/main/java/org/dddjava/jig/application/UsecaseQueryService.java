@@ -3,7 +3,6 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
-import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
 
@@ -30,7 +29,7 @@ public class UsecaseQueryService {
 
     public ServiceMethods serviceMethods(JigRepository jigRepository) {
         JigTypes serviceJigTypes = typesQueryService.serviceTypes(jigRepository);
-        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(typesQueryService.jigTypes(jigRepository)));
+        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, typesQueryService.methodRelations(jigRepository));
         if (serviceMethods.isEmpty()) jigEventRepository.registerサービスが見つからない();
         return serviceMethods;
     }

@@ -55,7 +55,7 @@ class SampleDataWriterTest {
                 ListOutputDataAdapter.buildListJson(repository, jigService));
 
         writeDataJs("inbound-data.js", "inboundData",
-                InboundDataAdapter.buildInboundJson(jigService.inboundAdapters(repository), jigTypes));
+                InboundDataAdapter.buildInboundJson(jigService.inboundAdapters(repository), jigTypes, jigService.methodRelations(repository)));
 
         writeDataJs("usecase-data.js", "usecaseData",
                 UsecaseDataAdapter.buildUsecaseJson(jigService.serviceTypes(repository)));

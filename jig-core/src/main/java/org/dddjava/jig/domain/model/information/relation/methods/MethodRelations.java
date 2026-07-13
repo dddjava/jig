@@ -15,8 +15,21 @@ import static java.util.stream.Collectors.*;
 /**
  * メソッドの関連一覧
  */
-public record MethodRelations(Collection<MethodRelation> relations) implements CallerMethodsFactory {
+public class MethodRelations implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
+
+    private final Collection<MethodRelation> relations;
+
+    /** calleeで引くためのインデックス。callerMethodsOfで必要になったときに構築する */
+    private volatile Map<JigMethodId, Set<JigMethodId>> calleeIndex = null;
+
+    public MethodRelations(Collection<MethodRelation> relations) {
+        this.relations = relations;
+    }
+
+    public Collection<MethodRelation> relations() {
+        return relations;
+    }
 
     public static MethodRelations from(JigTypes jigTypes) {
         return new MethodRelations(jigTypes.orderedStream()
@@ -42,10 +55,14 @@ public record MethodRelations(Collection<MethodRelation> relations) implements C
      */
     @Override
     public CallerMethods callerMethodsOf(JigMethodId jigMethodId) {
-        return new CallerMethods(relations.stream()
-                .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodId))
-                .map(MethodRelation::from)
-                .collect(toSet()));
+        var index = calleeIndex;
+        if (index == null) {
+            // 競合しても同じ結果になるので排他はしない
+            index = relations.stream()
+                    .collect(groupingBy(MethodRelation::to, mapping(MethodRelation::from, toSet())));
+            calleeIndex = index;
+        }
+        return new CallerMethods(index.getOrDefault(jigMethodId, Set.of()));
     }
 
     public MethodRelations filterFromRecursive(JigMethodId baseMethod, Predicate<JigMethodId> stopper) {

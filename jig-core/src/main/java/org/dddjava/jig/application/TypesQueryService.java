@@ -8,6 +8,7 @@ import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
@@ -23,6 +24,7 @@ public class TypesQueryService {
 
     private final Cache<JigRepository, JigTypes> jigTypesCache;
     private final Cache<JigRepository, CoreDomainJigTypes> coreDomainJigTypesCache;
+    private final Cache<JigRepository, MethodRelations> methodRelationsCache;
 
     public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
         this.coreDomainCondition = coreDomainCondition;
@@ -31,11 +33,14 @@ public class TypesQueryService {
         if (System.getProperty("jig.debug", "false").equals("true")) {
             this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().recordStats().build();
+            this.methodRelationsCache = Caffeine.newBuilder().recordStats().build();
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, coreDomainJigTypesCache, "coreDomainJigTypesCache");
+            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, methodRelationsCache, "methodRelationsCache");
         } else {
             this.jigTypesCache = Caffeine.newBuilder().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().build();
+            this.methodRelationsCache = Caffeine.newBuilder().build();
         }
     }
 
@@ -58,6 +63,15 @@ public class TypesQueryService {
 
     public MethodSmells methodSmells(JigRepository jigRepository) {
         return MethodSmells.from(coreDomainJigTypes(jigRepository).jigTypes());
+    }
+
+    /**
+     * メソッド関連を取得する
+     *
+     * 全命令の走査を伴うため、キャッシュして経路ごとの再計算を避ける。
+     */
+    public MethodRelations methodRelations(JigRepository jigRepository) {
+        return methodRelationsCache.get(jigRepository, key -> MethodRelations.from(jigTypes(jigRepository)));
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {

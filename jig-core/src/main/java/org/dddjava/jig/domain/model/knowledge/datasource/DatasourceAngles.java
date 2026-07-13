@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -23,6 +24,11 @@ import static java.util.stream.Collectors.groupingBy;
 public record DatasourceAngles(List<DatasourceAngle> list) {
 
     public static DatasourceAngles from(OutboundAdapters outboundAdapters, PersistenceAccessorRepository persistenceAccessorRepository, CallerMethodsFactory callerMethodsFactory) {
+        // ポート操作ごとの全件走査を避けるため、永続化操作をIDで引けるようにしておく
+        Map<PersistenceAccessorOperationId, List<PersistenceAccessorOperation>> operationMap = persistenceAccessorRepository.values().stream()
+                .flatMap(ops -> ops.persistenceAccessorOperations().stream())
+                .collect(groupingBy(PersistenceAccessorOperation::id));
+
         return new DatasourceAngles(outboundAdapters.stream()
                 .flatMap(adapter -> adapter.outboundPortStream()
                         .flatMap(port -> port.operationStream()
@@ -31,13 +37,14 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                                             CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(portOp.jigMethod().jigMethodId());
 
                                             // 内部で呼び出している永続化操作を操作の種類ごとに収集する
-                                            Map<PersistenceOperationType, List<String>> map = persistenceAccessorRepository.values().stream()
-                                                    .flatMap(ops -> ops.persistenceAccessorOperations().stream())
-                                                    .filter(persistenceAccessor -> {
-                                                        PersistenceAccessorOperationId persistenceAccessorOperationId = persistenceAccessor.id();
-                                                        return outboundPortOperationUseSQL(portOp, persistenceAccessorOperationId)
-                                                                || outboundAdapterExecutionUseSQL(exec, persistenceAccessorOperationId);
-                                                    })
+                                            Map<PersistenceOperationType, List<String>> map = Stream.concat(
+                                                            // OutboundPortOperationがDBアクセスするもの。
+                                                            // SpringDataJDBCを直接Serviceで使用している場合などにRepositoryインタフェースとSQLステートメントが一致する。
+                                                            Stream.of(portOperationId(portOp)),
+                                                            // OutboundAdapterExecutionに紐づく永続化操作
+                                                            exec.persistenceAccessorOperations().stream().map(PersistenceAccessorOperation::id))
+                                                    .distinct()
+                                                    .flatMap(operationId -> operationMap.getOrDefault(operationId, List.of()).stream())
                                                     .collect(groupingBy(PersistenceAccessorOperation::statementOperationType,
                                                             Collectors.collectingAndThen(Collectors.toList(),
                                                                     // テーブル名の重複を排除してソートしたリストにする
@@ -55,22 +62,12 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     }
 
     /**
-     * OutboundAdapterExecutionがDBアクセスしているかを判定する
+     * OutboundPortOperationに対応する永続化操作のIDを求める
      *
-     * OutboundAdapterExecutionに紐づく永続化操作で判断する
+     * namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当する。
      */
-    private static boolean outboundAdapterExecutionUseSQL(org.dddjava.jig.domain.model.information.outbound.OutboundAdapterExecution adapterExecution, PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        return adapterExecution.uses(persistenceAccessorOperationId);
-    }
-
-    /**
-     * OutboundPortOperationがDBアクセスするものかを判定する
-     *
-     * SpringDataJDBCを直接Serviceで使用している場合などにRepositoryインタフェースとSQLステートメントが一致する。
-     */
-    private static boolean outboundPortOperationUseSQL(OutboundPortOperation portOperation, PersistenceAccessorOperationId persistenceAccessorOperationId) {
+    private static PersistenceAccessorOperationId portOperationId(OutboundPortOperation portOperation) {
         var operationMethodId = portOperation.jigMethod().jigMethodId();
-        // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return persistenceAccessorOperationId.matches(TypeId.valueOf(operationMethodId.namespace()), operationMethodId.name());
+        return PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(operationMethodId.namespace()), operationMethodId.name());
     }
 }

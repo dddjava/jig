@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.data.types;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 
-import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -85,13 +85,16 @@ public record TypeId(String value) implements Comparable<TypeId> {
         return PackageId.valueOf(value.substring(0, value.lastIndexOf(".")));
     }
 
+    /** プリミティブ型の名前。isPrimitiveはホットパスなので正規表現でなくSetで判定する */
+    private static final Set<String> PRIMITIVE_TYPE_NAMES = Set.of("int", "long", "boolean", "double", "float", "byte", "char", "short");
+
     public boolean isBoolean() {
-        Class<?>[] booleanTypes = {Boolean.class, boolean.class};
-        return Arrays.stream(booleanTypes).anyMatch(clazz -> clazz.getName().equals(value));
+        return value.equals("java.lang.Boolean") || value.equals("boolean");
     }
 
     public boolean isPrimitive() {
-        return value.matches("(int|long|boolean|double|float|byte|char|short)(\\[])?");
+        return PRIMITIVE_TYPE_NAMES.contains(value)
+                || (value.endsWith("[]") && PRIMITIVE_TYPE_NAMES.contains(value.substring(0, value.length() - 2)));
     }
 
     public boolean isStreamAPI() {

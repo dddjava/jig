@@ -65,6 +65,22 @@ globalThis.Jig.glossary = (() => {
         return getTermOrSimpleName(fqn);
     }
 
+    /**
+     * typeFqnが属するパッケージ階層（自身から最上位まで）のいずれかの用語名にfilterTextが含まれるか判定する
+     * @param {string} typeFqn
+     * @param {string} filterText 小文字化済みの検索文字列
+     * @returns {boolean}
+     */
+    function packageHierarchyMatchesFilter(typeFqn, filterText) {
+        let packageFqn = globalThis.Jig.util.getPackageFqnFromTypeFqn(typeFqn);
+        while (true) {
+            if (getPackageTerm(packageFqn).title.toLowerCase().includes(filterText)) return true;
+            const dotIdx = packageFqn.lastIndexOf('.');
+            if (dotIdx === -1) return false;
+            packageFqn = packageFqn.slice(0, dotIdx);
+        }
+    }
+
     function getTypeTerm(fqn) {
         return getTermOrSimpleName(fqn);
     }
@@ -146,6 +162,7 @@ globalThis.Jig.glossary = (() => {
 
     return {
         getPackageTerm,
+        packageHierarchyMatchesFilter,
         getTypeTerm,
         getFieldTerm,
         getMethodTerm,

@@ -55,22 +55,6 @@ const UsecaseApp = (() => {
     }
 
     /**
-     * typeFqnが属するパッケージ階層（自身から最上位まで）のいずれかの用語名がfilterTextを含むか判定する
-     * @param {string} typeFqn
-     * @param {string} filterText 小文字化済みの検索文字列
-     * @returns {boolean}
-     */
-    function packageHierarchyMatchesFilter(typeFqn, filterText) {
-        let packageFqn = Jig.util.getPackageFqnFromTypeFqn(typeFqn);
-        while (true) {
-            if (Jig.glossary.getPackageTerm(packageFqn).title.toLowerCase().includes(filterText)) return true;
-            const dotIdx = packageFqn.lastIndexOf('.');
-            if (dotIdx === -1) return false;
-            packageFqn = packageFqn.slice(0, dotIdx);
-        }
-    }
-
-    /**
      * @param {string} fqn
      * @returns {string}
      */
@@ -514,7 +498,7 @@ const UsecaseApp = (() => {
             const classTitle = Jig.glossary.getTypeTerm(usecase.fqn).title.toLowerCase();
             if (classTitle.includes(filterText)) return [{usecase, methods: visibleMethods}];
 
-            if (packageHierarchyMatchesFilter(usecase.fqn, filterText)) return [{usecase, methods: visibleMethods}];
+            if (Jig.glossary.packageHierarchyMatchesFilter(usecase.fqn, filterText)) return [{usecase, methods: visibleMethods}];
 
             const matchingMethods = visibleMethods.filter(m =>
                 Jig.glossary.getMethodTerm(m.fqn).title.toLowerCase().includes(filterText)

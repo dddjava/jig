@@ -875,6 +875,47 @@ test.describe('inbound.js', () => {
         );
     });
 
+    test('サイドバー検索は所属パッケージ名でも絞り込める', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [
+                {
+                    fqn: "com.example.pkga.ControllerA",
+                    classPath: "/a", relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.pkga.ControllerA#get()", entrypointType: "HTTP_API", path: "GET /a", parameters: [], returnTypeRef: {fqn: "void"}}
+                    ]
+                },
+                {
+                    fqn: "com.example.pkgb.ControllerB",
+                    classPath: "/b", relations: [],
+                    entrypoints: [
+                        {fqn: "com.example.pkgb.ControllerB#get()", entrypointType: "HTTP_API", path: "GET /b", parameters: [], returnTypeRef: {fqn: "void"}}
+                    ]
+                }
+            ]
+        };
+        setGlossaryData({
+            "com.example.pkga": {title: "アルファ機能"},
+            "com.example.pkga.ControllerA": {title: "ControllerA"},
+            "com.example.pkgb": {title: "ベータ機能"},
+            "com.example.pkgb.ControllerB": {title: "ControllerB"},
+        });
+
+        const filterInput = doc.createElement('input');
+        filterInput.id = 'inbound-sidebar-filter';
+        doc.body.appendChild(filterInput);
+
+        InboundApp.init();
+
+        filterInput.value = 'アルファ';
+        filterInput.dispatchEvent({type: 'input'});
+
+        const sidebar = document.getElementById('inbound-sidebar-list');
+        const linkTexts = [...sidebar.querySelectorAll('a')].map(a => a.textContent);
+        assert.ok(linkTexts.includes('ControllerA'), 'アルファ機能配下のControllerAが表示されること');
+        assert.ok(!linkTexts.includes('ControllerB'), 'ベータ機能配下のControllerBは表示されないこと');
+    });
+
     test('ioTypesがある場合はルート型カードが描画されフィールドを展開する', () => {
         globalThis.inboundData = {
             inboundAdapters: [{

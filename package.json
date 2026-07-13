@@ -5,14 +5,9 @@
     "test": "node --test jig-core/src/test/js/*.test.js",
     "test:coverage": "node --test --experimental-test-coverage jig-core/src/test/js/*.test.js",
     "test:full": "npm run test && ./gradlew clean test",
-    "lint:css": "stylelint \"jig-core/src/main/resources/templates/**/*.css\"",
-    "pw": "playwright test",
-    "pw:ui": "playwright test --ui",
-    "pw:update": "playwright test --update-snapshots",
-    "pw:report": "playwright show-report"
+    "lint:css": "stylelint \"jig-core/src/main/resources/templates/**/*.css\""
   },
   "devDependencies": {
-    "@playwright/test": "1.61.1",
     "jsdom": "^29.1.1",
     "stylelint": "^17.14.0",
     "stylelint-config-recommended": "^18.0.0"

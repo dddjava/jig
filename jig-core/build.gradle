@@ -80,8 +80,8 @@ dependencies {
     testImplementation("org.springframework:spring-web")
 
     // テストで読み取るのに使用するアノテーションなど
-    testImplementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.52")
-    testImplementation("jakarta.validation:jakarta.validation-api:3.1.1")
+    testImplementation(libs.swagger.annotations.jakarta)
+    testImplementation(libs.jakarta.validation.api)
 }
 
 def bundleJsOutputDir = layout.buildDirectory.dir("generated/resources/bundle")

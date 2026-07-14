@@ -1,10 +1,19 @@
 [versions]
+spring-boot-plugin = "4.1.0"
+asm = "9.10.1"
+javaparser = "3.28.2"
+mybatis = "3.5.19"
+junit-bom = "5.12.0"
+swagger-annotations-jakarta = "2.2.52"
+jakarta-validation-api = "3.1.1"
 
 [libraries]
-spring-boot-plugin = "org.springframework.boot:spring-boot-gradle-plugin:4.1.0"
-
-asm = "org.ow2.asm:asm:9.10.1"
-javaparser = "com.github.javaparser:javaparser-core:3.28.2"
-mybatis = "org.mybatis:mybatis:3.5.19"
+spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot-plugin" }
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+javaparser = { module = "com.github.javaparser:javaparser-core", version.ref = "javaparser" }
+mybatis = { module = "org.mybatis:mybatis", version.ref = "mybatis" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
+swagger-annotations-jakarta = { module = "io.swagger.core.v3:swagger-annotations-jakarta", version.ref = "swagger-annotations-jakarta" }
+jakarta-validation-api = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakarta-validation-api" }
 
 [bundles]

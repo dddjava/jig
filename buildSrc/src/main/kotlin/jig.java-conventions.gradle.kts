@@ -35,8 +35,10 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
+val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.12.0"))
+    testImplementation(platform(libs.findLibrary("junit-bom").get()))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

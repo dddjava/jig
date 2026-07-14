@@ -153,22 +153,6 @@ globalThis.Jig.util = (() => {
     }
 
     /**
-     * items をパッケージFQN単位でグループ化する。
-     * パッケージのないFQN（ドットなし）は "(default)" にグループ化される。
-     * @template T
-     * @param {T[]} items
-     * @param {function(T): string} getFqn - アイテムのFQNを返す関数
-     * @returns {Map<string, T[]>} パッケージFQN → アイテム配列
-     */
-    function groupByPackageFqn(items, getFqn) {
-        const byPackage = new Map();
-        items.forEach(item => {
-            pushToMap(byPackage, getPackageFqnFromTypeFqn(getFqn(item)), item);
-        });
-        return byPackage;
-    }
-
-    /**
      * items の型FQNからパッケージ階層ツリーを構築する。
      * 各itemのパッケージFQNから最上位セグメントまでの中間パッケージノードを補完して親子連結する。
      * パッケージのないFQN（ドットなし）は "(default)" ノードに属する。
@@ -246,7 +230,6 @@ globalThis.Jig.util = (() => {
         collectTypeRefFqns,
         pushToMap,
         addToSetMap,
-        groupByPackageFqn,
         buildPackageTree,
         flattenPackageTree,
     }

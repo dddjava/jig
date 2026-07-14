@@ -1320,12 +1320,15 @@ table td.number {
     color: #5a7a9a;
 }
 
-/* トグルは常時薄く表示し、下位ノードを持つことがホバーなしでもわかるようにする */
+/* トグルは常時薄く表示し、下位ノードを持つことがホバーなしでもわかるようにする。
+   クリックしやすいよう当たり判定は行の高さいっぱいに拡げる（シェブロンの見た目は::beforeのサイズのまま） */
 
 .in-page-sidebar__toggle {
     opacity: 0.45;
     position: sticky;
     right: 0;
+    width: 28px;
+    height: 28px;
     border-radius: 4px;
     transition: opacity 0.15s, background-color 0.15s ease, color 0.15s ease;
 }

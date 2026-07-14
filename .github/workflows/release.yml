@@ -1,0 +1,53 @@
+name: Release
+
+# タグの push をトリガーに、リリースビルドと Draft リリースの作成を行う。
+# Maven Central / Gradle Plugin Portal への公開は CircleCI (.circleci/config.yml) で
+# 行っており、移行が完了するまでこのワークフローでは実施しない。
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=UTF-8'
+      # CircleCI の publish ジョブと同様にタグ名をバージョンとしてビルドする
+      ORG_GRADLE_PROJECT_version: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5.4.0
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Run Build
+        run: ./gradlew build
+      - name: Upload test failure report
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: test-failure-reports-release
+          path: build/reports/tests/
+          retention-days: 3
+      - name: Dogfooding
+        run: java -jar jig-cli/build/libs/jig-cli.jar --outputDirectory=example
+      - name: Upload dogfooding result
+        uses: actions/upload-artifact@v7
+        with:
+          name: example
+          path: example
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --draft \
+            --verify-tag \
+            --title "${{ github.ref_name }}" \
+            --generate-notes \
+            jig-cli/build/libs/jig-cli.jar

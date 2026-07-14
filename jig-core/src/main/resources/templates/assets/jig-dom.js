@@ -1020,6 +1020,17 @@ globalThis.Jig.dom = (() => {
     }
 
     /**
+     * サイドバーのパッケージノードからメインのパッケージ見出しへのリンク先を返す。
+     * メインに見出しがあるのは「クラスを直接持つ」または「用語(package-info)を持つ」パッケージ
+     * （flattenPackageTree に Jig.glossary.hasTerm を渡して生成する見出しと対になる規則）
+     */
+    function packageHeadingHref(node) {
+        return (node.items.length > 0 || globalThis.Jig.glossary.hasTerm(node.fqn))
+            ? "#" + globalThis.Jig.util.fqnToId("package", node.fqn)
+            : null;
+    }
+
+    /**
      * パッケージ見出しセクション。用語のタイトル・FQN・説明（あれば）を表示する。
      * サイドバーのパッケージノードのリンク先になる
      */
@@ -1083,6 +1094,7 @@ globalThis.Jig.dom = (() => {
             renderSection,
             renderTreeSection,
             renderLinkGroup,
+            packageHeadingHref,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,

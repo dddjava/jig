@@ -267,10 +267,7 @@ const InboundApp = (() => {
                     "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
                     Jig.glossary.getTypeTerm(adapter.fqn).title
                 ),
-                // メインに見出しがあるのは「クラスを直接持つ」または「用語(package-info)を持つ」パッケージ
-                packageHref: node => (node.items.length > 0 || Jig.glossary.findTerm(node.fqn))
-                    ? "#" + Jig.util.fqnToId(PACKAGE_ID_PREFIX, node.fqn)
-                    : null
+                packageHref: Jig.dom.sidebar.packageHeadingHref
             });
         });
     }
@@ -512,7 +509,7 @@ const InboundApp = (() => {
 
         // パッケージごとに見出しを置き、アダプターカードをまとめる。サイドバーのパッケージノードのリンク先になる
         // 用語（package-info）を持つパッケージはクラスを直接含まなくても見出しと説明を表示する
-        Jig.util.flattenPackageTree(adapters, adapter => adapter.fqn, fqn => !!Jig.glossary.findTerm(fqn))
+        Jig.util.flattenPackageTree(adapters, adapter => adapter.fqn, Jig.glossary.hasTerm)
             .forEach(({fqn: packageFqn, items: packageAdapters}) => {
                 container.appendChild(buildPackageHeading(packageFqn));
                 packageAdapters.forEach(adapter => container.appendChild(buildAdapterCard(adapter, usecaseData)));

@@ -14,6 +14,14 @@ globalThis.Jig.glossary = (() => {
     }
 
     /**
+     * @param {string} fqn
+     * @return {boolean}
+     */
+    function hasTerm(fqn) {
+        return !!findTerm(fqn);
+    }
+
+    /**
      * 型/パッケージ/メソッド等のFQNからソース（GitHub等）へのリンク要素を生成する。
      * sourcePath と blobUrlPrefix が揃う場合のみ要素を返し、それ以外は null。
      * メソッドFQNは型FQNにフォールバックして解決する。
@@ -166,6 +174,7 @@ globalThis.Jig.glossary = (() => {
         getFieldTerm,
         getMethodTerm,
         findTerm,
+        hasTerm,
         sourceLink,
         typeSimpleName,
         methodSimpleName,

@@ -74,6 +74,7 @@ test.describe('usecase.js', () => {
                 }, Event: EventStub
             };
             global.marked = {parse: (text) => text};
+            global.DOMPurify = {sanitize: (html) => html};
             global.mermaid = {
                 initialize: () => {
                 }, run: () => {
@@ -952,6 +953,7 @@ test.describe('usecase.js', () => {
                     }, Event: EventStub
                 };
                 global.marked = {parse: (text) => text};
+                global.DOMPurify = {sanitize: (html) => html};
                 global.mermaid = {
                     initialize: () => {
                     }, run: () => {
@@ -1228,6 +1230,7 @@ test.describe('usecase.js', () => {
                     }, Event: EventStub
                 };
                 global.marked = {parse: (text) => text};
+                global.DOMPurify = {sanitize: (html) => html};
                 global.mermaid = {
                     initialize: () => {
                     }, run: () => {
@@ -1296,6 +1299,7 @@ test.describe('usecase.js', () => {
                 }, Event: EventStub
             };
             global.marked = {parse: (text) => text};
+            global.DOMPurify = {sanitize: (html) => html};
             global.mermaid = {
                 initialize: () => {
                 }, run: () => {
@@ -1354,6 +1358,7 @@ test.describe('usecase.js', () => {
                 }, Event: EventStub
             };
             global.marked = {parse: (text) => text};
+            global.DOMPurify = {sanitize: (html) => html};
             global.mermaid = {
                 initialize: () => {
                 }, run: () => {

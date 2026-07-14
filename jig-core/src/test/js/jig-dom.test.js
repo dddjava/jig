@@ -42,6 +42,7 @@ test.describe('jig-dom.js', () => {
         global.marked = {
             parse: (text) => `<p>${text}</p>`
         };
+        global.DOMPurify = require('dompurify')(dom.window);
         global.navigationData = undefined;
 
         reloadJigModules();
@@ -217,6 +218,24 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sanitizeHtml', () => {
+        test('DOMPurify がある場合、危険なマークアップを除去する', () => {
+            const result = Jig.dom.sanitizeHtml('<p>ok</p><img src=x onerror=alert(1)>');
+            assert.equal(result.includes('onerror'), false);
+            assert.equal(result.includes('<p>ok</p>'), true);
+        });
+
+        test('DOMPurify が無い場合、null を返す', () => {
+            const original = global.DOMPurify;
+            global.DOMPurify = undefined;
+            try {
+                assert.equal(Jig.dom.sanitizeHtml('<p>ok</p>'), null);
+            } finally {
+                global.DOMPurify = original;
+            }
+        });
+    });
+
     test.describe('createMarkdownElement', () => {
         test('DIV.markdown を生成する', () => {
             const el = Jig.dom.createMarkdownElement('plain');
@@ -227,6 +246,25 @@ test.describe('jig-dom.js', () => {
         test('parseMarkdown の結果を innerHTML に設定する', () => {
             const el = Jig.dom.createMarkdownElement('# Heading');
             assert.equal(el.innerHTML, '<p># Heading</p>');
+        });
+
+        test('スクリプト実行につながるマークアップはサニタイズされる', () => {
+            const el = Jig.dom.createMarkdownElement('<img src=x onerror=alert(1)><script>alert(2)</script>text');
+            assert.equal(el.innerHTML.includes('onerror'), false);
+            assert.equal(el.innerHTML.includes('<script'), false);
+            assert.equal(el.textContent.includes('text'), true);
+        });
+
+        test('DOMPurify が無い場合、innerHTML ではなく textContent として扱う', () => {
+            const original = global.DOMPurify;
+            global.DOMPurify = undefined;
+            try {
+                const el = Jig.dom.createMarkdownElement('<img src=x onerror=alert(1)>text');
+                assert.equal(el.querySelector('img'), null);
+                assert.equal(el.textContent, '<img src=x onerror=alert(1)>text');
+            } finally {
+                global.DOMPurify = original;
+            }
         });
 
         test('Jig.mermaid があれば mermaid 変換を生成要素に対して呼ぶ', () => {

@@ -107,6 +107,7 @@ test.describe('inbound.js', () => {
         settingsEl.appendChild(panel);
         doc.body.appendChild(settingsEl);
         global.marked = {parse: (text) => text}; // markedのモック
+        global.DOMPurify = {sanitize: (html) => html}; // DOMPurifyのモック（パススルー）
         global.mermaid = {
             initialize: () => {
             }, run: () => {

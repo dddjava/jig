@@ -461,6 +461,7 @@ test.describe('glossary.js', () => {
                 parse: (text) => `<h1>${text.replace('# ', '')}</h1>`
             };
             global.window.marked = global.marked;
+            global.DOMPurify = {sanitize: (html) => html};
 
             glossary.renderGlossaryTerms([{
                 title: 'Hello',
@@ -473,6 +474,7 @@ test.describe('glossary.js', () => {
             assert.equal(markdown.innerHTML, '<h1>Hello</h1>');
             delete global.marked;
             delete global.window.marked;
+            delete global.DOMPurify;
         });
     });
 

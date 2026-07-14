@@ -72,11 +72,21 @@ globalThis.Jig.dom = (() => {
         return source;
     }
 
+    // Javadoc 由来テキストの XSS を防ぐ。DOMPurify が無い場合は null を返し、呼び出し側で安全側に倒す
+    function sanitizeHtml(html) {
+        const purifier = globalThis.DOMPurify;
+        if (purifier && typeof purifier.sanitize === "function") {
+            return purifier.sanitize(html);
+        }
+        return null;
+    }
+
     function createMarkdownElement(markdown) {
-        const element = createElement("div", {
-            className: "markdown",
-            innerHTML: parseMarkdown(markdown)
-        });
+        const sanitized = sanitizeHtml(parseMarkdown(markdown));
+        // サニタイザ不在（CDN 不達など）で innerHTML に入れるのは危険なので textContent で表示する
+        const element = sanitized != null
+            ? createElement("div", {className: "markdown", innerHTML: sanitized})
+            : createElement("div", {className: "markdown", textContent: markdown != null ? String(markdown) : ""});
         // Javadoc に書いた ```mermaid コードブロックをダイアグラムとして描画する
         globalThis.Jig?.mermaid?.renderMarkdownDiagrams?.(element);
         return element;
@@ -1014,6 +1024,7 @@ globalThis.Jig.dom = (() => {
         createCell,
         i18nText,
         parseMarkdown,
+        sanitizeHtml,
         createMarkdownElement,
         escapeCsvValue,
         buildCsv,

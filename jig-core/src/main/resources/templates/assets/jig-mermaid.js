@@ -847,6 +847,8 @@ globalThis.Jig.mermaid = (() => {
         const DEFAULT_MAX_TEXT_SIZE = 50000;
         const EXTENDED_MAX_TEXT_SIZE = 200000;
         const DEFAULT_MAX_EDGES = 500;
+        // click の関数コールバック（package図のノードクリック等）は mermaid 実装上 loose でのみ有効なため strict にできない
+        const MERMAID_SECURITY_LEVEL = "loose";
 
         // 描画済み SVG をコンテナ単位・ソース文字列キーでキャッシュする。
         // 同一ソースの再描画（チェック切替の往復・向き切替の戻しなど）で mermaid.run を回避する。
@@ -943,7 +945,7 @@ globalThis.Jig.mermaid = (() => {
 
             globalThis.mermaid.initialize({
                 startOnLoad: false,
-                securityLevel: "loose",
+                securityLevel: MERMAID_SECURITY_LEVEL,
                 maxTextSize: EXTENDED_MAX_TEXT_SIZE, // 初期のinitializeとの差分。initializeでやるの？
                 maxEdges: DEFAULT_MAX_EDGES
             });
@@ -1208,7 +1210,7 @@ globalThis.Jig.mermaid = (() => {
         function baseMermaidConfig(maxEdges) {
             return {
                 startOnLoad: false,
-                securityLevel: "loose",
+                securityLevel: MERMAID_SECURITY_LEVEL,
                 maxTextSize: DEFAULT_MAX_TEXT_SIZE,
                 maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES,
                 suppressErrorRendering: true
@@ -1494,7 +1496,7 @@ globalThis.Jig.mermaid = (() => {
             if (typeof window !== "undefined" && window === globalThis && globalThis.mermaid) {
                 globalThis.mermaid.initialize({
                     startOnLoad: false,
-                    securityLevel: "loose",
+                    securityLevel: MERMAID_SECURITY_LEVEL,
                     maxTextSize: DEFAULT_MAX_TEXT_SIZE,
                     maxEdges: DEFAULT_MAX_EDGES
                 });

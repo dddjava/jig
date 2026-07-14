@@ -220,6 +220,57 @@ test.describe('inbound.js', () => {
         assert.ok(mermaidCode.includes('classDef'), 'Theme classDefが含まれるべき');
     });
 
+    test('パッケージのdescriptionが存在する場合、パッケージ見出しに説明が表示される', () => {
+        globalThis.inboundData = mockInboundData;
+        setGlossaryData({
+            ...mockGlossaryData,
+            "com.example": {title: "サンプル", description: "サンプルパッケージの説明", kind: "パッケージ"}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        const packageHeading = mainList.children[1];
+        assert.ok(packageHeading.classList.has('package-heading'));
+        assert.equal(packageHeading.querySelector('h2').textContent, 'サンプル');
+        assert.equal(packageHeading.querySelector('.description .markdown').innerHTML, 'サンプルパッケージの説明');
+    });
+
+    // issue #1141 と同根: クラスを直接含まないパッケージのpackage-infoが表示されない
+    test('用語を持つがクラスを直接含まない中間パッケージにも見出しと説明が表示され、サイドバーからリンクされる', () => {
+        globalThis.inboundData = {
+            inboundAdapters: [{
+                ...mockInboundData.inboundAdapters[0],
+                fqn: "com.example.sub.ControllerA",
+                relations: [],
+                entrypoints: [{
+                    ...mockInboundData.inboundAdapters[0].entrypoints[0],
+                    fqn: "com.example.sub.ControllerA#method1()"
+                }]
+            }]
+        };
+        setGlossaryData({
+            "com.example": {title: "サンプル", description: "中間パッケージの説明", kind: "パッケージ"},
+            "com.example.sub.ControllerA": {title: "ControllerA", description: "", kind: "クラス"},
+            "com.example.sub.ControllerA#method1()": {title: "method1", simpleText: "method1", kind: "メソッド", description: ""}
+        });
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        // サマリー + 中間パッケージ見出し + 直属パッケージ見出し + コントローラーセクション
+        const intermediateHeading = mainList.children[1];
+        assert.equal(intermediateHeading.id, Jig.util.fqnToId('package', 'com.example'));
+        assert.equal(intermediateHeading.querySelector('h2').textContent, 'サンプル');
+        assert.equal(intermediateHeading.querySelector('.description .markdown').innerHTML, '中間パッケージの説明');
+        const leafHeading = mainList.children[2];
+        assert.equal(leafHeading.id, Jig.util.fqnToId('package', 'com.example.sub'));
+
+        const sidebar = document.getElementById('inbound-sidebar-list');
+        const intermediateLink = sidebar.querySelectorAll('.in-page-sidebar__package-link')
+            .find(a => a.textContent === 'サンプル');
+        assert.ok(intermediateLink, '中間パッケージがリンクとして表示される');
+        assert.equal(intermediateLink.getAttribute('href'), '#' + Jig.util.fqnToId('package', 'com.example'));
+    });
+
     test('renderMain should handle empty data', () => {
         globalThis.inboundData = {inboundAdapters: []};
         InboundApp.init();

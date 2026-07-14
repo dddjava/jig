@@ -267,8 +267,8 @@ const InboundApp = (() => {
                     "#" + Jig.util.fqnToId(ADAPTER_ID_PREFIX, adapter.fqn),
                     Jig.glossary.getTypeTerm(adapter.fqn).title
                 ),
-                // クラスを直接持つパッケージのみメインに見出しがあるため、それ以外はリンクなし
-                packageHref: node => node.items.length > 0
+                // メインに見出しがあるのは「クラスを直接持つ」または「用語(package-info)を持つ」パッケージ
+                packageHref: node => (node.items.length > 0 || Jig.glossary.findTerm(node.fqn))
                     ? "#" + Jig.util.fqnToId(PACKAGE_ID_PREFIX, node.fqn)
                     : null
             });
@@ -511,10 +511,9 @@ const InboundApp = (() => {
         if (summaryCard) container.appendChild(summaryCard);
 
         // パッケージごとに見出しを置き、アダプターカードをまとめる。サイドバーのパッケージノードのリンク先になる
-        const byPackage = Jig.util.groupByPackageFqn(adapters, adapter => adapter.fqn);
-        [...byPackage.entries()]
-            .sort(([a], [b]) => a.localeCompare(b))
-            .forEach(([packageFqn, packageAdapters]) => {
+        // 用語（package-info）を持つパッケージはクラスを直接含まなくても見出しと説明を表示する
+        Jig.util.flattenPackageTree(adapters, adapter => adapter.fqn, fqn => !!Jig.glossary.findTerm(fqn))
+            .forEach(({fqn: packageFqn, items: packageAdapters}) => {
                 container.appendChild(buildPackageHeading(packageFqn));
                 packageAdapters.forEach(adapter => container.appendChild(buildAdapterCard(adapter, usecaseData)));
             });
@@ -524,14 +523,22 @@ const InboundApp = (() => {
     }
 
     function buildPackageHeading(packageFqn) {
-        return Jig.dom.createElement("section", {
+        const term = Jig.glossary.getPackageTerm(packageFqn);
+        const section = Jig.dom.createElement("section", {
             id: Jig.util.fqnToId(PACKAGE_ID_PREFIX, packageFqn),
             className: "package-heading",
             children: [
-                Jig.dom.createElement("h2", {textContent: Jig.glossary.getPackageTerm(packageFqn).title}),
+                Jig.dom.createElement("h2", {textContent: term.title}),
                 Jig.dom.createElement("div", {className: "fully-qualified-name", textContent: packageFqn})
             ]
         });
+        if (term.description) {
+            section.appendChild(Jig.dom.createElement("section", {
+                className: "description",
+                children: [Jig.dom.createMarkdownElement(term.description)]
+            }));
+        }
+        return section;
     }
 
     function buildAdapterCard(adapter, usecaseData) {

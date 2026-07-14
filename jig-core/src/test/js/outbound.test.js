@@ -772,12 +772,16 @@ test.describe("outbound.js", () => {
             assert.equal(container.children[0].textContent, "データなし");
         });
 
-        test("出力ポートグループをセクションとして描画する", () => {
+        test("パッケージ見出しに続けて出力ポートグループをセクションとして描画する", () => {
             const doc = setupDom();
             OutboundApp.renderOutboundList([simpleGroup]);
             const container = doc.getElementById("outbound-port-list");
-            assert.ok(container.children.length > 0, "セクションが描画されていない");
-            const section = container.children[0];
+            assert.equal(container.children.length, 2, "パッケージ見出しとセクションが描画される");
+            const heading = container.children[0];
+            assert.ok(heading.classList.has("package-heading"));
+            assert.equal(heading.id, Jig.util.fqnToId("package", "com.example"));
+            assert.equal(heading.children.find(c => c.tagName === "h2").textContent, "example");
+            const section = container.children[1];
             assert.ok(section.className.includes("jig-card--type"));
             assert.equal(section.id, Jig.util.fqnToId("port", simpleGroup.outboundPort.fqn));
         });
@@ -786,10 +790,46 @@ test.describe("outbound.js", () => {
             const doc = setupDom();
             OutboundApp.renderOutboundList([simpleGroup]);
             const container = doc.getElementById("outbound-port-list");
-            const section = container.children[0];
+            const section = container.children[1];
             const h3 = section.children.find(c => c.tagName === "h3");
             assert.ok(h3, "h3が見つからない");
             assert.equal(h3.textContent, "Port");
+        });
+
+        test("パッケージのdescriptionが存在する場合、パッケージ見出しに説明が表示される", () => {
+            const doc = setupDom();
+            globalThis.glossaryData = {terms: {"com.example": {title: "サンプル", description: "サンプルパッケージの説明", kind: "パッケージ"}}};
+            try {
+                OutboundApp.renderOutboundList([simpleGroup]);
+                const heading = doc.getElementById("outbound-port-list").children[0];
+                assert.equal(heading.children.find(c => c.tagName === "h2").textContent, "サンプル");
+                assert.equal(heading.querySelector(".description .markdown").textContent, "サンプルパッケージの説明");
+            } finally {
+                delete globalThis.glossaryData;
+            }
+        });
+
+        // issue #1141 と同根: ポートを直接含まないパッケージのpackage-infoが表示されない
+        test("用語を持つがポートを直接含まない中間パッケージにも見出しと説明が表示される", () => {
+            const doc = setupDom();
+            globalThis.glossaryData = {terms: {"com.example": {title: "サンプル", description: "中間パッケージの説明", kind: "パッケージ"}}};
+            try {
+                const nestedGroup = {
+                    ...simpleGroup,
+                    outboundPort: {fqn: "com.example.sub.Port", label: "Port"}
+                };
+                OutboundApp.renderOutboundList([nestedGroup]);
+                const container = doc.getElementById("outbound-port-list");
+                // 中間パッケージ見出し + 直属パッケージ見出し + ポートカード
+                assert.equal(container.children.length, 3);
+                const intermediateHeading = container.children[0];
+                assert.equal(intermediateHeading.id, Jig.util.fqnToId("package", "com.example"));
+                assert.equal(intermediateHeading.children.find(c => c.tagName === "h2").textContent, "サンプル");
+                assert.equal(intermediateHeading.querySelector(".description .markdown").textContent, "中間パッケージの説明");
+                assert.equal(container.children[1].id, Jig.util.fqnToId("package", "com.example.sub"));
+            } finally {
+                delete globalThis.glossaryData;
+            }
         });
     });
 

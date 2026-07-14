@@ -4,17 +4,13 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 
 public class GradleProject {
     final Project project;
@@ -27,21 +23,12 @@ public class GradleProject {
         return findJavaPluginExtension(project).isPresent();
     }
 
-    public Set<Path> classPaths() {
-        return sourceSets()
-                .map(SourceSet::getOutput)
-                .flatMap(output -> Stream.concat(
-                        output.getClassesDirs().getFiles().stream(),
-                        Stream.of(output.getResourcesDir()).filter(Objects::nonNull)))
-                .map(File::toPath)
-                .collect(toSet());
+    private Stream<FileCollection> classOutputs() {
+        return sourceSets().map(SourceSet::getOutput);
     }
 
-    public Set<Path> sourcePaths() {
-        return sourceSets()
-                .flatMap(set -> set.getJava().getSrcDirs().stream())
-                .map(File::toPath)
-                .collect(toSet());
+    private Stream<FileCollection> sourceDirectories() {
+        return sourceSets().map(set -> set.getJava().getSourceDirectories());
     }
 
     private boolean isNonJavaProject(Project root) {
@@ -60,23 +47,24 @@ public class GradleProject {
     }
 
     /**
-     * 依存プロジェクトを含むすべてのクラスパスを返す
+     * 依存プロジェクトを含むすべてのクラス出力を返す。
+     * FileCollection のまま返すことでコンパイルタスクへの依存（builtBy）を保つ。
      */
-    public Set<Path> allClassPaths() {
+    public List<FileCollection> allClassOutputs() {
         return allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
-                .flatMap(gp -> gp.classPaths().stream())
-                .collect(toSet());
+                .flatMap(GradleProject::classOutputs)
+                .toList();
     }
 
     /**
-     * 依存プロジェクトを含むすべてのソースパスを返す
+     * 依存プロジェクトを含むすべてのソースディレクトリを返す
      */
-    public Set<Path> allSourcePaths() {
+    public List<FileCollection> allSourceDirectories() {
         return allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
-                .flatMap(gp -> gp.sourcePaths().stream())
-                .collect(toSet());
+                .flatMap(GradleProject::sourceDirectories)
+                .toList();
     }
 
     private Stream<Project> allDependencyProjectsFrom(Project currentProject) {

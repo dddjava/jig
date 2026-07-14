@@ -113,6 +113,34 @@ public class JigPluginFunctionalTest {
         assertTrue(testProjectDir.resolve(Path.of("build", "jig", "index.html")).toFile().isFile());
     }
 
+    /**
+     * クラスパスがコンパイルタスクへの依存（builtBy）を保っていることの検証。
+     * 依存が失われているとクリーン状態ではコンパイルされず「バイナリソースなし」で空出力になる。
+     */
+    @ParameterizedTest
+    @MethodSource("supportGradleVersion")
+    void クリーン状態でもコンパイルが実行されてから解析される(String version) throws IOException {
+        settingsGradle("""
+                rootProject.name = 'my-test'
+                """);
+        buildGradle("""
+                plugins {
+                    id 'java'
+                    id 'org.dddjava.jig-gradle-plugin'
+                }
+                """);
+        Path srcDir = testProjectDir.resolve(Path.of("src", "main", "java", "sample"));
+        Files.createDirectories(srcDir);
+        Files.writeString(srcDir.resolve("Hoge.java"), "package sample; public class Hoge {}");
+
+        var result = runner(version).build();
+
+        var compileResult = result.task(":compileJava");
+        assertNotNull(compileResult, "jigReports が compileJava をトリガーすること");
+        assertEquals(TaskOutcome.SUCCESS, compileResult.getOutcome());
+        assertEquals(TaskOutcome.SUCCESS, Objects.requireNonNull(result.task(":jigReports")).getOutcome());
+    }
+
     @ParameterizedTest
     @MethodSource("supportGradleVersion")
     void 複数のソースセットを収集できる(String version) throws IOException {
@@ -163,8 +191,10 @@ public class JigPluginFunctionalTest {
                 }
                 """);
         // bは非javaプロジェクト。
+        // implementation で参照されるため、解決可能なように default configuration を持つ base プラグインを適用する。
         buildGradle("b", """
                 plugins {
+                    id 'base'
                 }
                 """);
         // cはjavaプロジェクトかつc-a,c-b,c-cに依存する
@@ -200,22 +230,22 @@ public class JigPluginFunctionalTest {
         // TODO plugin側で解決したパスを出力してそこで検証する形にしたい
 
         String output = result.getOutput();
+        // 部分一致の誤検知を避けるため先頭にセパレータを付けて検証する（例: "b/src" が "c-b/src" に一致してしまう）
         // 含まれるもの
-        // FIXME java pluginが適用されていないbが入っているのは想定外
-        assertAll(Stream.of("a", "b", "c", "c-b", "d")
+        assertAll(Stream.of("a", "c", "c-b", "d")
                 .flatMap(project -> Stream.of(
-                        project + "/src/main/java",
-                        project + "/build/classes/java/main",
-                        project + "/build/resources/main"
+                        "/" + project + "/src/main/java",
+                        "/" + project + "/build/classes/java/main",
+                        "/" + project + "/build/resources/main"
                 ))
                 .map(path -> path.replace("/", File.separator))
                 .map(path -> () -> assertTrue(output.contains(path), path)));
-        // 含まれないもの
-        assertAll(Stream.of("c-a", "c-c")
+        // 含まれないもの（bは非javaプロジェクト）
+        assertAll(Stream.of("b", "c-a", "c-c")
                 .flatMap(project -> Stream.of(
-                        project + "/src/main/java",
-                        project + "/build/classes/java/main",
-                        project + "/build/resources/main"
+                        "/" + project + "/src/main/java",
+                        "/" + project + "/build/classes/java/main",
+                        "/" + project + "/build/resources/main"
                 ))
                 .map(path -> path.replace("/", File.separator))
                 .map(path -> () -> assertFalse(output.contains(path), path)));

@@ -82,11 +82,12 @@ globalThis.Jig.dom = (() => {
     }
 
     function createMarkdownElement(markdown) {
-        const sanitized = sanitizeHtml(parseMarkdown(markdown));
+        const source = markdown != null ? String(markdown) : "";
+        const sanitized = sanitizeHtml(parseMarkdown(source));
         // サニタイザ不在（CDN 不達など）で innerHTML に入れるのは危険なので textContent で表示する
         const element = sanitized != null
             ? createElement("div", {className: "markdown", innerHTML: sanitized})
-            : createElement("div", {className: "markdown", textContent: markdown != null ? String(markdown) : ""});
+            : createElement("div", {className: "markdown", textContent: source});
         // Javadoc に書いた ```mermaid コードブロックをダイアグラムとして描画する
         globalThis.Jig?.mermaid?.renderMarkdownDiagrams?.(element);
         return element;

@@ -253,4 +253,33 @@ test.describe('jig-util.js', () => {
             assert.deepEqual(roots[0].items.map(getFqn), ['TopLevelClass']);
         });
     });
+
+    test.describe('flattenPackageTree', () => {
+        const sut = jigUtil.flattenPackageTree;
+        const getFqn = item => item.fqn;
+
+        test('itemsを持つパッケージのみをDFS前順で返す', () => {
+            const items = [{fqn: 'org.example.A'}, {fqn: 'com.example.sub.B'}, {fqn: 'com.example.C'}];
+            const result = sut(items, getFqn);
+            assert.deepEqual(result.map(s => s.fqn), ['com.example', 'com.example.sub', 'org.example']);
+            assert.deepEqual(result[0].items.map(getFqn), ['com.example.C']);
+        });
+
+        test('includeEmptyNodeが真の中間パッケージは親の後・子孫の前に挿入される', () => {
+            const items = [{fqn: 'com.example.app.service.A'}, {fqn: 'com.example.B'}];
+            const result = sut(items, getFqn, fqn => fqn === 'com.example.app');
+            assert.deepEqual(result.map(s => s.fqn), ['com.example', 'com.example.app', 'com.example.app.service']);
+            assert.deepEqual(result[1].items, []);
+        });
+
+        test('includeEmptyNodeが偽の中間パッケージは含まれない', () => {
+            const items = [{fqn: 'com.example.app.service.A'}];
+            const result = sut(items, getFqn);
+            assert.deepEqual(result.map(s => s.fqn), ['com.example.app.service']);
+        });
+
+        test('空配列を渡すと空配列を返す', () => {
+            assert.deepEqual(sut([], getFqn), []);
+        });
+    });
 });

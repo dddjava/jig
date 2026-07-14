@@ -213,6 +213,28 @@ globalThis.Jig.util = (() => {
         return sortByFqn([...roots.values()]);
     }
 
+    /**
+     * buildPackageTree のツリーをDFS前順で平坦化する。
+     * itemsを持つノードは常に含み、itemsのないノードは includeEmptyNode(fqn) が真の場合のみ含む。
+     *
+     * @template T
+     * @param {T[]} items
+     * @param {function(T): string} getFqn - アイテムの型FQNを返す関数
+     * @param {function(string): boolean} [includeEmptyNode] - itemsのない中間パッケージを含めるかの述語
+     * @returns {{fqn: string, items: T[]}[]} パッケージFQNとアイテム配列の配列（fqn昇順・親が子孫より先）
+     */
+    function flattenPackageTree(items, getFqn, includeEmptyNode = () => false) {
+        const result = [];
+        const visit = (node) => {
+            if (node.items.length > 0 || includeEmptyNode(node.fqn)) {
+                result.push({fqn: node.fqn, items: node.items});
+            }
+            node.children.forEach(visit);
+        };
+        buildPackageTree(items, getFqn).forEach(visit);
+        return result;
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -226,6 +248,7 @@ globalThis.Jig.util = (() => {
         addToSetMap,
         groupByPackageFqn,
         buildPackageTree,
+        flattenPackageTree,
     }
 })();
 

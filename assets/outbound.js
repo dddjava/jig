@@ -298,12 +298,14 @@ const OutboundApp = (() => {
 
         Jig.dom.sidebar.renderTreeSection(sidebar, {
             title: "出力ポート",
-            items: grouped,
+            // メインでカードにならないポートはリンク先が無いためサイドバーにも出さない
+            items: visiblePortGroups(grouped),
             getFqn: group => group.outboundPort.fqn,
             renderLeaf: group => Jig.dom.sidebar.leaf(
                 "#" + Jig.util.fqnToId("port", group.outboundPort.fqn),
                 Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
-            )
+            ),
+            packageHref: Jig.dom.sidebar.packageHeadingHref
         });
 
         Jig.dom.sidebar.renderTreeSection(sidebar, {
@@ -333,83 +335,96 @@ const OutboundApp = (() => {
         });
     }
 
+    // ダイアグラムを生成できないグループはカードにならない。メインとサイドバーで同じ絞り込みを使う
+    function visiblePortGroups(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
+        return grouped.filter(group => generatePortMermaidCode(group, visibility));
+    }
+
     function renderOutboundList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-port-list");
         if (!container) return;
         container.innerHTML = "";
 
-        grouped.forEach(group => {
-            const portMermaidCode = generatePortMermaidCode(group, visibility);
-            if (!portMermaidCode) return;
-            const portFqnValue = group.outboundPort.fqn;
-            const portId = Jig.util.fqnToId("port", portFqnValue);
-            const portLabel = Jig.glossary.getTypeTerm(portFqnValue).title;
+        // カードにならないグループを先に除き、見出しが孤児にならないようにする
+        const visibleGroups = visiblePortGroups(grouped, visibility);
+        // パッケージごとに見出しを置き、ポートカードをまとめる。サイドバーのパッケージノードのリンク先になる
+        // 用語（package-info）を持つパッケージはポートを直接含まなくても見出しと説明を表示する
+        const sections = Jig.util.flattenPackageTree(visibleGroups, group => group.outboundPort.fqn, Jig.glossary.hasTerm);
+        sections.forEach(({fqn: packageFqn, items}) => {
+            container.appendChild(Jig.dom.createPackageHeading(Jig.util.fqnToId("package", packageFqn), packageFqn));
+            items.forEach(group => appendPortCard(container, group, visibility));
+        });
 
-            const portCard = Jig.dom.card.type({
-                id: portId,
-                title: portLabel,
-                fqn: portFqnValue,
-                titleSuffix: Jig.glossary.sourceLink(portFqnValue),
-            });
+        if (visibleGroups.length === 0) renderNoData(container);
+    }
 
-            if (visibility.adapter) {
-                const adapterLabels = Array.from(new Set(group.operations.map(operation => {
-                    const fqn = operation.outboundAdapter?.fqn ?? "";
-                    const label = Jig.glossary.getTypeTerm(fqn).title;
-                    return label + (label !== fqn ? ` (${fqn})` : "");
-                })));
-                if (adapterLabels.length > 0) {
-                    portCard.appendChild(Jig.dom.createElement("p", {
-                        className: "weak",
-                        textContent: "Implementation: " + adapterLabels.join(", ")
-                    }));
-                }
+    function appendPortCard(container, group, visibility) {
+        const portFqnValue = group.outboundPort.fqn;
+        const portId = Jig.util.fqnToId("port", portFqnValue);
+        const portLabel = Jig.glossary.getTypeTerm(portFqnValue).title;
+
+        const portCard = Jig.dom.card.type({
+            id: portId,
+            title: portLabel,
+            fqn: portFqnValue,
+            titleSuffix: Jig.glossary.sourceLink(portFqnValue),
+        });
+
+        if (visibility.adapter) {
+            const adapterLabels = Array.from(new Set(group.operations.map(operation => {
+                const fqn = operation.outboundAdapter?.fqn ?? "";
+                const label = Jig.glossary.getTypeTerm(fqn).title;
+                return label + (label !== fqn ? ` (${fqn})` : "");
+            })));
+            if (adapterLabels.length > 0) {
+                portCard.appendChild(Jig.dom.createElement("p", {
+                    className: "weak",
+                    textContent: "Implementation: " + adapterLabels.join(", ")
+                }));
             }
+        }
 
-            portCard.appendChild(Jig.dom.createElement("p", {
-                className: "weak",
-                textContent: `${group.operations.length} operations`
-            }));
+        portCard.appendChild(Jig.dom.createElement("p", {
+            className: "weak",
+            textContent: `${group.operations.length} operations`
+        }));
 
-            Jig.mermaid.diagram.createAndRegister(portCard, (container) => {
+        Jig.mermaid.diagram.createAndRegister(portCard, (container) => {
+            const currentVisibility = readVisibility();
+            const generator = (dir, opts) => generatePortMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
+            if (generator('LR')) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
+            }
+        }, {className: "mermaid-diagram"});
+
+        const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
+        group.operations.forEach(operation => {
+            const operationWithPort = {...operation, outboundPort: group.outboundPort};
+
+            const op = operation.outboundPortOperation;
+            const opTerm = Jig.glossary.getMethodTerm(op.fqn);
+            const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item", id: Jig.util.fqnToId("portOp", op.fqn), title: opTerm.title});
+            operationItem.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: opTerm.shortDeclaration}));
+            operationItem.appendChild(Jig.dom.type.methodIOSection(op.parameters, op.returnTypeRef));
+            Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
                 const currentVisibility = readVisibility();
-                const generator = (dir, opts) => generatePortMermaidCode(group, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
+                const generator = (dir, opts) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
                 if (generator('LR')) {
                     Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
                 }
-            }, {className: "mermaid-diagram"});
-
-            const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
-            group.operations.forEach(operation => {
-                const operationWithPort = {...operation, outboundPort: group.outboundPort};
-
-                const op = operation.outboundPortOperation;
-                const opTerm = Jig.glossary.getMethodTerm(op.fqn);
-                const operationItem = Jig.dom.card.item({tagName: "article", extraClass: "outbound-operation-item", id: Jig.util.fqnToId("portOp", op.fqn), title: opTerm.title});
-                operationItem.appendChild(Jig.dom.createElement("div", {className: "declaration", textContent: opTerm.shortDeclaration}));
-                operationItem.appendChild(Jig.dom.type.methodIOSection(op.parameters, op.returnTypeRef));
-                Jig.mermaid.diagram.createAndRegister(operationItem, (container) => {
-                    const currentVisibility = readVisibility();
-                    const generator = (dir, opts) => generateOperationMermaidCode(operationWithPort, {...currentVisibility, direction: dir, showPhysicalName: opts?.showPhysicalName});
-                    if (generator('LR')) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: 'LR', enableLabelToggle: true});
-                    }
-                });
-                itemList.appendChild(operationItem);
             });
-            const itemListDetails = Jig.dom.createElement("details", {});
-            const itemListSummary = Jig.dom.createElement("summary", {
-                className: "outbound-operation-list-summary",
-                textContent: `操作別詳細 (${group.operations.length}件)`
-            });
-            itemListDetails.appendChild(itemListSummary);
-            itemListDetails.appendChild(itemList);
-            portCard.appendChild(itemListDetails);
-
-            container.appendChild(portCard);
+            itemList.appendChild(operationItem);
         });
+        const itemListDetails = Jig.dom.createElement("details", {});
+        const itemListSummary = Jig.dom.createElement("summary", {
+            className: "outbound-operation-list-summary",
+            textContent: `操作別詳細 (${group.operations.length}件)`
+        });
+        itemListDetails.appendChild(itemListSummary);
+        itemListDetails.appendChild(itemList);
+        portCard.appendChild(itemListDetails);
 
-        if (grouped.length === 0) renderNoData(container);
+        container.appendChild(portCard);
     }
 
     function renderPersistenceList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {

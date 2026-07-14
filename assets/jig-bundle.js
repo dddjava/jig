@@ -154,22 +154,6 @@ globalThis.Jig.util = (() => {
     }
 
     /**
-     * items をパッケージFQN単位でグループ化する。
-     * パッケージのないFQN（ドットなし）は "(default)" にグループ化される。
-     * @template T
-     * @param {T[]} items
-     * @param {function(T): string} getFqn - アイテムのFQNを返す関数
-     * @returns {Map<string, T[]>} パッケージFQN → アイテム配列
-     */
-    function groupByPackageFqn(items, getFqn) {
-        const byPackage = new Map();
-        items.forEach(item => {
-            pushToMap(byPackage, getPackageFqnFromTypeFqn(getFqn(item)), item);
-        });
-        return byPackage;
-    }
-
-    /**
      * items の型FQNからパッケージ階層ツリーを構築する。
      * 各itemのパッケージFQNから最上位セグメントまでの中間パッケージノードを補完して親子連結する。
      * パッケージのないFQN（ドットなし）は "(default)" ノードに属する。
@@ -214,6 +198,28 @@ globalThis.Jig.util = (() => {
         return sortByFqn([...roots.values()]);
     }
 
+    /**
+     * buildPackageTree のツリーをDFS前順で平坦化する。
+     * itemsを持つノードは常に含み、itemsのないノードは includeEmptyNode(fqn) が真の場合のみ含む。
+     *
+     * @template T
+     * @param {T[]} items
+     * @param {function(T): string} getFqn - アイテムの型FQNを返す関数
+     * @param {function(string): boolean} [includeEmptyNode] - itemsのない中間パッケージを含めるかの述語
+     * @returns {{fqn: string, items: T[]}[]} パッケージFQNとアイテム配列の配列（fqn昇順・親が子孫より先）
+     */
+    function flattenPackageTree(items, getFqn, includeEmptyNode = () => false) {
+        const result = [];
+        const visit = (node) => {
+            if (node.items.length > 0 || includeEmptyNode(node.fqn)) {
+                result.push({fqn: node.fqn, items: node.items});
+            }
+            node.children.forEach(visit);
+        };
+        buildPackageTree(items, getFqn).forEach(visit);
+        return result;
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -225,8 +231,8 @@ globalThis.Jig.util = (() => {
         collectTypeRefFqns,
         pushToMap,
         addToSetMap,
-        groupByPackageFqn,
         buildPackageTree,
+        flattenPackageTree,
     }
 })();
 
@@ -529,6 +535,14 @@ globalThis.Jig.glossary = (() => {
     }
 
     /**
+     * @param {string} fqn
+     * @return {boolean}
+     */
+    function hasTerm(fqn) {
+        return !!findTerm(fqn);
+    }
+
+    /**
      * 型/パッケージ/メソッド等のFQNからソース（GitHub等）へのリンク要素を生成する。
      * sourcePath と blobUrlPrefix が揃う場合のみ要素を返し、それ以外は null。
      * メソッドFQNは型FQNにフォールバックして解決する。
@@ -681,6 +695,7 @@ globalThis.Jig.glossary = (() => {
         getFieldTerm,
         getMethodTerm,
         findTerm,
+        hasTerm,
         sourceLink,
         typeSimpleName,
         methodSimpleName,
@@ -767,11 +782,22 @@ globalThis.Jig.dom = (() => {
         return source;
     }
 
+    // Javadoc 由来テキストの XSS を防ぐ。DOMPurify が無い場合は null を返し、呼び出し側で安全側に倒す
+    function sanitizeHtml(html) {
+        const purifier = globalThis.DOMPurify;
+        if (purifier && typeof purifier.sanitize === "function") {
+            return purifier.sanitize(html);
+        }
+        return null;
+    }
+
     function createMarkdownElement(markdown) {
-        const element = createElement("div", {
-            className: "markdown",
-            innerHTML: parseMarkdown(markdown)
-        });
+        const source = markdown != null ? String(markdown) : "";
+        const sanitized = sanitizeHtml(parseMarkdown(source));
+        // サニタイザ不在（CDN 不達など）で innerHTML に入れるのは危険なので textContent で表示する
+        const element = sanitized != null
+            ? createElement("div", {className: "markdown", innerHTML: sanitized})
+            : createElement("div", {className: "markdown", textContent: source});
         // Javadoc に書いた ```mermaid コードブロックをダイアグラムとして描画する
         globalThis.Jig?.mermaid?.renderMarkdownDiagrams?.(element);
         return element;
@@ -1017,10 +1043,24 @@ globalThis.Jig.dom = (() => {
     // --- Sidebar ---
 
     // 折りたたみ状態の表現（hiddenクラスとトグルのaria）を一箇所で扱う
-    function setSidebarListExpanded(list, toggle, expanded) {
+    function applySidebarListState(list, toggle, expanded) {
         list.classList.toggle("in-page-sidebar__links--hidden", !expanded);
-        toggle.setAttribute("aria-expanded", String(expanded));
-        toggle.setAttribute("aria-label", expanded ? "折りたたむ" : "展開");
+        if (toggle) {
+            toggle.setAttribute("aria-expanded", String(expanded));
+            toggle.setAttribute("aria-label", expanded ? "折りたたむ" : "展開");
+        }
+    }
+
+    function setSidebarListExpanded(list, toggle, expanded, recursive = false) {
+        applySidebarListState(list, toggle, expanded);
+        // 閉じるときは配下もすべて閉じ、次に開いたとき1階層だけ開くようにする
+        // recursive指定時は開くときも配下をすべて開く（Alt+クリック用）
+        if (!expanded || recursive) {
+            list.querySelectorAll(".in-page-sidebar__links").forEach(descendant => {
+                const descendantToggle = descendant.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
+                applySidebarListState(descendant, descendantToggle, expanded);
+            });
+        }
     }
 
     function createSidebarToggle(targetEl) {
@@ -1028,9 +1068,9 @@ globalThis.Jig.dom = (() => {
             className: "in-page-sidebar__toggle",
             attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
         });
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener("click", (e) => {
             const collapsing = toggle.getAttribute("aria-expanded") === "true";
-            setSidebarListExpanded(targetEl, toggle, !collapsing);
+            setSidebarListExpanded(targetEl, toggle, !collapsing, e.altKey);
         });
         return toggle;
     }
@@ -1256,7 +1296,7 @@ globalThis.Jig.dom = (() => {
             }
 
             if (collapsed) {
-                setSidebarListExpanded(list, toggle, true);
+                setSidebarListExpanded(list, toggle, true, e.altKey);
             }
 
             // グループ見出しが上部に来る位置までスクロールして内容を見せる
@@ -1291,11 +1331,7 @@ globalThis.Jig.dom = (() => {
         while (el && el !== sidebar) {
             if (el.classList.contains("in-page-sidebar__links--hidden")) {
                 const toggle = el.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
-                if (toggle) {
-                    setSidebarListExpanded(el, toggle, true);
-                } else {
-                    el.classList.remove("in-page-sidebar__links--hidden");
-                }
+                setSidebarListExpanded(el, toggle, true);
             }
             el = el.parentElement;
         }
@@ -1372,6 +1408,23 @@ globalThis.Jig.dom = (() => {
                 collapseBtn.setAttribute('aria-expanded', 'true');
             }
         });
+    }
+
+    // Altキー押下中はトグルホバー時に見た目を変え、配下もまとめて開閉することを示す
+    function initSidebarAltKeyIndicator() {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+        if (document.body.dataset.altKeyIndicatorInitialized) return;
+        document.body.dataset.altKeyIndicatorInitialized = "true";
+        const setAltHeld = (held) => document.body.classList.toggle("jig-alt-held", held);
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Alt") setAltHeld(true);
+        });
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "Alt") setAltHeld(false);
+        });
+        window.addEventListener("blur", () => setAltHeld(false));
+        // OSにAlt単独押下を奪われてkeyupが届かない場合があるため、マウス移動時にaltKeyの実値で再同期する
+        window.addEventListener("mousemove", (e) => setAltHeld(e.altKey));
     }
 
     // --- Tab section ---
@@ -1701,7 +1754,42 @@ globalThis.Jig.dom = (() => {
         if (typeof document !== "undefined") {
             // サイドバー内リンクのクリックは、移動先の描画完了（hashchange）を待たずに即座にハイライトする
             initSidebarClickHighlight(document.querySelector(".in-page-sidebar"));
+            initSidebarAltKeyIndicator();
         }
+    }
+
+    /**
+     * サイドバーのパッケージノードからメインのパッケージ見出しへのリンク先を返す。
+     * メインに見出しがあるのは「クラスを直接持つ」または「用語(package-info)を持つ」パッケージ
+     * （flattenPackageTree に Jig.glossary.hasTerm を渡して生成する見出しと対になる規則）
+     */
+    function packageHeadingHref(node) {
+        return (node.items.length > 0 || globalThis.Jig.glossary.hasTerm(node.fqn))
+            ? "#" + globalThis.Jig.util.fqnToId("package", node.fqn)
+            : null;
+    }
+
+    /**
+     * パッケージ見出しセクション。用語のタイトル・FQN・説明（あれば）を表示する。
+     * サイドバーのパッケージノードのリンク先になる
+     */
+    function createPackageHeading(id, packageFqn) {
+        const term = globalThis.Jig.glossary.getPackageTerm(packageFqn);
+        const section = createElement("section", {
+            id,
+            className: "package-heading",
+            children: [
+                createElement("h2", {textContent: term.title}),
+                createElement("div", {className: "fully-qualified-name", textContent: packageFqn})
+            ]
+        });
+        if (term.description) {
+            section.appendChild(createElement("section", {
+                className: "description",
+                children: [createMarkdownElement(term.description)]
+            }));
+        }
+        return section;
     }
 
     return {
@@ -1709,7 +1797,9 @@ globalThis.Jig.dom = (() => {
         createCell,
         i18nText,
         parseMarkdown,
+        sanitizeHtml,
         createMarkdownElement,
+        createPackageHeading,
         escapeCsvValue,
         buildCsv,
         downloadCsv,
@@ -1743,11 +1833,13 @@ globalThis.Jig.dom = (() => {
             renderSection,
             renderTreeSection,
             renderLinkGroup,
+            packageHeadingHref,
             initTextFilter: initSidebarTextFilter,
             initCollapseBtn: initSidebarCollapseBtn,
             createToggle: createSidebarToggle,
             syncActiveLink: syncActiveSidebarLink,
             initClickHighlight: initSidebarClickHighlight,
+            initAltKeyIndicator: initSidebarAltKeyIndicator,
         },
         tab: {
             buildSection: buildTabSection,
@@ -2617,6 +2709,8 @@ globalThis.Jig.mermaid = (() => {
         const DEFAULT_MAX_TEXT_SIZE = 50000;
         const EXTENDED_MAX_TEXT_SIZE = 200000;
         const DEFAULT_MAX_EDGES = 500;
+        // click の関数コールバック（package図のノードクリック等）は mermaid 実装上 loose でのみ有効なため strict にできない
+        const MERMAID_SECURITY_LEVEL = "loose";
 
         // 描画済み SVG をコンテナ単位・ソース文字列キーでキャッシュする。
         // 同一ソースの再描画（チェック切替の往復・向き切替の戻しなど）で mermaid.run を回避する。
@@ -2713,7 +2807,7 @@ globalThis.Jig.mermaid = (() => {
 
             globalThis.mermaid.initialize({
                 startOnLoad: false,
-                securityLevel: "loose",
+                securityLevel: MERMAID_SECURITY_LEVEL,
                 maxTextSize: EXTENDED_MAX_TEXT_SIZE, // 初期のinitializeとの差分。initializeでやるの？
                 maxEdges: DEFAULT_MAX_EDGES
             });
@@ -2978,7 +3072,7 @@ globalThis.Jig.mermaid = (() => {
         function baseMermaidConfig(maxEdges) {
             return {
                 startOnLoad: false,
-                securityLevel: "loose",
+                securityLevel: MERMAID_SECURITY_LEVEL,
                 maxTextSize: DEFAULT_MAX_TEXT_SIZE,
                 maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES,
                 suppressErrorRendering: true
@@ -3264,7 +3358,7 @@ globalThis.Jig.mermaid = (() => {
             if (typeof window !== "undefined" && window === globalThis && globalThis.mermaid) {
                 globalThis.mermaid.initialize({
                     startOnLoad: false,
-                    securityLevel: "loose",
+                    securityLevel: MERMAID_SECURITY_LEVEL,
                     maxTextSize: DEFAULT_MAX_TEXT_SIZE,
                     maxEdges: DEFAULT_MAX_EDGES
                 });

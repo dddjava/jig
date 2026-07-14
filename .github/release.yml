@@ -8,6 +8,9 @@ changelog:
       exclude:
         labels:
           - dependencies
+    - title: CI・ワークフロー更新
+      labels:
+        - github_actions
     - title: ライブラリ更新
       labels:
         - dependencies

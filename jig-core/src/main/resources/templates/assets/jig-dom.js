@@ -341,13 +341,14 @@ globalThis.Jig.dom = (() => {
         }
     }
 
-    function setSidebarListExpanded(list, toggle, expanded) {
+    function setSidebarListExpanded(list, toggle, expanded, recursive = false) {
         applySidebarListState(list, toggle, expanded);
         // 閉じるときは配下もすべて閉じ、次に開いたとき1階層だけ開くようにする
-        if (!expanded) {
+        // recursive指定時は開くときも配下をすべて開く（Alt+クリック用）
+        if (!expanded || recursive) {
             list.querySelectorAll(".in-page-sidebar__links").forEach(descendant => {
                 const descendantToggle = descendant.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
-                applySidebarListState(descendant, descendantToggle, false);
+                applySidebarListState(descendant, descendantToggle, expanded);
             });
         }
     }
@@ -357,9 +358,9 @@ globalThis.Jig.dom = (() => {
             className: "in-page-sidebar__toggle",
             attributes: {"aria-expanded": "true", "aria-label": "折りたたむ"}
         });
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener("click", (e) => {
             const collapsing = toggle.getAttribute("aria-expanded") === "true";
-            setSidebarListExpanded(targetEl, toggle, !collapsing);
+            setSidebarListExpanded(targetEl, toggle, !collapsing, e.altKey);
         });
         return toggle;
     }
@@ -585,7 +586,7 @@ globalThis.Jig.dom = (() => {
             }
 
             if (collapsed) {
-                setSidebarListExpanded(list, toggle, true);
+                setSidebarListExpanded(list, toggle, true, e.altKey);
             }
 
             // グループ見出しが上部に来る位置までスクロールして内容を見せる

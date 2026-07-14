@@ -558,6 +558,24 @@ test.describe('jig-dom.js', () => {
             descendantLists.forEach(list => assert.ok(list.classList.contains('in-page-sidebar__links--hidden')));
         });
 
+        test('Alt+クリックで開くと配下もすべて開く', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [
+                {fqn: 'com.example.foo.A'},
+                {fqn: 'com.example.bar.B'},
+            ]});
+
+            const groupToggle = container.querySelector('.in-page-sidebar__title--group .in-page-sidebar__toggle');
+            const allLists = [...container.querySelectorAll('ul.in-page-sidebar__links')];
+            assert.ok(allLists.length > 1);
+
+            groupToggle.dispatchEvent(new window.Event('click'));
+            groupToggle.dispatchEvent(new window.MouseEvent('click', {altKey: true}));
+            allLists.forEach(list => assert.ok(!list.classList.contains('in-page-sidebar__links--hidden')));
+            container.querySelectorAll('.in-page-sidebar__item-header .in-page-sidebar__toggle')
+                .forEach(toggle => assert.equal(toggle.getAttribute('aria-expanded'), 'true'));
+        });
+
         test('グループ見出しに下部積み重ね用のオフセットが設定される', () => {
             const container = Jig.dom.createElement('div');
             Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.a.A'}]});

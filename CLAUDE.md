@@ -32,6 +32,9 @@ npm run test
 
 # 単一 JS テストファイル
 node --test jig-core/src/test/js/insight.test.js
+
+# CSS lint
+npm run lint:css
 ```
 
 ### テスト実行ポリシー
@@ -62,7 +65,7 @@ org.dddjava.jig/
 │   └── sources/       # ソース読み取り（filesystem, javasources, mybatis 等）
 ├── annotation/        # アノテーション定義
 ├── application/       # JigService 等のアプリケーションサービス
-├── adapter/           # 出力アダプター（html, json 等）
+├── adapter/           # 出力アダプター（datajs, json 等）
 └── infrastructure/    # インフラ実装（asm, javaparser, configuration 等）
 ```
 
@@ -74,10 +77,11 @@ org.dddjava.jig/
 |------|------|
 | バイトコード解析 | ASM |
 | Java ソース解析 | JavaParser |
-| Excel 出力 | Apache POI |
 | MyBatis SQL 解析 | MyBatis |
+| HTML 出力 | 静的テンプレート + JSON データ + クライアントサイド JS |
+| 図の描画 | Mermaid（クライアントサイドで描画） |
 | CLI 設定・起動 | Spring Boot |
-| テスト | JUnit Jupiter 5 + Mockito |
+| テスト | JUnit Jupiter 6 + Mockito |
 | JS テスト | Node.js 組み込み test runner + jsdom |
 
 ### 出力ドキュメント

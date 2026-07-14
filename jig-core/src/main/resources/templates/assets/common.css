@@ -1376,6 +1376,26 @@ table td.number {
     opacity: 1;
 }
 
+/* Altキー押下中は、開くトグルにホバーすると配下もまとめて開くことを示す
+   （jig-dom.js の initSidebarAltKeyIndicator が body.jig-alt-held を切り替える） */
+
+body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover {
+    background-color: #ffe0a3;
+    color: #7a4a00;
+}
+
+body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+    margin-left: 2px;
+    margin-right: -3px;
+}
+
 @layer components {
     .in-page-sidebar__item-header {
         display: flex;

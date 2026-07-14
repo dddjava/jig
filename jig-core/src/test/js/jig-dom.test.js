@@ -790,6 +790,47 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.initAltKeyIndicator', () => {
+        test.beforeEach(() => {
+            delete document.body.dataset.altKeyIndicatorInitialized;
+            document.body.classList.remove('jig-alt-held');
+        });
+
+        test('Altキー押下でbodyにjig-alt-heldクラスが付与され、離すと外れる', () => {
+            Jig.dom.sidebar.initAltKeyIndicator();
+
+            window.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Alt'}));
+            assert.ok(document.body.classList.contains('jig-alt-held'));
+
+            window.dispatchEvent(new window.KeyboardEvent('keyup', {key: 'Alt'}));
+            assert.ok(!document.body.classList.contains('jig-alt-held'));
+        });
+
+        test('Alt以外のキーでは反応しない', () => {
+            Jig.dom.sidebar.initAltKeyIndicator();
+
+            window.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Shift'}));
+            assert.ok(!document.body.classList.contains('jig-alt-held'));
+        });
+
+        test('ウィンドウがblurするとjig-alt-heldが解除される', () => {
+            Jig.dom.sidebar.initAltKeyIndicator();
+
+            window.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Alt'}));
+            window.dispatchEvent(new window.Event('blur'));
+            assert.ok(!document.body.classList.contains('jig-alt-held'));
+        });
+
+        test('二重初期化してもリスナーは1つだけ登録される', () => {
+            Jig.dom.sidebar.initAltKeyIndicator();
+            Jig.dom.sidebar.initAltKeyIndicator();
+
+            window.dispatchEvent(new window.KeyboardEvent('keydown', {key: 'Alt'}));
+            window.dispatchEvent(new window.KeyboardEvent('keyup', {key: 'Alt'}));
+            assert.ok(!document.body.classList.contains('jig-alt-held'));
+        });
+    });
+
     test.describe('type.resolver', () => {
         test('デフォルトは null', () => {
             assert.equal(Jig.dom.type.getResolver(), null);

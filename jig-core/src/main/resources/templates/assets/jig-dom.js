@@ -700,6 +700,21 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    // Altキー押下中はトグルホバー時に見た目を変え、配下もまとめて開閉することを示す
+    function initSidebarAltKeyIndicator() {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+        if (document.body.dataset.altKeyIndicatorInitialized) return;
+        document.body.dataset.altKeyIndicatorInitialized = "true";
+        const setAltHeld = (held) => document.body.classList.toggle("jig-alt-held", held);
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Alt") setAltHeld(true);
+        });
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "Alt") setAltHeld(false);
+        });
+        window.addEventListener("blur", () => setAltHeld(false));
+    }
+
     // --- Tab section ---
 
     function buildTabSection(tabDefs, options = {}) {
@@ -1027,6 +1042,7 @@ globalThis.Jig.dom = (() => {
         if (typeof document !== "undefined") {
             // サイドバー内リンクのクリックは、移動先の描画完了（hashchange）を待たずに即座にハイライトする
             initSidebarClickHighlight(document.querySelector(".in-page-sidebar"));
+            initSidebarAltKeyIndicator();
         }
     }
 
@@ -1111,6 +1127,7 @@ globalThis.Jig.dom = (() => {
             createToggle: createSidebarToggle,
             syncActiveLink: syncActiveSidebarLink,
             initClickHighlight: initSidebarClickHighlight,
+            initAltKeyIndicator: initSidebarAltKeyIndicator,
         },
         tab: {
             buildSection: buildTabSection,

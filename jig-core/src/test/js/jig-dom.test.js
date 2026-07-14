@@ -533,6 +533,31 @@ test.describe('jig-dom.js', () => {
             assert.equal(toggle.getAttribute('aria-expanded'), 'false');
         });
 
+        test('上位階層を閉じると配下もすべて閉じ、再度開くと1階層だけ開く', () => {
+            const container = Jig.dom.createElement('div');
+            Jig.dom.sidebar.renderTreeSection(container, {...options, items: [
+                {fqn: 'com.example.foo.A'},
+                {fqn: 'com.example.bar.B'},
+            ]});
+
+            const groupToggle = container.querySelector('.in-page-sidebar__title--group .in-page-sidebar__toggle');
+            const allLists = [...container.querySelectorAll('ul.in-page-sidebar__links')];
+            const groupList = allLists[0];
+            const descendantLists = allLists.slice(1);
+            assert.ok(descendantLists.length > 0);
+
+            // 上位階層を閉じると配下のリストもすべて閉じ、トグルのariaも同期する
+            groupToggle.dispatchEvent(new window.Event('click'));
+            allLists.forEach(list => assert.ok(list.classList.contains('in-page-sidebar__links--hidden')));
+            container.querySelectorAll('.in-page-sidebar__item-header .in-page-sidebar__toggle')
+                .forEach(toggle => assert.equal(toggle.getAttribute('aria-expanded'), 'false'));
+
+            // 再度開くと直下の1階層だけ開き、配下は閉じたまま
+            groupToggle.dispatchEvent(new window.Event('click'));
+            assert.ok(!groupList.classList.contains('in-page-sidebar__links--hidden'));
+            descendantLists.forEach(list => assert.ok(list.classList.contains('in-page-sidebar__links--hidden')));
+        });
+
         test('グループ見出しに下部積み重ね用のオフセットが設定される', () => {
             const container = Jig.dom.createElement('div');
             Jig.dom.sidebar.renderTreeSection(container, {...options, items: [{fqn: 'com.a.A'}]});

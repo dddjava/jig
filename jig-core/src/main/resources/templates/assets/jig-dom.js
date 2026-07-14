@@ -333,10 +333,23 @@ globalThis.Jig.dom = (() => {
     // --- Sidebar ---
 
     // 折りたたみ状態の表現（hiddenクラスとトグルのaria）を一箇所で扱う
-    function setSidebarListExpanded(list, toggle, expanded) {
+    function applySidebarListState(list, toggle, expanded) {
         list.classList.toggle("in-page-sidebar__links--hidden", !expanded);
-        toggle.setAttribute("aria-expanded", String(expanded));
-        toggle.setAttribute("aria-label", expanded ? "折りたたむ" : "展開");
+        if (toggle) {
+            toggle.setAttribute("aria-expanded", String(expanded));
+            toggle.setAttribute("aria-label", expanded ? "折りたたむ" : "展開");
+        }
+    }
+
+    function setSidebarListExpanded(list, toggle, expanded) {
+        applySidebarListState(list, toggle, expanded);
+        // 閉じるときは配下もすべて閉じ、次に開いたとき1階層だけ開くようにする
+        if (!expanded) {
+            list.querySelectorAll(".in-page-sidebar__links").forEach(descendant => {
+                const descendantToggle = descendant.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
+                applySidebarListState(descendant, descendantToggle, false);
+            });
+        }
     }
 
     function createSidebarToggle(targetEl) {
@@ -607,11 +620,7 @@ globalThis.Jig.dom = (() => {
         while (el && el !== sidebar) {
             if (el.classList.contains("in-page-sidebar__links--hidden")) {
                 const toggle = el.previousElementSibling?.querySelector(".in-page-sidebar__toggle");
-                if (toggle) {
-                    setSidebarListExpanded(el, toggle, true);
-                } else {
-                    el.classList.remove("in-page-sidebar__links--hidden");
-                }
+                setSidebarListExpanded(el, toggle, true);
             }
             el = el.parentElement;
         }

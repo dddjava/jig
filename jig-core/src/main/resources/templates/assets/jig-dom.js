@@ -1019,6 +1019,29 @@ globalThis.Jig.dom = (() => {
         }
     }
 
+    /**
+     * パッケージ見出しセクション。用語のタイトル・FQN・説明（あれば）を表示する。
+     * サイドバーのパッケージノードのリンク先になる
+     */
+    function createPackageHeading(id, packageFqn) {
+        const term = globalThis.Jig.glossary.getPackageTerm(packageFqn);
+        const section = createElement("section", {
+            id,
+            className: "package-heading",
+            children: [
+                createElement("h2", {textContent: term.title}),
+                createElement("div", {className: "fully-qualified-name", textContent: packageFqn})
+            ]
+        });
+        if (term.description) {
+            section.appendChild(createElement("section", {
+                className: "description",
+                children: [createMarkdownElement(term.description)]
+            }));
+        }
+        return section;
+    }
+
     return {
         createElement,
         createCell,
@@ -1026,6 +1049,7 @@ globalThis.Jig.dom = (() => {
         parseMarkdown,
         sanitizeHtml,
         createMarkdownElement,
+        createPackageHeading,
         escapeCsvValue,
         buildCsv,
         downloadCsv,

@@ -523,22 +523,7 @@ const InboundApp = (() => {
     }
 
     function buildPackageHeading(packageFqn) {
-        const term = Jig.glossary.getPackageTerm(packageFqn);
-        const section = Jig.dom.createElement("section", {
-            id: Jig.util.fqnToId(PACKAGE_ID_PREFIX, packageFqn),
-            className: "package-heading",
-            children: [
-                Jig.dom.createElement("h2", {textContent: term.title}),
-                Jig.dom.createElement("div", {className: "fully-qualified-name", textContent: packageFqn})
-            ]
-        });
-        if (term.description) {
-            section.appendChild(Jig.dom.createElement("section", {
-                className: "description",
-                children: [Jig.dom.createMarkdownElement(term.description)]
-            }));
-        }
-        return section;
+        return Jig.dom.createPackageHeading(Jig.util.fqnToId(PACKAGE_ID_PREFIX, packageFqn), packageFqn);
     }
 
     function buildAdapterCard(adapter, usecaseData) {

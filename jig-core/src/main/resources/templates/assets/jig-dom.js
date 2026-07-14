@@ -713,6 +713,8 @@ globalThis.Jig.dom = (() => {
             if (e.key === "Alt") setAltHeld(false);
         });
         window.addEventListener("blur", () => setAltHeld(false));
+        // OSにAlt単独押下を奪われてkeyupが届かない場合があるため、マウス移動時にaltKeyの実値で再同期する
+        window.addEventListener("mousemove", (e) => setAltHeld(e.altKey));
     }
 
     // --- Tab section ---

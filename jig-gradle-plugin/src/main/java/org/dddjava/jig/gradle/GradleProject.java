@@ -78,6 +78,7 @@ public class GradleProject {
                             String name = configuration.getName();
                             return "implementation".equals(name);
                         })
+                        // implementation は api を extendsFrom しているため、getAllDependencies で api 宣言分も含まれる
                         .map(Configuration::getAllDependencies)
                         .flatMap(DependencySet::stream)
                         .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))

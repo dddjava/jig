@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -176,7 +177,7 @@ public class JigPluginFunctionalTest {
     void マルチプロジェクト構成でソースディレクトリを収集できる(String version) throws IOException {
         settingsGradle("""
                 rootProject.name = 'my-test'
-                include 'a', 'b', 'c', 'c-a', 'c-b', 'c-c', 'd'
+                include 'a', 'b', 'c', 'c-a', 'c-b', 'c-c', 'c-d', 'd'
                 """);
         // aにプラグイン適用
         buildGradle("a", """
@@ -197,21 +198,23 @@ public class JigPluginFunctionalTest {
                     id 'base'
                 }
                 """);
-        // cはjavaプロジェクトかつc-a,c-b,c-cに依存する
-        // 複数階層とimplementation以外を拾わない検証
+        // cはjavaプロジェクトかつc-a,c-b,c-c,c-dに依存する
+        // 複数階層でimplementationとapiを拾い、それ以外を拾わない検証
         buildGradle("c", """
                 plugins {
-                    id 'java'
+                    id 'java-library'
                 }
                 dependencies {
                     testImplementation project(':c-a');
                     implementation project(':c-b');
                     runtimeOnly project(':c-c');
+                    api project(':c-d');
                 }
                 """);
         buildGradle("c-a", "plugins { id 'java' }");
         buildGradle("c-b", "plugins { id 'java' }");
         buildGradle("c-c", "plugins { id 'java' }");
+        buildGradle("c-d", "plugins { id 'java' }");
         // dはjavaプロジェクト
         // 複数のjavaプロジェクトに依存しても取得できる検証用
         buildGradle("d", """
@@ -226,13 +229,17 @@ public class JigPluginFunctionalTest {
         assertEquals(TaskOutcome.SUCCESS, taskResult.getOutcome());
         assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
 
-        // jig-coreのread paths... の中に出力されているのでそこで検証する。
+        // jig-coreのread paths... の行で検証する。
+        // 出力全体だとGradle自体の--infoログ（compileJava実行など）に一致してしまうため行を限定する。
         // TODO plugin側で解決したパスを出力してそこで検証する形にしたい
+        String output = result.getOutput().lines()
+                .filter(line -> line.contains("read paths:"))
+                .collect(Collectors.joining("\n"));
+        assertFalse(output.isEmpty(), result.getOutput());
 
-        String output = result.getOutput();
         // 部分一致の誤検知を避けるため先頭にセパレータを付けて検証する（例: "b/src" が "c-b/src" に一致してしまう）
         // 含まれるもの
-        assertAll(Stream.of("a", "c", "c-b", "d")
+        assertAll(Stream.of("a", "c", "c-b", "c-d", "d")
                 .flatMap(project -> Stream.of(
                         "/" + project + "/src/main/java",
                         "/" + project + "/build/classes/java/main",

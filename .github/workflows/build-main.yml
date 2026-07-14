@@ -36,8 +36,25 @@ jobs:
           path: build/reports/tests/
           retention-days: 3
 
+  js-test:
+    # JavaScript のテストはubuntuだけで行う
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Install JS dependencies
+        run: npm ci
+      - name: Run JS tests
+        run: npm run test
+      - name: Run stylelint
+        run: npm run lint:css
+
   deploy-pages:
-    needs: build
+    needs: [ build, js-test ]
     runs-on: ubuntu-latest
     permissions:
       contents: write

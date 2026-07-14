@@ -27,6 +27,17 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Install JS dependencies
+        run: npm ci
+      - name: Run JS tests
+        run: npm run test
+      - name: Run stylelint
+        run: npm run lint:css
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
       - name: Build

@@ -298,16 +298,14 @@ const OutboundApp = (() => {
 
         Jig.dom.sidebar.renderTreeSection(sidebar, {
             title: "出力ポート",
-            items: grouped,
+            // メインでカードにならないポートはリンク先が無いためサイドバーにも出さない
+            items: visiblePortGroups(grouped),
             getFqn: group => group.outboundPort.fqn,
             renderLeaf: group => Jig.dom.sidebar.leaf(
                 "#" + Jig.util.fqnToId("port", group.outboundPort.fqn),
                 Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
             ),
-            // メインに見出しがあるのは「クラスを直接持つ」または「用語(package-info)を持つ」パッケージ
-            packageHref: node => (node.items.length > 0 || Jig.glossary.findTerm(node.fqn))
-                ? "#" + Jig.util.fqnToId("package", node.fqn)
-                : null
+            packageHref: Jig.dom.sidebar.packageHeadingHref
         });
 
         Jig.dom.sidebar.renderTreeSection(sidebar, {
@@ -337,22 +335,27 @@ const OutboundApp = (() => {
         });
     }
 
+    // ダイアグラムを生成できないグループはカードにならない。メインとサイドバーで同じ絞り込みを使う
+    function visiblePortGroups(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
+        return grouped.filter(group => generatePortMermaidCode(group, visibility));
+    }
+
     function renderOutboundList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-port-list");
         if (!container) return;
         container.innerHTML = "";
 
-        // ダイアグラムを生成できないグループはカードにならないため、見出しが孤児にならないよう先に除く
-        const visibleGroups = grouped.filter(group => generatePortMermaidCode(group, visibility));
+        // カードにならないグループを先に除き、見出しが孤児にならないようにする
+        const visibleGroups = visiblePortGroups(grouped, visibility);
         // パッケージごとに見出しを置き、ポートカードをまとめる。サイドバーのパッケージノードのリンク先になる
         // 用語（package-info）を持つパッケージはポートを直接含まなくても見出しと説明を表示する
-        const sections = Jig.util.flattenPackageTree(visibleGroups, group => group.outboundPort.fqn, fqn => !!Jig.glossary.findTerm(fqn));
+        const sections = Jig.util.flattenPackageTree(visibleGroups, group => group.outboundPort.fqn, Jig.glossary.hasTerm);
         sections.forEach(({fqn: packageFqn, items}) => {
             container.appendChild(Jig.dom.createPackageHeading(Jig.util.fqnToId("package", packageFqn), packageFqn));
             items.forEach(group => appendPortCard(container, group, visibility));
         });
 
-        if (grouped.length === 0) renderNoData(container);
+        if (visibleGroups.length === 0) renderNoData(container);
     }
 
     function appendPortCard(container, group, visibility) {

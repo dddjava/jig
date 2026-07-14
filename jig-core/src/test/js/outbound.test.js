@@ -772,6 +772,14 @@ test.describe("outbound.js", () => {
             assert.equal(container.children[0].textContent, "データなし");
         });
 
+        test("表示設定で全グループがカードにならない場合も「データなし」を表示する", () => {
+            const doc = setupDom();
+            OutboundApp.renderOutboundList([simpleGroup], {});
+            const container = doc.getElementById("outbound-port-list");
+            assert.equal(container.children.length, 1, "孤児の見出しを生成しない");
+            assert.equal(container.children[0].textContent, "データなし");
+        });
+
         test("パッケージ見出しに続けて出力ポートグループをセクションとして描画する", () => {
             const doc = setupDom();
             OutboundApp.renderOutboundList([simpleGroup]);
@@ -872,6 +880,8 @@ test.describe("outbound.js", () => {
                 outboundPort: {fqn: "com.example.Port"},
                 operations: [{
                     outboundPortOperation: makeMethodData("com.example.Port#save()"),
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: makeMethodData("com.example.Adapter#save()"),
                     persistenceAccessors: [{targetOperationTypes: {"ORDERS": "INSERT"}}],
                     externalAccessors: []
                 }]

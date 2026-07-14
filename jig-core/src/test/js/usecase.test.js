@@ -155,12 +155,13 @@ test.describe('usecase.js', () => {
             assert.equal(sidebarLinks[3].textContent, 'otherMethod');
 
             const mainList = document.getElementById('usecase-list');
-            assert.equal(mainList.children.length, 1);
-            const packageSection = mainList.children[0];
-            assert.equal(packageSection.className, 'package-section');
-            assert.equal(packageSection.querySelector('.package-header h2').textContent, 'example');
-            assert.equal(packageSection.querySelector('.package-header .fully-qualified-name').textContent, 'com.example');
-            const serviceSection = packageSection.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
+            assert.equal(mainList.children.length, 2, 'パッケージ見出しとユースケースカードが並ぶ');
+            const packageHeading = mainList.children[0];
+            assert.equal(packageHeading.className, 'package-heading');
+            assert.equal(packageHeading.id, globalThis.Jig.util.fqnToId('package', 'com.example'));
+            assert.equal(packageHeading.querySelector('h2').textContent, 'example');
+            assert.equal(packageHeading.querySelector('.fully-qualified-name').textContent, 'com.example');
+            const serviceSection = document.getElementById(globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             assert.equal(serviceSection.querySelector('h3 span').textContent, 'ServiceA');
             assert.equal(serviceSection.querySelector('.fully-qualified-name').textContent, 'com.example.ServiceA');
             assert.equal(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
@@ -209,7 +210,7 @@ test.describe('usecase.js', () => {
             assert.equal(description.querySelector('.markdown')?.innerHTML, 'Description of method1');
         });
 
-        test('パッケージのdescriptionが存在する場合、パッケージセクションに説明が表示される', () => {
+        test('パッケージのdescriptionが存在する場合、パッケージ見出しに説明が表示される', () => {
             setGlossaryData({
                 "com.example": {title: "サンプル", description: "サンプルパッケージの説明"},
                 "com.example.ServiceA": {title: "ServiceA"},
@@ -220,9 +221,9 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const mainList = document.getElementById('usecase-list');
-            const packageSection = mainList.children[0];
-            assert.equal(packageSection.querySelector('.package-header h2').textContent, 'サンプル');
-            const pkgDescription = packageSection.querySelector('.description .markdown');
+            const packageHeading = mainList.children[0];
+            assert.equal(packageHeading.querySelector('h2').textContent, 'サンプル');
+            const pkgDescription = packageHeading.querySelector('.description .markdown');
             assert.ok(pkgDescription, 'パッケージの説明が表示されること');
             assert.equal(pkgDescription.innerHTML, 'サンプルパッケージの説明');
         });
@@ -254,15 +255,15 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const mainList = document.getElementById('usecase-list');
-            assert.equal(mainList.children.length, 2, '中間パッケージと直属パッケージのセクションが並ぶ');
+            assert.equal(mainList.children.length, 3, '中間パッケージ見出し・直属パッケージ見出し・カードが並ぶ');
 
-            const intermediateSection = mainList.children[0];
-            assert.equal(intermediateSection.id, globalThis.Jig.util.fqnToId('package', 'com.example'));
-            assert.equal(intermediateSection.querySelector('.package-header h2').textContent, 'サンプル');
-            assert.equal(intermediateSection.querySelector('.description .markdown').innerHTML, '中間パッケージの説明');
+            const intermediateHeading = mainList.children[0];
+            assert.equal(intermediateHeading.id, globalThis.Jig.util.fqnToId('package', 'com.example'));
+            assert.equal(intermediateHeading.querySelector('h2').textContent, 'サンプル');
+            assert.equal(intermediateHeading.querySelector('.description .markdown').innerHTML, '中間パッケージの説明');
 
-            const leafSection = mainList.children[1];
-            assert.equal(leafSection.id, globalThis.Jig.util.fqnToId('package', 'com.example.sub'));
+            const leafHeading = mainList.children[1];
+            assert.equal(leafHeading.id, globalThis.Jig.util.fqnToId('package', 'com.example.sub'));
 
             // サイドバーの中間パッケージノードはメインの見出しへのリンクになる
             const sidebar = document.getElementById('usecase-sidebar-list');
@@ -282,7 +283,7 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const mainList = document.getElementById('usecase-list');
-            assert.equal(mainList.children.length, 1, '直属パッケージのセクションのみ');
+            assert.equal(mainList.children.length, 2, '直属パッケージの見出しとカードのみ');
             assert.equal(mainList.children[0].id, globalThis.Jig.util.fqnToId('package', 'com.example'));
         });
 
@@ -315,9 +316,8 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const mainList = document.getElementById('usecase-list');
-            const packageSection = mainList.children[0];
-            const headerNext = packageSection.children[1];
-            assert.ok(!headerNext || !headerNext.classList.has('description'), 'descriptionセクションが存在しないこと');
+            const packageHeading = mainList.children[0];
+            assert.ok(!packageHeading.querySelector('.description'), 'descriptionセクションが存在しないこと');
         });
 
         test.describe('サイドバーテキストフィルター', () => {
@@ -563,7 +563,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithGenerics;
             UsecaseApp.init();
 
-            const serviceSection = document.getElementById('usecase-list').children[0];
+            const serviceSection = document.getElementById(globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             assert.ok(classDiagram, 'クラス図が生成されること');
 
@@ -745,8 +745,8 @@ test.describe('usecase.js', () => {
             assert.ok(document.getElementById(method1Id), 'method1のarticleが存在する');
             assert.ok(!document.getElementById(otherMethodId), 'otherMethodのarticleは存在しない');
 
-            // パッケージセクションが1つ表示される（ハンドラを含むため）
-            assert.equal(mainList.children.length, 1);
+            // パッケージ見出しとカードが表示される（ハンドラを含むため）
+            assert.equal(mainList.children.length, 2);
 
             // クラス単位の図にはハンドラ（method1）のみが含まれ、otherMethodは含まれない
             const serviceSection = document.querySelector('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));

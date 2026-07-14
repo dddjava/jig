@@ -544,8 +544,9 @@ const UsecaseApp = (() => {
                     children: [header, methodList]
                 });
             },
-            // クラスを直接持たない中間パッケージノードはメインに見出しがないためリンクなし
-            packageHref: node => node.items.length > 0 ? "#" + fqnToPackageId(node.fqn) : null
+            // メインに見出しがあるのは「クラスを直接持つ」または「用語(package-info)を持つ」パッケージ
+            packageHref: node => (node.items.length > 0 || Jig.glossary.findTerm(node.fqn))
+                ? "#" + fqnToPackageId(node.fqn) : null
         });
     }
 
@@ -667,10 +668,14 @@ const UsecaseApp = (() => {
         return methodSection;
     }
 
-    function renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext) {
-        const visibleUsecaseMethods = usecase.methods.filter(
+    function visibleUsecaseMethodsOf(usecase, handlerFqns) {
+        return usecase.methods.filter(
             method => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn))
         );
+    }
+
+    function renderUsecaseCard(usecase, handlerFqns, buildCurrentDiagramContext) {
+        const visibleUsecaseMethods = visibleUsecaseMethodsOf(usecase, handlerFqns);
         if (handlerFqns && visibleUsecaseMethods.length === 0) return null;
 
         const term = Jig.glossary.getTypeTerm(usecase.fqn);
@@ -791,12 +796,14 @@ const UsecaseApp = (() => {
 
         const handlerFqns = state.handlerFqns;
 
-        const byPackage = Jig.util.groupByPackageFqn(usecases, u => u.fqn);
-        byPackage.forEach((packageUsecases, packageFqn) => {
+        // カードにならないusecaseを先に除き、用語を持つ中間パッケージの見出しが孤児にならないようにする
+        const visibleUsecases = usecases.filter(u => !handlerFqns || visibleUsecaseMethodsOf(u, handlerFqns).length > 0);
+        // 用語（package-info）を持つパッケージはクラスを直接含まなくても見出しと説明を表示する
+        const sections = Jig.util.flattenPackageTree(visibleUsecases, u => u.fqn, fqn => !!Jig.glossary.findTerm(fqn));
+        sections.forEach(({fqn: packageFqn, items: packageUsecases}) => {
             const cards = packageUsecases
                 .map(u => renderUsecaseCard(u, handlerFqns, buildCurrentDiagramContext))
                 .filter(Boolean);
-            if (cards.length === 0) return;
 
             const pkgTerm = Jig.glossary.getPackageTerm(packageFqn);
             const pkgSection = Jig.dom.createElement("section", {

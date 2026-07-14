@@ -227,6 +227,84 @@ test.describe('usecase.js', () => {
             assert.equal(pkgDescription.innerHTML, 'サンプルパッケージの説明');
         });
 
+        // issue #1141: クラスを直接含まないパッケージのpackage-infoが表示されない
+        test('用語を持つがクラスを直接含まない中間パッケージにも見出しと説明が表示される', () => {
+            const nestedUsecaseData = {
+                usecases: [{
+                    fqn: "com.example.sub.ServiceA",
+                    fields: [],
+                    staticMethods: [],
+                    methods: [{
+                        fqn: "com.example.sub.ServiceA#method1()",
+                        visibility: "PUBLIC",
+                        parameters: [],
+                        returnTypeRef: {fqn: "void"},
+                        declaration: "method1():void",
+                        isDeprecated: false,
+                        callMethods: []
+                    }]
+                }]
+            };
+            setGlossaryData({
+                "com.example": {title: "サンプル", description: "中間パッケージの説明"},
+                "com.example.sub.ServiceA": {title: "ServiceA"},
+                "com.example.sub.ServiceA#method1()": {title: "method1"}
+            });
+            globalThis.usecaseData = nestedUsecaseData;
+            UsecaseApp.init();
+
+            const mainList = document.getElementById('usecase-list');
+            assert.equal(mainList.children.length, 2, '中間パッケージと直属パッケージのセクションが並ぶ');
+
+            const intermediateSection = mainList.children[0];
+            assert.equal(intermediateSection.id, globalThis.Jig.util.fqnToId('package', 'com.example'));
+            assert.equal(intermediateSection.querySelector('.package-header h2').textContent, 'サンプル');
+            assert.equal(intermediateSection.querySelector('.description .markdown').innerHTML, '中間パッケージの説明');
+
+            const leafSection = mainList.children[1];
+            assert.equal(leafSection.id, globalThis.Jig.util.fqnToId('package', 'com.example.sub'));
+
+            // サイドバーの中間パッケージノードはメインの見出しへのリンクになる
+            const sidebar = document.getElementById('usecase-sidebar-list');
+            const intermediateLink = sidebar.querySelectorAll('a')
+                .find(a => a.textContent === 'サンプル');
+            assert.ok(intermediateLink, '中間パッケージがリンクとして表示される');
+            assert.equal(intermediateLink.getAttribute('href'), '#' + globalThis.Jig.util.fqnToId('package', 'com.example'));
+        });
+
+        test('用語のない中間パッケージにはセクションが生成されない', () => {
+            setGlossaryData({
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#method1()": {title: "method1"},
+                "com.example.ServiceA#otherMethod()": {title: "otherMethod"}
+            });
+            globalThis.usecaseData = mockUsecaseAppData;
+            UsecaseApp.init();
+
+            const mainList = document.getElementById('usecase-list');
+            assert.equal(mainList.children.length, 1, '直属パッケージのセクションのみ');
+            assert.equal(mainList.children[0].id, globalThis.Jig.util.fqnToId('package', 'com.example'));
+        });
+
+        test('ハンドラのみ表示で子孫が全て非表示なら中間パッケージの見出しも表示されない', () => {
+            // inboundDataなし = ハンドラなし
+            setGlossaryData({
+                "com.example": {title: "サンプル", description: "中間パッケージの説明"},
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#method1()": {title: "method1"},
+                "com.example.ServiceA#otherMethod()": {title: "otherMethod"}
+            });
+            globalThis.usecaseData = mockUsecaseAppData;
+
+            document.getElementById('display-target-handlers-only').checked = true;
+            document.getElementById('display-target-all').checked = false;
+
+            UsecaseApp.init();
+
+            const mainList = document.getElementById('usecase-list');
+            assert.equal(mainList.children.length, 0, '孤児の見出しが生成されない');
+        });
+
         test('パッケージのdescriptionが空の場合、説明セクションは表示されない', () => {
             setGlossaryData({
                 "com.example.ServiceA": {title: "ServiceA"},

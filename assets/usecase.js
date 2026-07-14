@@ -489,14 +489,16 @@ const UsecaseApp = (() => {
         const filterText = state.sidebarFilterText.toLowerCase();
         const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
 
-        // テキストフィルタ: クラス名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
+        // テキストフィルタ: クラス名/所属パッケージ名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
         const filteredItems = usecases.flatMap(usecase => {
             const visibleMethods = usecase.methods.filter(isVisibleMethod);
             if (visibleMethods.length === 0) return [];
             if (!filterText) return [{usecase, methods: visibleMethods}];
 
             const classTitle = Jig.glossary.getTypeTerm(usecase.fqn).title.toLowerCase();
-            if (classTitle.includes(filterText)) return [{usecase, methods: visibleMethods}];
+            if (classTitle.includes(filterText) || Jig.glossary.packageHierarchyMatchesFilter(usecase.fqn, filterText)) {
+                return [{usecase, methods: visibleMethods}];
+            }
 
             const matchingMethods = visibleMethods.filter(m =>
                 Jig.glossary.getMethodTerm(m.fqn).title.toLowerCase().includes(filterText)

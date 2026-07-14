@@ -96,29 +96,30 @@ const IndexApp = (() => {
         renderDocumentLinks();
 
         const packageDiagramContainer = document.getElementById("package-diagram");
-        if (!packageDiagramContainer) return;
+        const packageData = packageDiagramContainer ? getPackageData() : null;
 
-        const packageData = getPackageData();
-        const allPackages = packageData.packages;
-        const allPackageRelations = packageData.relations;
+        if (packageDiagramContainer && packageData) {
+            const allPackages = packageData.packages;
+            const allPackageRelations = packageData.relations;
 
-        packageData.domainPackageRoots.forEach(packageRoot => {
+            packageData.domainPackageRoots.forEach(packageRoot => {
+                renderPackageDiagram(
+                    packageDiagramContainer,
+                    allPackages, allPackageRelations,
+                    packageRoot,
+                    "ドメインパッケージ",
+                    Jig.mermaid.nav.domainTypeUrl
+                );
+            });
+
+            const commonRoot = Jig.util.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
             renderPackageDiagram(
                 packageDiagramContainer,
                 allPackages, allPackageRelations,
-                packageRoot,
-                "ドメインパッケージ",
-                Jig.mermaid.nav.domainTypeUrl
+                commonRoot,
+                "最上位パッケージ"
             );
-        });
-
-        const commonRoot = Jig.util.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
-        renderPackageDiagram(
-            packageDiagramContainer,
-            allPackages, allPackageRelations,
-            commonRoot,
-            "最上位パッケージ"
-        );
+        }
 
         updateRelativeTime();
     }
@@ -163,3 +164,7 @@ const IndexApp = (() => {
 })();
 
 Jig.bootstrap.register("index", IndexApp.init);
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = IndexApp;
+}

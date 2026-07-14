@@ -252,7 +252,8 @@ const InboundApp = (() => {
 
         const visibleAdapters = adapters.filter(adapter => {
             if (!filterText) return true;
-            return Jig.glossary.getTypeTerm(adapter.fqn).title.toLowerCase().includes(filterText);
+            return Jig.glossary.getTypeTerm(adapter.fqn).title.toLowerCase().includes(filterText)
+                || Jig.glossary.packageHierarchyMatchesFilter(adapter.fqn, filterText);
         });
 
         // エントリーポイント種別ごとのグループ → パッケージ階層 → クラスのツリー

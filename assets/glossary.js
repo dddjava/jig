@@ -40,8 +40,12 @@ const GlossaryApp = (() => {
         return normalizeGlossaryData(glossaryData) ?? [];
     }
 
-    function buildTermAnchorId(term, index) {
-        return term.fqn ? Jig.util.fqnToId("term", term.fqn) : `term-${index}`;
+    function buildTermAnchorId(term) {
+        if (term.fqn) return Jig.util.fqnToId("term", term.fqn);
+        // fqn を持たない用語は title(+kind+origin) をキーにして、サイドバー・本文・hash復元で同一IDになるようにする
+        // 区切りには値にまず含まれないNUL文字(\u0000)を使い、フィールド境界のずれによる衝突を避ける
+        const key = `${term.title || ""}\u0000${term.kind || ""}\u0000${term.origin || ""}`;
+        return Jig.util.fqnToId("term", key);
     }
 
     function createMetaItem(label, value) {
@@ -73,7 +77,7 @@ const GlossaryApp = (() => {
         if (!list) return;
 
         list.innerHTML = "";
-        const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
+        const items = terms.map(term => ({id: buildTermAnchorId(term), label: term.title || ""}));
         const section = Jig.dom.sidebar.section(items);
         if (!section) return;
 
@@ -104,7 +108,7 @@ const GlossaryApp = (() => {
         chars.forEach(char => {
             const link = Jig.dom.createElement("a", {
                 className: "glossary-jump-link",
-                href: `#group-${char}`,
+                attributes: {href: `#group-${char}`},
                 textContent: char
             });
             link.addEventListener("click", (e) => {
@@ -146,8 +150,8 @@ const GlossaryApp = (() => {
                 ]
             });
 
-            groupTerms.forEach((term, index) => {
-                const anchorId = buildTermAnchorId(term, index);
+            groupTerms.forEach(term => {
+                const anchorId = buildTermAnchorId(term);
                 const isCompact = !showAttributes;
 
                 const metaChildren = [];
@@ -298,7 +302,7 @@ const GlossaryApp = (() => {
             let el = document.getElementById(targetId);
             if (!el) {
                 // フィルタで非表示になっている場合、対象の用語を強制的に追加して再描画する
-                const targetTerm = terms.find((t, i) => buildTermAnchorId(t, i) === targetId);
+                const targetTerm = terms.find(t => buildTermAnchorId(t) === targetId);
                 if (targetTerm) {
                     const filteredTerms = getFilteredTerms(terms, controls);
                     const sortedTerms = sortTerms([...filteredTerms, targetTerm], "name");

@@ -580,6 +580,21 @@ globalThis.Jig.glossary = (() => {
         return getTermOrSimpleName(fqn);
     }
 
+    /**
+     * typeFqnが属するパッケージ階層（自身から最上位まで）のいずれかの用語名にfilterTextが含まれるか判定する
+     * @param {string} typeFqn
+     * @param {string} filterText 小文字化済みの検索文字列
+     * @returns {boolean}
+     */
+    function packageHierarchyMatchesFilter(typeFqn, filterText) {
+        const packageFqn = globalThis.Jig.util.getPackageFqnFromTypeFqn(typeFqn);
+        if (packageFqn === '(default)') return false;
+        const segments = packageFqn.split('.');
+        return segments.some((_, i) =>
+            getPackageTerm(segments.slice(0, i + 1).join('.')).title.toLowerCase().includes(filterText)
+        );
+    }
+
     function getTypeTerm(fqn) {
         return getTermOrSimpleName(fqn);
     }
@@ -661,6 +676,7 @@ globalThis.Jig.glossary = (() => {
 
     return {
         getPackageTerm,
+        packageHierarchyMatchesFilter,
         getTypeTerm,
         getFieldTerm,
         getMethodTerm,
@@ -1462,6 +1478,45 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    // --- Depth aggregation control ---
+    // パッケージ関連図・ライブラリ依存図の階層集約セレクト（集約なし・深さN）とその
+    // ▲▼ステップボタンで共通に使う。両画面で選択肢生成・活性制御・step操作を揃えるための実装。
+
+    function buildDepthOptions(maxDepth) {
+        const options = [{value: "0", text: "集約なし"}];
+        for (let depth = 1; depth <= maxDepth; depth += 1) {
+            options.push({value: String(depth), text: `深さ${depth}`});
+        }
+        return options;
+    }
+
+    function renderDepthOptions(select, maxDepth, value) {
+        if (!select) return;
+        select.innerHTML = "";
+        buildDepthOptions(maxDepth).forEach(option => {
+            select.appendChild(createElement("option", {textContent: option.text, attributes: {value: option.value}}));
+        });
+        select.value = String(Math.min(Math.max(Number(value) || 0, 0), maxDepth));
+    }
+
+    function updateDepthButtonStates(select, upButton, downButton) {
+        if (!select || !upButton || !downButton) return;
+        const options = Array.from(select.options);
+        const currentIndex = options.findIndex(opt => opt.value === select.value);
+        upButton.disabled = currentIndex <= 0;
+        downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
+    }
+
+    function stepDepthByIndex(select, delta) {
+        if (!select) return;
+        const options = Array.from(select.options);
+        const currentIndex = options.findIndex(opt => opt.value === select.value);
+        const nextIndex = currentIndex + delta;
+        if (nextIndex < 0 || nextIndex >= options.length) return;
+        select.value = options[nextIndex].value;
+        select.dispatchEvent(new Event("change"));
+    }
+
     // --- Common UI setup ---
 
     function normalizeNavigationHref(href) {
@@ -1697,6 +1752,12 @@ globalThis.Jig.dom = (() => {
         tab: {
             buildSection: buildTabSection,
         },
+        depthControl: {
+            buildOptions: buildDepthOptions,
+            renderOptions: renderDepthOptions,
+            updateButtonStates: updateDepthButtonStates,
+            step: stepDepthByIndex,
+        },
     };
 })();
 
@@ -1780,7 +1841,7 @@ globalThis.Jig.mermaid = (() => {
                 const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
                 if (!this.edgeSet.has(edgeKey)) {
                     this.edgeSet.add(edgeKey);
-                    const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
+                    const edgeLine = label ? `  ${from} -- "${escapeMermaidText(label)}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
                     this.edges.push(edgeLine);
                 }
             }

@@ -1210,10 +1210,19 @@ globalThis.Jig.mermaid = (() => {
 
             dropdown.innerHTML = "";
             items.forEach((item) => {
+                if (item.separator) {
+                    const separator = document.createElement("li");
+                    separator.className = "mermaid-menu-separator";
+                    separator.setAttribute("role", "separator");
+                    dropdown.appendChild(separator);
+                    return;
+                }
+
                 const li = document.createElement("li");
                 li.className = "mermaid-menu-item";
-                li.setAttribute("role", "menuitem");
+                li.setAttribute("role", "menuitemcheckbox");
                 li.tabIndex = 0;
+                if (item.checked != null) li.setAttribute("aria-checked", String(item.checked));
                 li.textContent = item.label;
                 const activate = () => {
                     closeAllMermaidMenus();
@@ -1390,6 +1399,15 @@ globalThis.Jig.mermaid = (() => {
                                 renderDiagram(newDirection);
                             }
                         });
+                    }
+                    // diagramFn 側（呼び出し元）がダイアグラム固有の追加メニュー項目（例: 含める要素の切り替え）
+                    // を持つ場合はここに連結する。rerender は同じ向きでの再描画のみを行う。
+                    if (typeof diagramFn.buildExtraMenuItems === "function") {
+                        const extraItems = diagramFn.buildExtraMenuItems(() => renderDiagram(newDirection));
+                        if (Array.isArray(extraItems) && extraItems.length > 0) {
+                            if (menuItems.length > 0) menuItems.push({separator: true});
+                            menuItems.push(...extraItems);
+                        }
                     }
                     ensureDiagramMenu(container, menuItems);
                 }

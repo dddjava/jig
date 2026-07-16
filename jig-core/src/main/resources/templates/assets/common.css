@@ -1808,6 +1808,11 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     outline: none;
 }
 
+.mermaid-menu-separator {
+    margin: 0.25em 0;
+    border-top: 1px solid #ddd;
+}
+
 /* エラーメッセージ（必須データ欠落） */
 
 p.jig-data-error {

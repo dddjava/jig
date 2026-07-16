@@ -554,9 +554,12 @@ const UsecaseApp = (() => {
      * @returns {function}
      */
     function createUsecaseDiagramGenerator(method, buildCurrentDiagramContext) {
-        return (dir, opts) => {
+        // ダイアグラムごとの表示要素の上書き設定。未指定のキーはサイドバーの全体設定に従う。
+        let diagramContextOverrides = {};
+
+        const generator = (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+            const currentUsecaseDiagram = buildUsecaseDiagram(method, {...buildCurrentDiagramContext(), ...diagramContextOverrides});
             const builder = Jig.mermaid.createBuilder();
             const classSubgraphs = new Map();
             const ensureClassSubgraph = (fqn) => {
@@ -597,6 +600,31 @@ const UsecaseApp = (() => {
             });
             return builder.build(dir);
         };
+
+        const diagramContentToggles = [
+            {key: 'showDiagramInternalMethods', label: '内部メソッド'},
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
+        ];
+
+        // サイドバーの表示設定はこのダイアグラムに限らず全体に効くため、コンテキストメニューでは
+        // このダイアグラムだけの上書き（diagramContextOverrides）として保持する。
+        generator.buildExtraMenuItems = (rerenderSameDirection) => {
+            const baseContext = buildCurrentDiagramContext();
+            return diagramContentToggles.map(({key, label}) => {
+                const currentValue = diagramContextOverrides[key] !== undefined ? diagramContextOverrides[key] : baseContext[key];
+                return {
+                    label: `${label}を${currentValue ? '非表示' : '表示'}にする`,
+                    checked: currentValue,
+                    onSelect: () => {
+                        diagramContextOverrides = {...diagramContextOverrides, [key]: !currentValue};
+                        rerenderSameDirection();
+                    }
+                };
+            });
+        };
+
+        return generator;
     }
 
     /**
@@ -887,6 +915,7 @@ const UsecaseApp = (() => {
         buildReverseCallerMap,
         buildUsecaseDiagram,
         buildClassGraph,
+        createUsecaseDiagramGenerator,
         SequenceDiagram,
         render,
         renderSidebar,

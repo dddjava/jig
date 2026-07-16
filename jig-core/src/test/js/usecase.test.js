@@ -1842,4 +1842,80 @@ test.describe('usecase.js', () => {
             assert.ok(result.edges.find(e => e.from === 'web.Ctrl#entry2()' && e.to === 'pkg.Cls#A()'));
         });
     });
+
+    test.describe('createUsecaseDiagramGenerator', () => {
+        function buildContext(rootMethod, methodB, overrides = {}) {
+            const methodMap = new Map([[rootMethod.fqn, rootMethod], [methodB.fqn, methodB]]);
+            return {
+                methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
+                outboundOperationSet: new Set(),
+                showDiagramInternalMethods: true,
+                showDiagramOutboundPorts: true,
+                showDiagramDomainTypes: false,
+                ...overrides
+            };
+        }
+
+        test('メニュー項目はサイドバーの現在値を反映し、ラベルは切替後の状態を示す', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const context = buildContext(rootMethod, methodB);
+
+            const generator = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
+            const items = generator.buildExtraMenuItems(() => {});
+
+            assert.deepEqual(items.map(i => i.label), [
+                '内部メソッドを非表示にする',
+                '出力インタフェースを非表示にする',
+                'ドメインモデルを表示にする'
+            ]);
+            assert.deepEqual(items.map(i => i.checked), [true, true, false]);
+        });
+
+        test('メニュー項目を選択するとこのダイアグラムだけ表示要素が切り替わる（サイドバー側の値は変更しない）', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodBNodeId = globalThis.Jig.util.fqnToId("node", methodB.fqn);
+            // サイドバー設定は「内部メソッド:表示」のまま
+            const context = buildContext(rootMethod, methodB, {showDiagramInternalMethods: true});
+
+            const generator = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
+
+            // 内部メソッドを非表示に切り替える前は B ノードが含まれる
+            const before = generator('LR', {});
+            assert.ok(before.includes(methodBNodeId), '切替前はBノードを含む');
+
+            let rerendered = false;
+            const items = generator.buildExtraMenuItems(() => { rerendered = true; });
+            const internalMethodsItem = items.find(i => i.label.startsWith('内部メソッド'));
+            internalMethodsItem.onSelect();
+
+            assert.equal(rerendered, true, '選択時に再描画コールバックが呼ばれる');
+            assert.equal(context.showDiagramInternalMethods, true, 'サイドバー（グローバル）側の値は変更されない');
+
+            // 切替後は B ノードが消える（このダイアグラムだけの上書き）
+            const after = generator('LR', {});
+            assert.ok(!after.includes(methodBNodeId), '切替後はBノードを含まない');
+
+            // メニューを再度取得すると状態がトグルされていることが反映される
+            const itemsAfter = generator.buildExtraMenuItems(() => {});
+            assert.equal(itemsAfter.find(i => i.label.startsWith('内部メソッド')).checked, false);
+        });
+
+        test('同じmethodから複数回生成しても、それぞれ独立した上書き状態を持つ', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodBNodeId = globalThis.Jig.util.fqnToId("node", methodB.fqn);
+            const context = buildContext(rootMethod, methodB, {showDiagramInternalMethods: true});
+
+            const generator1 = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
+            const generator2 = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
+
+            generator1.buildExtraMenuItems(() => {}).find(i => i.label.startsWith('内部メソッド')).onSelect();
+
+            assert.ok(!generator1('LR', {}).includes(methodBNodeId), 'generator1はBノードを含まない');
+            assert.ok(generator2('LR', {}).includes(methodBNodeId), 'generator2は影響を受けずBノードを含む');
+        });
+    });
 });

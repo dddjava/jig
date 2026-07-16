@@ -672,4 +672,77 @@ test.describe('jig-mermaid.js', () => {
             });
         });
     });
+
+    test.describe('renderWithControls の表示切り替えメニュー', () => {
+        const {JSDOM} = require('jsdom');
+
+        function setupGlobals() {
+            const dom = new JSDOM(`<!DOCTYPE html><body><div class="target"></div></body></html>`);
+            global.window = dom.window;
+            global.document = dom.window.document;
+            const mermaidStub = {run: () => Promise.resolve(), initialize: () => {}};
+            global.window.mermaid = mermaidStub;
+            globalThis.mermaid = mermaidStub;
+            return dom.window.document;
+        }
+
+        test('向き変更と表示名変更がひとつのメニューにまとまる', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+
+            mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {
+                direction: 'LR',
+                enableLabelToggle: true
+            });
+
+            assert.equal(doc.querySelectorAll('.mermaid-menu-button').length, 1, 'メニューボタンは1個だけ生成される');
+            assert.equal(doc.querySelectorAll('.mermaid-direction-button').length, 0, '個別の向きボタンはもう生成されない');
+            assert.equal(doc.querySelectorAll('.mermaid-label-toggle-button').length, 0, '個別の表示名ボタンはもう生成されない');
+
+            const itemLabels = Array.from(doc.querySelectorAll('.mermaid-menu-item')).map(li => li.textContent);
+            assert.deepEqual(itemLabels, ['レイアウト方向を縦にする', '表示名を物理名にする']);
+        });
+
+        test('向き・表示名のどちらも対象外の図ではメニューボタンごと隠す', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+
+            mermaid.render.renderWithControls(target, () => 'sequenceDiagram\nA->>B: call');
+
+            const diagram = doc.querySelector('.mermaid-diagram');
+            assert.equal(diagram.classList.contains('mermaid-menu-empty'), true);
+            assert.equal(doc.querySelectorAll('.mermaid-menu-item').length, 0);
+        });
+
+        test('メニュー項目を選択するとその図だけ切り替わりメニューは閉じる', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+
+            mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {direction: 'LR'});
+
+            const diagram = doc.querySelector('.mermaid-diagram');
+            diagram.querySelector('.mermaid-menu-button').click();
+            assert.equal(diagram.classList.contains('mermaid-menu-open'), true, 'クリックでメニューが開く');
+
+            diagram.querySelector('.mermaid-menu-item').click();
+
+            assert.equal(diagram.classList.contains('mermaid-menu-open'), false, '選択後はメニューが閉じる');
+            assert.ok(doc.querySelector('.mermaid').textContent.includes('graph TB'), '向きがTBに切り替わる');
+        });
+
+        test('ドキュメントの他の場所をクリックするとメニューが閉じる', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+
+            mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {direction: 'LR'});
+
+            const diagram = doc.querySelector('.mermaid-diagram');
+            diagram.querySelector('.mermaid-menu-button').click();
+            assert.equal(diagram.classList.contains('mermaid-menu-open'), true);
+
+            doc.body.click();
+
+            assert.equal(diagram.classList.contains('mermaid-menu-open'), false);
+        });
+    });
 });

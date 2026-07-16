@@ -1145,24 +1145,94 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
-        function ensureDirectionButton(container, currentDirection, onUpdate) {
-            if (!container || !currentDirection) return null;
-            const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
-            if (!button) return null;
-            button.onclick = () => {
-                const newDirection = (currentDirection === "LR") ? "TB" : "LR";
-                onUpdate(newDirection);
-            };
-            return button;
+        // 個別ダイアグラムの表示切り替え（向き・表示名）をまとめるコンテキストメニュー。
+        // サイドバーの表示設定（全体設定）とは独立に、ダイアグラムごとに開閉・選択する。
+        // documentごとに1度だけ登録する（テストのようにdocumentを差し替える場合にも対応するためWeakSetで管理）
+        const mermaidMenuGlobalHandlerDocuments = new WeakSet();
+
+        function closeAllMermaidMenus() {
+            if (typeof document === "undefined") return;
+            document.querySelectorAll(".mermaid-menu-open").forEach((el) => {
+                el.classList.remove("mermaid-menu-open");
+                const button = el.querySelector(":scope > .mermaid-menu-button");
+                if (button) button.setAttribute("aria-expanded", "false");
+            });
         }
 
-        function ensureLabelToggleButton(container, showPhysicalName, onToggle) {
+        function ensureMermaidMenuGlobalHandlers() {
+            if (typeof document === "undefined" || mermaidMenuGlobalHandlerDocuments.has(document)) return;
+            mermaidMenuGlobalHandlerDocuments.add(document);
+            document.addEventListener("click", () => closeAllMermaidMenus());
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape") closeAllMermaidMenus();
+            });
+        }
+
+        function ensureMermaidMenuDropdown(container) {
             if (!container) return null;
-            const label = showPhysicalName ? "用語名を表示" : "物理名を表示";
-            const button = ensureMermaidControlButton(container, "mermaid-label-toggle-button", label, "T");
-            if (!button) return null;
-            button.onclick = onToggle;
-            return button;
+            let dropdown = container.querySelector(":scope > .mermaid-menu-dropdown");
+            if (!dropdown) {
+                dropdown = document.createElement("ul");
+                dropdown.className = "mermaid-menu-dropdown";
+                dropdown.setAttribute("role", "menu");
+                container.insertBefore(dropdown, container.firstChild);
+            }
+            return dropdown;
+        }
+
+        // container ごとの表示切り替え項目（向き・表示名）をコンテキストメニューとして描画する。
+        // items が空ならメニューボタン自体を隠す（従来、方向/表示名ボタンが個別に非表示だったのと同じ扱い）。
+        function ensureDiagramMenu(container, items) {
+            if (!container) return null;
+            ensureMermaidMenuGlobalHandlers();
+
+            const button = ensureMermaidControlButton(container, "mermaid-menu-button", "表示切り替え", "⋮");
+            const dropdown = ensureMermaidMenuDropdown(container);
+            if (!button || !dropdown) return null;
+
+            button.setAttribute("aria-haspopup", "true");
+            button.setAttribute("aria-expanded", container.classList.contains("mermaid-menu-open") ? "true" : "false");
+            button.onclick = (event) => {
+                event.stopPropagation();
+                const isOpen = container.classList.contains("mermaid-menu-open");
+                closeAllMermaidMenus();
+                if (!isOpen) {
+                    container.classList.add("mermaid-menu-open");
+                    button.setAttribute("aria-expanded", "true");
+                }
+            };
+
+            const hasItems = Array.isArray(items) && items.length > 0;
+            container.classList.toggle("mermaid-menu-empty", !hasItems);
+            if (!hasItems) {
+                container.classList.remove("mermaid-menu-open");
+            }
+
+            dropdown.innerHTML = "";
+            items.forEach((item) => {
+                const li = document.createElement("li");
+                li.className = "mermaid-menu-item";
+                li.setAttribute("role", "menuitem");
+                li.tabIndex = 0;
+                li.textContent = item.label;
+                const activate = () => {
+                    closeAllMermaidMenus();
+                    item.onSelect();
+                };
+                li.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    activate();
+                });
+                li.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        activate();
+                    }
+                });
+                dropdown.appendChild(li);
+            });
+
+            return {button, dropdown};
         }
 
         function ensureEdgeWarningPanel(container) {
@@ -1304,15 +1374,24 @@ globalThis.Jig.mermaid = (() => {
                     ensureCopySourceButton(container, currentSource);
                     ensureDownloadButton(container);
                     ensureZoomButton(container);
+
+                    const menuItems = [];
                     if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
-                        ensureDirectionButton(container, newDirection, renderDiagram);
-                    }
-                    if (enableLabelToggle) {
-                        ensureLabelToggleButton(container, showPhysicalName, () => {
-                            showPhysicalName = !showPhysicalName;
-                            renderDiagram(newDirection);
+                        menuItems.push({
+                            label: newDirection === "LR" ? "レイアウト方向を縦にする" : "レイアウト方向を横にする",
+                            onSelect: () => renderDiagram(newDirection === "LR" ? "TB" : "LR")
                         });
                     }
+                    if (enableLabelToggle) {
+                        menuItems.push({
+                            label: showPhysicalName ? "表示名を用語名にする" : "表示名を物理名にする",
+                            onSelect: () => {
+                                showPhysicalName = !showPhysicalName;
+                                renderDiagram(newDirection);
+                            }
+                        });
+                    }
+                    ensureDiagramMenu(container, menuItems);
                 }
 
                 if (isTooLarge(currentSource)) {

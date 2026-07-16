@@ -1675,8 +1675,7 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 @layer components {
     .mermaid-copy-button,
     .mermaid-download-button,
-    .mermaid-direction-button,
-    .mermaid-label-toggle-button,
+    .mermaid-menu-button,
     .mermaid-zoom-button {
         position: absolute;
         top: 6px;
@@ -1698,17 +1697,20 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 
 .mermaid-diagram:hover > .mermaid-copy-button,
 .mermaid-diagram:hover > .mermaid-download-button,
-.mermaid-diagram:hover > .mermaid-direction-button,
-.mermaid-diagram:hover > .mermaid-label-toggle-button,
-.mermaid-diagram:hover > .mermaid-zoom-button {
+.mermaid-diagram:hover > .mermaid-menu-button,
+.mermaid-diagram:hover > .mermaid-zoom-button,
+.mermaid-diagram.mermaid-menu-open > .mermaid-menu-button {
     opacity: 0.6;
     pointer-events: auto;
 }
 
+.mermaid-diagram.mermaid-menu-empty > .mermaid-menu-button {
+    display: none;
+}
+
 .mermaid-copy-button::after,
 .mermaid-download-button::after,
-.mermaid-direction-button::after,
-.mermaid-label-toggle-button::after,
+.mermaid-menu-button::after,
 .mermaid-zoom-button::after {
     content: attr(data-tooltip);
     position: absolute;
@@ -1729,8 +1731,7 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 
 .mermaid-diagram .mermaid-copy-button:hover,
 .mermaid-diagram .mermaid-download-button:hover,
-.mermaid-diagram .mermaid-direction-button:hover,
-.mermaid-diagram .mermaid-label-toggle-button:hover,
+.mermaid-diagram .mermaid-menu-button:hover,
 .mermaid-diagram .mermaid-zoom-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
@@ -1740,14 +1741,17 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 .mermaid-copy-button:focus-visible::after,
 .mermaid-download-button:hover::after,
 .mermaid-download-button:focus-visible::after,
-.mermaid-direction-button:hover::after,
-.mermaid-direction-button:focus-visible::after,
-.mermaid-label-toggle-button:hover::after,
-.mermaid-label-toggle-button:focus-visible::after,
+.mermaid-menu-button:hover::after,
+.mermaid-menu-button:focus-visible::after,
 .mermaid-zoom-button:hover::after,
 .mermaid-zoom-button:focus-visible::after {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* メニューが開いている間はツールチップとメニュー本体が重ならないようにする */
+.mermaid-diagram.mermaid-menu-open > .mermaid-menu-button::after {
+    display: none;
 }
 
 @layer components {
@@ -1759,19 +1763,49 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
         right: 40px;
     }
 
-    .mermaid-direction-button {
+    .mermaid-menu-button {
         right: 74px;
     }
 
-    .mermaid-label-toggle-button {
-        right: 108px;
-        font-size: var(--jig-font-size-2xs);
-        font-weight: bold;
-    }
-
     .mermaid-zoom-button {
-        right: 142px;
+        right: 108px;
     }
+}
+
+/* 個別ダイアグラムの表示切り替え（向き・表示名）のコンテキストメニュー */
+
+.mermaid-menu-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 74px;
+    margin: 0;
+    padding: 0.25em 0;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #888;
+    border-radius: 6px;
+    min-width: 12em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 2;
+}
+
+.mermaid-diagram.mermaid-menu-open > .mermaid-menu-dropdown {
+    display: block;
+}
+
+.mermaid-menu-item {
+    padding: 0.4em 0.8em;
+    font-size: var(--jig-font-size-sm);
+    color: #222;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.mermaid-menu-item:hover,
+.mermaid-menu-item:focus-visible {
+    background-color: #f0f0f0;
+    outline: none;
 }
 
 /* エラーメッセージ（必須データ欠落） */

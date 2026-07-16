@@ -150,8 +150,8 @@ const DomainApp = (() => {
      * @param {string} direction
      * @return {string|null}
      */
-    function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false) {
-        const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations);
+    function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection, showPhysicalName = false, transitiveReductionEnabled) {
+        const elements = collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations, transitiveReductionEnabled);
         if (!elements) return null;
         const {uniqueRelations, packageFqns} = elements;
         const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
@@ -166,7 +166,7 @@ const DomainApp = (() => {
         return source;
     }
 
-    function collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations) {
+    function collectPackageRelationDiagramElements(pkg, allPackages, allPackageRelations, transitiveReductionEnabled = domainSettings.transitiveReductionEnabled) {
         const {uniqueRelations, packageFqns} = Jig.mermaid.builder.buildVisibleDiagramRelations(
             allPackages,
             allPackageRelations,
@@ -174,7 +174,7 @@ const DomainApp = (() => {
             {
                 packageFilterFqn: [pkg.fqn],
                 aggregationDepth: pkg.fqn.split('.').length + 1,
-                transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
+                transitiveReductionEnabled
             }
         );
         // パッケージが1つしかなければ表示しない。関連が0でもパッケージが複数あればノードのみで表示する
@@ -194,7 +194,7 @@ const DomainApp = (() => {
      * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {{edges: Array, involvedFqns: Set<string>} | null}
      */
-    function collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing = true, showIncoming = true} = {}) {
+    function collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing = true, showIncoming = true, showDeprecatedNodes = domainSettings.showDeprecatedNodes} = {}) {
         const allRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -204,10 +204,10 @@ const DomainApp = (() => {
         if (outgoing.length === 0 && incoming.length === 0) return null;
 
         const filteredOut = showOutgoing
-            ? (domainSettings.showDeprecatedNodes ? outgoing : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated))
+            ? (showDeprecatedNodes ? outgoing : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated))
             : [];
         const filteredIn = showIncoming
-            ? (domainSettings.showDeprecatedNodes ? incoming : incoming.filter(r => !typesMap?.get(r.from)?.isDeprecated))
+            ? (showDeprecatedNodes ? incoming : incoming.filter(r => !typesMap?.get(r.from)?.isDeprecated))
             : [];
 
         if (filteredOut.length === 0 && filteredIn.length === 0) {
@@ -233,8 +233,8 @@ const DomainApp = (() => {
      * @param {{showOutgoing?: boolean, showIncoming?: boolean}} options
      * @returns {string | null}
      */
-    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true, showPhysicalName = false} = {}) {
-        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection, {showOutgoing = true, showIncoming = true, showPhysicalName = false, showDeprecatedNodes} = {}) {
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming, showDeprecatedNodes});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
@@ -298,9 +298,10 @@ const DomainApp = (() => {
         showOutgoing = true, showIncoming = true,
         showFields = true, showMethods = true,
         maxVisibility = 'PRIVATE',
-        showPhysicalName = false
+        showPhysicalName = false,
+        showDeprecatedNodes
     } = {}) {
-        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming});
+        const result = collectTypeRelationEdges(type, typeRelations, typesMap, {showOutgoing, showIncoming, showDeprecatedNodes});
         if (!result) return null;
         const {edges, involvedFqns} = result;
 
@@ -389,7 +390,9 @@ const DomainApp = (() => {
         showExternalOutgoing = true,
         showExternalIncoming = true,
         direction = domainSettings.diagramDirection,
-        showPhysicalName = false
+        showPhysicalName = false,
+        showDeprecatedNodes = domainSettings.showDeprecatedNodes,
+        transitiveReductionEnabled = domainSettings.transitiveReductionEnabled
     } = {}) {
         const relations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
@@ -398,7 +401,7 @@ const DomainApp = (() => {
         if (pkgTypeFqns.size === 0) return null;
 
         // Deprecated ノード非表示の場合、deprecated 型を除外
-        if (!domainSettings.showDeprecatedNodes) {
+        if (!showDeprecatedNodes) {
             pkgTypeFqns = new Set([...pkgTypeFqns].filter(fqn => !typesMap?.get(fqn)?.isDeprecated));
             if (pkgTypeFqns.size === 0) return null;
         }
@@ -450,7 +453,7 @@ const DomainApp = (() => {
         });
 
         let edges = Array.from(uniqueEdgesMap.values());
-        if (domainSettings.transitiveReductionEnabled) {
+        if (transitiveReductionEnabled) {
             edges = Jig.mermaid.graph.transitiveReduction(edges);
         }
 
@@ -694,10 +697,19 @@ const DomainApp = (() => {
         return section;
     }
 
-    function registerDiagramPanel(panel, diagramDef) {
-        return Jig.mermaid.diagram.createAndRegister(panel, (container) => {
-            renderDiagram(container, diagramDef);
-        });
+    function setupPackageRelationDiagramPanel(panel, pkg, allPackages, allPackageRelations, typeRelations, typesMap) {
+        const settingsOverride = createDiagramSettingsOverride([
+            {key: 'transitiveReductionEnabled', label: '依存関係の簡略表示', getGlobalValue: () => domainSettings.transitiveReductionEnabled}
+        ]);
+
+        const render = (container) => {
+            renderDiagram(container, {
+                pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations, typeRelations, typesMap,
+                getSettingsOverrides: settingsOverride.getOverrides,
+                buildExtraMenuItems: settingsOverride.buildExtraMenuItems
+            });
+        };
+        Jig.mermaid.diagram.createAndRegister(panel, render);
     }
 
     /**
@@ -825,12 +837,18 @@ const DomainApp = (() => {
             });
         }
 
+        const settingsOverride = createDiagramSettingsOverride([
+            {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => domainSettings.showDeprecatedNodes}
+        ]);
+
         const render = (container) => {
             renderDiagram(container, {
                 pkg: undefined, type, diagramType, typeRelations, typesMap,
                 showOutgoing: outgoingCheckbox.checked,
                 showIncoming: incomingCheckbox.checked,
-                ...getClassDefOptions()
+                ...getClassDefOptions(),
+                getSettingsOverrides: settingsOverride.getOverrides,
+                buildExtraMenuItems: settingsOverride.buildExtraMenuItems
             });
         };
         const container = Jig.mermaid.diagram.createAndRegister(panel, render);
@@ -891,8 +909,17 @@ const DomainApp = (() => {
             ]
         }));
 
+        const settingsOverride = createDiagramSettingsOverride([
+            {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => domainSettings.showDeprecatedNodes},
+            {key: 'transitiveReductionEnabled', label: '依存関係の簡略表示', getGlobalValue: () => domainSettings.transitiveReductionEnabled}
+        ]);
+
         const render = (container) => {
-            renderDiagram(container, {pkg, type: undefined, diagramType: 'type', typeRelations, typesMap});
+            renderDiagram(container, {
+                pkg, type: undefined, diagramType: 'type', typeRelations, typesMap,
+                getSettingsOverrides: settingsOverride.getOverrides,
+                buildExtraMenuItems: settingsOverride.buildExtraMenuItems
+            });
         };
         const container = Jig.mermaid.diagram.createAndRegister(panel, render);
         outgoingCheckbox.addEventListener('change', () => render(container));
@@ -964,15 +991,7 @@ const DomainApp = (() => {
                     id: 'inner-pkg',
                     label: 'パッケージ内パッケージ関連図',
                     enabled: hasPackageRelationDiagram(pkg, allPackages, allPackageRelations),
-                    setup: panel => registerDiagramPanel(panel, {
-                        pkg,
-                        type: undefined,
-                        diagramType: 'package',
-                        allPackages,
-                        allPackageRelations,
-                        typeRelations,
-                        typesMap
-                    })
+                    setup: panel => setupPackageRelationDiagramPanel(panel, pkg, allPackages, allPackageRelations, typeRelations, typesMap)
                 },
                 {
                     id: 'inner-class',
@@ -1085,16 +1104,46 @@ const DomainApp = (() => {
     }
 
     /**
+     * サイドバーの表示設定（全体設定）に対して、ダイアグラムごとの上書きを保持しつつ
+     * コンテキストメニュー項目を組み立てる。usecase.js の createDiagramContextOverrideMenu と同様の役割。
+     * @param {{key: string, label: string, getGlobalValue: function(): boolean}[]} toggles
+     * @returns {{getOverrides: function(): object, buildExtraMenuItems: function(function(): void): object[]}}
+     */
+    function createDiagramSettingsOverride(toggles) {
+        let overrides = {};
+        return {
+            getOverrides: () => ({...overrides}),
+            buildExtraMenuItems: (rerender) => toggles.map(({key, label, getGlobalValue}) => {
+                const currentValue = overrides[key] !== undefined ? overrides[key] : getGlobalValue();
+                return {
+                    label,
+                    checked: currentValue,
+                    onSelect: () => {
+                        overrides = {...overrides, [key]: !currentValue};
+                        rerender();
+                    }
+                };
+            })
+        };
+    }
+
+    /**
      * 指定されたダイアグラムを再生成
      * @param {HTMLElement} container
-     * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
+     * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?, getSettingsOverrides?, buildExtraMenuItems?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap, showOutgoing = true, showIncoming = true, showFields = true, showMethods = true, maxVisibility = 'PRIVATE', hierarchyAggregation = false} = diagram;
+        const {
+            pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap,
+            showOutgoing = true, showIncoming = true, showFields = true, showMethods = true,
+            maxVisibility = 'PRIVATE', hierarchyAggregation = false,
+            getSettingsOverrides = () => ({}), buildExtraMenuItems
+        } = diagram;
 
         container.innerHTML = "";
 
         const renderIfNonNull = (generator, renderOptions = {}) => {
+            if (buildExtraMenuItems) generator.buildExtraMenuItems = buildExtraMenuItems;
             if (generator(domainSettings.diagramDirection)) {
                 Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection, ...renderOptions});
             }
@@ -1107,17 +1156,17 @@ const DomainApp = (() => {
             );
         } else if (diagramType === 'package') {
             renderIfNonNull(
-                (dir, opts) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir, opts?.showPhysicalName),
+                (dir, opts) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir, opts?.showPhysicalName, getSettingsOverrides().transitiveReductionEnabled),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'classDirect') {
             renderIfNonNull(
-                (dir, opts) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showPhysicalName: opts?.showPhysicalName}),
+                (dir, opts) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showPhysicalName: opts?.showPhysicalName, showDeprecatedNodes: getSettingsOverrides().showDeprecatedNodes}),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'classDefinition') {
             renderIfNonNull(
-                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName}),
+                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName, showDeprecatedNodes: getSettingsOverrides().showDeprecatedNodes}),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'type') {
@@ -1127,7 +1176,7 @@ const DomainApp = (() => {
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
             const showExternalIncoming = incoming ? incoming.checked : true;
             renderIfNonNull(
-                (dir, opts) => createRelationDiagram(pkg, typeRelations, typesMap, {showExternalOutgoing, showExternalIncoming, direction: dir, showPhysicalName: opts?.showPhysicalName}),
+                (dir, opts) => createRelationDiagram(pkg, typeRelations, typesMap, {showExternalOutgoing, showExternalIncoming, direction: dir, showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
                 {enableLabelToggle: true}
             );
         }
@@ -1312,7 +1361,8 @@ const DomainApp = (() => {
         createTypeClassDiagramSource,
         createPackageRelationDiagram,
         createPackageDirectRelationDiagram,
-        derivePackageRelations
+        derivePackageRelations,
+        createDiagramSettingsOverride
     };
 })();
 

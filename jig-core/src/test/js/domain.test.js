@@ -13,7 +13,7 @@ require('../../main/resources/templates/assets/jig-bootstrap.js');
 const Jig = globalThis.Jig;
 
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
-const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createTypeClassDiagramSource, createPackageRelationDiagram, createPackageDirectRelationDiagram} = DomainApp;
+const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createTypeClassDiagramSource, createPackageRelationDiagram, createPackageDirectRelationDiagram, createDiagramSettingsOverride} = DomainApp;
 
 function setupDomainData(domainPackageRoots, types) {
     globalThis.domainData = {domainPackageRoots, types};
@@ -275,6 +275,42 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
         });
+
+        test('showDeprecatedNodes=false を明示すると、サイドバー設定（デフォルトtrue）に関わらずdeprecated型を除外する', () => {
+            const typesMap = new Map([
+                ['org.example.A', {fqn: 'org.example.A', isDeprecated: false}],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: true}],
+            ]);
+            const typeRelations = [{from: 'org.example.A', to: 'org.example.B'}];
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
+
+            const result = createRelationDiagram(pkg, typeRelations, typesMap, {showDeprecatedNodes: false});
+
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            assert.ok(!result.includes(idB), 'deprecatedなBは除外されること');
+        });
+
+        test('transitiveReductionEnabled=false を明示すると、サイドバー設定（デフォルトtrue）に関わらず推移的簡約をしない', () => {
+            const typesMap = new Map([
+                ['org.example.A', {fqn: 'org.example.A', isDeprecated: false}],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: false}],
+                ['org.example.C', {fqn: 'org.example.C', isDeprecated: false}],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.B', to: 'org.example.C'},
+                {from: 'org.example.A', to: 'org.example.C'}, // 推移的
+            ];
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}, {fqn: 'org.example.C'}]};
+
+            const reduced = createRelationDiagram(pkg, typeRelations, typesMap, {transitiveReductionEnabled: true});
+            const notReduced = createRelationDiagram(pkg, typeRelations, typesMap, {transitiveReductionEnabled: false});
+
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idC = Jig.util.fqnToId("n", 'org.example.C');
+            assert.ok(!reduced.includes(`${idA} --> ${idC}`), '簡約有効ではA→Cの直接エッジが除かれること');
+            assert.ok(notReduced.includes(`${idA} --> ${idC}`), '簡約無効ではA→Cの直接エッジが残ること');
+        });
     });
 
     test.describe('createTypeRelationDiagram', () => {
@@ -407,6 +443,28 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idA} ---> ${idX}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idA} --> ${idB}`), 'subgraph内エッジは通常長であること');
         });
+
+        test('showDeprecatedNodes=false を明示すると、サイドバー設定（デフォルトtrue）に関わらずdeprecated型を除外する', () => {
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: true};
+            const typeC = {fqn: 'org.example.C', isDeprecated: false};
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+                ['org.example.C', typeC],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.A', to: 'org.example.C'},
+            ];
+
+            const result = createTypeRelationDiagram(typeA, typeRelations, typesMap, 'TB', {showDeprecatedNodes: false});
+
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idC = Jig.util.fqnToId("n", 'org.example.C');
+            assert.ok(!result.includes(idB), 'deprecatedなBは除外されること');
+            assert.ok(result.includes(idC), '非deprecatedなCは残ること');
+        });
     });
 
     test.describe('createPackageRelationDiagram', () => {
@@ -448,6 +506,28 @@ test.describe('domain.js', () => {
 
             assert.ok(result !== null, 'ダイアグラムが生成されること');
             assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
+        });
+
+        test('transitiveReductionEnabled=false を明示すると、サイドバー設定（デフォルトtrue）に関わらず推移的簡約をしない', () => {
+            const packages = [
+                {fqn: 'org.example', types: []},
+                {fqn: 'org.example.a', types: [{fqn: 'org.example.a.TypeA'}]},
+                {fqn: 'org.example.b', types: [{fqn: 'org.example.b.TypeB'}]},
+                {fqn: 'org.example.c', types: [{fqn: 'org.example.c.TypeC'}]},
+            ];
+            const parentPkg = packages[0];
+            const allPackageRelations = [
+                {from: 'org.example.a', to: 'org.example.b'},
+                {from: 'org.example.b', to: 'org.example.c'},
+                {from: 'org.example.a', to: 'org.example.c'}, // 推移的
+            ];
+
+            const reduced = createPackageRelationDiagram(parentPkg, packages, allPackageRelations, undefined, undefined, true);
+            const notReduced = createPackageRelationDiagram(parentPkg, packages, allPackageRelations, undefined, undefined, false);
+
+            const countEdges = (src) => (src.match(/-->/g) || []).length;
+            assert.equal(countEdges(reduced), 2, '簡約有効では推移的エッジが除かれ2本になること');
+            assert.equal(countEdges(notReduced), 3, '簡約無効では3本のエッジが残ること');
         });
     });
 
@@ -887,6 +967,58 @@ test.describe('domain.js', () => {
             const idA = Jig.util.fqnToId("n", 'org.example.A');
             assert.ok(result.includes(`click ${idA} href`), 'クリックディレクティブが含まれること');
             assert.ok(result.includes('"org.example.A"'), 'FQNがツールチップとして含まれること');
+        });
+
+        test('showDeprecatedNodes=false を明示すると、サイドバー設定（デフォルトtrue）に関わらずdeprecated型を除外する', () => {
+            const typesMap = new Map([
+                ['org.example.A', {fqn: 'org.example.A', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+                ['org.example.B', {fqn: 'org.example.B', isDeprecated: true, fields: [], methods: [], staticMethods: []}],
+                ['org.example.C', {fqn: 'org.example.C', isDeprecated: false, fields: [], methods: [], staticMethods: []}],
+            ]);
+            const typeA = typesMap.get('org.example.A');
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.A', to: 'org.example.C'},
+            ];
+
+            const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap, 'TB', {showDeprecatedNodes: false});
+
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idC = Jig.util.fqnToId("n", 'org.example.C');
+            assert.ok(!result.includes(idB), 'deprecatedなBは除外されること');
+            assert.ok(result.includes(idC), '非deprecatedなCは残ること');
+        });
+    });
+
+    test.describe('createDiagramSettingsOverride', () => {
+        test('未選択時はサイドバー（グローバル）設定の現在値をcheckedとして反映する', () => {
+            let globalValue = true;
+            const settingsOverride = createDiagramSettingsOverride([
+                {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => globalValue}
+            ]);
+
+            const items = settingsOverride.buildExtraMenuItems(() => {});
+
+            assert.deepEqual(items.map(i => i.label), ['Deprecated ノード']);
+            assert.equal(items[0].checked, true);
+        });
+
+        test('選択するとこのダイアグラムだけの上書きとして保持され、グローバル設定自体は変更しない', () => {
+            let globalValue = true;
+            const settingsOverride = createDiagramSettingsOverride([
+                {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => globalValue}
+            ]);
+
+            let rerendered = false;
+            const items = settingsOverride.buildExtraMenuItems(() => { rerendered = true; });
+            items[0].onSelect();
+
+            assert.equal(rerendered, true, '選択時に再描画コールバックが呼ばれる');
+            assert.equal(globalValue, true, 'グローバル設定は変更されない');
+            assert.deepEqual(settingsOverride.getOverrides(), {showDeprecatedNodes: false});
+
+            const itemsAfter = settingsOverride.buildExtraMenuItems(() => {});
+            assert.equal(itemsAfter[0].checked, false, '次回はOFFとして反映される');
         });
     });
 

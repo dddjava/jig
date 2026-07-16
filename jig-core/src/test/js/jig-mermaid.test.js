@@ -686,7 +686,7 @@ test.describe('jig-mermaid.js', () => {
             return dom.window.document;
         }
 
-        test('向き変更と表示名変更がひとつのメニューにまとまる', () => {
+        test('コピー/ダウンロードのアクションと向き変更・表示名変更がひとつのメニューにまとまる', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');
 
@@ -696,22 +696,27 @@ test.describe('jig-mermaid.js', () => {
             });
 
             assert.equal(doc.querySelectorAll('.mermaid-menu-button').length, 1, 'メニューボタンは1個だけ生成される');
+            assert.equal(doc.querySelectorAll('.mermaid-copy-button').length, 0, '個別のコピーボタンはもう生成されない');
+            assert.equal(doc.querySelectorAll('.mermaid-download-button').length, 0, '個別のダウンロードボタンはもう生成されない');
             assert.equal(doc.querySelectorAll('.mermaid-direction-button').length, 0, '個別の向きボタンはもう生成されない');
             assert.equal(doc.querySelectorAll('.mermaid-label-toggle-button').length, 0, '個別の表示名ボタンはもう生成されない');
 
             const itemLabels = Array.from(doc.querySelectorAll('.mermaid-menu-item')).map(li => li.textContent);
-            assert.deepEqual(itemLabels, ['レイアウト方向を縦にする', '表示名を物理名にする']);
+            assert.deepEqual(itemLabels, ['ソースをコピー', 'SVGをダウンロード', 'レイアウト方向を縦にする', '表示名を物理名にする']);
+            assert.equal(doc.querySelectorAll('.mermaid-menu-separator').length, 1, 'アクション群と表示切替群の間に区切り線が1本入る');
         });
 
-        test('向き・表示名のどちらも対象外の図でもメニューボタンは常に表示する', () => {
+        test('向き・表示名のどちらも対象外の図でもコピー/ダウンロードの項目とメニューボタンは常に表示する', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');
 
             mermaid.render.renderWithControls(target, () => 'sequenceDiagram\nA->>B: call');
 
             const diagram = doc.querySelector('.mermaid-diagram');
-            assert.equal(diagram.querySelectorAll('.mermaid-menu-button').length, 1, '項目が空でもボタンは表示される');
-            assert.equal(doc.querySelectorAll('.mermaid-menu-item').length, 0);
+            assert.equal(diagram.querySelectorAll('.mermaid-menu-button').length, 1, 'ボタンは表示される');
+            const itemLabels = Array.from(doc.querySelectorAll('.mermaid-menu-item')).map(li => li.textContent);
+            assert.deepEqual(itemLabels, ['ソースをコピー', 'SVGをダウンロード']);
+            assert.equal(doc.querySelectorAll('.mermaid-menu-separator').length, 0, '他のグループが無ければ区切り線は入らない');
         });
 
         test('メニューボタンは一番右側（.mermaid-menuが最小のright）に配置される', () => {
@@ -732,16 +737,41 @@ test.describe('jig-mermaid.js', () => {
             assert.ok(menu.querySelector(':scope > .mermaid-menu-dropdown'));
         });
 
-        test('メニュー項目を選択するとその図だけ表示が切り替わる', () => {
+        test('向き変更の項目を選択するとその図だけ表示が切り替わる', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');
 
             mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {direction: 'LR'});
 
             const diagram = doc.querySelector('.mermaid-diagram');
-            diagram.querySelector('.mermaid-menu-item').click();
+            const directionItem = Array.from(diagram.querySelectorAll('.mermaid-menu-item'))
+                .find(li => li.textContent.startsWith('レイアウト方向'));
+            directionItem.click();
 
             assert.ok(doc.querySelector('.mermaid').textContent.includes('graph TB'), '向きがTBに切り替わる');
+        });
+
+        test('ソースをコピー項目を選択するとクリップボードにコピーされる', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+            let copiedText = null;
+            const navigatorStub = {clipboard: {writeText: (text) => { copiedText = text; return Promise.resolve(); }}};
+            // Node.jsの navigator はゲッターのみで直接代入できないため defineProperty で差し替える
+            const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+            Object.defineProperty(globalThis, 'navigator', {value: navigatorStub, configurable: true, writable: true});
+
+            try {
+                mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {direction: 'LR'});
+
+                const diagram = doc.querySelector('.mermaid-diagram');
+                const copyItem = Array.from(diagram.querySelectorAll('.mermaid-menu-item'))
+                    .find(li => li.textContent === 'ソースをコピー');
+                copyItem.click();
+
+                assert.equal(copiedText, 'graph LR\nA-->B');
+            } finally {
+                Object.defineProperty(globalThis, 'navigator', originalDescriptor);
+            }
         });
     });
 });

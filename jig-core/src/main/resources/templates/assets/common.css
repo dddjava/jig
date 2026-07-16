@@ -1679,8 +1679,6 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 }
 
 @layer components {
-    .mermaid-copy-button,
-    .mermaid-download-button,
     .mermaid-menu,
     .mermaid-zoom-button {
         position: absolute;
@@ -1694,8 +1692,6 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     }
 }
 
-.mermaid-copy-button,
-.mermaid-download-button,
 .mermaid-menu-button,
 .mermaid-zoom-button {
     padding: 0;
@@ -1712,8 +1708,6 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     height: 100%;
 }
 
-.mermaid-diagram:hover > .mermaid-copy-button,
-.mermaid-diagram:hover > .mermaid-download-button,
 .mermaid-diagram:hover > .mermaid-menu,
 .mermaid-diagram:hover > .mermaid-zoom-button {
     opacity: 0.6;
@@ -1727,8 +1721,6 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     opacity: 1;
 }
 
-.mermaid-copy-button::after,
-.mermaid-download-button::after,
 .mermaid-menu-button::after,
 .mermaid-zoom-button::after {
     content: attr(data-tooltip);
@@ -1748,8 +1740,6 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
-.mermaid-diagram .mermaid-copy-button:hover,
-.mermaid-diagram .mermaid-download-button:hover,
 .mermaid-diagram .mermaid-zoom-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
@@ -1759,10 +1749,6 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     background-color: #f0f0f0;
 }
 
-.mermaid-copy-button:hover::after,
-.mermaid-copy-button:focus-visible::after,
-.mermaid-download-button:hover::after,
-.mermaid-download-button:focus-visible::after,
 .mermaid-menu-button:hover::after,
 .mermaid-menu-button:focus-visible::after,
 .mermaid-zoom-button:hover::after,
@@ -1782,16 +1768,8 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
         right: 6px;
     }
 
-    .mermaid-copy-button {
-        right: 40px;
-    }
-
-    .mermaid-download-button {
-        right: 74px;
-    }
-
     .mermaid-zoom-button {
-        right: 108px;
+        right: 40px;
     }
 }
 

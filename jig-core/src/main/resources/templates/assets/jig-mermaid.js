@@ -1072,17 +1072,6 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
-        function ensureCopySourceButton(container, source) {
-            const button = ensureMermaidControlButton(container, "mermaid-copy-button", "Copy Source", "⧉");
-            if (!button) return null;
-            button.onclick = () => {
-                const text = source != null ? String(source) : "";
-                if (!text) return;
-                copyMermaidText(text, button);
-            };
-            return button;
-        }
-
         function findRenderedMermaidSvg(container) {
             if (!container) return null;
             return container.querySelector(":scope > .mermaid svg");
@@ -1110,13 +1099,6 @@ globalThis.Jig.mermaid = (() => {
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
             flashButtonLabel(button, "Downloaded");
-        }
-
-        function ensureDownloadButton(container) {
-            const button = ensureMermaidControlButton(container, "mermaid-download-button", "Download SVG", "⬇");
-            if (!button) return null;
-            button.onclick = () => downloadMermaidSvg(container, button);
-            return button;
         }
 
         function openMermaidSvgInNewTab(container, button) {
@@ -1196,10 +1178,10 @@ globalThis.Jig.mermaid = (() => {
 
                 const li = document.createElement("li");
                 li.className = "mermaid-menu-item";
-                li.setAttribute("role", "menuitemcheckbox");
                 li.tabIndex = 0;
                 if (item.checked != null) {
                     // ON/OFFの状態を持つ項目は、文言の違いだけに頼らずスイッチ表示で視認性を上げる
+                    li.setAttribute("role", "menuitemcheckbox");
                     li.classList.add("mermaid-menu-item--switch");
                     li.setAttribute("aria-checked", String(item.checked));
 
@@ -1214,16 +1196,17 @@ globalThis.Jig.mermaid = (() => {
                     li.appendChild(labelEl);
                     li.appendChild(switchEl);
                 } else {
+                    li.setAttribute("role", "menuitem");
                     li.textContent = item.label;
                 }
                 li.addEventListener("click", (event) => {
                     event.stopPropagation();
-                    item.onSelect();
+                    item.onSelect(li);
                 });
                 li.addEventListener("keydown", (event) => {
                     if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
-                        item.onSelect();
+                        item.onSelect(li);
                     }
                 });
                 dropdown.appendChild(li);
@@ -1368,19 +1351,32 @@ globalThis.Jig.mermaid = (() => {
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 if (showControls) {
-                    ensureCopySourceButton(container, currentSource);
-                    ensureDownloadButton(container);
                     ensureZoomButton(container);
 
-                    const menuItems = [];
+                    const actionItems = [
+                        {
+                            label: "ソースをコピー",
+                            onSelect: (el) => {
+                                const text = currentSource != null ? String(currentSource) : "";
+                                if (!text) return;
+                                copyMermaidText(text, el);
+                            }
+                        },
+                        {
+                            label: "SVGをダウンロード",
+                            onSelect: (el) => downloadMermaidSvg(container, el)
+                        }
+                    ];
+
+                    const viewItems = [];
                     if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
-                        menuItems.push({
+                        viewItems.push({
                             label: newDirection === "LR" ? "レイアウト方向を縦にする" : "レイアウト方向を横にする",
                             onSelect: () => renderDiagram(newDirection === "LR" ? "TB" : "LR")
                         });
                     }
                     if (enableLabelToggle) {
-                        menuItems.push({
+                        viewItems.push({
                             label: showPhysicalName ? "表示名を用語名にする" : "表示名を物理名にする",
                             onSelect: () => {
                                 showPhysicalName = !showPhysicalName;
@@ -1388,15 +1384,20 @@ globalThis.Jig.mermaid = (() => {
                             }
                         });
                     }
+
                     // diagramFn 側（呼び出し元）がダイアグラム固有の追加メニュー項目（例: 含める要素の切り替え）
                     // を持つ場合はここに連結する。rerender は同じ向きでの再描画のみを行う。
+                    let extraItems = [];
                     if (typeof diagramFn.buildExtraMenuItems === "function") {
-                        const extraItems = diagramFn.buildExtraMenuItems(() => renderDiagram(newDirection));
-                        if (Array.isArray(extraItems) && extraItems.length > 0) {
-                            if (menuItems.length > 0) menuItems.push({separator: true});
-                            menuItems.push(...extraItems);
-                        }
+                        const items = diagramFn.buildExtraMenuItems(() => renderDiagram(newDirection));
+                        if (Array.isArray(items)) extraItems = items;
                     }
+
+                    // グループ間にのみ区切り線を挟む（空のグループは無視する）
+                    const menuItems = [actionItems, viewItems, extraItems]
+                        .filter(group => group.length > 0)
+                        .flatMap((group, index) => index === 0 ? group : [{separator: true}, ...group]);
+
                     ensureDiagramMenu(container, menuItems);
                 }
 

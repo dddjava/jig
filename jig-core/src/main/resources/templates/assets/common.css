@@ -1832,6 +1832,46 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     outline: none;
 }
 
+/* ON/OFFの状態を持つ項目（内部メソッド等）はスイッチ表示にし、テキストの違いだけに頼らない */
+.mermaid-menu-item--switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75em;
+}
+
+.mermaid-menu-item__switch {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 30px;
+    height: 16px;
+    border-radius: 999px;
+    background-color: #ccc;
+    transition: background-color 0.15s ease;
+}
+
+.mermaid-menu-item__switch::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease;
+}
+
+.mermaid-menu-item[aria-checked="true"] .mermaid-menu-item__switch {
+    background-color: #1b3a66;
+}
+
+.mermaid-menu-item[aria-checked="true"] .mermaid-menu-item__switch::before {
+    transform: translateX(14px);
+}
+
 .mermaid-menu-separator {
     margin: 0.25em 0;
     border-top: 1px solid #ddd;

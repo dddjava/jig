@@ -1857,7 +1857,7 @@ test.describe('usecase.js', () => {
             };
         }
 
-        test('メニュー項目はサイドバーの現在値を反映し、ラベルは切替後の状態を示す', () => {
+        test('メニュー項目はサイドバーの現在値をON/OFF状態(checked)として反映する（ラベルは固定名詞）', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
             const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
             const context = buildContext(rootMethod, methodB);
@@ -1866,9 +1866,9 @@ test.describe('usecase.js', () => {
             const items = generator.buildExtraMenuItems(() => {});
 
             assert.deepEqual(items.map(i => i.label), [
-                '内部メソッドを非表示にする',
-                '出力インタフェースを非表示にする',
-                'ドメインモデルを表示にする'
+                '内部メソッド',
+                '出力インタフェース',
+                'ドメインモデル'
             ]);
             assert.deepEqual(items.map(i => i.checked), [true, true, false]);
         });

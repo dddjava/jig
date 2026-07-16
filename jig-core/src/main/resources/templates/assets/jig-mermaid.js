@@ -1198,8 +1198,24 @@ globalThis.Jig.mermaid = (() => {
                 li.className = "mermaid-menu-item";
                 li.setAttribute("role", "menuitemcheckbox");
                 li.tabIndex = 0;
-                if (item.checked != null) li.setAttribute("aria-checked", String(item.checked));
-                li.textContent = item.label;
+                if (item.checked != null) {
+                    // ON/OFFの状態を持つ項目は、文言の違いだけに頼らずスイッチ表示で視認性を上げる
+                    li.classList.add("mermaid-menu-item--switch");
+                    li.setAttribute("aria-checked", String(item.checked));
+
+                    const labelEl = document.createElement("span");
+                    labelEl.className = "mermaid-menu-item__label";
+                    labelEl.textContent = item.label;
+
+                    const switchEl = document.createElement("span");
+                    switchEl.className = "mermaid-menu-item__switch";
+                    switchEl.setAttribute("aria-hidden", "true");
+
+                    li.appendChild(labelEl);
+                    li.appendChild(switchEl);
+                } else {
+                    li.textContent = item.label;
+                }
                 li.addEventListener("click", (event) => {
                     event.stopPropagation();
                     item.onSelect();

@@ -614,7 +614,7 @@ const UsecaseApp = (() => {
             return diagramContentToggles.map(({key, label}) => {
                 const currentValue = diagramContextOverrides[key] !== undefined ? diagramContextOverrides[key] : baseContext[key];
                 return {
-                    label: `${label}を${currentValue ? '非表示' : '表示'}にする`,
+                    label,
                     checked: currentValue,
                     onSelect: () => {
                         diagramContextOverrides = {...diagramContextOverrides, [key]: !currentValue};

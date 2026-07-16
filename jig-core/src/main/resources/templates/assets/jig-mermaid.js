@@ -1145,68 +1145,44 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
-        // 個別ダイアグラムの表示切り替え（向き・表示名）をまとめるコンテキストメニュー。
-        // サイドバーの表示設定（全体設定）とは独立に、ダイアグラムごとに開閉・選択する。
-        // documentごとに1度だけ登録する（テストのようにdocumentを差し替える場合にも対応するためWeakSetで管理）
-        const mermaidMenuGlobalHandlerDocuments = new WeakSet();
-
-        function closeAllMermaidMenus() {
-            if (typeof document === "undefined") return;
-            document.querySelectorAll(".mermaid-menu-open").forEach((el) => {
-                el.classList.remove("mermaid-menu-open");
-                const button = el.querySelector(":scope > .mermaid-menu-button");
-                if (button) button.setAttribute("aria-expanded", "false");
-            });
-        }
-
-        function ensureMermaidMenuGlobalHandlers() {
-            if (typeof document === "undefined" || mermaidMenuGlobalHandlerDocuments.has(document)) return;
-            mermaidMenuGlobalHandlerDocuments.add(document);
-            document.addEventListener("click", () => closeAllMermaidMenus());
-            document.addEventListener("keydown", (event) => {
-                if (event.key === "Escape") closeAllMermaidMenus();
-            });
-        }
-
-        function ensureMermaidMenuDropdown(container) {
+        // 個別ダイアグラムの表示切り替え（向き・表示名など）をまとめるコンテキストメニュー。
+        // サイドバーの表示設定（全体設定）とは独立に、ダイアグラムごとにホバーで開閉・選択する
+        // （開閉はCSSの:hoverのみで制御し、JS側では開閉状態を持たない）。
+        function ensureMermaidMenuWrapper(container) {
             if (!container) return null;
-            let dropdown = container.querySelector(":scope > .mermaid-menu-dropdown");
-            if (!dropdown) {
-                dropdown = document.createElement("ul");
+            let menu = container.querySelector(":scope > .mermaid-menu");
+            if (!menu) {
+                menu = document.createElement("div");
+                menu.className = "mermaid-menu";
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "mermaid-menu-button";
+                button.textContent = "⋮";
+                button.setAttribute("aria-haspopup", "true");
+                button.setAttribute("aria-label", "表示切り替え");
+                button.title = "表示切り替え";
+                button.dataset.tooltip = "表示切り替え";
+
+                const dropdown = document.createElement("ul");
                 dropdown.className = "mermaid-menu-dropdown";
                 dropdown.setAttribute("role", "menu");
-                container.insertBefore(dropdown, container.firstChild);
+
+                menu.appendChild(button);
+                menu.appendChild(dropdown);
+                container.insertBefore(menu, container.firstChild);
             }
-            return dropdown;
+            return menu;
         }
 
-        // container ごとの表示切り替え項目（向き・表示名）をコンテキストメニューとして描画する。
-        // items が空ならメニューボタン自体を隠す（従来、方向/表示名ボタンが個別に非表示だったのと同じ扱い）。
+        // container ごとの表示切り替え項目（向き・表示名など）をコンテキストメニューとして描画する。
+        // 項目が空でもメニューボタンは常に表示する。
         function ensureDiagramMenu(container, items) {
-            if (!container) return null;
-            ensureMermaidMenuGlobalHandlers();
+            const menu = ensureMermaidMenuWrapper(container);
+            if (!menu) return null;
 
-            const button = ensureMermaidControlButton(container, "mermaid-menu-button", "表示切り替え", "⋮");
-            const dropdown = ensureMermaidMenuDropdown(container);
-            if (!button || !dropdown) return null;
-
-            button.setAttribute("aria-haspopup", "true");
-            button.setAttribute("aria-expanded", container.classList.contains("mermaid-menu-open") ? "true" : "false");
-            button.onclick = (event) => {
-                event.stopPropagation();
-                const isOpen = container.classList.contains("mermaid-menu-open");
-                closeAllMermaidMenus();
-                if (!isOpen) {
-                    container.classList.add("mermaid-menu-open");
-                    button.setAttribute("aria-expanded", "true");
-                }
-            };
-
-            const hasItems = Array.isArray(items) && items.length > 0;
-            container.classList.toggle("mermaid-menu-empty", !hasItems);
-            if (!hasItems) {
-                container.classList.remove("mermaid-menu-open");
-            }
+            const dropdown = menu.querySelector(".mermaid-menu-dropdown");
+            if (!dropdown) return null;
 
             dropdown.innerHTML = "";
             items.forEach((item) => {
@@ -1224,24 +1200,20 @@ globalThis.Jig.mermaid = (() => {
                 li.tabIndex = 0;
                 if (item.checked != null) li.setAttribute("aria-checked", String(item.checked));
                 li.textContent = item.label;
-                const activate = () => {
-                    closeAllMermaidMenus();
-                    item.onSelect();
-                };
                 li.addEventListener("click", (event) => {
                     event.stopPropagation();
-                    activate();
+                    item.onSelect();
                 });
                 li.addEventListener("keydown", (event) => {
                     if (event.key === "Enter" || event.key === " ") {
                         event.preventDefault();
-                        activate();
+                        item.onSelect();
                     }
                 });
                 dropdown.appendChild(li);
             });
 
-            return {button, dropdown};
+            return {menu, dropdown};
         }
 
         function ensureEdgeWarningPanel(container) {

@@ -703,46 +703,45 @@ test.describe('jig-mermaid.js', () => {
             assert.deepEqual(itemLabels, ['レイアウト方向を縦にする', '表示名を物理名にする']);
         });
 
-        test('向き・表示名のどちらも対象外の図ではメニューボタンごと隠す', () => {
+        test('向き・表示名のどちらも対象外の図でもメニューボタンは常に表示する', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');
 
             mermaid.render.renderWithControls(target, () => 'sequenceDiagram\nA->>B: call');
 
             const diagram = doc.querySelector('.mermaid-diagram');
-            assert.equal(diagram.classList.contains('mermaid-menu-empty'), true);
+            assert.equal(diagram.querySelectorAll('.mermaid-menu-button').length, 1, '項目が空でもボタンは表示される');
             assert.equal(doc.querySelectorAll('.mermaid-menu-item').length, 0);
         });
 
-        test('メニュー項目を選択するとその図だけ切り替わりメニューは閉じる', () => {
+        test('メニューボタンは一番右側（.mermaid-menuが最小のright）に配置される', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');
 
-            mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {direction: 'LR'});
+            mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {
+                direction: 'LR',
+                enableLabelToggle: true
+            });
 
+            // 開閉はCSSの:hoverのみで制御するため、ボタン/ドロップダウンをまとめる
+            // .mermaid-menu ラッパーが .mermaid-diagram の子として生成されていることを確認する
             const diagram = doc.querySelector('.mermaid-diagram');
-            diagram.querySelector('.mermaid-menu-button').click();
-            assert.equal(diagram.classList.contains('mermaid-menu-open'), true, 'クリックでメニューが開く');
-
-            diagram.querySelector('.mermaid-menu-item').click();
-
-            assert.equal(diagram.classList.contains('mermaid-menu-open'), false, '選択後はメニューが閉じる');
-            assert.ok(doc.querySelector('.mermaid').textContent.includes('graph TB'), '向きがTBに切り替わる');
+            const menu = diagram.querySelector(':scope > .mermaid-menu');
+            assert.ok(menu, '.mermaid-menu ラッパーが生成される');
+            assert.ok(menu.querySelector(':scope > .mermaid-menu-button'));
+            assert.ok(menu.querySelector(':scope > .mermaid-menu-dropdown'));
         });
 
-        test('ドキュメントの他の場所をクリックするとメニューが閉じる', () => {
+        test('メニュー項目を選択するとその図だけ表示が切り替わる', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');
 
             mermaid.render.renderWithControls(target, (direction) => `graph ${direction}\nA-->B`, {direction: 'LR'});
 
             const diagram = doc.querySelector('.mermaid-diagram');
-            diagram.querySelector('.mermaid-menu-button').click();
-            assert.equal(diagram.classList.contains('mermaid-menu-open'), true);
+            diagram.querySelector('.mermaid-menu-item').click();
 
-            doc.body.click();
-
-            assert.equal(diagram.classList.contains('mermaid-menu-open'), false);
+            assert.ok(doc.querySelector('.mermaid').textContent.includes('graph TB'), '向きがTBに切り替わる');
         });
     });
 });

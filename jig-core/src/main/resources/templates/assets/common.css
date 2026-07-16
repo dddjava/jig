@@ -709,8 +709,8 @@ body.hide-usecase-members .tab-member-section {
 }
 
 /* 図が小さいとコンテキストメニューが .jig-card-section の overflow: hidden に
-   はみ出し部分を切り取られてしまうため、開いている間だけ解除する */
-.jig-card-section:has(.mermaid-menu-open) {
+   はみ出し部分を切り取られてしまうため、ホバーで開いている間だけ解除する */
+.jig-card-section:has(.mermaid-menu:hover) {
     overflow: visible;
 }
 
@@ -1681,19 +1681,12 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 @layer components {
     .mermaid-copy-button,
     .mermaid-download-button,
-    .mermaid-menu-button,
+    .mermaid-menu,
     .mermaid-zoom-button {
         position: absolute;
         top: 6px;
         width: 28px;
         height: 28px;
-        padding: 0;
-        border: 1px solid #888;
-        border-radius: 6px;
-        background-color: rgba(255, 255, 255, 0.85);
-        cursor: pointer;
-        font-size: var(--jig-font-size-base);
-        line-height: 1;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.15s;
@@ -1701,17 +1694,34 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     }
 }
 
-.mermaid-diagram:hover > .mermaid-copy-button,
-.mermaid-diagram:hover > .mermaid-download-button,
-.mermaid-diagram:hover > .mermaid-menu-button,
-.mermaid-diagram:hover > .mermaid-zoom-button,
-.mermaid-diagram.mermaid-menu-open > .mermaid-menu-button {
-    opacity: 0.6;
-    pointer-events: auto;
+.mermaid-copy-button,
+.mermaid-download-button,
+.mermaid-menu-button,
+.mermaid-zoom-button {
+    padding: 0;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    font-size: var(--jig-font-size-base);
+    line-height: 1;
 }
 
-.mermaid-diagram.mermaid-menu-empty > .mermaid-menu-button {
-    display: none;
+.mermaid-menu-button {
+    width: 100%;
+    height: 100%;
+}
+
+.mermaid-menu:hover {
+    opacity: 1;
+}
+
+.mermaid-diagram:hover > .mermaid-copy-button,
+.mermaid-diagram:hover > .mermaid-download-button,
+.mermaid-diagram:hover > .mermaid-menu,
+.mermaid-diagram:hover > .mermaid-zoom-button {
+    opacity: 0.6;
+    pointer-events: auto;
 }
 
 .mermaid-copy-button::after,
@@ -1737,10 +1747,13 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
 
 .mermaid-diagram .mermaid-copy-button:hover,
 .mermaid-diagram .mermaid-download-button:hover,
-.mermaid-diagram .mermaid-menu-button:hover,
 .mermaid-diagram .mermaid-zoom-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
+}
+
+.mermaid-menu-button:hover {
+    background-color: #f0f0f0;
 }
 
 .mermaid-copy-button:hover::after,
@@ -1755,21 +1768,22 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     transform: translateY(0);
 }
 
-/* メニューが開いている間はツールチップとメニュー本体が重ならないようにする */
-.mermaid-diagram.mermaid-menu-open > .mermaid-menu-button::after {
+/* メニューが開いている（ホバー中の）間はツールチップとメニュー本体が重ならないようにする */
+.mermaid-menu:hover > .mermaid-menu-button::after {
     display: none;
 }
 
 @layer components {
-    .mermaid-copy-button {
+    /* コンテキストメニューを一番右側に配置する */
+    .mermaid-menu {
         right: 6px;
     }
 
-    .mermaid-download-button {
+    .mermaid-copy-button {
         right: 40px;
     }
 
-    .mermaid-menu-button {
+    .mermaid-download-button {
         right: 74px;
     }
 
@@ -1778,13 +1792,14 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     }
 }
 
-/* 個別ダイアグラムの表示切り替え（向き・表示名）のコンテキストメニュー */
+/* 個別ダイアグラムの表示切り替え（向き・表示名など）のコンテキストメニュー。
+   ボタンとメニュー本体の間に隙間があるとホバーが途切れて閉じてしまうため、top: 100%で隙間なく接続する。 */
 
 .mermaid-menu-dropdown {
     display: none;
     position: absolute;
-    top: 40px;
-    right: 74px;
+    top: 100%;
+    right: 0;
     margin: 0;
     padding: 0.25em 0;
     list-style: none;
@@ -1796,7 +1811,7 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     z-index: 2;
 }
 
-.mermaid-diagram.mermaid-menu-open > .mermaid-menu-dropdown {
+.mermaid-menu:hover > .mermaid-menu-dropdown {
     display: block;
 }
 

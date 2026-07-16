@@ -1712,16 +1712,19 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     height: 100%;
 }
 
-.mermaid-menu:hover {
-    opacity: 1;
-}
-
 .mermaid-diagram:hover > .mermaid-copy-button,
 .mermaid-diagram:hover > .mermaid-download-button,
 .mermaid-diagram:hover > .mermaid-menu,
 .mermaid-diagram:hover > .mermaid-zoom-button {
     opacity: 0.6;
     pointer-events: auto;
+}
+
+/* メニュー自体をホバーしている間は完全に不透明にする（透過でドロップダウン越しに
+   ノードの図形が透けて文字が読みにくくなるのを防ぐ）。
+   .mermaid-diagram:hover > .mermaid-menu より詳細度を上げて確実に上書きする。 */
+.mermaid-diagram:hover > .mermaid-menu:hover {
+    opacity: 1;
 }
 
 .mermaid-copy-button::after,

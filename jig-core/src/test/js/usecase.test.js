@@ -1918,4 +1918,53 @@ test.describe('usecase.js', () => {
             assert.ok(generator2('LR', {}).includes(methodBNodeId), 'generator2は影響を受けずBノードを含む');
         });
     });
+
+    test.describe('createSequenceDiagramGenerator', () => {
+        function buildContext(rootMethod, methodB, methodC, overrides = {}) {
+            const methodMap = new Map([[rootMethod.fqn, rootMethod], [methodB.fqn, methodB], [methodC.fqn, methodC]]);
+            return {
+                methodMap,
+                outboundOperationSet: new Set(),
+                showDiagramInternalMethods: true,
+                showDiagramOutboundPorts: true,
+                ...overrides
+            };
+        }
+
+        test('メニュー項目は内部メソッド・出力インタフェースの2つのみ（ドメインモデルは対象外）', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodC = {fqn: 'pkg.Cls#C()', callMethods: [], kind: 'usecase'};
+            const context = buildContext(rootMethod, methodB, methodC);
+
+            const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
+            const items = generator.buildExtraMenuItems(() => {});
+
+            assert.deepEqual(items.map(i => i.label), ['内部メソッド', '出力インタフェース']);
+            assert.deepEqual(items.map(i => i.checked), [true, true]);
+        });
+
+        test('メニュー項目を選択するとこのシーケンス図だけ表示要素が切り替わる（サイドバー側の値は変更しない）', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#C()'], kind: 'method'};
+            const methodC = {fqn: 'pkg.Cls#C()', callMethods: [], kind: 'usecase'};
+            const methodBNodeId = globalThis.Jig.util.fqnToId("node", methodB.fqn);
+            const context = buildContext(rootMethod, methodB, methodC, {showDiagramInternalMethods: true});
+
+            const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
+
+            const before = generator();
+            assert.ok(before.includes(methodBNodeId), '切替前はBノードを含む');
+
+            let rerendered = false;
+            const items = generator.buildExtraMenuItems(() => { rerendered = true; });
+            items.find(i => i.label === '内部メソッド').onSelect();
+
+            assert.equal(rerendered, true, '選択時に再描画コールバックが呼ばれる');
+            assert.equal(context.showDiagramInternalMethods, true, 'サイドバー（グローバル）側の値は変更されない');
+
+            const after = generator();
+            assert.ok(!after.includes(methodBNodeId), '切替後はBが消え、A->Cの呼び出しにインライン化される');
+        });
+    });
 });

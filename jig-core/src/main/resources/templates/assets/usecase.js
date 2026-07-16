@@ -549,17 +549,48 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * サイドバーの表示設定（全体設定）に対して、ダイアグラムごとの上書きを保持しつつ
+     * コンテキストメニュー項目を組み立てる共通ヘルパー。
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @param {{key: string, label: string}[]} toggles
+     * @returns {{getContext: function(): DiagramContext, buildExtraMenuItems: function(function(): void): object[]}}
+     */
+    function createDiagramContextOverrideMenu(buildCurrentDiagramContext, toggles) {
+        let overrides = {};
+        return {
+            getContext: () => ({...buildCurrentDiagramContext(), ...overrides}),
+            buildExtraMenuItems: (rerenderSameDirection) => {
+                const baseContext = buildCurrentDiagramContext();
+                return toggles.map(({key, label}) => {
+                    const currentValue = overrides[key] !== undefined ? overrides[key] : baseContext[key];
+                    return {
+                        label,
+                        checked: currentValue,
+                        onSelect: () => {
+                            overrides = {...overrides, [key]: !currentValue};
+                            rerenderSameDirection();
+                        }
+                    };
+                });
+            }
+        };
+    }
+
+    /**
      * @param {UsecaseMethod} method
      * @param {function(): DiagramContext} buildCurrentDiagramContext
      * @returns {function}
      */
     function createUsecaseDiagramGenerator(method, buildCurrentDiagramContext) {
-        // ダイアグラムごとの表示要素の上書き設定。未指定のキーはサイドバーの全体設定に従う。
-        let diagramContextOverrides = {};
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
+            {key: 'showDiagramInternalMethods', label: '内部メソッド'},
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
+        ]);
 
         const generator = (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const currentUsecaseDiagram = buildUsecaseDiagram(method, {...buildCurrentDiagramContext(), ...diagramContextOverrides});
+            const currentUsecaseDiagram = buildUsecaseDiagram(method, contextMenu.getContext());
             const builder = Jig.mermaid.createBuilder();
             const classSubgraphs = new Map();
             const ensureClassSubgraph = (fqn) => {
@@ -601,28 +632,28 @@ const UsecaseApp = (() => {
             return builder.build(dir);
         };
 
-        const diagramContentToggles = [
-            {key: 'showDiagramInternalMethods', label: '内部メソッド'},
-            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
-            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
-        ];
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
 
-        // サイドバーの表示設定はこのダイアグラムに限らず全体に効くため、コンテキストメニューでは
-        // このダイアグラムだけの上書き（diagramContextOverrides）として保持する。
-        generator.buildExtraMenuItems = (rerenderSameDirection) => {
-            const baseContext = buildCurrentDiagramContext();
-            return diagramContentToggles.map(({key, label}) => {
-                const currentValue = diagramContextOverrides[key] !== undefined ? diagramContextOverrides[key] : baseContext[key];
-                return {
-                    label,
-                    checked: currentValue,
-                    onSelect: () => {
-                        diagramContextOverrides = {...diagramContextOverrides, [key]: !currentValue};
-                        rerenderSameDirection();
-                    }
-                };
-            });
+        return generator;
+    }
+
+    /**
+     * @param {UsecaseMethod} method
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {function}
+     */
+    function createSequenceDiagramGenerator(method, buildCurrentDiagramContext) {
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
+            {key: 'showDiagramInternalMethods', label: '内部メソッド'},
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'}
+        ]);
+
+        const generator = () => {
+            const sequenceDiagram = SequenceDiagram.buildDiagram(method, contextMenu.getContext());
+            return SequenceDiagram.buildCode(sequenceDiagram);
         };
+
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
 
         return generator;
     }
@@ -682,11 +713,7 @@ const UsecaseApp = (() => {
             if (hasSequenceDiagram) {
                 Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
                     sequenceContainer.innerHTML = "";
-                    const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
-                    const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
-                    if (currentSequenceDiagramCode) {
-                        Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
-                    }
+                    Jig.mermaid.render.renderWithControls(sequenceContainer, createSequenceDiagramGenerator(method, buildCurrentDiagramContext));
                 });
             }
         }
@@ -916,6 +943,7 @@ const UsecaseApp = (() => {
         buildUsecaseDiagram,
         buildClassGraph,
         createUsecaseDiagramGenerator,
+        createSequenceDiagramGenerator,
         SequenceDiagram,
         render,
         renderSidebar,

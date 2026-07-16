@@ -708,6 +708,12 @@ body.hide-usecase-members .tab-member-section {
     overflow: hidden;
 }
 
+/* 図が小さいとコンテキストメニューが .jig-card-section の overflow: hidden に
+   はみ出し部分を切り取られてしまうため、開いている間だけ解除する */
+.jig-card-section:has(.mermaid-menu-open) {
+    overflow: visible;
+}
+
 .description,
 .diagram-container {
     padding: 12px;

@@ -1003,6 +1003,19 @@ test.describe('domain.js', () => {
             assert.equal(items[0].checked, true);
         });
 
+        test('未上書きのgetValues()は、動的なgetGlobalValue（階層集約の自動判定のような計算値）の現在値を返す', () => {
+            // 階層集約のように、サイドバー設定ではなくダイアグラムごとに計算される既定値を想定
+            let computedDefault = false;
+            const settingsOverride = createDiagramSettingsOverride([
+                {key: 'hierarchyAggregation', label: '階層集約', getGlobalValue: () => computedDefault}
+            ]);
+
+            assert.deepEqual(settingsOverride.getValues(), {hierarchyAggregation: false});
+
+            computedDefault = true; // 呼び出しごとに再計算されうる値の変化を模す
+            assert.deepEqual(settingsOverride.getValues(), {hierarchyAggregation: true}, '上書きが無ければ常に最新のgetGlobalValue()を反映する');
+        });
+
         test('選択するとこのダイアグラムだけの上書きとして保持され、グローバル設定自体は変更しない', () => {
             let globalValue = true;
             const settingsOverride = createDiagramSettingsOverride([
@@ -1015,7 +1028,7 @@ test.describe('domain.js', () => {
 
             assert.equal(rerendered, true, '選択時に再描画コールバックが呼ばれる');
             assert.equal(globalValue, true, 'グローバル設定は変更されない');
-            assert.deepEqual(settingsOverride.getOverrides(), {showDeprecatedNodes: false});
+            assert.deepEqual(settingsOverride.getValues(), {showDeprecatedNodes: false});
 
             const itemsAfter = settingsOverride.buildExtraMenuItems(() => {});
             assert.equal(itemsAfter[0].checked, false, '次回はOFFとして反映される');

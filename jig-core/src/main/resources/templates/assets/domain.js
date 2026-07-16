@@ -705,7 +705,7 @@ const DomainApp = (() => {
         const render = (container) => {
             renderDiagram(container, {
                 pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations, typeRelations, typesMap,
-                getSettingsOverrides: settingsOverride.getOverrides,
+                getSettingsOverrides: settingsOverride.getValues,
                 buildExtraMenuItems: settingsOverride.buildExtraMenuItems
             });
         };
@@ -847,7 +847,7 @@ const DomainApp = (() => {
                 showOutgoing: outgoingCheckbox.checked,
                 showIncoming: incomingCheckbox.checked,
                 ...getClassDefOptions(),
-                getSettingsOverrides: settingsOverride.getOverrides,
+                getSettingsOverrides: settingsOverride.getValues,
                 buildExtraMenuItems: settingsOverride.buildExtraMenuItems
             });
         };
@@ -858,58 +858,30 @@ const DomainApp = (() => {
     }
 
     function setupPackageDirectDiagramPanel(panel, pkg, allPackageRelations) {
-        const aggregationCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "package-direct-aggregation"}
-        });
-        // 丸めると全関連が自己ループに潰れるパッケージでは既定OFFにし、空の図を初期表示しない
-        aggregationCheckbox.checked = collectPackageDirectRelations(pkg, allPackageRelations, true).length > 0;
-        panel.appendChild(Jig.dom.createElement("fieldset", {
-            className: "diagram-panel-options",
-            children: [
-                Jig.dom.createElement("legend", {textContent: "表示"}),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [aggregationCheckbox, "階層集約"]
-                }),
-            ]
-        }));
+        const settingsOverride = createDiagramSettingsOverride([
+            {
+                key: 'hierarchyAggregation',
+                label: '階層集約',
+                // 丸めると全関連が自己ループに潰れるパッケージでは既定OFFにし、空の図を初期表示しない
+                getGlobalValue: () => collectPackageDirectRelations(pkg, allPackageRelations, true).length > 0
+            }
+        ]);
 
         const render = (container) => {
             renderDiagram(container, {
                 pkg, type: undefined, diagramType: 'packageDirect',
                 allPackageRelations,
-                hierarchyAggregation: aggregationCheckbox.checked
+                getSettingsOverrides: settingsOverride.getValues,
+                buildExtraMenuItems: settingsOverride.buildExtraMenuItems
             });
         };
-        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
-        aggregationCheckbox.addEventListener('change', () => render(container));
+        Jig.mermaid.diagram.createAndRegister(panel, render);
     }
 
     function setupPackageTypeDiagramPanel(panel, pkg, typeRelations, typesMap) {
-        const outgoingCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
-        });
-        outgoingCheckbox.checked = true;
-        const incomingCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "class-relation-external-incoming"}
-        });
-        incomingCheckbox.checked = true;
-        panel.appendChild(Jig.dom.createElement("fieldset", {
-            className: "diagram-panel-options",
-            children: [
-                Jig.dom.createElement("legend", {textContent: "表示"}),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [incomingCheckbox, "関連元"]
-                }),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [outgoingCheckbox, "関連先"]
-                }),
-            ]
-        }));
-
         const settingsOverride = createDiagramSettingsOverride([
+            {key: 'showExternalOutgoing', label: '関連先', getGlobalValue: () => true},
+            {key: 'showExternalIncoming', label: '関連元', getGlobalValue: () => true},
             {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => domainSettings.showDeprecatedNodes},
             {key: 'transitiveReductionEnabled', label: '依存関係の簡略表示', getGlobalValue: () => domainSettings.transitiveReductionEnabled}
         ]);
@@ -917,13 +889,11 @@ const DomainApp = (() => {
         const render = (container) => {
             renderDiagram(container, {
                 pkg, type: undefined, diagramType: 'type', typeRelations, typesMap,
-                getSettingsOverrides: settingsOverride.getOverrides,
+                getSettingsOverrides: settingsOverride.getValues,
                 buildExtraMenuItems: settingsOverride.buildExtraMenuItems
             });
         };
-        const container = Jig.mermaid.diagram.createAndRegister(panel, render);
-        outgoingCheckbox.addEventListener('change', () => render(container));
-        incomingCheckbox.addEventListener('change', () => render(container));
+        Jig.mermaid.diagram.createAndRegister(panel, render);
     }
 
     function appendConfiguredTabs(cardSection, tabConfigs, options = {}) {
@@ -1104,22 +1074,26 @@ const DomainApp = (() => {
     }
 
     /**
-     * サイドバーの表示設定（全体設定）に対して、ダイアグラムごとの上書きを保持しつつ
+     * サイドバーの表示設定（全体設定）や動的な既定値に対して、ダイアグラムごとの上書きを保持しつつ
      * コンテキストメニュー項目を組み立てる。usecase.js の createDiagramContextOverrideMenu と同様の役割。
+     * getValues() は上書きの有無に関わらず、常に各キーの実効値（上書きが無ければ getGlobalValue() の
+     * 現在値）を返す。getGlobalValue が動的な既定値（例: 階層集約の自動判定）を返す場合でも、
+     * 呼び出し側でその既定値を別途複製する必要がない。
      * @param {{key: string, label: string, getGlobalValue: function(): boolean}[]} toggles
-     * @returns {{getOverrides: function(): object, buildExtraMenuItems: function(function(): void): object[]}}
+     * @returns {{getValues: function(): object, buildExtraMenuItems: function(function(): void): object[]}}
      */
     function createDiagramSettingsOverride(toggles) {
         let overrides = {};
+        const effectiveValue = ({key, getGlobalValue}) => overrides[key] !== undefined ? overrides[key] : getGlobalValue();
         return {
-            getOverrides: () => ({...overrides}),
-            buildExtraMenuItems: (rerender) => toggles.map(({key, label, getGlobalValue}) => {
-                const currentValue = overrides[key] !== undefined ? overrides[key] : getGlobalValue();
+            getValues: () => Object.fromEntries(toggles.map(t => [t.key, effectiveValue(t)])),
+            buildExtraMenuItems: (rerender) => toggles.map(toggle => {
+                const currentValue = effectiveValue(toggle);
                 return {
-                    label,
+                    label: toggle.label,
                     checked: currentValue,
                     onSelect: () => {
-                        overrides = {...overrides, [key]: !currentValue};
+                        overrides = {...overrides, [toggle.key]: !currentValue};
                         rerender();
                     }
                 };
@@ -1136,7 +1110,7 @@ const DomainApp = (() => {
         const {
             pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap,
             showOutgoing = true, showIncoming = true, showFields = true, showMethods = true,
-            maxVisibility = 'PRIVATE', hierarchyAggregation = false,
+            maxVisibility = 'PRIVATE',
             getSettingsOverrides = () => ({}), buildExtraMenuItems
         } = diagram;
 
@@ -1151,7 +1125,7 @@ const DomainApp = (() => {
 
         if (diagramType === 'packageDirect') {
             renderIfNonNull(
-                (dir, opts) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir, opts?.showPhysicalName, hierarchyAggregation),
+                (dir, opts) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir, opts?.showPhysicalName, getSettingsOverrides().hierarchyAggregation),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'package') {
@@ -1170,13 +1144,8 @@ const DomainApp = (() => {
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'type') {
-            const panel = typeof container.closest === 'function' ? container.closest('.jig-tab-panel') : null;
-            const outgoing = panel?.querySelector('.class-relation-external-outgoing');
-            const incoming = panel?.querySelector('.class-relation-external-incoming');
-            const showExternalOutgoing = outgoing ? outgoing.checked : true;
-            const showExternalIncoming = incoming ? incoming.checked : true;
             renderIfNonNull(
-                (dir, opts) => createRelationDiagram(pkg, typeRelations, typesMap, {showExternalOutgoing, showExternalIncoming, direction: dir, showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
+                (dir, opts) => createRelationDiagram(pkg, typeRelations, typesMap, {direction: dir, showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
                 {enableLabelToggle: true}
             );
         }

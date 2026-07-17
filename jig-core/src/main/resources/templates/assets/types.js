@@ -198,6 +198,7 @@
  * @property {boolean} [showDiagramCallers]
  * @property {boolean} [showDiagramCallees]
  * @property {boolean} showDiagramInternalMethods
+ * @property {boolean} [showDiagramInboundClasses]
  * @property {boolean} showDiagramOutboundPorts
  * @property {boolean} showDiagramDomainTypes
  */

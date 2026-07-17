@@ -89,7 +89,7 @@ test.describe('usecase.js', () => {
             // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
             // チェックボックス要素を事前登録
-            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-callers', 'show-diagram-callees', 'show-diagram-internal-methods', 'show-diagram-outbound-ports'].forEach(id => {
+            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-callers', 'show-diagram-callees', 'show-diagram-internal-methods', 'show-diagram-inbound-classes', 'show-diagram-outbound-ports'].forEach(id => {
                 const el = doc.createElement('input');
                 el.id = id;
                 el.checked = true;
@@ -470,7 +470,8 @@ test.describe('usecase.js', () => {
             assert.ok(!code.includes('subgraph'));
         });
 
-        test('クラス単位の図にドメインモデルノードがデフォルトで表示される', () => {
+        test('show-diagram-domain-typesがONの場合、クラス単位の図にドメインモデルノードが表示される', () => {
+            document.getElementById('show-diagram-domain-types').checked = true;
             globalThis.domainData = {
                 types: [{fqn: 'com.example.Order', isDeprecated: false}]
             };
@@ -531,6 +532,7 @@ test.describe('usecase.js', () => {
         });
 
         test('戻り値の型がコレクション型の場合、typeArgumentRefs内のドメイン型がノードに追加される', () => {
+            document.getElementById('show-diagram-domain-types').checked = true;
             globalThis.domainData = {
                 types: [{fqn: 'com.example.Order', isDeprecated: false}]
             };
@@ -579,6 +581,7 @@ test.describe('usecase.js', () => {
         });
 
         test('引数の型がコレクション型の場合、typeArgumentRefs内のドメイン型がノードに追加される', () => {
+            document.getElementById('show-diagram-domain-types').checked = true;
             globalThis.domainData = {
                 types: [{fqn: 'com.example.Order', isDeprecated: false}]
             };
@@ -2013,6 +2016,153 @@ test.describe('usecase.js', () => {
 
             const after = generator();
             assert.ok(!after.includes(methodBNodeId), '切替後はBが消え、A->Cの呼び出しにインライン化される');
+        });
+    });
+
+    test.describe('buildClassGraph', () => {
+        test('showDiagramOutboundPorts=trueかつoutboundOperationSetに含まれる呼び出しはoutbound-classノードとして追加される', () => {
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['ext.Repo#save()']}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {
+                outboundOperationSet: new Set(['ext.Repo#save()']),
+                showDiagramOutboundPorts: true
+            });
+
+            assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo' && n.kind === 'outbound-class'));
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#method1()' && e.to === 'ext.Repo'));
+        });
+
+        test('showDiagramOutboundPorts=falseの場合、outbound-classノードは追加されない', () => {
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['ext.Repo#save()']}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {
+                outboundOperationSet: new Set(['ext.Repo#save()']),
+                showDiagramOutboundPorts: false
+            });
+
+            assert.ok(!result.nodes.find(n => n.kind === 'outbound-class'));
+            assert.equal(result.edges.length, 0);
+        });
+
+        test('showDiagramInboundClasses=falseの場合、inbound-classノードは追加されない', () => {
+            globalThis.inboundData = {
+                inboundAdapters: [{relations: [{from: 'web.Ctrl#create()', to: 'pkg.ServiceA#method1()'}]}]
+            };
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: []}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {
+                outboundOperationSet: new Set(),
+                showDiagramInboundClasses: false
+            });
+
+            assert.ok(!result.nodes.find(n => n.kind === 'inbound-class'));
+            assert.equal(result.edges.length, 0);
+
+            delete globalThis.inboundData;
+        });
+
+        test('showDiagramDomainTypesを指定しない場合はドメインモデルノードが追加されない（既定は非表示）', () => {
+            globalThis.domainData = {types: [{fqn: 'com.example.Order', isDeprecated: false}]};
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {
+                        fqn: 'pkg.ServiceA#method1(Order)',
+                        visibility: 'PUBLIC',
+                        callMethods: [],
+                        parameters: [{name: 'arg0', nameSource: 'POSITIONAL', typeRef: {fqn: 'com.example.Order'}}],
+                        returnTypeRef: {fqn: 'void'}
+                    }
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {outboundOperationSet: new Set()});
+
+            assert.ok(!result.nodes.find(n => n.kind === 'domain-type'));
+
+            delete globalThis.domainData;
+        });
+    });
+
+    test.describe('createClassDiagramGenerator', () => {
+        function buildContext(overrides = {}) {
+            return {
+                outboundOperationSet: new Set(),
+                showDiagramInboundClasses: true,
+                showDiagramOutboundPorts: true,
+                showDiagramDomainTypes: false,
+                ...overrides
+            };
+        }
+
+        test('メニュー項目は入力インタフェース・出力インタフェース・ドメインモデルの3つ', () => {
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: []}]
+            };
+            const context = buildContext();
+
+            const generator = UsecaseApp.createClassDiagramGenerator(usecase, null, () => context);
+            const items = generator.buildExtraMenuItems(() => {});
+
+            assert.deepEqual(items.map(i => i.label), ['入力インタフェース', '出力インタフェース', 'ドメインモデル']);
+            assert.deepEqual(items.map(i => i.checked), [true, true, false]);
+        });
+
+        test('メニュー項目を選択するとこの図だけ表示要素が切り替わる（サイドバー側の値は変更しない）', () => {
+            globalThis.inboundData = {
+                inboundAdapters: [{relations: [{from: 'web.Ctrl#create()', to: 'pkg.ServiceA#method1()'}]}]
+            };
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: []}]
+            };
+            const ctrlNodeId = globalThis.Jig.util.fqnToId("node", 'web.Ctrl');
+            const context = buildContext();
+
+            const generator = UsecaseApp.createClassDiagramGenerator(usecase, null, () => context);
+
+            const before = generator();
+            assert.ok(before.includes(ctrlNodeId), '切替前はinboundクラスノードを含む');
+
+            let rerendered = false;
+            const items = generator.buildExtraMenuItems(() => { rerendered = true; });
+            items.find(i => i.label === '入力インタフェース').onSelect();
+
+            assert.equal(rerendered, true, '選択時に再描画コールバックが呼ばれる');
+            assert.equal(context.showDiagramInboundClasses, true, 'サイドバー（グローバル）側の値は変更されない');
+
+            const after = generator();
+            assert.ok(!after.includes(ctrlNodeId), '切替後はinboundクラスノードが消える');
+
+            delete globalThis.inboundData;
         });
     });
 });

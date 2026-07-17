@@ -235,6 +235,7 @@ const OutboundApp = (() => {
         if (type === "INSERT") return "C";
         if (type === "UPDATE") return "U";
         if (type === "DELETE") return "D";
+        if (type === "UNKNOWN") return "?";
         return "";
     }
 

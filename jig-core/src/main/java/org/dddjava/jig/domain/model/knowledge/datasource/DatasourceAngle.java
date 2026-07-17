@@ -89,6 +89,14 @@ public class DatasourceAngle {
         return tableNames(PersistenceOperationType.DELETE);
     }
 
+    public String unknownTables() {
+        return joining(unknownTableNames());
+    }
+
+    public List<String> unknownTableNames() {
+        return tableNames(PersistenceOperationType.UNKNOWN);
+    }
+
     public JigMethod concreteMethod() {
         return adapterExecution.jigMethod();
     }

@@ -858,12 +858,19 @@ const DomainApp = (() => {
     }
 
     function setupPackageDirectDiagramPanel(panel, pkg, allPackageRelations) {
+        // 丸めると全関連が自己ループに潰れるパッケージでは既定OFFにし、空の図を初期表示しない。
+        // 全件スキャンを伴うため、パネルごとに1回だけ計算してキャッシュする。
+        let cachedDefaultHierarchyAggregation = null;
         const settingsOverride = createDiagramSettingsOverride([
             {
                 key: 'hierarchyAggregation',
                 label: '階層集約',
-                // 丸めると全関連が自己ループに潰れるパッケージでは既定OFFにし、空の図を初期表示しない
-                getGlobalValue: () => collectPackageDirectRelations(pkg, allPackageRelations, true).length > 0
+                getGlobalValue: () => {
+                    if (cachedDefaultHierarchyAggregation === null) {
+                        cachedDefaultHierarchyAggregation = collectPackageDirectRelations(pkg, allPackageRelations, true).length > 0;
+                    }
+                    return cachedDefaultHierarchyAggregation;
+                }
             }
         ]);
 
@@ -1073,33 +1080,8 @@ const DomainApp = (() => {
         });
     }
 
-    /**
-     * サイドバーの表示設定（全体設定）や動的な既定値に対して、ダイアグラムごとの上書きを保持しつつ
-     * コンテキストメニュー項目を組み立てる。usecase.js の createDiagramContextOverrideMenu と同様の役割。
-     * getValues() は上書きの有無に関わらず、常に各キーの実効値（上書きが無ければ getGlobalValue() の
-     * 現在値）を返す。getGlobalValue が動的な既定値（例: 階層集約の自動判定）を返す場合でも、
-     * 呼び出し側でその既定値を別途複製する必要がない。
-     * @param {{key: string, label: string, getGlobalValue: function(): boolean}[]} toggles
-     * @returns {{getValues: function(): object, buildExtraMenuItems: function(function(): void): object[]}}
-     */
-    function createDiagramSettingsOverride(toggles) {
-        let overrides = {};
-        const effectiveValue = ({key, getGlobalValue}) => overrides[key] !== undefined ? overrides[key] : getGlobalValue();
-        return {
-            getValues: () => Object.fromEntries(toggles.map(t => [t.key, effectiveValue(t)])),
-            buildExtraMenuItems: (rerender) => toggles.map(toggle => {
-                const currentValue = effectiveValue(toggle);
-                return {
-                    label: toggle.label,
-                    checked: currentValue,
-                    onSelect: () => {
-                        overrides = {...overrides, [toggle.key]: !currentValue};
-                        rerender();
-                    }
-                };
-            })
-        };
-    }
+    // jig-mermaid.js の共通ヘルパー（usecase.js の createDiagramContextOverrideMenu と同じ実装を共有する）
+    const createDiagramSettingsOverride = Jig.mermaid.render.createDiagramSettingsOverride;
 
     /**
      * 指定されたダイアグラムを再生成

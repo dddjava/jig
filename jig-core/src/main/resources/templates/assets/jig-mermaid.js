@@ -960,6 +960,17 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
+        function renderEmptyDiagram(diagram, messageText) {
+            if (!diagram) return;
+            diagram.classList.add("too-large");
+            diagram.textContent = "";
+
+            const message = document.createElement("p");
+            message.className = "mermaid-too-large__message";
+            message.textContent = messageText;
+            diagram.appendChild(message);
+        }
+
         function renderTooLargeDiagram(diagram, source, {messageText, onRender} = {}) {
             if (!diagram) return;
             diagram.classList.add("too-large");
@@ -1319,6 +1330,31 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
+        /**
+         * サイドバーの表示設定（全体設定）や動的な既定値に対して、ダイアグラムごとの上書きを保持しつつ
+         * コンテキストメニュー項目を組み立てる共通ヘルパー。
+         * @param {{key: string, label: string, getGlobalValue: function(): boolean}[]} toggles
+         * @returns {{getValues: function(): object, buildExtraMenuItems: function(function(): void): object[]}}
+         */
+        function createDiagramSettingsOverride(toggles) {
+            let overrides = {};
+            const effectiveValue = ({key, getGlobalValue}) => overrides[key] !== undefined ? overrides[key] : getGlobalValue();
+            return {
+                getValues: () => Object.fromEntries(toggles.map(t => [t.key, effectiveValue(t)])),
+                buildExtraMenuItems: (rerender) => toggles.map(toggle => {
+                    const currentValue = effectiveValue(toggle);
+                    return {
+                        label: toggle.label,
+                        checked: currentValue,
+                        onSelect: () => {
+                            overrides = {...overrides, [toggle.key]: !currentValue};
+                            rerender();
+                        }
+                    };
+                })
+            };
+        }
+
         function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle, showControls = true} = {}) {
             if (!targetEl) return;
 
@@ -1369,7 +1405,7 @@ globalThis.Jig.mermaid = (() => {
                     ];
 
                     const viewItems = [];
-                    if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
+                    if (newDirection && (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource))) {
                         viewItems.push({
                             label: newDirection === "LR" ? "レイアウト方向を縦にする" : "レイアウト方向を横にする",
                             onSelect: () => renderDiagram(newDirection === "LR" ? "TB" : "LR")
@@ -1399,6 +1435,14 @@ globalThis.Jig.mermaid = (() => {
                         .flatMap((group, index) => index === 0 ? group : [{separator: true}, ...group]);
 
                     ensureDiagramMenu(container, menuItems);
+                }
+
+                if (!currentSource) {
+                    diagramEl.style.display = "";
+                    setEdgeWarning(container, {visible: false});
+                    renderEmptyDiagram(diagramEl, "表示設定により表示できる内容がありません");
+                    setRendering(container, false);
+                    return;
                 }
 
                 if (isTooLarge(currentSource)) {
@@ -1595,6 +1639,7 @@ globalThis.Jig.mermaid = (() => {
             flashButtonLabel,
             renderTooLargeDiagram,
             renderWithControls,
+            createDiagramSettingsOverride,
             setupLazyMermaidRender,
             initializeMermaid,
             setRendering

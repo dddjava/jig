@@ -187,11 +187,10 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
             // 非staticインナークラスは Outer<T>.Inner<S> のように連結される。
             // 型引数はネストしたインナークラスごとに振り分けられているため、最も内側（実際の型）のものを採用する。
             StringBuilder binaryName = new StringBuilder(classType.name());
-            ClassType innermost = classType;
             for (ClassType innerClass : classType.innerClasses()) {
                 binaryName.append('$').append(innerClass.name());
-                innermost = innerClass;
             }
+            ClassType innermost = classType.innerClasses().isEmpty() ? classType : classType.lastInnerClass();
             return new JigTypeReference(
                     AsmUtils.jvmBinaryName2TypeId(binaryName.toString()),
                     List.of(), // 型アノテーション未対応

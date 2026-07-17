@@ -50,7 +50,7 @@ public enum PersistenceOperationType {
      * JOINを含む複数テーブルの参照に対応。サブクエリ内FROMも対応。WITHなどは未対応。
      */
     public PersistenceTargetOperationTypes extractTable(Optional<Query> optQuery, PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        if (this != UNKNOWN && optQuery.isPresent()) {
+        if (!patterns.isEmpty() && optQuery.isPresent()) {
             String sql = optQuery.get().normalizedQuery().replaceAll("\n", " ");
             List<PersistenceTargetOperationType> targets = findTargetsFrom(sql);
             if (!targets.isEmpty()) {

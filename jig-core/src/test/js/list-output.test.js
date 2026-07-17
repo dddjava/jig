@@ -228,6 +228,7 @@ test.describe('list-output.js', () => {
                         selectTables: ['EXAMPLE'],
                         updateTables: [],
                         deleteTables: [],
+                        unknownTables: [],
                         callerTypeCount: 1,
                         callerMethodCount: 2,
                     },
@@ -237,8 +238,8 @@ test.describe('list-output.js', () => {
 
                 assert.equal(
                     csv,
-                    '"パッケージ名","クラス名","メソッドシグネチャ","メソッド戻り値の型","クラス別名","メソッド戻り値の型の別名","メソッド引数の型の別名","循環的複雑度","INSERT","SELECT","UPDATE","DELETE","関連元クラス数","関連元メソッド数"\r\n' +
-                    '"com.example","ExampleRepository","find()","Example","例","例","","1","EXAMPLE","EXAMPLE","","","1","2"'
+                    '"パッケージ名","クラス名","メソッドシグネチャ","メソッド戻り値の型","クラス別名","メソッド戻り値の型の別名","メソッド引数の型の別名","循環的複雑度","INSERT","SELECT","UPDATE","DELETE","UNKNOWN","関連元クラス数","関連元メソッド数"\r\n' +
+                    '"com.example","ExampleRepository","find()","Example","例","例","","1","EXAMPLE","EXAMPLE","","","","1","2"'
                 );
             });
         });
@@ -539,15 +540,15 @@ test.describe('list-output.js', () => {
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
-                assert.equal(row.children.length, 14);
+                assert.equal(row.children.length, 15);
                 assert.equal(row.children[0].textContent, 'com.example');
                 assert.equal(row.children[1].textContent, 'ExampleRepository');
                 assert.equal(row.children[7].textContent, '1');
                 assert.equal(row.children[7].className, 'number');
-                assert.equal(row.children[12].textContent, '1');
-                assert.equal(row.children[12].className, 'number');
-                assert.equal(row.children[13].textContent, '2');
+                assert.equal(row.children[13].textContent, '1');
                 assert.equal(row.children[13].className, 'number');
+                assert.equal(row.children[14].textContent, '2');
+                assert.equal(row.children[14].className, 'number');
             });
         });
 

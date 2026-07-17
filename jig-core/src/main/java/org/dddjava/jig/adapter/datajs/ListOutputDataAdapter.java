@@ -181,6 +181,7 @@ public class ListOutputDataAdapter implements DataAdapter {
                 .and("selectTables", Json.array(datasourceAngle.selectTableNames()))
                 .and("updateTables", Json.array(datasourceAngle.updateTableNames()))
                 .and("deleteTables", Json.array(datasourceAngle.deleteTableNames()))
+                .and("unknownTables", Json.array(datasourceAngle.unknownTableNames()))
                 .and("callerTypeCount", datasourceAngle.callerMethods().typeCount())
                 .and("callerMethodCount", datasourceAngle.callerMethods().size())
                 .build();

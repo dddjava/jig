@@ -550,29 +550,19 @@ const UsecaseApp = (() => {
 
     /**
      * サイドバーの表示設定（全体設定）に対して、ダイアグラムごとの上書きを保持しつつ
-     * コンテキストメニュー項目を組み立てる共通ヘルパー。
+     * コンテキストメニュー項目を組み立てる共通ヘルパー。jig-mermaid.js の
+     * createDiagramSettingsOverride（domain.js と共有）に、DiagramContext形式での取得を足したもの。
      * @param {function(): DiagramContext} buildCurrentDiagramContext
      * @param {{key: string, label: string}[]} toggles
      * @returns {{getContext: function(): DiagramContext, buildExtraMenuItems: function(function(): void): object[]}}
      */
     function createDiagramContextOverrideMenu(buildCurrentDiagramContext, toggles) {
-        let overrides = {};
+        const settingsOverride = Jig.mermaid.render.createDiagramSettingsOverride(
+            toggles.map(({key, label}) => ({key, label, getGlobalValue: () => buildCurrentDiagramContext()[key]}))
+        );
         return {
-            getContext: () => ({...buildCurrentDiagramContext(), ...overrides}),
-            buildExtraMenuItems: (rerenderSameDirection) => {
-                const baseContext = buildCurrentDiagramContext();
-                return toggles.map(({key, label}) => {
-                    const currentValue = overrides[key] !== undefined ? overrides[key] : baseContext[key];
-                    return {
-                        label,
-                        checked: currentValue,
-                        onSelect: () => {
-                            overrides = {...overrides, [key]: !currentValue};
-                            rerenderSameDirection();
-                        }
-                    };
-                });
-            }
+            getContext: () => ({...buildCurrentDiagramContext(), ...settingsOverride.getValues()}),
+            buildExtraMenuItems: settingsOverride.buildExtraMenuItems
         };
     }
 

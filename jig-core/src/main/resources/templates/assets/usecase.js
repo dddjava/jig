@@ -220,16 +220,18 @@ const UsecaseApp = (() => {
             return visible;
         }
 
-        collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
-            const edgeKey = makeEdgeKey(callerFqn, rootMethod.fqn);
-            if (!edgeSet.has(edgeKey)) {
-                edgeSet.add(edgeKey);
-                edges.push({from: callerFqn, to: rootMethod.fqn});
-            }
-            if (!nodes.has(callerFqn)) {
-                nodes.set(callerFqn, {fqn: callerFqn, kind});
-            }
-        });
+        if (diagramContext.showDiagramCallers !== false) {
+            collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
+                const edgeKey = makeEdgeKey(callerFqn, rootMethod.fqn);
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({from: callerFqn, to: rootMethod.fqn});
+                }
+                if (!nodes.has(callerFqn)) {
+                    nodes.set(callerFqn, {fqn: callerFqn, kind});
+                }
+            });
+        }
 
         /**
          * @param {string} effectiveCallerFqn
@@ -273,7 +275,9 @@ const UsecaseApp = (() => {
             }
         }
 
-        traverse(rootMethod.fqn, rootMethod.callMethods);
+        if (diagramContext.showDiagramCallees !== false) {
+            traverse(rootMethod.fqn, rootMethod.callMethods);
+        }
 
         const domainFqnSet = Jig.data.domain.getDomainFqnSet();
         if (diagramContext.showDiagramDomainTypes && domainFqnSet.size > 0) {
@@ -573,6 +577,8 @@ const UsecaseApp = (() => {
      */
     function createUsecaseDiagramGenerator(method, buildCurrentDiagramContext) {
         const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
+            {key: 'showDiagramCallers', label: '呼び出し元'},
+            {key: 'showDiagramCallees', label: '呼び出し先'},
             {key: 'showDiagramInternalMethods', label: '内部メソッド'},
             {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
             {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
@@ -829,6 +835,8 @@ const UsecaseApp = (() => {
             methodMap,
             reverseCallerMap,
             outboundOperationSet,
+            showDiagramCallers: document.getElementById('show-diagram-callers').checked,
+            showDiagramCallees: document.getElementById('show-diagram-callees').checked,
             showDiagramInternalMethods: document.getElementById('show-diagram-internal-methods').checked,
             showDiagramOutboundPorts: document.getElementById('show-diagram-outbound-ports').checked,
             showDiagramDomainTypes: document.getElementById('show-diagram-domain-types').checked,
@@ -860,6 +868,8 @@ const UsecaseApp = (() => {
             {id: 'show-details', class: 'hide-usecase-details'},
             {id: 'show-descriptions', class: 'hide-usecase-descriptions'},
             {id: 'show-declarations', class: 'hide-usecase-declarations'},
+            {id: 'show-diagram-callers', reRender: true},
+            {id: 'show-diagram-callees', reRender: true},
             {id: 'show-diagram-internal-methods', reRender: true},
             {id: 'show-diagram-outbound-ports', reRender: true},
             {id: 'show-diagram-domain-types', reRender: true}

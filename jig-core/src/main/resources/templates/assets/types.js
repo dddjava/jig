@@ -195,6 +195,8 @@
  * @typedef {Object} DiagramContext
  * @property {Map<string, UsecaseMethod>} methodMap
  * @property {Set<string>} outboundOperationSet
+ * @property {boolean} [showDiagramCallers]
+ * @property {boolean} [showDiagramCallees]
  * @property {boolean} showDiagramInternalMethods
  * @property {boolean} showDiagramOutboundPorts
  * @property {boolean} showDiagramDomainTypes

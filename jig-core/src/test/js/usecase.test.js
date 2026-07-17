@@ -89,7 +89,7 @@ test.describe('usecase.js', () => {
             // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
             // チェックボックス要素を事前登録
-            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-internal-methods', 'show-diagram-outbound-ports'].forEach(id => {
+            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-callers', 'show-diagram-callees', 'show-diagram-internal-methods', 'show-diagram-outbound-ports'].forEach(id => {
                 const el = doc.createElement('input');
                 el.id = id;
                 el.checked = true;
@@ -1623,6 +1623,50 @@ test.describe('usecase.js', () => {
             assert.equal(result.edges.length, 0);
         });
 
+        test('showDiagramCallersがfalseの場合、呼び出し元はノードとして追加されない', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase'};
+            const callerMethod = {fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'usecase'};
+            const methodMap = new Map([
+                ['pkg.Cls#A()', rootMethod],
+                ['pkg.Cls#B()', callerMethod]
+            ]);
+
+            const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
+                methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
+                outboundOperationSet: new Set(),
+                showDiagramCallers: false,
+                showDiagramInternalMethods: true,
+                showDiagramOutboundPorts: true
+            });
+
+            assert.equal(result.nodes.length, 1);
+            assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+            assert.equal(result.edges.length, 0);
+        });
+
+        test('showDiagramCalleesがfalseの場合、呼び出し先はノードとして追加されない', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
+            const calleeMethod = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodMap = new Map([
+                ['pkg.Cls#A()', rootMethod],
+                ['pkg.Cls#B()', calleeMethod]
+            ]);
+
+            const result = UsecaseApp.buildUsecaseDiagram(rootMethod, {
+                methodMap,
+                reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
+                outboundOperationSet: new Set(),
+                showDiagramCallees: false,
+                showDiagramInternalMethods: true,
+                showDiagramOutboundPorts: true
+            });
+
+            assert.equal(result.nodes.length, 1);
+            assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+            assert.equal(result.edges.length, 0);
+        });
+
         test('直接の呼び出し元(usecase)は caller -> root のエッジで追加される', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase'};
             const callerMethod = {fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'usecase'};
@@ -1850,6 +1894,8 @@ test.describe('usecase.js', () => {
                 methodMap,
                 reverseCallerMap: UsecaseApp.buildReverseCallerMap(methodMap),
                 outboundOperationSet: new Set(),
+                showDiagramCallers: true,
+                showDiagramCallees: true,
                 showDiagramInternalMethods: true,
                 showDiagramOutboundPorts: true,
                 showDiagramDomainTypes: false,
@@ -1866,11 +1912,13 @@ test.describe('usecase.js', () => {
             const items = generator.buildExtraMenuItems(() => {});
 
             assert.deepEqual(items.map(i => i.label), [
+                '呼び出し元',
+                '呼び出し先',
                 '内部メソッド',
                 '出力インタフェース',
                 'ドメインモデル'
             ]);
-            assert.deepEqual(items.map(i => i.checked), [true, true, false]);
+            assert.deepEqual(items.map(i => i.checked), [true, true, true, true, false]);
         });
 
         test('メニュー項目を選択するとこのダイアグラムだけ表示要素が切り替わる（サイドバー側の値は変更しない）', () => {

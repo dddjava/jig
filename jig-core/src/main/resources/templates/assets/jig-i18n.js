@@ -55,6 +55,8 @@ globalThis.Jig.i18n = (() => {
             "メンバ": "Members",
             "ハンドラのみ": "Handlers only",
             "入力・出力": "Input/Output",
+            "呼び出し元": "Callers",
+            "呼び出し先": "Callees",
             "内部メソッド": "Internal methods",
             "出力インタフェース": "Outbound interface",
             "ドメインモデル": "Domain model",

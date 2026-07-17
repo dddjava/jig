@@ -433,9 +433,15 @@ main table thead {
     color: #999;
 }
 
-/* 型参照リンク（メソッド引数・戻り値・フィールド型など）: hoverせずともクリック可能と分かるよう常時色を付ける */
+/* 型参照リンク（メソッド引数・戻り値・フィールド型など）: hoverせずともクリック可能と分かるよう常時薄い下線を付け、hoverで濃くする */
 .type-ref-link {
-    color: #2d5fa8;
+    text-decoration-line: underline;
+    text-decoration-color: rgba(0, 0, 0, 0.45);
+    text-underline-offset: 3px;
+}
+
+.type-ref-link:hover {
+    text-decoration-color: currentColor;
 }
 
 .entrypoint-item {

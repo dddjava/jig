@@ -140,8 +140,8 @@ public class MyBatisStatementsReader {
                     case UPDATE -> PersistenceOperationType.UPDATE;
                     case DELETE -> PersistenceOperationType.DELETE;
                     case UNKNOWN, FLUSH -> {
-                        logger.warn("JIGではSQL Command Type {} はJIGでは対応していません。SELECTとして続行します。", sqlCommandType);
-                        yield PersistenceOperationType.SELECT;
+                        logger.warn("JIGではSQL Command Type {} には対応していません。UNKNOWNとして扱います。", sqlCommandType);
+                        yield PersistenceOperationType.UNKNOWN;
                     }
                 };
                 PersistenceAccessorOperation myBatisStatement = PersistenceAccessorOperation.from(persistenceAccessorOperationId, persistenceOperationType, query);

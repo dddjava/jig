@@ -19,7 +19,9 @@ public enum PersistenceOperationType {
     SELECT("(?<!:)\\bfrom\\s+([^\\s,()]+)",
             "select\\s+(nextval\\('.+'\\))"),
     UPDATE("\\bupdate\\s+([^\\s,()]+)"),
-    DELETE("delete\\s+from\\s+([^\\s()]+)\\b");
+    DELETE("delete\\s+from\\s+([^\\s()]+)\\b"),
+    /** MyBatisのSqlCommandTypeがUNKNOWN/FLUSHの場合など、種類を判別できない操作を表す */
+    UNKNOWN();
 
     private static final Logger logger = LoggerFactory.getLogger(PersistenceOperationType.class);
     private static final Pattern JOIN_PATTERN =
@@ -48,7 +50,7 @@ public enum PersistenceOperationType {
      * JOINを含む複数テーブルの参照に対応。サブクエリ内FROMも対応。WITHなどは未対応。
      */
     public PersistenceTargetOperationTypes extractTable(Optional<Query> optQuery, PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        if (optQuery.isPresent()) {
+        if (this != UNKNOWN && optQuery.isPresent()) {
             String sql = optQuery.get().normalizedQuery().replaceAll("\n", " ");
             List<PersistenceTargetOperationType> targets = findTargetsFrom(sql);
             if (!targets.isEmpty()) {

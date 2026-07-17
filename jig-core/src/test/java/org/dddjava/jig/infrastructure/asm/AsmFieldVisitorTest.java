@@ -1,8 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
+import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.infrastructure.asm.ut.field.MyEnumFieldSut;
+import org.dddjava.jig.infrastructure.asm.ut.field.MyInnerClassGenericsSut;
 import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.MemberAnnotatedClass;
@@ -78,5 +80,18 @@ class AsmFieldVisitorTest {
         assertTrue(text.contains("annotation=@Deprecated(...)"), "Text should contain 'annotation=@Deprecated(...)'");
 
         assertEquals("bf", sut.elementTextOf("arrayString").orElseThrow());
+    }
+
+    @Test
+    void 非staticインナークラスかつジェネリックな外側クラスのフィールド型が正しく解決される() {
+        // issue1108: Outer<T>.Inner<S> がOuterとして解決され、Inner名と型引数が破棄される不具合の再現テスト
+        var members = TestSupport.buildJigType(MyInnerClassGenericsSut.class).jigTypeMembers();
+        JigField field = members.findFieldByName("innerClassField").orElseThrow();
+
+        assertEquals(TestSupport.getTypeIdFromClass(MyInnerClassGenericsSut.Outer.Inner.class), field.typeId());
+        assertEquals(
+                List.of(TestSupport.getTypeIdFromClass(Integer.class)),
+                field.jigTypeReference().typeArgumentList().stream().map(JigTypeArgument::typeId).toList()
+        );
     }
 }

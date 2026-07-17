@@ -433,6 +433,11 @@ main table thead {
     color: #999;
 }
 
+/* 型参照リンク（メソッド引数・戻り値・フィールド型など）: hoverせずともクリック可能と分かるよう常時色を付ける */
+.type-ref-link {
+    color: #2d5fa8;
+}
+
 .entrypoint-item {
     padding: 8px 0;
     border-bottom: 1px solid #eef0f5;

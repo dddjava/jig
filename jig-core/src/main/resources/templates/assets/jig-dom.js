@@ -159,7 +159,7 @@ globalThis.Jig.dom = (() => {
         const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
         if (resolved?.href) {
             return createElement('a', {
-                className: classes,
+                className: [classes, 'type-ref-link'].filter(Boolean).join(' '),
                 attributes: {href: resolved.href},
                 textContent: title
             });

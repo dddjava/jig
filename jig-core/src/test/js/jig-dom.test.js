@@ -874,7 +874,7 @@ test.describe('jig-dom.js', () => {
 
             assert.equal(el.tagName, 'A');
             assert.equal(el.getAttribute('href'), '/types/java.util.List');
-            assert.equal(el.className, 'type-link');
+            assert.equal(el.className, 'type-link type-ref-link');
             assert.equal(el.textContent, 'List');
 
             Jig.dom.type.clearResolver();

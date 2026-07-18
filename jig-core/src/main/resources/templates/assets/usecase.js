@@ -1043,7 +1043,7 @@ const UsecaseApp = (() => {
         if (packageUsecases.length === 0) return;
         const packageGraph = buildPackageGraph(packageUsecases, buildCurrentDiagramContext());
         if (packageGraph.edges.length === 0) return;
-        const diagramContainer = Jig.dom.createElement("div", {className: "diagram-container package-diagram"});
+        const diagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container package-diagram"});
         headingSection.appendChild(diagramContainer);
         Jig.mermaid.diagram.createAndRegister(diagramContainer, (mmdContainer) => {
             mmdContainer.innerHTML = "";

@@ -375,6 +375,88 @@ const UsecaseApp = (() => {
         return {nodes, edges};
     }
 
+    /**
+     * パッケージに含まれるクラスをユースケースと見立てたグラフを組み立てる。
+     * クラス間の呼び出しは全メソッド由来、ドメインモデルの入出力は公開インタフェース（ユースケースとstaticメソッド）由来とする。
+     * @param {Usecase[]} packageUsecases
+     * @param {DiagramContext} [diagramContext]
+     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     */
+    function buildPackageGraph(packageUsecases, diagramContext = {}) {
+        /** @type {DiagramNode[]} */
+        const nodes = [];
+        /** @type {DiagramEdge[]} */
+        const edges = [];
+        const edgeSet = new Set();
+        const domainNodeSet = new Set();
+        const outboundNodeSet = new Set();
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
+        const outboundOperationSet = diagramContext.outboundOperationSet || new Set();
+        const showDiagramOutboundPorts = diagramContext.showDiagramOutboundPorts ?? true;
+        const showDiagramDomainTypes = diagramContext.showDiagramDomainTypes ?? false;
+        const showDiagramInboundClasses = diagramContext.showDiagramInboundClasses ?? true;
+        const classFqns = new Set(packageUsecases.map(usecase => usecase.fqn));
+
+        const addEdgeOnce = (from, to) => {
+            const edgeKey = makeEdgeKey(from, to);
+            if (!edgeSet.has(edgeKey)) {
+                edgeSet.add(edgeKey);
+                edges.push({from, to});
+            }
+        };
+
+        packageUsecases.forEach(usecase => {
+            nodes.push({fqn: usecase.fqn, kind: "usecase"});
+
+            [...usecase.methods, ...usecase.staticMethods].forEach(method => {
+                (method.callMethods || []).forEach(calleeFqn => {
+                    const calleeClassFqn = getClassFqnFromMethodFqn(calleeFqn);
+                    if (calleeClassFqn === usecase.fqn) return;
+                    if (classFqns.has(calleeClassFqn)) {
+                        addEdgeOnce(usecase.fqn, calleeClassFqn);
+                    } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
+                        if (!outboundNodeSet.has(calleeClassFqn)) {
+                            outboundNodeSet.add(calleeClassFqn);
+                            nodes.push({fqn: calleeClassFqn, kind: "outbound-class"});
+                        }
+                        addEdgeOnce(usecase.fqn, calleeClassFqn);
+                    }
+                });
+            });
+
+            if (showDiagramDomainTypes) {
+                [...usecase.methods.filter(isUsecase), ...usecase.staticMethods].forEach(method => {
+                    collectDomainTypeNodesAndEdges(method, usecase.fqn, domainFqnSet, edgeSet, edges, domainFqn => {
+                        if (!domainNodeSet.has(domainFqn)) {
+                            domainNodeSet.add(domainFqn);
+                            nodes.push({fqn: domainFqn, kind: "domain-type"});
+                        }
+                    });
+                });
+            }
+        });
+
+        if (showDiagramInboundClasses) {
+            const inboundNodeSet = new Set();
+            Jig.data.inbound.getControllers().forEach(controller => {
+                (controller.relations || []).forEach(relation => {
+                    if (!relation?.from || !relation?.to) return;
+                    const targetClassFqn = getClassFqnFromMethodFqn(relation.to);
+                    if (!classFqns.has(targetClassFqn)) return;
+                    const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
+                    if (classFqns.has(callerClassFqn)) return;
+                    if (!inboundNodeSet.has(callerClassFqn)) {
+                        inboundNodeSet.add(callerClassFqn);
+                        nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
+                    }
+                    addEdgeOnce(callerClassFqn, targetClassFqn);
+                });
+            });
+        }
+
+        return {nodes, edges};
+    }
+
     const SequenceDiagram = {
         /**
          * @param {UsecaseMethod} rootMethod
@@ -799,6 +881,68 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * inbound-class/outbound-class/domain-typeのノードをリンク付きでbuilderへ追加する。
+     * @param {MermaidBuilder} builder
+     * @param {DiagramNode} node
+     * @param {function(string): string} typeLabel
+     * @returns {boolean} 該当するkindを追加した場合true
+     */
+    function addLinkedClassNode(builder, node, typeLabel) {
+        const nodeId = fqnToNodeId(node.fqn);
+        if (node.kind === "inbound-class") {
+            builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+            builder.addClass(nodeId, "inbound");
+            builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
+        } else if (node.kind === "outbound-class") {
+            builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+            builder.addClass(nodeId, "outbound");
+            builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(node.fqn), node.fqn);
+        } else if (node.kind === "domain-type") {
+            builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+            builder.addClass(nodeId, "domain");
+            builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * パッケージに含まれるクラスをユースケースと見立てたユースケース図のジェネレータ
+     * @param {Usecase[]} packageUsecases
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {function}
+     */
+    function createPackageDiagramGenerator(packageUsecases, buildCurrentDiagramContext) {
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
+            {key: 'showDiagramInboundClasses', label: '入力インタフェース'},
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
+        ]);
+
+        const generator = (dir, opts) => {
+            const {type: typeLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const packageGraph = buildPackageGraph(packageUsecases, contextMenu.getContext());
+            const builder = Jig.mermaid.createBuilder();
+            packageGraph.nodes.forEach(node => {
+                if (addLinkedClassNode(builder, node, typeLabel)) return;
+                const nodeId = fqnToNodeId(node.fqn);
+                builder.addNode(nodeId, typeLabel(node.fqn), 'method');
+                builder.addClass(nodeId, "usecase");
+                builder.addClick(nodeId, "#" + fqnToTypeId(node.fqn), node.fqn);
+            });
+            packageGraph.edges.forEach(edge => {
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+            });
+            return builder.build(dir);
+        };
+
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
+
+        return generator;
+    }
+
+    /**
      * @param {Usecase} usecase
      * @param {Set<string>|null} handlerFqns
      * @param {function(): DiagramContext} buildCurrentDiagramContext
@@ -817,19 +961,8 @@ const UsecaseApp = (() => {
             const builder = Jig.mermaid.createBuilder();
             classGraph.nodes.forEach(node => {
                 const nodeId = fqnToNodeId(node.fqn);
-                if (node.kind === "inbound-class") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "inbound");
-                    builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
-                } else if (node.kind === "outbound-class") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "outbound");
-                    builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(node.fqn), node.fqn);
-                } else if (node.kind === "domain-type") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "domain");
-                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
-                } else if (node.kind === "usecase") {
+                if (addLinkedClassNode(builder, node, typeLabel)) return;
+                if (node.kind === "usecase") {
                     builder.addNode(nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "usecase");
                     builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
@@ -891,9 +1024,30 @@ const UsecaseApp = (() => {
         // 用語（package-info）を持つパッケージはクラスを直接含まなくても見出しと説明を表示する
         const sections = Jig.util.flattenPackageTree(visibleUsecases, ({usecase}) => usecase.fqn, Jig.glossary.hasTerm);
         sections.forEach(({fqn: packageFqn, items: packageUsecases}) => {
-            container.appendChild(Jig.dom.createPackageHeading(fqnToPackageId(packageFqn), packageFqn));
+            const heading = Jig.dom.createPackageHeading(fqnToPackageId(packageFqn), packageFqn);
+            container.appendChild(heading);
+            appendPackageDiagram(heading, packageUsecases.map(({usecase}) => usecase), buildCurrentDiagramContext);
             packageUsecases.forEach(({usecase, visibleMethods}) =>
                 container.appendChild(renderUsecaseCard(usecase, visibleMethods, handlerFqns, buildCurrentDiagramContext)));
+        });
+    }
+
+    /**
+     * パッケージ見出しに、パッケージ内クラスをユースケースと見立てたユースケース図を追加する。
+     * クラス間の関連がない場合は追加しない。
+     * @param {HTMLElement} headingSection
+     * @param {Usecase[]} packageUsecases
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     */
+    function appendPackageDiagram(headingSection, packageUsecases, buildCurrentDiagramContext) {
+        if (packageUsecases.length === 0) return;
+        const packageGraph = buildPackageGraph(packageUsecases, buildCurrentDiagramContext());
+        if (packageGraph.edges.length === 0) return;
+        const diagramContainer = Jig.dom.createElement("div", {className: "diagram-container package-diagram"});
+        headingSection.appendChild(diagramContainer);
+        Jig.mermaid.diagram.createAndRegister(diagramContainer, (mmdContainer) => {
+            mmdContainer.innerHTML = "";
+            Jig.mermaid.render.renderWithControls(mmdContainer, createPackageDiagramGenerator(packageUsecases, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
         });
     }
 
@@ -982,9 +1136,11 @@ const UsecaseApp = (() => {
         buildReverseCallerMap,
         buildUsecaseDiagram,
         buildClassGraph,
+        buildPackageGraph,
         createUsecaseDiagramGenerator,
         createSequenceDiagramGenerator,
         createClassDiagramGenerator,
+        createPackageDiagramGenerator,
         SequenceDiagram,
         render,
         renderSidebar,

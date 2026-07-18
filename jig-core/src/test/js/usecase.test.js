@@ -665,6 +665,170 @@ test.describe('usecase.js', () => {
             assert.ok(code.includes('"web.OrderCtrl"'), 'inbound-classノードにFQNのツールチップが含まれること');
         });
 
+        test.describe('パッケージ単位のユースケース図', () => {
+            const packageDiagramData = {
+                usecases: [
+                    {
+                        fqn: "com.example.ServiceA",
+                        fields: [],
+                        staticMethods: [],
+                        methods: [{
+                            fqn: "com.example.ServiceA#method1()",
+                            visibility: "PUBLIC",
+                            parameters: [],
+                            returnTypeRef: {fqn: "void"},
+                            declaration: "method1():void",
+                            isDeprecated: false,
+                            callMethods: ["com.example.ServiceB#action()", "com.example.Repo#save()"]
+                        }]
+                    },
+                    {
+                        fqn: "com.example.ServiceB",
+                        fields: [],
+                        staticMethods: [],
+                        methods: [{
+                            fqn: "com.example.ServiceB#action()",
+                            visibility: "PUBLIC",
+                            parameters: [],
+                            returnTypeRef: {fqn: "void"},
+                            declaration: "action():void",
+                            isDeprecated: false,
+                            callMethods: []
+                        }]
+                    }
+                ]
+            };
+
+            function setupPackageDiagramGlossary() {
+                setGlossaryData({
+                    "com.example.ServiceA": {title: "ServiceA"},
+                    "com.example.ServiceA#method1()": {title: "method1"},
+                    "com.example.ServiceB": {title: "ServiceB"},
+                    "com.example.ServiceB#action()": {title: "action"},
+                    "web.OrderCtrl": {title: "OrderCtrl"},
+                    "com.example.Repo": {title: "Repo"}
+                });
+            }
+
+            function getPackageDiagramCode() {
+                const heading = document.getElementById(globalThis.Jig.util.fqnToId('package', 'com.example'));
+                const diagram = heading?.querySelector('.package-diagram');
+                return diagram?.querySelector('.mermaid')?.textContent ?? null;
+            }
+
+            test('パッケージ内のクラス間呼び出しがユースケースノードとエッジで表示される', () => {
+                setupPackageDiagramGlossary();
+                globalThis.usecaseData = packageDiagramData;
+                UsecaseApp.init();
+
+                const code = getPackageDiagramCode();
+                assert.ok(code, 'パッケージ見出しにパッケージ図が生成されること');
+
+                const serviceANodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA');
+                const serviceBNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceB');
+                assert.ok(code.includes(`${serviceANodeId}(["ServiceA"])`), 'クラスがユースケースの形状で表示されること');
+                assert.ok(code.includes(`${serviceANodeId} --> ${serviceBNodeId}`), 'クラス間のエッジが含まれること');
+                assert.ok(code.includes(`class ${serviceANodeId} usecase`), 'クラスノードにusecaseスタイルが付与されること');
+                assert.ok(code.includes('#' + globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA')), 'クラスカードへのリンクが含まれること');
+                const repoNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Repo');
+                assert.ok(!code.includes(repoNodeId), 'outboundOperationSetにないパッケージ外クラスは表示されないこと');
+            });
+
+            test('クラス間の関連がないパッケージには図が生成されない', () => {
+                setGlossaryData({
+                    "com.example.ServiceA": {title: "ServiceA"},
+                    "com.example.ServiceA#method1()": {title: "method1"},
+                    "com.example.ServiceA#otherMethod()": {title: "otherMethod"}
+                });
+                globalThis.usecaseData = mockUsecaseAppData;
+                UsecaseApp.init();
+
+                const heading = document.getElementById(globalThis.Jig.util.fqnToId('package', 'com.example'));
+                assert.ok(heading, 'パッケージ見出しは生成されること');
+                assert.ok(!heading.querySelector('.package-diagram'), 'クラス内呼び出しのみではパッケージ図が生成されないこと');
+            });
+
+            test('inboundクラスのノードとエッジが追加される', () => {
+                globalThis.inboundData = {
+                    inboundAdapters: [{
+                        relations: [
+                            {from: 'web.OrderCtrl#create()', to: 'com.example.ServiceB#action()'}
+                        ]
+                    }]
+                };
+                setupPackageDiagramGlossary();
+                globalThis.usecaseData = packageDiagramData;
+                UsecaseApp.init();
+
+                const code = getPackageDiagramCode();
+                assert.ok(code, 'パッケージ図が生成されること');
+
+                const ctrlNodeId = globalThis.Jig.util.fqnToId("node", 'web.OrderCtrl');
+                const serviceBNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceB');
+                assert.ok(code.includes(`${ctrlNodeId} --> ${serviceBNodeId}`), 'inboundクラス→クラスのエッジが含まれること');
+                assert.ok(code.includes('./inbound.html#' + globalThis.Jig.util.fqnToId("adapter", 'web.OrderCtrl')), 'inbound.htmlへのリンクが含まれること');
+            });
+
+            test('outboundクラスのノードとエッジが追加される', () => {
+                globalThis.outboundData = {
+                    outboundPorts: [{
+                        fqn: 'com.example.Repo',
+                        operations: [{fqn: 'com.example.Repo#save()'}]
+                    }]
+                };
+                setupPackageDiagramGlossary();
+                globalThis.usecaseData = packageDiagramData;
+                UsecaseApp.init();
+
+                const code = getPackageDiagramCode();
+                assert.ok(code, 'パッケージ図が生成されること');
+
+                const serviceANodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA');
+                const repoNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Repo');
+                assert.ok(code.includes(`${serviceANodeId} --> ${repoNodeId}`), 'クラス→outboundクラスのエッジが含まれること');
+                assert.ok(code.includes('./outbound.html#' + globalThis.Jig.util.fqnToId("port", 'com.example.Repo')), 'outbound.htmlへのリンクが含まれること');
+            });
+
+            test('show-diagram-domain-typesがONの場合、公開メソッドの入出力ドメインモデルが表示される', () => {
+                document.getElementById('show-diagram-domain-types').checked = true;
+                globalThis.domainData = {
+                    types: [{fqn: 'com.example.domain.Order', isDeprecated: false}]
+                };
+                const dataWithDomain = {
+                    usecases: [
+                        packageDiagramData.usecases[0],
+                        {
+                            fqn: "com.example.ServiceB",
+                            fields: [],
+                            staticMethods: [],
+                            methods: [{
+                                fqn: "com.example.ServiceB#action()",
+                                visibility: "PUBLIC",
+                                parameters: [],
+                                returnTypeRef: {fqn: "com.example.domain.Order"},
+                                declaration: "action():Order",
+                                isDeprecated: false,
+                                callMethods: []
+                            }]
+                        }
+                    ]
+                };
+                setupPackageDiagramGlossary();
+                globalThis.usecaseData = dataWithDomain;
+                UsecaseApp.init();
+
+                const code = getPackageDiagramCode();
+                assert.ok(code, 'パッケージ図が生成されること');
+
+                const serviceBNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceB');
+                const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.domain.Order');
+                assert.ok(code.includes(`${serviceBNodeId} -.-> ${orderNodeId}`), 'クラス→戻り値ドメインの破線エッジが含まれること');
+                assert.ok(code.includes('./domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.domain.Order')), 'domain.htmlへのリンクが含まれること');
+
+                delete globalThis.domainData;
+            });
+        });
+
         test('renderUsecaseAppList should handle empty data', () => {
             globalThis.usecaseData = {usecases: []};
             UsecaseApp.init();

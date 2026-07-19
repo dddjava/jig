@@ -596,11 +596,11 @@ const DomainApp = (() => {
      * @param {Map<string, PackageType[]>} childPackagesMap
      * @returns {HTMLElement | null}
      */
-    function createChildrenTable(pkg, childPackagesMap) {
+    function createChildrenCard(pkg, childPackagesMap) {
         const types = pkg.types;
         const childPackages = getDirectChildPackages(pkg, childPackagesMap);
 
-        // 子パッケージ（▶︎ プレフィックス） + 子タイプ を合わせて表示
+        // 子パッケージ + 子タイプ を合わせて表示
         const allChildren = [
             ...childPackages.map(childPkg => ({
                 isPackage: true,
@@ -616,7 +616,8 @@ const DomainApp = (() => {
 
         if (allChildren.length === 0) return null;
 
-        const tbody = Jig.dom.createElement("tbody", {
+        const list = Jig.dom.createElement("ul", {
+            className: "package-children-list",
             children: allChildren.map(child => {
                 const kind = child.isPackage ? "パッケージ" : "クラス";
                 const link = child.isPackage
@@ -625,21 +626,15 @@ const DomainApp = (() => {
                         textContent: child.title
                     })
                     : Jig.dom.type.refElement({fqn: child.fqn});
-                const cell = Jig.dom.createElement("td", {
+                return Jig.dom.createElement("li", {
                     children: [Jig.dom.kind.badgeElement(kind), link]
                 });
-                return Jig.dom.createElement("tr", {children: [cell]});
             })
         });
 
-        return Jig.dom.createElement("table", {
-            children: [
-                Jig.dom.createElement("thead", {
-                    children: [Jig.dom.createElement("tr", {children: [Jig.dom.i18nText("th", "名前")]})]
-                }),
-                tbody
-            ]
-        });
+        const card = Jig.dom.card.item({title: "構成要素"});
+        card.appendChild(list);
+        return card;
     }
 
 
@@ -912,9 +907,9 @@ const DomainApp = (() => {
                 }));
             }
 
-            const childrenTable = createChildrenTable(pkg, childPackagesMap);
-            if (childrenTable) {
-                section.appendChild(childrenTable);
+            const childrenCard = createChildrenCard(pkg, childPackagesMap);
+            if (childrenCard) {
+                section.appendChild(childrenCard);
             }
 
             appendConfiguredTabs(section, [

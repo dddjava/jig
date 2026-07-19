@@ -124,6 +124,7 @@ globalThis.Jig.i18n = (() => {
             "スケジュール": "Schedule",
             "出力ポート / 操作": "Outbound port / operation",
             "列挙値": "Enum values",
+            "構成要素": "Contents",
             // glossary attribute meta
             "属性情報": "Attributes",
             "単純名": "Simple name",

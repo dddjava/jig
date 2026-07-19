@@ -429,20 +429,22 @@ const UsecaseApp = (() => {
      * 呼び出し先を辿り、集計対象外の非公開メソッドは読み飛ばして（インライン化して）
      * 集計対象メソッドへの呼び出しを収集する。集計対象でも非公開でもない呼び出し先は
      * onOtherCallee に渡す（出力インタフェース判定などは呼び出し側で行う）。
+     * 非公開メソッドは呼び出し全体で共有するvisitedで一度だけ展開する（循環防止と、
+     * 分岐合流するDAGでの指数的な再走査の防止）。展開済みメソッドの呼び出し先は
+     * 初回展開時にコールバック済みのため、スキップしても収集結果は変わらない。
      * @param {string[]} callMethods
      * @param {{targetMethodFqns: Set<string>, internalMethodMap: Map<string, UsecaseMethod>, onTargetCallee: function(string): void, onOtherCallee: function(string): void}} config
-     * @param {Set<string>} [inliningPath] インライン化で辿った非公開メソッド（循環防止）
+     * @param {Set<string>} [visited] 展開済みの非公開メソッド
      */
-    function collectInlinedCallees(callMethods, config, inliningPath = new Set()) {
+    function collectInlinedCallees(callMethods, config, visited = new Set()) {
         const {targetMethodFqns, internalMethodMap, onTargetCallee, onOtherCallee} = config;
         (callMethods || []).forEach(calleeFqn => {
             if (targetMethodFqns.has(calleeFqn)) {
                 onTargetCallee(calleeFqn);
             } else if (internalMethodMap.has(calleeFqn)) {
-                if (inliningPath.has(calleeFqn)) return;
-                const nextPath = new Set(inliningPath);
-                nextPath.add(calleeFqn);
-                collectInlinedCallees(internalMethodMap.get(calleeFqn).callMethods, config, nextPath);
+                if (visited.has(calleeFqn)) return;
+                visited.add(calleeFqn);
+                collectInlinedCallees(internalMethodMap.get(calleeFqn).callMethods, config, visited);
             } else {
                 onOtherCallee(calleeFqn);
             }

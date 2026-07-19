@@ -2580,6 +2580,34 @@ test.describe('usecase.js', () => {
 
             assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#create()' && e.to === 'pkg.ServiceA#other()'));
         });
+
+        test('非公開メソッドが多段に分岐合流するDAGでも指数的に再走査しない', () => {
+            // 各段のa/bが次段のa/bを両方呼ぶ30段のダイヤモンド連鎖。
+            // パス単位の循環防止だけだと2^30通りの経路を再走査して完了しない。
+            const depth = 30;
+            const methods = [];
+            for (let i = 0; i < depth; i++) {
+                const callees = i + 1 < depth
+                    ? [`pkg.ServiceA#a${i + 1}()`, `pkg.ServiceA#b${i + 1}()`]
+                    : ['pkg.ServiceA#other()'];
+                methods.push({fqn: `pkg.ServiceA#a${i}()`, visibility: 'PRIVATE', callMethods: callees});
+                methods.push({fqn: `pkg.ServiceA#b${i}()`, visibility: 'PRIVATE', callMethods: callees});
+            }
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#create()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#a0()', 'pkg.ServiceA#b0()']},
+                    ...methods,
+                    {fqn: 'pkg.ServiceA#other()', visibility: 'PUBLIC', callMethods: []}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {outboundOperationSet: new Set()});
+
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#create()' && e.to === 'pkg.ServiceA#other()'));
+        });
     });
 
     test.describe('createClassDiagramGenerator', () => {

@@ -423,6 +423,30 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * 呼び出し先を辿り、集計対象外の非公開メソッドは読み飛ばして（インライン化して）
+     * 集計対象メソッド／出力インタフェースへの呼び出しを収集する。
+     * クラス単位・パッケージメソッド単位のグラフ構築で使う。
+     * @param {string[]} callMethods
+     * @param {{targetMethodFqns: Set<string>, internalMethodMap: Map<string, UsecaseMethod>, outboundOperationSet: Set<string>, showDiagramOutboundPorts: boolean, onTargetCallee: function(string): void, onOutboundCallee: function(string): void}} config
+     * @param {Set<string>} [inliningPath] インライン化で辿った非公開メソッド（循環防止）
+     */
+    function collectInlinedCallees(callMethods, config, inliningPath = new Set()) {
+        const {targetMethodFqns, internalMethodMap, outboundOperationSet, showDiagramOutboundPorts, onTargetCallee, onOutboundCallee} = config;
+        (callMethods || []).forEach(calleeFqn => {
+            if (targetMethodFqns.has(calleeFqn)) {
+                onTargetCallee(calleeFqn);
+            } else if (internalMethodMap.has(calleeFqn)) {
+                if (inliningPath.has(calleeFqn)) return;
+                const nextPath = new Set(inliningPath);
+                nextPath.add(calleeFqn);
+                collectInlinedCallees(internalMethodMap.get(calleeFqn).callMethods, config, nextPath);
+            } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
+                onOutboundCallee(calleeFqn);
+            }
+        });
+    }
+
+    /**
      * @param {Usecase} usecase
      * @param {Set<string>|null} handlerFqns ハンドラのみ表示時のFQN集合、nullはすべて表示
      * @param {DiagramContext} [diagramContext]
@@ -439,6 +463,7 @@ const UsecaseApp = (() => {
         const classMethods = [...usecase.methods.filter(m => isUsecase(m) && (!handlerFqns || handlerFqns.has(m.fqn))), ...usecase.staticMethods];
         const methodFqns = new Set(classMethods.map(m => m.fqn));
         const staticMethodFqns = new Set(usecase.staticMethods.map(m => m.fqn));
+        const internalMethodMap = new Map(usecase.methods.filter(m => !isUsecase(m)).map(m => [m.fqn, m]));
         const domainFqnSet = Jig.data.domain.getDomainFqnSet();
         const {outboundOperationSet, inboundCallerIndex, showDiagramOutboundPorts, showDiagramDomainTypes, showDiagramInboundClasses}
             = resolveClassLevelDiagramContext(diagramContext);
@@ -447,10 +472,13 @@ const UsecaseApp = (() => {
             const kind = isUsecase(method) ? "usecase" : (staticMethodFqns.has(method.fqn) ? "static-method" : "method");
             nodes.push({fqn: method.fqn, kind});
 
-            (method.callMethods || []).forEach(calleeFqn => {
-                if (methodFqns.has(calleeFqn)) {
-                    addEdgeOnce(edgeSet, edges, method.fqn, calleeFqn);
-                } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
+            collectInlinedCallees(method.callMethods, {
+                targetMethodFqns: methodFqns,
+                internalMethodMap,
+                outboundOperationSet,
+                showDiagramOutboundPorts,
+                onTargetCallee: calleeFqn => addEdgeOnce(edgeSet, edges, method.fqn, calleeFqn),
+                onOutboundCallee: calleeFqn => {
                     const outboundClassFqn = getClassFqnFromMethodFqn(calleeFqn);
                     addNodeOnce(outboundNodeSet, nodes, outboundClassFqn, "outbound-class");
                     addEdgeOnce(edgeSet, edges, method.fqn, outboundClassFqn);
@@ -559,8 +587,10 @@ const UsecaseApp = (() => {
             = resolveClassLevelDiagramContext(diagramContext);
         const classFqns = new Set(packageUsecases.map(usecase => usecase.fqn));
         const methodFqns = new Set();
+        const internalMethodMap = new Map();
         packageUsecases.forEach(usecase => {
-            usecase.methods.filter(isUsecase).forEach(method => methodFqns.add(method.fqn));
+            usecase.methods.forEach(method =>
+                isUsecase(method) ? methodFqns.add(method.fqn) : internalMethodMap.set(method.fqn, method));
             usecase.staticMethods.forEach(method => methodFqns.add(method.fqn));
         });
 
@@ -570,10 +600,13 @@ const UsecaseApp = (() => {
             publicMethods.forEach(method => {
                 nodes.push({fqn: method.fqn, kind: "usecase", classFqn: usecase.fqn});
 
-                (method.callMethods || []).forEach(calleeFqn => {
-                    if (methodFqns.has(calleeFqn)) {
-                        addEdgeOnce(edgeSet, edges, method.fqn, calleeFqn);
-                    } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
+                collectInlinedCallees(method.callMethods, {
+                    targetMethodFqns: methodFqns,
+                    internalMethodMap,
+                    outboundOperationSet,
+                    showDiagramOutboundPorts,
+                    onTargetCallee: calleeFqn => addEdgeOnce(edgeSet, edges, method.fqn, calleeFqn),
+                    onOutboundCallee: calleeFqn => {
                         const outboundClassFqn = getClassFqnFromMethodFqn(calleeFqn);
                         addNodeOnce(outboundNodeSet, nodes, outboundClassFqn, "outbound-class");
                         addEdgeOnce(edgeSet, edges, method.fqn, outboundClassFqn);

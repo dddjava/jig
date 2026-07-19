@@ -2475,6 +2475,62 @@ test.describe('usecase.js', () => {
 
             delete globalThis.domainData;
         });
+
+        test('非公開メソッド経由の公開メソッド呼び出しはインライン化されてエッジになる', () => {
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#create()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#validate()']},
+                    {fqn: 'pkg.ServiceA#validate()', visibility: 'PRIVATE', callMethods: ['pkg.ServiceA#other()']},
+                    {fqn: 'pkg.ServiceA#other()', visibility: 'PUBLIC', callMethods: []}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {outboundOperationSet: new Set()});
+
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#create()' && e.to === 'pkg.ServiceA#other()'));
+            assert.ok(!result.nodes.find(n => n.fqn === 'pkg.ServiceA#validate()'), '非公開メソッドはノードにならない');
+        });
+
+        test('非公開メソッド経由の出力インタフェース呼び出しはインライン化されてoutbound-classへのエッジになる', () => {
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#create()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#store()']},
+                    {fqn: 'pkg.ServiceA#store()', visibility: 'PRIVATE', callMethods: ['ext.Repo#save()']}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {
+                outboundOperationSet: new Set(['ext.Repo#save()']),
+                showDiagramOutboundPorts: true
+            });
+
+            assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo' && n.kind === 'outbound-class'));
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#create()' && e.to === 'ext.Repo'));
+        });
+
+        test('非公開メソッドが循環していても無限ループしない', () => {
+            const usecase = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#create()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#a()']},
+                    {fqn: 'pkg.ServiceA#a()', visibility: 'PRIVATE', callMethods: ['pkg.ServiceA#b()']},
+                    {fqn: 'pkg.ServiceA#b()', visibility: 'PRIVATE', callMethods: ['pkg.ServiceA#a()', 'pkg.ServiceA#other()']},
+                    {fqn: 'pkg.ServiceA#other()', visibility: 'PUBLIC', callMethods: []}
+                ]
+            };
+
+            const result = UsecaseApp.buildClassGraph(usecase, null, {outboundOperationSet: new Set()});
+
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#create()' && e.to === 'pkg.ServiceA#other()'));
+        });
     });
 
     test.describe('createClassDiagramGenerator', () => {
@@ -2613,6 +2669,29 @@ test.describe('usecase.js', () => {
             assert.ok(result.edges.find(e => e.from === 'web.Ctrl' && e.to === 'pkg.ServiceA#method1()'));
 
             delete globalThis.inboundData;
+        });
+
+        test('非公開メソッド経由の別クラス公開メソッド呼び出しはインライン化されてエッジになる', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#helper()']},
+                    {fqn: 'pkg.ServiceA#helper()', visibility: 'PRIVATE', callMethods: ['pkg.ServiceB#method2()']}
+                ]
+            };
+            const usecaseB = {
+                fqn: 'pkg.ServiceB',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceB#method2()', visibility: 'PUBLIC', callMethods: []}]
+            };
+
+            const result = UsecaseApp.buildPackageMethodGraph([usecaseA, usecaseB], {outboundOperationSet: new Set()});
+
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#method1()' && e.to === 'pkg.ServiceB#method2()'));
+            assert.ok(!result.nodes.find(n => n.fqn === 'pkg.ServiceA#helper()'), '非公開メソッドはノードにならない');
         });
     });
 

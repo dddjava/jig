@@ -622,6 +622,7 @@ const DomainApp = (() => {
                 const kind = child.isPackage ? "パッケージ" : "クラス";
                 const link = child.isPackage
                     ? Jig.dom.createElement("a", {
+                        className: "package-ref-link",
                         attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                         textContent: child.title
                     })

@@ -228,7 +228,6 @@ test.describe('usecase.js', () => {
             assert.equal(pkgDescription.innerHTML, 'サンプルパッケージの説明');
         });
 
-        // issue #1141: クラスを直接含まないパッケージのpackage-infoが表示されない
         test('用語を持つがクラスを直接含まない中間パッケージにも見出しと説明が表示される', () => {
             const nestedUsecaseData = {
                 usecases: [{

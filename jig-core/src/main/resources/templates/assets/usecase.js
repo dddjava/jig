@@ -273,7 +273,7 @@ const UsecaseApp = (() => {
     /**
      * 呼び出し先を辿り、対象外の内部メソッドは読み飛ばして（インライン化して）
      * 対象への呼び出しを収集する共通骨格。対象判定・インライン化対象は呼び出し側が与える。
-     * 内部メソッドは走査全体で一度だけ展開する（循環と、分岐合流するDAGでの指数的な再走査を防ぐ。#1152）。
+     * 内部メソッドは走査全体で一度だけ展開する（循環と、分岐合流するDAGでの指数的な再走査を防ぐ）。
      * @param {string[]} callMethods
      * @param {{isTarget: function(string): boolean, inlinableMethodOf: function(string): (UsecaseMethod|undefined), onTargetCallee: function(string): void, onOtherCallee: function(string): void}} config
      */

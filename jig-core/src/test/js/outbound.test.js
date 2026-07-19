@@ -817,7 +817,6 @@ test.describe("outbound.js", () => {
             }
         });
 
-        // issue #1141 と同根: ポートを直接含まないパッケージのpackage-infoが表示されない
         test("用語を持つがポートを直接含まない中間パッケージにも見出しと説明が表示される", () => {
             const doc = setupDom();
             globalThis.glossaryData = {terms: {"com.example": {title: "サンプル", description: "中間パッケージの説明", kind: "パッケージ"}}};

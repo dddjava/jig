@@ -235,7 +235,6 @@ test.describe('inbound.js', () => {
         assert.equal(packageHeading.querySelector('.description .markdown').innerHTML, 'サンプルパッケージの説明');
     });
 
-    // issue #1141 と同根: クラスを直接含まないパッケージのpackage-infoが表示されない
     test('用語を持つがクラスを直接含まない中間パッケージにも見出しと説明が表示され、サイドバーからリンクされる', () => {
         globalThis.inboundData = {
             inboundAdapters: [{

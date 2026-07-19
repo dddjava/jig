@@ -86,6 +86,7 @@ await page.waitForTimeout(500); // 再描画待ち
 
 ## 既知の癖
 
+- locator の `hasText` は部分一致。タブ名などで「クラス関連図」を指定すると「パッケージ内クラス関連図」にも一致する。完全一致には正規表現（`{ hasText: /^クラス関連図$/ }`）を使うこと。
 - `fullPage: true` のスクリーンショットは `position: sticky` 要素（サイドバー等）をスクロール合成時に重複描画することがある。sticky要素の検証はビューポート単位のスクロールで行うこと（`~/.claude/CLAUDE.md` にも同様の注記あり）。
 - 図の存在確認には `.diagram-container` の派生クラス（`.class-diagram` `.package-diagram` 等、`usecase.js` の `Jig.dom.createElement("div", {className: "jig-card-section diagram-container ..."})` 呼び出しを参照）を使うと的確に絞り込める。
 - 自己解析結果（`build/jig`）のクラス数は少ないため、「特定の条件（1クラスのみのパッケージ等）を満たすデータ」がサンプルに存在しないことがある。無理に実データで揃えようとせず、次項のjsdom比較かPlaywright側でモックデータ（`globalThis.usecaseData = {...}` を差し込んでから `UsecaseApp.init()`）を使うほうが早い。

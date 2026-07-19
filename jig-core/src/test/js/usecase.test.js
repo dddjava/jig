@@ -1239,6 +1239,55 @@ test.describe('usecase.js', () => {
             delete globalThis.domainData;
         });
 
+        test('既定OFFのトグルでしか関連が生まれない図もコンテナが生成され、トグルをONにすると出現する', () => {
+            globalThis.domainData = {
+                types: [{fqn: 'com.example.Order', isDeprecated: false}]
+            };
+            // 呼び出し関係はなく、ドメインモデル（既定OFF）のエッジしか生まれないメソッド
+            const usecaseDataWithDomainOnly = {
+                usecases: [{
+                    fqn: "com.example.ServiceA",
+                    fields: [],
+                    staticMethods: [],
+                    methods: [{
+                        fqn: "com.example.ServiceA#findOrder()",
+                        visibility: "PUBLIC",
+                        parameters: [],
+                        returnTypeRef: {fqn: "com.example.Order"},
+                        declaration: "findOrder():Order",
+                        isDeprecated: false,
+                        callMethods: []
+                    }]
+                }]
+            };
+            setGlossaryData({
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#findOrder()": {title: "findOrder"},
+                "com.example.Order": {title: "Order"}
+            });
+            globalThis.usecaseData = usecaseDataWithDomainOnly;
+            UsecaseApp.init();
+
+            const methodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#findOrder()');
+            const methodSection = document.getElementById(methodId);
+            const diagramContainer = methodSection.querySelector('.diagram-container');
+            assert.ok(diagramContainer, '現在のトグル状態では関連がなくても図のコンテナが生成されること');
+
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            assert.ok(!diagramContainer.querySelector('.mermaid').textContent.includes(orderNodeId),
+                'トグルOFFの初期描画ではドメインノードを含まないこと');
+
+            document.getElementById('show-diagram-domain-types').checked = true;
+            // 他テストで登録された古いコンテナを避け、このテストのコンテナだけ再描画する
+            const mainList = document.getElementById('usecase-list');
+            globalThis.Jig.mermaid.diagram.rerenderVisible(container => mainList.contains(container));
+
+            assert.ok(diagramContainer.querySelector('.mermaid').textContent.includes(orderNodeId),
+                'トグルをONにして再描画するとドメインノードが出現すること');
+
+            delete globalThis.domainData;
+        });
+
         test('domainDataがない場合でもドメインモデルノードが追加されず正常動作する', () => {
             delete globalThis.domainData;
             setGlossaryData({

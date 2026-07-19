@@ -2405,4 +2405,169 @@ test.describe('usecase.js', () => {
             delete globalThis.inboundData;
         });
     });
+
+    test.describe('buildPackageMethodGraph', () => {
+        test('公開メソッドがclassFqn付きのusecaseノードとして追加され、パッケージ内の別クラスへの呼び出しはメソッド単位のエッジになる', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceB#method2()']}]
+            };
+            const usecaseB = {
+                fqn: 'pkg.ServiceB',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceB#method2()', visibility: 'PUBLIC', callMethods: []}]
+            };
+
+            const result = UsecaseApp.buildPackageMethodGraph([usecaseA, usecaseB], {outboundOperationSet: new Set()});
+
+            const nodeA = result.nodes.find(n => n.fqn === 'pkg.ServiceA#method1()');
+            const nodeB = result.nodes.find(n => n.fqn === 'pkg.ServiceB#method2()');
+            assert.ok(nodeA && nodeA.kind === 'usecase' && nodeA.classFqn === 'pkg.ServiceA');
+            assert.ok(nodeB && nodeB.kind === 'usecase' && nodeB.classFqn === 'pkg.ServiceB');
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#method1()' && e.to === 'pkg.ServiceB#method2()'));
+        });
+
+        test('同一クラス内のメソッド呼び出しもエッジとして追加される（クラス単位版との違い）', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#method2()']},
+                    {fqn: 'pkg.ServiceA#method2()', visibility: 'PUBLIC', callMethods: []}
+                ]
+            };
+
+            const result = UsecaseApp.buildPackageMethodGraph([usecaseA], {outboundOperationSet: new Set()});
+
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#method1()' && e.to === 'pkg.ServiceA#method2()'));
+        });
+
+        test('showDiagramOutboundPorts=trueかつoutboundOperationSetに含まれる呼び出しはoutbound-classノードとして追加される', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['ext.Repo#save()']}]
+            };
+
+            const result = UsecaseApp.buildPackageMethodGraph([usecaseA], {
+                outboundOperationSet: new Set(['ext.Repo#save()']),
+                showDiagramOutboundPorts: true
+            });
+
+            assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo' && n.kind === 'outbound-class'));
+            assert.ok(result.edges.find(e => e.from === 'pkg.ServiceA#method1()' && e.to === 'ext.Repo'));
+        });
+
+        test('showDiagramInboundClasses=trueの場合、外部クラスからの呼び出しはinbound-classから対象メソッドへのエッジになる', () => {
+            globalThis.inboundData = {
+                inboundAdapters: [{relations: [{from: 'web.Ctrl#create()', to: 'pkg.ServiceA#method1()'}]}]
+            };
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: []}]
+            };
+
+            const result = UsecaseApp.buildPackageMethodGraph([usecaseA], {
+                outboundOperationSet: new Set(),
+                showDiagramInboundClasses: true
+            });
+
+            assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl' && n.kind === 'inbound-class'));
+            assert.ok(result.edges.find(e => e.from === 'web.Ctrl' && e.to === 'pkg.ServiceA#method1()'));
+
+            delete globalThis.inboundData;
+        });
+    });
+
+    test.describe('createPackageDiagramGenerator', () => {
+        function buildContext(overrides = {}) {
+            return {
+                outboundOperationSet: new Set(),
+                showDiagramInboundClasses: true,
+                showDiagramOutboundPorts: true,
+                showDiagramDomainTypes: false,
+                ...overrides
+            };
+        }
+
+        test('メニュー項目は入力インタフェース・出力インタフェース・ドメインモデル・メソッド単位の4つで、メソッド単位は既定OFF', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: []}]
+            };
+            const context = buildContext();
+
+            const generator = UsecaseApp.createPackageDiagramGenerator([usecaseA], () => context);
+            const items = generator.buildExtraMenuItems(() => {});
+
+            assert.deepEqual(items.map(i => i.label), ['入力インタフェース', '出力インタフェース', 'ドメインモデル', 'メソッド単位']);
+            assert.deepEqual(items.map(i => i.checked), [true, true, false, false]);
+        });
+
+        test('既定（メソッド単位OFF）ではクラス単位ノードで、クラス間のエッジのみ表示される', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceB#method2()']}]
+            };
+            const usecaseB = {
+                fqn: 'pkg.ServiceB',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceB#method2()', visibility: 'PUBLIC', callMethods: []}]
+            };
+            const context = buildContext();
+            const classANodeId = globalThis.Jig.util.fqnToId("node", 'pkg.ServiceA');
+            const methodANodeId = globalThis.Jig.util.fqnToId("node", 'pkg.ServiceA#method1()');
+
+            const generator = UsecaseApp.createPackageDiagramGenerator([usecaseA, usecaseB], () => context);
+            const source = generator('LR', {});
+
+            assert.ok(source.includes(classANodeId), 'クラス単位ノードを含む');
+            assert.ok(!source.includes(methodANodeId), 'メソッド単位ノードは含まない');
+            assert.ok(!source.includes('subgraph'), 'クラス単位表示ではsubgraphを使わない');
+        });
+
+        test('メソッド単位をONにするとクラスをsubgraphの枠にしてメソッドノードが配置される', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceB#method2()']}]
+            };
+            const usecaseB = {
+                fqn: 'pkg.ServiceB',
+                fields: [],
+                staticMethods: [],
+                methods: [{fqn: 'pkg.ServiceB#method2()', visibility: 'PUBLIC', callMethods: []}]
+            };
+            const context = buildContext();
+            const classASubgraphId = Jig.util.fqnToId("sg", 'pkg.ServiceA');
+            const methodANodeId = globalThis.Jig.util.fqnToId("node", 'pkg.ServiceA#method1()');
+            const methodBNodeId = globalThis.Jig.util.fqnToId("node", 'pkg.ServiceB#method2()');
+
+            const generator = UsecaseApp.createPackageDiagramGenerator([usecaseA, usecaseB], () => context);
+
+            let rerendered = false;
+            const items = generator.buildExtraMenuItems(() => { rerendered = true; });
+            items.find(i => i.label === 'メソッド単位').onSelect();
+
+            assert.equal(rerendered, true, '選択時に再描画コールバックが呼ばれる');
+            assert.equal(context.showDiagramMethodLevel, undefined, 'サイドバー（グローバル）側の値は変更されない');
+
+            const source = generator('LR', {});
+            assert.ok(source.includes(`subgraph ${classASubgraphId}`), 'クラスがsubgraphの枠になる');
+            assert.ok(source.includes(methodANodeId) && source.includes(methodBNodeId), 'メソッド単位ノードを含む');
+        });
+    });
 });

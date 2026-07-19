@@ -60,6 +60,12 @@ const UsecaseApp = (() => {
         {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
     ];
 
+    // パッケージ図固有のコンテキストメニュー項目。ノード粒度をクラス単位/メソッド単位で切り替える
+    const PACKAGE_DIAGRAM_MENU_TOGGLES = [
+        ...CLASS_LEVEL_DIAGRAM_MENU_TOGGLES,
+        {key: 'showDiagramMethodLevel', label: 'メソッド単位'}
+    ];
+
     /**
      * 図の有無の判定用に、表示対象トグルをすべてONにしたコンテキストを返す。
      * 現在のトグル状態で判定すると、OFFのトグルでしか関連が生まれない図はコンテナごと
@@ -490,6 +496,70 @@ const UsecaseApp = (() => {
         return {nodes, edges};
     }
 
+    /**
+     * パッケージに含まれるクラスの公開メソッド（ユースケースとstaticメソッド）をユースケースと見立てたグラフを組み立てる。
+     * クラスはノードをまとめるための subgraph 情報（classFqn）としてのみ扱う。
+     * @param {Usecase[]} packageUsecases
+     * @param {DiagramContext} [diagramContext]
+     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     */
+    function buildPackageMethodGraph(packageUsecases, diagramContext = {}) {
+        /** @type {DiagramNode[]} */
+        const nodes = [];
+        /** @type {DiagramEdge[]} */
+        const edges = [];
+        const edgeSet = new Set();
+        const domainNodeSet = new Set();
+        const outboundNodeSet = new Set();
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
+        const {outboundOperationSet, inboundCallerIndex, showDiagramOutboundPorts, showDiagramDomainTypes, showDiagramInboundClasses}
+            = resolveClassLevelDiagramContext(diagramContext);
+        const classFqns = new Set(packageUsecases.map(usecase => usecase.fqn));
+        const methodFqns = new Set();
+        packageUsecases.forEach(usecase => {
+            usecase.methods.filter(isUsecase).forEach(method => methodFqns.add(method.fqn));
+            usecase.staticMethods.forEach(method => methodFqns.add(method.fqn));
+        });
+
+        packageUsecases.forEach(usecase => {
+            const publicMethods = [...usecase.methods.filter(isUsecase), ...usecase.staticMethods];
+
+            publicMethods.forEach(method => {
+                nodes.push({fqn: method.fqn, kind: "usecase", classFqn: usecase.fqn});
+
+                (method.callMethods || []).forEach(calleeFqn => {
+                    if (methodFqns.has(calleeFqn)) {
+                        addEdgeOnce(edgeSet, edges, method.fqn, calleeFqn);
+                    } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
+                        const outboundClassFqn = getClassFqnFromMethodFqn(calleeFqn);
+                        addNodeOnce(outboundNodeSet, nodes, outboundClassFqn, "outbound-class");
+                        addEdgeOnce(edgeSet, edges, method.fqn, outboundClassFqn);
+                    }
+                });
+
+                if (showDiagramDomainTypes) {
+                    collectDomainTypeNodesAndEdges(method, method.fqn, domainFqnSet, edgeSet, edges,
+                        domainFqn => addNodeOnce(domainNodeSet, nodes, domainFqn, "domain-type"));
+                }
+            });
+        });
+
+        if (showDiagramInboundClasses) {
+            const inboundNodeSet = new Set();
+            classFqns.forEach(classFqn => {
+                (inboundCallerIndex.get(classFqn) || [])
+                    .filter(({calleeMethodFqn}) => methodFqns.has(calleeMethodFqn))
+                    .forEach(({callerClassFqn, calleeMethodFqn}) => {
+                        if (classFqns.has(callerClassFqn)) return;
+                        addNodeOnce(inboundNodeSet, nodes, callerClassFqn, "inbound-class");
+                        addEdgeOnce(edgeSet, edges, callerClassFqn, calleeMethodFqn);
+                    });
+            });
+        }
+
+        return {nodes, edges};
+    }
+
     const SequenceDiagram = {
         /**
          * @param {UsecaseMethod} rootMethod
@@ -698,7 +768,7 @@ const UsecaseApp = (() => {
      */
     function createDiagramContextOverrideMenu(buildCurrentDiagramContext, toggles) {
         const settingsOverride = Jig.mermaid.render.createDiagramSettingsOverride(
-            toggles.map(({key, label}) => ({key, label, getGlobalValue: () => buildCurrentDiagramContext()[key]}))
+            toggles.map(({key, label}) => ({key, label, getGlobalValue: () => !!buildCurrentDiagramContext()[key]}))
         );
         return {
             getContext: () => ({...buildCurrentDiagramContext(), ...settingsOverride.getValues()}),
@@ -949,18 +1019,30 @@ const UsecaseApp = (() => {
      * @returns {function}
      */
     function createPackageDiagramGenerator(packageUsecases, buildCurrentDiagramContext) {
-        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, CLASS_LEVEL_DIAGRAM_MENU_TOGGLES);
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, PACKAGE_DIAGRAM_MENU_TOGGLES);
 
         const generator = (dir, opts) => {
-            const {type: typeLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const packageGraph = buildPackageGraph(packageUsecases, contextMenu.getContext());
+            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const context = contextMenu.getContext();
+            const methodLevel = !!context.showDiagramMethodLevel;
+            const packageGraph = methodLevel
+                ? buildPackageMethodGraph(packageUsecases, context)
+                : buildPackageGraph(packageUsecases, context);
             const builder = Jig.mermaid.createBuilder();
+            const classSubgraphs = new Map();
             packageGraph.nodes.forEach(node => {
                 if (addLinkedClassNode(builder, node, typeLabel)) return;
                 const nodeId = fqnToNodeId(node.fqn);
-                builder.addNode(nodeId, typeLabel(node.fqn), 'method');
-                builder.addClass(nodeId, "usecase");
-                builder.addClick(nodeId, "#" + fqnToTypeId(node.fqn), node.fqn);
+                if (methodLevel) {
+                    const subgraph = builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", node.classFqn), typeLabel(node.classFqn), 'LR');
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
+                } else {
+                    builder.addNode(nodeId, typeLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    builder.addClick(nodeId, "#" + fqnToTypeId(node.fqn), node.fqn);
+                }
             });
             packageGraph.edges.forEach(edge => {
                 builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
@@ -1155,6 +1237,7 @@ const UsecaseApp = (() => {
         buildUsecaseDiagram,
         buildClassGraph,
         buildPackageGraph,
+        buildPackageMethodGraph,
         createUsecaseDiagramGenerator,
         createSequenceDiagramGenerator,
         createClassDiagramGenerator,

@@ -1022,24 +1022,26 @@ const UsecaseApp = (() => {
         const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, PACKAGE_DIAGRAM_MENU_TOGGLES);
 
         const generator = (dir, opts) => {
-            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const {type: typeLabel, method: mLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
             const context = contextMenu.getContext();
             const methodLevel = !!context.showDiagramMethodLevel;
             const packageGraph = methodLevel
                 ? buildPackageMethodGraph(packageUsecases, context)
                 : buildPackageGraph(packageUsecases, context);
             const builder = Jig.mermaid.createBuilder();
-            const classSubgraphs = new Map();
+            const subgraphs = new Map();
             packageGraph.nodes.forEach(node => {
                 if (addLinkedClassNode(builder, node, typeLabel)) return;
                 const nodeId = fqnToNodeId(node.fqn);
                 if (methodLevel) {
-                    const subgraph = builder.ensureSubgraph(classSubgraphs, Jig.util.fqnToId("sg", node.classFqn), typeLabel(node.classFqn), 'LR');
+                    const subgraph = builder.ensureSubgraph(subgraphs, Jig.util.fqnToId("sg", node.classFqn), typeLabel(node.classFqn), 'LR');
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "usecase");
                     builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
                 } else {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'method');
+                    const packageFqn = Jig.util.getPackageFqnFromTypeFqn(node.fqn);
+                    const subgraph = builder.ensureSubgraph(subgraphs, Jig.util.fqnToId("sg", packageFqn), pkgLabel(packageFqn), 'LR');
+                    builder.addNodeToSubgraph(subgraph, nodeId, typeLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "usecase");
                     builder.addClick(nodeId, "#" + fqnToTypeId(node.fqn), node.fqn);
                 }

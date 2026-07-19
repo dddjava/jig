@@ -2530,13 +2530,14 @@ test.describe('usecase.js', () => {
             const context = buildContext();
             const classANodeId = globalThis.Jig.util.fqnToId("node", 'pkg.ServiceA');
             const methodANodeId = globalThis.Jig.util.fqnToId("node", 'pkg.ServiceA#method1()');
+            const packageSubgraphId = Jig.util.fqnToId("sg", 'pkg');
 
             const generator = UsecaseApp.createPackageDiagramGenerator([usecaseA, usecaseB], () => context);
             const source = generator('LR', {});
 
             assert.ok(source.includes(classANodeId), 'クラス単位ノードを含む');
             assert.ok(!source.includes(methodANodeId), 'メソッド単位ノードは含まない');
-            assert.ok(!source.includes('subgraph'), 'クラス単位表示ではsubgraphを使わない');
+            assert.ok(source.includes(`subgraph ${packageSubgraphId}`), 'パッケージがsubgraphの枠になる');
         });
 
         test('メソッド単位をONにするとクラスをsubgraphの枠にしてメソッドノードが配置される', () => {

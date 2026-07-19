@@ -443,6 +443,47 @@ test.describe('usecase.js', () => {
             assert.ok(!classDiagram, '内部メソッドのみへのエッジがある場合、クラス図は生成されない');
         });
 
+        // 図の有無判定はトグル状態に依存しない。現在のトグル状態で判定すると、OFFのトグルでしか
+        // 関連が生まれない図はコンテナごと生成されず、後からONにしても出現できない
+        test('ドメインモデルとの関連しかないクラスでも、表示設定OFFのままクラス図コンテナが生成される', () => {
+            // show-diagram-domain-types はデフォルトOFF
+            globalThis.domainData = {
+                types: [{fqn: 'com.example.Order', isDeprecated: false}]
+            };
+            const usecaseDataDomainOnly = {
+                usecases: [{
+                    fqn: "com.example.ServiceA",
+                    fields: [],
+                    staticMethods: [],
+                    methods: [{
+                        fqn: "com.example.ServiceA#findOrder()",
+                        visibility: "PUBLIC",
+                        parameters: [],
+                        returnTypeRef: {fqn: "com.example.Order"},
+                        declaration: "findOrder():Order",
+                        isDeprecated: false,
+                        callMethods: []
+                    }]
+                }]
+            };
+            setGlossaryData({
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#findOrder()": {title: "findOrder"},
+                "com.example.Order": {title: "Order"}
+            });
+            globalThis.usecaseData = usecaseDataDomainOnly;
+            UsecaseApp.init();
+
+            const serviceSection = document.getElementById(globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
+            const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+            assert.ok(classDiagram, 'ドメインモデルOFFでもクラス図コンテナが生成されること');
+            const code = classDiagram.querySelector('.mermaid').textContent;
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            assert.ok(!code.includes(orderNodeId), '描画自体は現在のトグル状態に従い、ドメインノードは含まれないこと');
+
+            delete globalThis.domainData;
+        });
+
         test('クラス単位の図がクラスヘッダー直下にレンダリングされる', () => {
             setGlossaryData({
                 "com.example.ServiceA": {title: "ServiceA"},
@@ -824,6 +865,41 @@ test.describe('usecase.js', () => {
                 const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.domain.Order');
                 assert.ok(code.includes(`${serviceBNodeId} -.-> ${orderNodeId}`), 'クラス→戻り値ドメインの破線エッジが含まれること');
                 assert.ok(code.includes('./domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.domain.Order')), 'domain.htmlへのリンクが含まれること');
+
+                delete globalThis.domainData;
+            });
+
+            test('ドメインモデルとの関連しかないパッケージでも、表示設定OFFのままパッケージ図コンテナが生成される', () => {
+                // show-diagram-domain-types はデフォルトOFF
+                globalThis.domainData = {
+                    types: [{fqn: 'com.example.domain.Order', isDeprecated: false}]
+                };
+                const domainOnlyData = {
+                    usecases: [
+                        {
+                            fqn: "com.example.ServiceA",
+                            fields: [],
+                            staticMethods: [],
+                            methods: [{
+                                fqn: "com.example.ServiceA#findOrder()",
+                                visibility: "PUBLIC",
+                                parameters: [],
+                                returnTypeRef: {fqn: "com.example.domain.Order"},
+                                declaration: "findOrder():Order",
+                                isDeprecated: false,
+                                callMethods: []
+                            }]
+                        }
+                    ]
+                };
+                setupPackageDiagramGlossary();
+                globalThis.usecaseData = domainOnlyData;
+                UsecaseApp.init();
+
+                const code = getPackageDiagramCode();
+                assert.ok(code, 'ドメインモデルOFFでもパッケージ図コンテナが生成されること');
+                const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.domain.Order');
+                assert.ok(!code.includes(orderNodeId), '描画自体は現在のトグル状態に従い、ドメインノードは含まれないこと');
 
                 delete globalThis.domainData;
             });

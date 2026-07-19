@@ -960,28 +960,28 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderEmptyDiagram(diagram, messageText) {
-            if (!diagram) return;
+        // 図の代わりにメッセージを表示する状態へリセットし、メッセージ要素を返す
+        function resetDiagramWithMessage(diagram, messageText) {
             diagram.classList.add("too-large");
             diagram.textContent = "";
 
             const message = document.createElement("p");
             message.className = "mermaid-too-large__message";
             message.textContent = messageText;
-            diagram.appendChild(message);
+            return message;
+        }
+
+        function renderEmptyDiagram(diagram, messageText) {
+            if (!diagram) return;
+            diagram.appendChild(resetDiagramWithMessage(diagram, messageText));
         }
 
         function renderTooLargeDiagram(diagram, source, {messageText, onRender} = {}) {
             if (!diagram) return;
-            diagram.classList.add("too-large");
-            diagram.textContent = "";
+            const message = resetDiagramWithMessage(diagram, messageText ?? "図が大きいため表示を制限しています");
 
             const container = document.createElement("div");
             container.className = "mermaid-too-large";
-
-            const message = document.createElement("p");
-            message.className = "mermaid-too-large__message";
-            message.textContent = messageText ?? "図が大きいため表示を制限しています";
             container.appendChild(message);
 
             const actions = document.createElement("div");

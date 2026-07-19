@@ -21,6 +21,92 @@ const UsecaseApp = (() => {
     const makeEdgeKey = (from, to) => `${from} ${to}`;
 
     /**
+     * 未登録のエッジだけを追加する
+     * @param {Set<string>} edgeSet
+     * @param {DiagramEdge[]} edges
+     */
+    function addEdgeOnce(edgeSet, edges, from, to, dotted = false) {
+        const edgeKey = makeEdgeKey(from, to);
+        if (edgeSet.has(edgeKey)) return;
+        edgeSet.add(edgeKey);
+        edges.push(dotted ? {from, to, dotted: true} : {from, to});
+    }
+
+    /**
+     * 未登録のノードだけを追加する
+     * @param {Set<string>} addedFqns
+     * @param {DiagramNode[]} nodes
+     */
+    function addNodeOnce(addedFqns, nodes, fqn, kind) {
+        if (addedFqns.has(fqn)) return;
+        addedFqns.add(fqn);
+        nodes.push({fqn, kind});
+    }
+
+    // 図の表示対象トグル。checkbox idとDiagramContextキーの対応を一元管理する
+    const DIAGRAM_TOGGLES = [
+        {id: 'show-diagram-callers', key: 'showDiagramCallers'},
+        {id: 'show-diagram-callees', key: 'showDiagramCallees'},
+        {id: 'show-diagram-internal-methods', key: 'showDiagramInternalMethods'},
+        {id: 'show-diagram-inbound-classes', key: 'showDiagramInboundClasses'},
+        {id: 'show-diagram-outbound-ports', key: 'showDiagramOutboundPorts'},
+        {id: 'show-diagram-domain-types', key: 'showDiagramDomainTypes'}
+    ];
+
+    // クラス図・パッケージ図で共通のコンテキストメニュー項目
+    const CLASS_LEVEL_DIAGRAM_MENU_TOGGLES = [
+        {key: 'showDiagramInboundClasses', label: '入力インタフェース'},
+        {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+        {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
+    ];
+
+    /**
+     * 図の有無の判定用に、表示対象トグルをすべてONにしたコンテキストを返す。
+     * 現在のトグル状態で判定すると、OFFのトグルでしか関連が生まれない図はコンテナごと
+     * 生成されず、後からトグルをONにしても出現できないため（トグル変更は再描画のみで
+     * コンテナを再生成しない）。
+     * @param {DiagramContext} diagramContext
+     * @returns {DiagramContext}
+     */
+    function withAllDiagramToggles(diagramContext) {
+        const context = {...diagramContext};
+        DIAGRAM_TOGGLES.forEach(({key}) => context[key] = true);
+        return context;
+    }
+
+    /**
+     * クラス図・パッケージ図で使う表示対象トグルと関連データをコンテキストから取り出す
+     * @param {DiagramContext} diagramContext
+     */
+    function resolveClassLevelDiagramContext(diagramContext) {
+        return {
+            outboundOperationSet: diagramContext.outboundOperationSet || new Set(),
+            inboundCallerIndex: diagramContext.inboundCallerIndex ?? buildInboundCallerIndex(),
+            showDiagramOutboundPorts: diagramContext.showDiagramOutboundPorts ?? true,
+            showDiagramDomainTypes: diagramContext.showDiagramDomainTypes ?? false,
+            showDiagramInboundClasses: diagramContext.showDiagramInboundClasses ?? true,
+        };
+    }
+
+    /**
+     * inboundクラスからの呼び出し関係を、呼び出し先クラスFQNで引けるインデックスにする
+     * @returns {Map<string, {callerClassFqn: string, calleeMethodFqn: string}[]>}
+     */
+    function buildInboundCallerIndex() {
+        const map = new Map();
+        Jig.data.inbound.getControllers().forEach(controller => {
+            (controller.relations || []).forEach(relation => {
+                if (!relation?.from || !relation?.to) return;
+                Jig.util.pushToMap(map, getClassFqnFromMethodFqn(relation.to), {
+                    callerClassFqn: getClassFqnFromMethodFqn(relation.from),
+                    calleeMethodFqn: relation.to
+                });
+            });
+        });
+        return map;
+    }
+
+    /**
      * メソッドのパラメータ・戻り値からドメイン型ノード・エッジを収集する
      * @param {UsecaseMethod} method
      * @param {string} methodFqn
@@ -35,22 +121,14 @@ const UsecaseApp = (() => {
                 .filter(domainFqn => domainFqnSet.has(domainFqn))
                 .forEach(domainFqn => {
                     addDomainNode(domainFqn);
-                    const edgeKey = makeEdgeKey(domainFqn, methodFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: domainFqn, to: methodFqn, dotted: true});
-                    }
+                    addEdgeOnce(edgeSet, edges, domainFqn, methodFqn, true);
                 });
         });
         Jig.util.collectTypeRefFqns(method.returnTypeRef)
             .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
             .forEach(returnFqn => {
                 addDomainNode(returnFqn);
-                const edgeKey = makeEdgeKey(methodFqn, returnFqn);
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: methodFqn, to: returnFqn, dotted: true});
-                }
+                addEdgeOnce(edgeSet, edges, methodFqn, returnFqn, true);
             });
     }
 
@@ -311,65 +389,39 @@ const UsecaseApp = (() => {
         const outboundNodeSet = new Set();
         const classMethods = [...usecase.methods.filter(m => isUsecase(m) && (!handlerFqns || handlerFqns.has(m.fqn))), ...usecase.staticMethods];
         const methodFqns = new Set(classMethods.map(m => m.fqn));
+        const staticMethodFqns = new Set(usecase.staticMethods.map(m => m.fqn));
         const domainFqnSet = Jig.data.domain.getDomainFqnSet();
-        const outboundOperationSet = diagramContext.outboundOperationSet || new Set();
-        const showDiagramOutboundPorts = diagramContext.showDiagramOutboundPorts ?? true;
-        const showDiagramDomainTypes = diagramContext.showDiagramDomainTypes ?? false;
-        const showDiagramInboundClasses = diagramContext.showDiagramInboundClasses ?? true;
+        const {outboundOperationSet, inboundCallerIndex, showDiagramOutboundPorts, showDiagramDomainTypes, showDiagramInboundClasses}
+            = resolveClassLevelDiagramContext(diagramContext);
 
         classMethods.forEach(method => {
-            const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
+            const kind = isUsecase(method) ? "usecase" : (staticMethodFqns.has(method.fqn) ? "static-method" : "method");
             nodes.push({fqn: method.fqn, kind});
 
             (method.callMethods || []).forEach(calleeFqn => {
                 if (methodFqns.has(calleeFqn)) {
-                    const edgeKey = makeEdgeKey(method.fqn, calleeFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: method.fqn, to: calleeFqn});
-                    }
+                    addEdgeOnce(edgeSet, edges, method.fqn, calleeFqn);
                 } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
                     const outboundClassFqn = getClassFqnFromMethodFqn(calleeFqn);
-                    if (!outboundNodeSet.has(outboundClassFqn)) {
-                        outboundNodeSet.add(outboundClassFqn);
-                        nodes.push({fqn: outboundClassFqn, kind: "outbound-class"});
-                    }
-                    const edgeKey = makeEdgeKey(method.fqn, outboundClassFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: method.fqn, to: outboundClassFqn});
-                    }
+                    addNodeOnce(outboundNodeSet, nodes, outboundClassFqn, "outbound-class");
+                    addEdgeOnce(edgeSet, edges, method.fqn, outboundClassFqn);
                 }
             });
 
             if (showDiagramDomainTypes) {
-                collectDomainTypeNodesAndEdges(method, method.fqn, domainFqnSet, edgeSet, edges, domainFqn => {
-                    if (!domainNodeSet.has(domainFqn)) {
-                        domainNodeSet.add(domainFqn);
-                        nodes.push({fqn: domainFqn, kind: "domain-type"});
-                    }
-                });
+                collectDomainTypeNodesAndEdges(method, method.fqn, domainFqnSet, edgeSet, edges,
+                    domainFqn => addNodeOnce(domainNodeSet, nodes, domainFqn, "domain-type"));
             }
         });
 
         if (showDiagramInboundClasses) {
             const inboundNodeSet = new Set();
-            Jig.data.inbound.getControllers().forEach(controller => {
-                (controller.relations || []).forEach(relation => {
-                    if (!relation?.from || !relation?.to) return;
-                    if (!methodFqns.has(relation.to)) return;
-                    const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
-                    if (!inboundNodeSet.has(callerClassFqn)) {
-                        inboundNodeSet.add(callerClassFqn);
-                        nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
-                    }
-                    const edgeKey = makeEdgeKey(callerClassFqn, relation.to);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: callerClassFqn, to: relation.to});
-                    }
+            (inboundCallerIndex.get(usecase.fqn) || [])
+                .filter(({calleeMethodFqn}) => methodFqns.has(calleeMethodFqn))
+                .forEach(({callerClassFqn, calleeMethodFqn}) => {
+                    addNodeOnce(inboundNodeSet, nodes, callerClassFqn, "inbound-class");
+                    addEdgeOnce(edgeSet, edges, callerClassFqn, calleeMethodFqn);
                 });
-            });
         }
 
         return {nodes, edges};
@@ -391,65 +443,46 @@ const UsecaseApp = (() => {
         const domainNodeSet = new Set();
         const outboundNodeSet = new Set();
         const domainFqnSet = Jig.data.domain.getDomainFqnSet();
-        const outboundOperationSet = diagramContext.outboundOperationSet || new Set();
-        const showDiagramOutboundPorts = diagramContext.showDiagramOutboundPorts ?? true;
-        const showDiagramDomainTypes = diagramContext.showDiagramDomainTypes ?? false;
-        const showDiagramInboundClasses = diagramContext.showDiagramInboundClasses ?? true;
+        const {outboundOperationSet, inboundCallerIndex, showDiagramOutboundPorts, showDiagramDomainTypes, showDiagramInboundClasses}
+            = resolveClassLevelDiagramContext(diagramContext);
         const classFqns = new Set(packageUsecases.map(usecase => usecase.fqn));
-
-        const addEdgeOnce = (from, to) => {
-            const edgeKey = makeEdgeKey(from, to);
-            if (!edgeSet.has(edgeKey)) {
-                edgeSet.add(edgeKey);
-                edges.push({from, to});
-            }
-        };
 
         packageUsecases.forEach(usecase => {
             nodes.push({fqn: usecase.fqn, kind: "usecase"});
 
-            [...usecase.methods, ...usecase.staticMethods].forEach(method => {
+            const collectCallEdges = (method) => {
                 (method.callMethods || []).forEach(calleeFqn => {
                     const calleeClassFqn = getClassFqnFromMethodFqn(calleeFqn);
                     if (calleeClassFqn === usecase.fqn) return;
                     if (classFqns.has(calleeClassFqn)) {
-                        addEdgeOnce(usecase.fqn, calleeClassFqn);
+                        addEdgeOnce(edgeSet, edges, usecase.fqn, calleeClassFqn);
                     } else if (showDiagramOutboundPorts && outboundOperationSet.has(calleeFqn)) {
-                        if (!outboundNodeSet.has(calleeClassFqn)) {
-                            outboundNodeSet.add(calleeClassFqn);
-                            nodes.push({fqn: calleeClassFqn, kind: "outbound-class"});
-                        }
-                        addEdgeOnce(usecase.fqn, calleeClassFqn);
+                        addNodeOnce(outboundNodeSet, nodes, calleeClassFqn, "outbound-class");
+                        addEdgeOnce(edgeSet, edges, usecase.fqn, calleeClassFqn);
                     }
                 });
-            });
+            };
+            const collectDomainEdges = (method) =>
+                collectDomainTypeNodesAndEdges(method, usecase.fqn, domainFqnSet, edgeSet, edges,
+                    domainFqn => addNodeOnce(domainNodeSet, nodes, domainFqn, "domain-type"));
 
-            if (showDiagramDomainTypes) {
-                [...usecase.methods.filter(isUsecase), ...usecase.staticMethods].forEach(method => {
-                    collectDomainTypeNodesAndEdges(method, usecase.fqn, domainFqnSet, edgeSet, edges, domainFqn => {
-                        if (!domainNodeSet.has(domainFqn)) {
-                            domainNodeSet.add(domainFqn);
-                            nodes.push({fqn: domainFqn, kind: "domain-type"});
-                        }
-                    });
-                });
-            }
+            usecase.methods.forEach(method => {
+                collectCallEdges(method);
+                if (showDiagramDomainTypes && isUsecase(method)) collectDomainEdges(method);
+            });
+            usecase.staticMethods.forEach(method => {
+                collectCallEdges(method);
+                if (showDiagramDomainTypes) collectDomainEdges(method);
+            });
         });
 
         if (showDiagramInboundClasses) {
             const inboundNodeSet = new Set();
-            Jig.data.inbound.getControllers().forEach(controller => {
-                (controller.relations || []).forEach(relation => {
-                    if (!relation?.from || !relation?.to) return;
-                    const targetClassFqn = getClassFqnFromMethodFqn(relation.to);
-                    if (!classFqns.has(targetClassFqn)) return;
-                    const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
+            classFqns.forEach(classFqn => {
+                (inboundCallerIndex.get(classFqn) || []).forEach(({callerClassFqn}) => {
                     if (classFqns.has(callerClassFqn)) return;
-                    if (!inboundNodeSet.has(callerClassFqn)) {
-                        inboundNodeSet.add(callerClassFqn);
-                        nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
-                    }
-                    addEdgeOnce(callerClassFqn, targetClassFqn);
+                    addNodeOnce(inboundNodeSet, nodes, callerClassFqn, "inbound-class");
+                    addEdgeOnce(edgeSet, edges, callerClassFqn, classFqn);
                 });
             });
         }
@@ -775,11 +808,12 @@ const UsecaseApp = (() => {
             }));
         }
 
-        const currentContext = buildCurrentDiagramContext();
-        const usecaseDiagram = buildUsecaseDiagram(method, currentContext);
+        // 図の有無は全トグルONの文脈で判定する（描画自体は現在のトグル状態に従う）
+        const gateContext = withAllDiagramToggles(buildCurrentDiagramContext());
+        const usecaseDiagram = buildUsecaseDiagram(method, gateContext);
         const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-        const sequenceDiagram = SequenceDiagram.buildDiagram(method, currentContext);
+        const sequenceDiagram = SequenceDiagram.buildDiagram(method, gateContext);
         const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
         const hasSequenceDiagram = sequenceDiagramCode !== null;
 
@@ -837,7 +871,8 @@ const UsecaseApp = (() => {
             }));
         }
 
-        const classGraph = buildClassGraph(usecase, handlerFqns, buildCurrentDiagramContext());
+        // 図の有無は全トグルONの文脈で判定する（描画自体は現在のトグル状態に従う）
+        const classGraph = buildClassGraph(usecase, handlerFqns, withAllDiagramToggles(buildCurrentDiagramContext()));
         if (classGraph.edges.length > 0) {
             const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
             section.appendChild(classDiagramContainer);
@@ -914,11 +949,7 @@ const UsecaseApp = (() => {
      * @returns {function}
      */
     function createPackageDiagramGenerator(packageUsecases, buildCurrentDiagramContext) {
-        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
-            {key: 'showDiagramInboundClasses', label: '入力インタフェース'},
-            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
-            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
-        ]);
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, CLASS_LEVEL_DIAGRAM_MENU_TOGGLES);
 
         const generator = (dir, opts) => {
             const {type: typeLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
@@ -949,11 +980,7 @@ const UsecaseApp = (() => {
      * @returns {function}
      */
     function createClassDiagramGenerator(usecase, handlerFqns, buildCurrentDiagramContext) {
-        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
-            {key: 'showDiagramInboundClasses', label: '入力インタフェース'},
-            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
-            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
-        ]);
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, CLASS_LEVEL_DIAGRAM_MENU_TOGGLES);
 
         const generator = (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
@@ -999,20 +1026,15 @@ const UsecaseApp = (() => {
 
         const methodMap = buildMethodMap(usecases);
         const reverseCallerMap = buildReverseCallerMap(methodMap);
+        const inboundCallerIndex = buildInboundCallerIndex();
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
 
-        const buildCurrentDiagramContext = () => ({
-            methodMap,
-            reverseCallerMap,
-            outboundOperationSet,
-            showDiagramCallers: document.getElementById('show-diagram-callers').checked,
-            showDiagramCallees: document.getElementById('show-diagram-callees').checked,
-            showDiagramInternalMethods: document.getElementById('show-diagram-internal-methods').checked,
-            showDiagramInboundClasses: document.getElementById('show-diagram-inbound-classes').checked,
-            showDiagramOutboundPorts: document.getElementById('show-diagram-outbound-ports').checked,
-            showDiagramDomainTypes: document.getElementById('show-diagram-domain-types').checked,
-        });
+        const buildCurrentDiagramContext = () => {
+            const context = {methodMap, reverseCallerMap, inboundCallerIndex, outboundOperationSet};
+            DIAGRAM_TOGGLES.forEach(({id, key}) => context[key] = document.getElementById(id).checked);
+            return context;
+        };
 
         const handlerFqns = state.handlerFqns;
 
@@ -1041,7 +1063,8 @@ const UsecaseApp = (() => {
      */
     function appendPackageDiagram(headingSection, packageUsecases, buildCurrentDiagramContext) {
         if (packageUsecases.length === 0) return;
-        const packageGraph = buildPackageGraph(packageUsecases, buildCurrentDiagramContext());
+        // 図の有無は全トグルONの文脈で判定する（描画自体は現在のトグル状態に従う）
+        const packageGraph = buildPackageGraph(packageUsecases, withAllDiagramToggles(buildCurrentDiagramContext()));
         if (packageGraph.edges.length === 0) return;
         const diagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container package-diagram"});
         headingSection.appendChild(diagramContainer);
@@ -1061,12 +1084,7 @@ const UsecaseApp = (() => {
             {id: 'show-details', class: 'hide-usecase-details'},
             {id: 'show-descriptions', class: 'hide-usecase-descriptions'},
             {id: 'show-declarations', class: 'hide-usecase-declarations'},
-            {id: 'show-diagram-callers', reRender: true},
-            {id: 'show-diagram-callees', reRender: true},
-            {id: 'show-diagram-internal-methods', reRender: true},
-            {id: 'show-diagram-inbound-classes', reRender: true},
-            {id: 'show-diagram-outbound-ports', reRender: true},
-            {id: 'show-diagram-domain-types', reRender: true}
+            ...DIAGRAM_TOGGLES.map(({id}) => ({id, reRender: true}))
         ];
 
         controls.forEach(control => {

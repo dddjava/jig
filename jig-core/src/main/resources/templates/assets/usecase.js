@@ -210,17 +210,14 @@ const UsecaseApp = (() => {
 
     /**
      * パラメータリストから呼び出しエッジのラベル用テキストを組み立てる。
-     * 実引数の値ではなく、呼び出し先メソッドの仮引数（名前が取得できていれば名前、できなければ型のみ）を示す。
+     * 実引数の値ではなく、呼び出し先メソッドの仮引数の型を示す。
      * @param {MethodParameter[]} parameters
      * @param {function(string): string} typeLabel
      * @returns {string}
      */
     function buildArgumentsLabel(parameters, typeLabel) {
         if (!parameters || parameters.length === 0) return '';
-        return parameters.map(param => {
-            const type = typeLabel(param.typeRef?.fqn);
-            return param.nameSource === 'METHOD_PARAMETERS' ? `${param.name}: ${type}` : type;
-        }).join(', ');
+        return parameters.map(param => typeLabel(param.typeRef?.fqn)).join(', ');
     }
 
     /**

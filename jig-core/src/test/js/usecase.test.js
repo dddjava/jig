@@ -1698,13 +1698,8 @@ test.describe('usecase.js', () => {
             assert.equal(UsecaseApp.buildArgumentsLabel(null, typeLabel), '');
         });
 
-        test('nameSourceがMETHOD_PARAMETERSの場合は "name: Type" 形式になる', () => {
+        test('引数の型のみになる（仮引数名は含まない）', () => {
             const parameters = [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}];
-            assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'order: com.example.Order');
-        });
-
-        test('nameSourceがMETHOD_PARAMETERS以外の場合は型のみになる（実引数名が取得できていないため）', () => {
-            const parameters = [{name: 'arg0', nameSource: 'POSITIONAL', typeRef: {fqn: 'com.example.Order'}}];
             assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'com.example.Order');
         });
 
@@ -1713,13 +1708,13 @@ test.describe('usecase.js', () => {
                 {name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}},
                 {name: 'arg1', nameSource: 'POSITIONAL', typeRef: {fqn: 'java.lang.String'}}
             ];
-            assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'order: com.example.Order, java.lang.String');
+            assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'com.example.Order, java.lang.String');
         });
 
         test('typeLabelで用語名変換される', () => {
             const parameters = [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}];
             const label = UsecaseApp.buildArgumentsLabel(parameters, () => '注文');
-            assert.equal(label, 'order: 注文');
+            assert.equal(label, '注文');
         });
     });
 
@@ -2277,7 +2272,7 @@ test.describe('usecase.js', () => {
             const generator = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
             const source = generator('LR', {});
 
-            assert.ok(source.includes('order: Order'), '引数ラベルを含む');
+            assert.ok(source.includes('"Order"'), '引数の型ラベルを含む');
         });
 
         test('引数OFFに切り替えるとedgeラベルが表示されなくなる', () => {
@@ -2293,7 +2288,7 @@ test.describe('usecase.js', () => {
             items.find(i => i.label === '引数').onSelect();
 
             const source = generator('LR', {});
-            assert.ok(!source.includes('order: Order'), '引数OFFではラベルを含まない');
+            assert.ok(!source.includes('"Order"'), '引数OFFではラベルを含まない');
         });
     });
 
@@ -2357,10 +2352,10 @@ test.describe('usecase.js', () => {
             const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
             const code = generator();
 
-            assert.ok(code.includes(': order: Order'), '引数ラベルを含む');
+            assert.ok(code.includes(': Order'), '引数の型ラベルを含む');
         });
 
-        test('既定（引数ON）では出力インタフェース呼び出しに "メソッド名(引数)" 形式のラベルが付与される', () => {
+        test('既定（引数ON）では出力インタフェース呼び出しに "メソッド名(型)" 形式のラベルが付与される', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['ext.Repo#save(Order)'], kind: 'usecase'};
             const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
             const methodC = {fqn: 'pkg.Cls#C()', callMethods: [], kind: 'usecase'};
@@ -2373,7 +2368,7 @@ test.describe('usecase.js', () => {
             const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
             const code = generator();
 
-            assert.ok(code.includes(': save(order: Order)'), 'メソッド名と引数ラベルを含む');
+            assert.ok(code.includes(': save(Order)'), 'メソッド名と引数の型ラベルを含む');
         });
 
         test('引数OFFに切り替えると内部メソッド呼び出しのラベルが空になる', () => {
@@ -2390,7 +2385,7 @@ test.describe('usecase.js', () => {
             items.find(i => i.label === '引数').onSelect();
 
             const code = generator();
-            assert.ok(!code.includes('order: Order'), '引数OFFではラベルを含まない');
+            assert.ok(!code.includes(': Order'), '引数OFFではラベルを含まない');
         });
     });
 

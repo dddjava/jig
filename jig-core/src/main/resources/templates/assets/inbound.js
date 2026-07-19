@@ -496,6 +496,8 @@ const InboundApp = (() => {
     function renderMain(adapters) {
         const container = document.getElementById("inbound-list");
         if (!container) return;
+        // 破棄するDOMに紐づくダイアグラム登録を解除してから作り直す
+        Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
         const usecaseData = Jig.data.usecase.get();
 

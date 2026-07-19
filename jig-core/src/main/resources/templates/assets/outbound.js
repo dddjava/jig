@@ -344,6 +344,8 @@ const OutboundApp = (() => {
     function renderOutboundList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-port-list");
         if (!container) return;
+        // 破棄するDOMに紐づくダイアグラム登録を解除してから作り直す
+        Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
 
         // カードにならないグループを先に除き、見出しが孤児にならないようにする
@@ -431,6 +433,8 @@ const OutboundApp = (() => {
     function renderPersistenceList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-persistence-list");
         if (!container) return;
+        // 破棄するDOMに紐づくダイアグラム登録を解除してから作り直す
+        Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
 
         grouped.forEach(group => {
@@ -458,6 +462,8 @@ const OutboundApp = (() => {
     function renderExternalList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
         const container = document.getElementById("outbound-external-list");
         if (!container) return;
+        // 破棄するDOMに紐づくダイアグラム登録を解除してから作り直す
+        Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
 
         grouped.forEach(group => {

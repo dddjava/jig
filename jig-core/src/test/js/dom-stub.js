@@ -316,6 +316,15 @@ class Element {
         }
         return null;
     }
+
+    contains(other) {
+        let node = other;
+        while (node) {
+            if (node === this) return true;
+            node = node.parentNode;
+        }
+        return false;
+    }
 }
 
 class DocumentStub {

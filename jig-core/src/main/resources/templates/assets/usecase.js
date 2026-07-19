@@ -1155,6 +1155,8 @@ const UsecaseApp = (() => {
     function renderUsecaseList(usecases) {
         const container = document.getElementById("usecase-list");
         if (!container) return;
+        // 破棄するDOMに紐づくダイアグラム登録を解除してから作り直す
+        Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
 
         if (!usecases || usecases.length === 0) {

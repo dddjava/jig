@@ -1726,6 +1726,24 @@ globalThis.Jig.mermaid = (() => {
         }
 
         /**
+         * 指定要素配下に登録済みのダイアグラムをすべて登録解除する。
+         * DOMを作り直して再登録する前に呼び出し、古いレンダリングクロージャと
+         * IntersectionObserverの購読が蓄積し続けないようにする。
+         * @param {HTMLElement} rootElement
+         */
+        function unregisterWithin(rootElement) {
+            if (!rootElement) return;
+            for (let i = diagramRegistry.length - 1; i >= 0; i--) {
+                const container = diagramRegistry[i].container;
+                if (!rootElement.contains(container)) continue;
+                diagramRegistry.splice(i, 1);
+                renderedContainers.delete(container);
+                observerMap.get(container)?.disconnect();
+                observerMap.delete(container);
+            }
+        }
+
+        /**
          * 表示範囲内のダイアグラムのみ再レンダリング
          * @param {Function} [shouldRerender] - 再レンダリング判定関数（省略時は全て）
          */
@@ -1788,6 +1806,7 @@ globalThis.Jig.mermaid = (() => {
 
         return {
             register,
+            unregisterWithin,
             rerenderVisible,
             createAndRegister,
         };

@@ -673,6 +673,76 @@ test.describe('jig-mermaid.js', () => {
         });
     });
 
+    test.describe('diagram.unregisterWithin', () => {
+        const {JSDOM} = require('jsdom');
+
+        class FakeIntersectionObserver {
+            constructor(callback) {
+                this.callback = callback;
+                this.disconnected = false;
+            }
+            observe(target) { this.target = target; }
+            unobserve() {}
+            disconnect() { this.disconnected = true; }
+        }
+
+        function setup() {
+            const dom = new JSDOM('<!DOCTYPE html><body><div id="root"></div><div id="outside-parent"></div></body>');
+            global.window = dom.window;
+            global.document = dom.window.document;
+            global.window.IntersectionObserver = FakeIntersectionObserver;
+            global.IntersectionObserver = FakeIntersectionObserver;
+            return dom.window.document;
+        }
+
+        /**
+         * ダイアグラムを登録し、observerの交差通知でレンダリング済みにしたうえで
+         * rerenderVisibleの表示判定に掛かるようgetBoundingClientRectを差し替える
+         */
+        function registerRendered(parent) {
+            const container = document.createElement('div');
+            parent.appendChild(container);
+            let renderCount = 0;
+            let observer = null;
+            const originalObserve = FakeIntersectionObserver.prototype.observe;
+            FakeIntersectionObserver.prototype.observe = function (target) {
+                originalObserve.call(this, target);
+                observer = this;
+            };
+            mermaid.diagram.register(container, () => renderCount++);
+            FakeIntersectionObserver.prototype.observe = originalObserve;
+            observer.callback([{isIntersecting: true, target: container}]);
+            container.getBoundingClientRect = () => ({top: 10, bottom: 20});
+            return {container, observer, getRenderCount: () => renderCount};
+        }
+
+        test('配下のコンテナは登録解除され、rerenderVisibleで再レンダリングされずobserverもdisconnectされる', () => {
+            const doc = setup();
+            const inside = registerRendered(doc.getElementById('root'));
+            assert.equal(inside.getRenderCount(), 1, '交差通知で一度レンダリングされる');
+
+            mermaid.diagram.unregisterWithin(doc.getElementById('root'));
+            mermaid.diagram.rerenderVisible();
+
+            assert.equal(inside.getRenderCount(), 1, '登録解除後は再レンダリングされない');
+            assert.equal(inside.observer.disconnected, true, 'observerの購読が解除される');
+        });
+
+        test('指定要素の配下にないコンテナは登録解除されない', () => {
+            const doc = setup();
+            const outside = registerRendered(doc.getElementById('outside-parent'));
+
+            mermaid.diagram.unregisterWithin(doc.getElementById('root'));
+            mermaid.diagram.rerenderVisible();
+
+            assert.equal(outside.getRenderCount(), 2, '対象外のコンテナは再レンダリングされ続ける');
+            assert.equal(outside.observer.disconnected, false);
+
+            // 後続テストに影響しないよう掃除する
+            mermaid.diagram.unregisterWithin(doc.getElementById('outside-parent'));
+        });
+    });
+
     test.describe('renderWithControls の表示切り替えメニュー', () => {
         const {JSDOM} = require('jsdom');
 

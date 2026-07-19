@@ -270,38 +270,83 @@ const UsecaseApp = (() => {
         return diagramContext.showDiagramInternalMethods || kind === "usecase";
     }
 
+    /** @typedef {{tryEnter: function(string): (InliningGuard|null)}} InliningGuard インライン化の展開可否を判定し、展開する場合は再帰用ガードを返す */
+
+    /** パス単位のガード。循環のみ防ぎ、別経路からは同じメソッドを再展開する（シーケンス図が経路ごとの呼び出しを描くため） */
+    function pathInliningGuard(path = new Set()) {
+        return {
+            tryEnter(fqn) {
+                if (path.has(fqn)) return null;
+                return pathInliningGuard(new Set(path).add(fqn));
+            }
+        };
+    }
+
+    /** 走査全体で共有するガード。各メソッドを一度だけ展開する（分岐合流するDAGでも線形。#1152） */
+    function sharedVisitedInliningGuard() {
+        const visited = new Set();
+        const guard = {
+            tryEnter(fqn) {
+                if (visited.has(fqn)) return null;
+                visited.add(fqn);
+                return guard;
+            }
+        };
+        return guard;
+    }
+
+    /**
+     * 呼び出し先を辿り、対象外の内部メソッドは読み飛ばして（インライン化して）
+     * 対象への呼び出しを収集する共通骨格。対象判定・インライン化対象・展開ガードは呼び出し側が与える。
+     * @param {string[]} callMethods
+     * @param {{isTarget: function(string): boolean, inlinableMethodOf: function(string): (UsecaseMethod|undefined), onTargetCallee: function(string): void, onOtherCallee: function(string): void}} config
+     * @param {InliningGuard} guard
+     */
+    function traverseWithInlining(callMethods, config, guard) {
+        const {isTarget, inlinableMethodOf, onTargetCallee, onOtherCallee} = config;
+        (callMethods || []).forEach(calleeFqn => {
+            if (isTarget(calleeFqn)) {
+                onTargetCallee(calleeFqn);
+                return;
+            }
+            const inlinable = inlinableMethodOf(calleeFqn);
+            if (inlinable) {
+                const nextGuard = guard.tryEnter(calleeFqn);
+                if (nextGuard) traverseWithInlining(inlinable.callMethods, config, nextGuard);
+            } else {
+                onOtherCallee(calleeFqn);
+            }
+        });
+    }
+
     /**
      * 呼び出し先を辿り、非表示の内部メソッドは読み飛ばして（インライン化して）
-     * 可視ノード／出力インタフェースへの呼び出しを収集する共通トラバーサル。
-     * usecase図（ノード・エッジ）とシーケンス図（参加者・呼び出し）の両方が同じ辿り方を使う。
+     * 可視ノード／出力インタフェースへの呼び出しを収集する。可視ノードは新たな呼び出し元として
+     * さらに辿る。usecase図（ノード・エッジ）とシーケンス図（参加者・呼び出し）の両方が同じ辿り方を使う。
      * @param {string} effectiveCallerFqn
      * @param {string[]} callMethods
      * @param {DiagramContext} diagramContext
      * @param {Set<string>} visited
      * @param {{onVisibleCallee: function(string, string, UsecaseMethod): void, onOutboundCallee: function(string, string): void}} handlers
-     * @param {Set<string>} [inliningPath]
      */
-    function traverseCallGraph(effectiveCallerFqn, callMethods, diagramContext, visited, handlers, inliningPath = new Set()) {
-        if (!callMethods) return;
-        for (const calleeFqn of callMethods) {
-            if (diagramContext.methodMap.has(calleeFqn)) {
-                const m = diagramContext.methodMap.get(calleeFqn);
-                if (shouldIncludeMethodNode(m.kind, diagramContext)) {
-                    handlers.onVisibleCallee(effectiveCallerFqn, calleeFqn, m);
-                    if (!visited.has(calleeFqn)) {
-                        visited.add(calleeFqn);
-                        traverseCallGraph(calleeFqn, m.callMethods, diagramContext, visited, handlers, new Set());
-                    }
-                } else if (!inliningPath.has(calleeFqn)) {
-                    const nextPath = new Set(inliningPath);
-                    nextPath.add(calleeFqn);
-                    traverseCallGraph(effectiveCallerFqn, m.callMethods, diagramContext, visited, handlers, nextPath);
-                }
-            } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
-                if (!diagramContext.showDiagramOutboundPorts) continue;
+    function traverseCallGraph(effectiveCallerFqn, callMethods, diagramContext, visited, handlers) {
+        const methodMap = diagramContext.methodMap;
+        traverseWithInlining(callMethods, {
+            isTarget: fqn => methodMap.has(fqn) && shouldIncludeMethodNode(methodMap.get(fqn).kind, diagramContext),
+            inlinableMethodOf: fqn => methodMap.get(fqn),
+            onTargetCallee: calleeFqn => {
+                const m = methodMap.get(calleeFqn);
+                handlers.onVisibleCallee(effectiveCallerFqn, calleeFqn, m);
+                if (visited.has(calleeFqn)) return;
+                visited.add(calleeFqn);
+                traverseCallGraph(calleeFqn, m.callMethods, diagramContext, visited, handlers);
+            },
+            onOtherCallee: calleeFqn => {
+                if (!diagramContext.outboundOperationSet.has(calleeFqn)) return;
+                if (!diagramContext.showDiagramOutboundPorts) return;
                 handlers.onOutboundCallee(effectiveCallerFqn, calleeFqn);
             }
-        }
+        }, pathInliningGuard());
     }
 
     /**
@@ -429,26 +474,19 @@ const UsecaseApp = (() => {
      * 呼び出し先を辿り、集計対象外の非公開メソッドは読み飛ばして（インライン化して）
      * 集計対象メソッドへの呼び出しを収集する。集計対象でも非公開でもない呼び出し先は
      * onOtherCallee に渡す（出力インタフェース判定などは呼び出し側で行う）。
-     * 非公開メソッドは呼び出し全体で共有するvisitedで一度だけ展開する（循環防止と、
-     * 分岐合流するDAGでの指数的な再走査の防止）。展開済みメソッドの呼び出し先は
-     * 初回展開時にコールバック済みのため、スキップしても収集結果は変わらない。
+     * 非公開メソッドは共有ガードで一度だけ展開する（展開済みメソッドの呼び出し先は
+     * 初回展開時にコールバック済みのため、スキップしても収集結果は変わらない）。
      * @param {string[]} callMethods
      * @param {{targetMethodFqns: Set<string>, internalMethodMap: Map<string, UsecaseMethod>, onTargetCallee: function(string): void, onOtherCallee: function(string): void}} config
-     * @param {Set<string>} [visited] 展開済みの非公開メソッド
      */
-    function collectInlinedCallees(callMethods, config, visited = new Set()) {
+    function collectInlinedCallees(callMethods, config) {
         const {targetMethodFqns, internalMethodMap, onTargetCallee, onOtherCallee} = config;
-        (callMethods || []).forEach(calleeFqn => {
-            if (targetMethodFqns.has(calleeFqn)) {
-                onTargetCallee(calleeFqn);
-            } else if (internalMethodMap.has(calleeFqn)) {
-                if (visited.has(calleeFqn)) return;
-                visited.add(calleeFqn);
-                collectInlinedCallees(internalMethodMap.get(calleeFqn).callMethods, config, visited);
-            } else {
-                onOtherCallee(calleeFqn);
-            }
-        });
+        traverseWithInlining(callMethods, {
+            isTarget: fqn => targetMethodFqns.has(fqn),
+            inlinableMethodOf: fqn => internalMethodMap.get(fqn),
+            onTargetCallee,
+            onOtherCallee
+        }, sharedVisitedInliningGuard());
     }
 
     /**

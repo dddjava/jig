@@ -767,25 +767,6 @@ const DomainApp = (() => {
         let getClassDefOptions = () => ({});
 
         if (diagramType === 'classDefinition') {
-            const showFieldsCheckbox = Jig.dom.createElement("input", {attributes: {type: "checkbox"}});
-            showFieldsCheckbox.checked = true;
-            const showMethodsCheckbox = Jig.dom.createElement("input", {attributes: {type: "checkbox"}});
-            showMethodsCheckbox.checked = true;
-            panel.appendChild(Jig.dom.createElement("fieldset", {
-                className: "diagram-panel-options",
-                children: [
-                    Jig.dom.createElement("legend", {textContent: "メンバ"}),
-                    Jig.dom.createElement("label", {
-                        className: "diagram-panel-option",
-                        children: [showFieldsCheckbox, "フィールド"]
-                    }),
-                    Jig.dom.createElement("label", {
-                        className: "diagram-panel-option",
-                        children: [showMethodsCheckbox, "メソッド"]
-                    }),
-                ]
-            }));
-
             const visibilityRadioGroupName = `visibility-filter-${Math.random().toString(36).slice(2)}`;
             const visibilityRadios = VISIBILITY_ORDER.map((v, i) => {
                 const radio = Jig.dom.createElement("input", {
@@ -806,10 +787,8 @@ const DomainApp = (() => {
                 ]
             }));
 
-            extraControls.push(showFieldsCheckbox, showMethodsCheckbox, ...visibilityRadios);
+            extraControls.push(...visibilityRadios);
             getClassDefOptions = () => ({
-                showFields: showFieldsCheckbox.checked,
-                showMethods: showMethodsCheckbox.checked,
                 maxVisibility: visibilityRadios.find(r => r.checked)?.value ?? 'PRIVATE'
             });
         }
@@ -817,6 +796,10 @@ const DomainApp = (() => {
         const settingsOverride = createDiagramSettingsOverride([
             {key: 'showIncoming', label: '関連元', getGlobalValue: () => true},
             {key: 'showOutgoing', label: '関連先', getGlobalValue: () => true},
+            ...(diagramType === 'classDefinition' ? [
+                {key: 'showFields', label: 'フィールド', getGlobalValue: () => true},
+                {key: 'showMethods', label: 'メソッド', getGlobalValue: () => true}
+            ] : []),
             {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => domainSettings.showDeprecatedNodes}
         ]);
 
@@ -1068,7 +1051,6 @@ const DomainApp = (() => {
     function renderDiagram(container, diagram) {
         const {
             pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap,
-            showFields = true, showMethods = true,
             maxVisibility = 'PRIVATE',
             getSettingsOverrides = () => ({}), buildExtraMenuItems
         } = diagram;
@@ -1099,7 +1081,7 @@ const DomainApp = (() => {
             );
         } else if (diagramType === 'classDefinition') {
             renderIfNonNull(
-                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
+                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {maxVisibility, showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'type') {

@@ -89,7 +89,7 @@ test.describe('usecase.js', () => {
             // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
             // チェックボックス要素を事前登録
-            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-callers', 'show-diagram-callees', 'show-diagram-internal-methods', 'show-diagram-inbound-classes', 'show-diagram-outbound-ports'].forEach(id => {
+            ['show-members', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-callers', 'show-diagram-callees', 'show-diagram-internal-methods', 'show-diagram-inbound-classes', 'show-diagram-outbound-ports', 'show-diagram-arguments'].forEach(id => {
                 const el = doc.createElement('input');
                 el.id = id;
                 el.checked = true;
@@ -1668,6 +1668,61 @@ test.describe('usecase.js', () => {
         });
     });
 
+    test.describe('buildOutboundOperationParameterMap', () => {
+        test('outboundPortsのoperationsのfqnからparametersを引けるMapを作る', () => {
+            const outboundData = {
+                outboundPorts: [
+                    {
+                        fqn: 'com.example.RepositoryB',
+                        operations: [
+                            {fqn: 'com.example.RepositoryB#save(Order)', parameters: [{name: 'arg0', nameSource: 'POSITIONAL', typeRef: {fqn: 'com.example.Order'}}]}
+                        ]
+                    }
+                ]
+            };
+            const map = UsecaseApp.buildOutboundOperationParameterMap(outboundData);
+            assert.equal(map.get('com.example.RepositoryB#save(Order)').length, 1);
+            assert.equal(map.get('com.example.RepositoryB#save(Order)')[0].typeRef.fqn, 'com.example.Order');
+        });
+
+        test('outboundPortsがない場合は空Mapを返す', () => {
+            assert.equal(UsecaseApp.buildOutboundOperationParameterMap(null).size, 0);
+        });
+    });
+
+    test.describe('buildArgumentsLabel', () => {
+        const typeLabel = fqn => fqn;
+
+        test('パラメータが空の場合は空文字列を返す', () => {
+            assert.equal(UsecaseApp.buildArgumentsLabel([], typeLabel), '');
+            assert.equal(UsecaseApp.buildArgumentsLabel(null, typeLabel), '');
+        });
+
+        test('nameSourceがMETHOD_PARAMETERSの場合は "name: Type" 形式になる', () => {
+            const parameters = [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}];
+            assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'order: com.example.Order');
+        });
+
+        test('nameSourceがMETHOD_PARAMETERS以外の場合は型のみになる（実引数名が取得できていないため）', () => {
+            const parameters = [{name: 'arg0', nameSource: 'POSITIONAL', typeRef: {fqn: 'com.example.Order'}}];
+            assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'com.example.Order');
+        });
+
+        test('複数パラメータはカンマ区切りになる', () => {
+            const parameters = [
+                {name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}},
+                {name: 'arg1', nameSource: 'POSITIONAL', typeRef: {fqn: 'java.lang.String'}}
+            ];
+            assert.equal(UsecaseApp.buildArgumentsLabel(parameters, typeLabel), 'order: com.example.Order, java.lang.String');
+        });
+
+        test('typeLabelで用語名変換される', () => {
+            const parameters = [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}];
+            const label = UsecaseApp.buildArgumentsLabel(parameters, () => '注文');
+            assert.equal(label, 'order: 注文');
+        });
+    });
+
     test.describe('buildUsecaseDiagram', () => {
 
 
@@ -2160,9 +2215,10 @@ test.describe('usecase.js', () => {
                 '呼び出し先',
                 '内部メソッド',
                 '出力インタフェース',
-                'ドメインモデル'
+                'ドメインモデル',
+                '引数'
             ]);
-            assert.deepEqual(items.map(i => i.checked), [true, true, true, true, false]);
+            assert.deepEqual(items.map(i => i.checked), [true, true, true, true, false, false]);
         });
 
         test('メニュー項目を選択するとこのダイアグラムだけ表示要素が切り替わる（サイドバー側の値は変更しない）', () => {
@@ -2209,6 +2265,36 @@ test.describe('usecase.js', () => {
             assert.ok(!generator1('LR', {}).includes(methodBNodeId), 'generator1はBノードを含まない');
             assert.ok(generator2('LR', {}).includes(methodBNodeId), 'generator2は影響を受けずBノードを含む');
         });
+
+        test('既定（引数ON）では呼び出し先メソッドの引数がedgeラベルとして表示される', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B(Order)'], kind: 'usecase'};
+            const methodB = {
+                fqn: 'pkg.Cls#B(Order)', callMethods: [], kind: 'method',
+                parameters: [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}]
+            };
+            const context = buildContext(rootMethod, methodB, {showDiagramArguments: true});
+
+            const generator = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
+            const source = generator('LR', {});
+
+            assert.ok(source.includes('order: Order'), '引数ラベルを含む');
+        });
+
+        test('引数OFFに切り替えるとedgeラベルが表示されなくなる', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B(Order)'], kind: 'usecase'};
+            const methodB = {
+                fqn: 'pkg.Cls#B(Order)', callMethods: [], kind: 'method',
+                parameters: [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}]
+            };
+            const context = buildContext(rootMethod, methodB, {showDiagramArguments: true});
+
+            const generator = UsecaseApp.createUsecaseDiagramGenerator(rootMethod, () => context);
+            const items = generator.buildExtraMenuItems(() => {});
+            items.find(i => i.label === '引数').onSelect();
+
+            const source = generator('LR', {});
+            assert.ok(!source.includes('order: Order'), '引数OFFではラベルを含まない');
+        });
     });
 
     test.describe('createSequenceDiagramGenerator', () => {
@@ -2223,7 +2309,7 @@ test.describe('usecase.js', () => {
             };
         }
 
-        test('メニュー項目は内部メソッド・出力インタフェースの2つのみ（ドメインモデルは対象外）', () => {
+        test('メニュー項目は内部メソッド・出力インタフェース・引数の3つ（ドメインモデルは対象外）', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase'};
             const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
             const methodC = {fqn: 'pkg.Cls#C()', callMethods: [], kind: 'usecase'};
@@ -2232,8 +2318,8 @@ test.describe('usecase.js', () => {
             const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
             const items = generator.buildExtraMenuItems(() => {});
 
-            assert.deepEqual(items.map(i => i.label), ['内部メソッド', '出力インタフェース']);
-            assert.deepEqual(items.map(i => i.checked), [true, true]);
+            assert.deepEqual(items.map(i => i.label), ['内部メソッド', '出力インタフェース', '引数']);
+            assert.deepEqual(items.map(i => i.checked), [true, true, false]);
         });
 
         test('メニュー項目を選択するとこのシーケンス図だけ表示要素が切り替わる（サイドバー側の値は変更しない）', () => {
@@ -2257,6 +2343,54 @@ test.describe('usecase.js', () => {
 
             const after = generator();
             assert.ok(!after.includes(methodBNodeId), '切替後はBが消え、A->Cの呼び出しにインライン化される');
+        });
+
+        test('既定（引数ON）では内部メソッド呼び出しに引数ラベルが付与される', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#C(Order)'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodC = {
+                fqn: 'pkg.Cls#C(Order)', callMethods: [], kind: 'usecase',
+                parameters: [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}]
+            };
+            const context = buildContext(rootMethod, methodB, methodC, {showDiagramArguments: true});
+
+            const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
+            const code = generator();
+
+            assert.ok(code.includes(': order: Order'), '引数ラベルを含む');
+        });
+
+        test('既定（引数ON）では出力インタフェース呼び出しに "メソッド名(引数)" 形式のラベルが付与される', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['ext.Repo#save(Order)'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodC = {fqn: 'pkg.Cls#C()', callMethods: [], kind: 'usecase'};
+            const context = buildContext(rootMethod, methodB, methodC, {
+                showDiagramArguments: true,
+                outboundOperationSet: new Set(['ext.Repo#save(Order)']),
+                outboundOperationParameterMap: new Map([['ext.Repo#save(Order)', [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}]]])
+            });
+
+            const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
+            const code = generator();
+
+            assert.ok(code.includes(': save(order: Order)'), 'メソッド名と引数ラベルを含む');
+        });
+
+        test('引数OFFに切り替えると内部メソッド呼び出しのラベルが空になる', () => {
+            const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#C(Order)'], kind: 'usecase'};
+            const methodB = {fqn: 'pkg.Cls#B()', callMethods: [], kind: 'method'};
+            const methodC = {
+                fqn: 'pkg.Cls#C(Order)', callMethods: [], kind: 'usecase',
+                parameters: [{name: 'order', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.Order'}}]
+            };
+            const context = buildContext(rootMethod, methodB, methodC, {showDiagramArguments: true});
+
+            const generator = UsecaseApp.createSequenceDiagramGenerator(rootMethod, () => context);
+            const items = generator.buildExtraMenuItems(() => {});
+            items.find(i => i.label === '引数').onSelect();
+
+            const code = generator();
+            assert.ok(!code.includes('order: Order'), '引数OFFではラベルを含まない');
         });
     });
 

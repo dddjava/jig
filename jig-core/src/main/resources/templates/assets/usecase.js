@@ -50,7 +50,8 @@ const UsecaseApp = (() => {
         {id: 'show-diagram-internal-methods', key: 'showDiagramInternalMethods'},
         {id: 'show-diagram-inbound-classes', key: 'showDiagramInboundClasses'},
         {id: 'show-diagram-outbound-ports', key: 'showDiagramOutboundPorts'},
-        {id: 'show-diagram-domain-types', key: 'showDiagramDomainTypes'}
+        {id: 'show-diagram-domain-types', key: 'showDiagramDomainTypes'},
+        {id: 'show-diagram-arguments', key: 'showDiagramArguments'}
     ];
 
     // クラス図・パッケージ図で共通のコンテキストメニュー項目
@@ -180,6 +181,46 @@ const UsecaseApp = (() => {
             (port.operations || []).forEach(op => set.add(op.fqn));
         });
         return set;
+    }
+
+    /**
+     * 出力インタフェースのオペレーションFQNからパラメータリストを引けるようにする
+     * @param {OutboundData} outboundData
+     * @returns {Map<string, MethodParameter[]>}
+     */
+    function buildOutboundOperationParameterMap(outboundData) {
+        const map = new Map();
+        (outboundData?.outboundPorts || []).forEach(port => {
+            (port.operations || []).forEach(op => map.set(op.fqn, op.parameters || []));
+        });
+        return map;
+    }
+
+    /**
+     * 呼び出し先メソッドFQNからパラメータリストを取得する（内部メソッド/出力インタフェースの両方に対応）
+     * @param {string} calleeFqn
+     * @param {DiagramContext} diagramContext
+     * @returns {MethodParameter[]}
+     */
+    function resolveCalleeParameters(calleeFqn, diagramContext) {
+        const method = diagramContext.methodMap?.get(calleeFqn);
+        if (method) return method.parameters || [];
+        return diagramContext.outboundOperationParameterMap?.get(calleeFqn) || [];
+    }
+
+    /**
+     * パラメータリストから呼び出しエッジのラベル用テキストを組み立てる。
+     * 実引数の値ではなく、呼び出し先メソッドの仮引数（名前が取得できていれば名前、できなければ型のみ）を示す。
+     * @param {MethodParameter[]} parameters
+     * @param {function(string): string} typeLabel
+     * @returns {string}
+     */
+    function buildArgumentsLabel(parameters, typeLabel) {
+        if (!parameters || parameters.length === 0) return '';
+        return parameters.map(param => {
+            const type = typeLabel(param.typeRef?.fqn);
+            return param.nameSource === 'METHOD_PARAMETERS' ? `${param.name}: ${type}` : type;
+        }).join(', ');
     }
 
     /**
@@ -567,6 +608,8 @@ const UsecaseApp = (() => {
          * @returns {SequenceDiagram}
          */
         buildDiagram(rootMethod, diagramContext) {
+            // シーケンス図は物理名切り替えに対応していないため常に用語名表示
+            const {type: typeLabel} = Jig.glossary.makeLabels(false);
             /** @type {string[]} */
             const participantKeys = [];
             /** @type {Map<string, SequenceParticipant>} */
@@ -623,7 +666,10 @@ const UsecaseApp = (() => {
                         const isUc = m.kind === "usecase";
                         if (diagramContext.showDiagramInternalMethods || isUc) {
                             const callee = ensureUsecaseParticipant(calleeFqn);
-                            calls.push({from: caller.id, to: callee.id, label: ''});
+                            const label = diagramContext.showDiagramArguments
+                                ? buildArgumentsLabel(m.parameters, typeLabel)
+                                : '';
+                            calls.push({from: caller.id, to: callee.id, label});
                             if (!visited.has(calleeFqn)) {
                                 visited.add(calleeFqn);
                                 traverse(calleeFqn, m.callMethods, new Set());
@@ -640,7 +686,11 @@ const UsecaseApp = (() => {
                         const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                         const methodName = getMethodSimpleName(calleeFqn);
                         const callee = ensureParticipant(classFqn, Jig.glossary.getTypeTerm(classFqn).title, "outbound");
-                        calls.push({from: caller.id, to: callee.id, label: methodName});
+                        const argumentsLabel = diagramContext.showDiagramArguments
+                            ? buildArgumentsLabel(resolveCalleeParameters(calleeFqn, diagramContext), typeLabel)
+                            : '';
+                        const label = argumentsLabel ? `${methodName}(${argumentsLabel})` : methodName;
+                        calls.push({from: caller.id, to: callee.id, label});
                     }
                 }
             }
@@ -787,12 +837,14 @@ const UsecaseApp = (() => {
             {key: 'showDiagramCallees', label: '呼び出し先'},
             {key: 'showDiagramInternalMethods', label: '内部メソッド'},
             {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
-            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
+            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'},
+            {key: 'showDiagramArguments', label: '引数'}
         ]);
 
         const generator = (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const currentUsecaseDiagram = buildUsecaseDiagram(method, contextMenu.getContext());
+            const context = contextMenu.getContext();
+            const currentUsecaseDiagram = buildUsecaseDiagram(method, context);
             const builder = Jig.mermaid.createBuilder();
             const classSubgraphs = new Map();
             const ensureClassSubgraph = (fqn) => {
@@ -829,7 +881,10 @@ const UsecaseApp = (() => {
                 }
             });
             currentUsecaseDiagram.edges.forEach(edge => {
-                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+                const label = (!edge.dotted && context.showDiagramArguments)
+                    ? buildArgumentsLabel(resolveCalleeParameters(edge.to, context), typeLabel)
+                    : "";
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), label, edge.dotted ?? false);
             });
             return builder.build(dir);
         };
@@ -847,7 +902,8 @@ const UsecaseApp = (() => {
     function createSequenceDiagramGenerator(method, buildCurrentDiagramContext) {
         const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
             {key: 'showDiagramInternalMethods', label: '内部メソッド'},
-            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'}
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+            {key: 'showDiagramArguments', label: '引数'}
         ]);
 
         const generator = () => {
@@ -1114,9 +1170,10 @@ const UsecaseApp = (() => {
         const inboundCallerIndex = buildInboundCallerIndex();
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
+        const outboundOperationParameterMap = buildOutboundOperationParameterMap(Jig.data.outbound.get());
 
         const buildCurrentDiagramContext = () => {
-            const context = {methodMap, reverseCallerMap, inboundCallerIndex, outboundOperationSet};
+            const context = {methodMap, reverseCallerMap, inboundCallerIndex, outboundOperationSet, outboundOperationParameterMap};
             DIAGRAM_TOGGLES.forEach(({id, key}) => context[key] = document.getElementById(id).checked);
             return context;
         };
@@ -1236,6 +1293,8 @@ const UsecaseApp = (() => {
         init,
         state,
         buildOutboundOperationSet,
+        buildOutboundOperationParameterMap,
+        buildArgumentsLabel,
         buildReverseCallerMap,
         buildUsecaseDiagram,
         buildClassGraph,

@@ -88,3 +88,31 @@ await page.waitForTimeout(500); // 再描画待ち
 
 - `fullPage: true` のスクリーンショットは `position: sticky` 要素（サイドバー等）をスクロール合成時に重複描画することがある。sticky要素の検証はビューポート単位のスクロールで行うこと（`~/.claude/CLAUDE.md` にも同様の注記あり）。
 - 図の存在確認には `.diagram-container` の派生クラス（`.class-diagram` `.package-diagram` 等、`usecase.js` の `Jig.dom.createElement("div", {className: "jig-card-section diagram-container ..."})` 呼び出しを参照）を使うと的確に絞り込める。
+- 自己解析結果（`build/jig`）のクラス数は少ないため、「特定の条件（1クラスのみのパッケージ等）を満たすデータ」がサンプルに存在しないことがある。無理に実データで揃えようとせず、次項のjsdom比較かPlaywright側でモックデータ（`globalThis.usecaseData = {...}` を差し込んでから `UsecaseApp.init()`）を使うほうが早い。
+
+## ブラウザを起動せずMermaidソースをテキスト比較する（軽量版）
+
+見た目の一致・差分を「スクリーンショットの目視」ではなく「生成されたMermaidソース文字列の diff」で確認したい場合、jsdom + 対象JSファイルの直接requireで十分なことが多い。ブラウザ起動より高速。
+
+```js
+const { JSDOM } = require('jsdom'); // jig-core/src/test/js で使っているのと同じ依存。プロジェクトルートで実行すること
+const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+global.document = dom.window.document;
+global.window = dom.window;
+global.marked = { parse: t => t };
+global.DOMPurify = { sanitize: h => h };
+
+// usecase.test.js と同じ順序でrequireする。jig-bootstrap.js を忘れると
+// 「Cannot read properties of undefined (reading 'register')」でusecase.js末尾のグローバル登録が落ちる
+require('./jig-core/src/main/resources/templates/assets/jig-util.js');
+require('./jig-core/src/main/resources/templates/assets/jig-data.js');
+require('./jig-core/src/main/resources/templates/assets/jig-glossary.js');
+require('./jig-core/src/main/resources/templates/assets/jig-mermaid.js');
+require('./jig-core/src/main/resources/templates/assets/jig-dom.js');
+require('./jig-core/src/main/resources/templates/assets/jig-bootstrap.js');
+const UsecaseApp = require('./jig-core/src/main/resources/templates/assets/usecase.js');
+
+// 以降、UsecaseApp.createXxxDiagramGenerator(...) を呼んで文字列比較する
+```
+
+**注意**: このスクリプトを `/tmp` や scratchpad に置いて `node` で実行すると `jsdom` が解決できず `MODULE_NOT_FOUND` になる（`node_modules` はプロジェクトルートにしかない）。一時ファイルとして書く場合もリポジトリルート直下に置いて実行し、確認が終わったら削除すること。

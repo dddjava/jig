@@ -1733,14 +1733,14 @@ globalThis.Jig.mermaid = (() => {
          */
         function unregisterWithin(rootElement) {
             if (!rootElement) return;
-            for (let i = diagramRegistry.length - 1; i >= 0; i--) {
-                const container = diagramRegistry[i].container;
-                if (!rootElement.contains(container)) continue;
-                diagramRegistry.splice(i, 1);
+            const remaining = diagramRegistry.filter(({container}) => {
+                if (!rootElement.contains(container)) return true;
                 renderedContainers.delete(container);
                 observerMap.get(container)?.disconnect();
                 observerMap.delete(container);
-            }
+                return false;
+            });
+            diagramRegistry.splice(0, diagramRegistry.length, ...remaining);
         }
 
         /**

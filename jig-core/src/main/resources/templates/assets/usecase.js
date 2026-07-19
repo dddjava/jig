@@ -251,12 +251,54 @@ const UsecaseApp = (() => {
         Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (!relation?.from || !relation?.to) return;
-                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
-                if (methodMap.has(callerClassFqn)) return;
+                if (methodMap.has(relation.from)) return; // 呼び出し元がusecase内メソッドなら上のループで登録済み
                 addEntry(relation.to, {fqn: relation.from, kind: "inbound-method"});
             });
         });
         return map;
+    }
+
+    /**
+     * @param {string} kind
+     * @param {DiagramContext} diagramContext
+     * @returns {boolean}
+     */
+    function shouldIncludeMethodNode(kind, diagramContext) {
+        return diagramContext.showDiagramInternalMethods || kind === "usecase";
+    }
+
+    /**
+     * 呼び出し先を辿り、非表示の内部メソッドは読み飛ばして（インライン化して）
+     * 可視ノード／出力インタフェースへの呼び出しを収集する共通トラバーサル。
+     * usecase図（ノード・エッジ）とシーケンス図（参加者・呼び出し）の両方が同じ辿り方を使う。
+     * @param {string} effectiveCallerFqn
+     * @param {string[]} callMethods
+     * @param {DiagramContext} diagramContext
+     * @param {Set<string>} visited
+     * @param {{onVisibleCallee: function(string, string, UsecaseMethod): void, onOutboundCallee: function(string, string): void}} handlers
+     * @param {Set<string>} [inliningPath]
+     */
+    function traverseCallGraph(effectiveCallerFqn, callMethods, diagramContext, visited, handlers, inliningPath = new Set()) {
+        if (!callMethods) return;
+        for (const calleeFqn of callMethods) {
+            if (diagramContext.methodMap.has(calleeFqn)) {
+                const m = diagramContext.methodMap.get(calleeFqn);
+                if (shouldIncludeMethodNode(m.kind, diagramContext)) {
+                    handlers.onVisibleCallee(effectiveCallerFqn, calleeFqn, m);
+                    if (!visited.has(calleeFqn)) {
+                        visited.add(calleeFqn);
+                        traverseCallGraph(calleeFqn, m.callMethods, diagramContext, visited, handlers, new Set());
+                    }
+                } else if (!inliningPath.has(calleeFqn)) {
+                    const nextPath = new Set(inliningPath);
+                    nextPath.add(calleeFqn);
+                    traverseCallGraph(effectiveCallerFqn, m.callMethods, diagramContext, visited, handlers, nextPath);
+                }
+            } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
+                if (!diagramContext.showDiagramOutboundPorts) continue;
+                handlers.onOutboundCallee(effectiveCallerFqn, calleeFqn);
+            }
+        }
     }
 
     /**
@@ -273,10 +315,6 @@ const UsecaseApp = (() => {
         nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
         visited.add(rootMethod.fqn);
 
-        function shouldIncludeMethodNode(kind) {
-            return diagramContext.showDiagramInternalMethods || kind === "usecase";
-        }
-
         const reverseCallerMap = diagramContext.reverseCallerMap;
 
         /**
@@ -291,7 +329,7 @@ const UsecaseApp = (() => {
             if (diagramContext.showDiagramInternalMethods) {
                 callers.forEach(caller => {
                     if (caller.fqn === rootFqn) return;
-                    if (!shouldIncludeMethodNode(caller.kind)) return;
+                    if (!shouldIncludeMethodNode(caller.kind, diagramContext)) return;
                     visible.set(caller.fqn, caller.kind);
                 });
                 return visible;
@@ -344,61 +382,28 @@ const UsecaseApp = (() => {
 
         if (diagramContext.showDiagramCallers !== false) {
             collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
-                const edgeKey = makeEdgeKey(callerFqn, rootMethod.fqn);
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: callerFqn, to: rootMethod.fqn});
-                }
+                addEdgeOnce(edgeSet, edges, callerFqn, rootMethod.fqn);
                 if (!nodes.has(callerFqn)) {
                     nodes.set(callerFqn, {fqn: callerFqn, kind});
                 }
             });
         }
 
-        /**
-         * @param {string} effectiveCallerFqn
-         * @param {string[]} callMethods
-         * @param {Set<string>} inliningPath
-         */
-        function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
-            if (!callMethods) return;
-            for (const calleeFqn of callMethods) {
-                if (diagramContext.methodMap.has(calleeFqn)) {
-                    const m = diagramContext.methodMap.get(calleeFqn);
-                    if (shouldIncludeMethodNode(m.kind)) {
-                        const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
-                        if (!edgeSet.has(edgeKey)) {
-                            edgeSet.add(edgeKey);
-                            edges.push({from: effectiveCallerFqn, to: calleeFqn});
-                        }
-                        if (!visited.has(calleeFqn)) {
-                            visited.add(calleeFqn);
-                            nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
-                            traverse(calleeFqn, m.callMethods, new Set());
-                        }
-                    } else {
-                        if (!inliningPath.has(calleeFqn)) {
-                            const nextPath = new Set(inliningPath);
-                            nextPath.add(calleeFqn);
-                            traverse(effectiveCallerFqn, m.callMethods, nextPath);
-                        }
+        if (diagramContext.showDiagramCallees !== false) {
+            traverseCallGraph(rootMethod.fqn, rootMethod.callMethods, diagramContext, visited, {
+                onVisibleCallee: (callerFqn, calleeFqn, m) => {
+                    addEdgeOnce(edgeSet, edges, callerFqn, calleeFqn);
+                    if (!nodes.has(calleeFqn)) {
+                        nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
                     }
-                } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
-                    if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: effectiveCallerFqn, to: calleeFqn});
-                    }
+                },
+                onOutboundCallee: (callerFqn, calleeFqn) => {
+                    addEdgeOnce(edgeSet, edges, callerFqn, calleeFqn);
                     if (!nodes.has(calleeFqn)) {
                         nodes.set(calleeFqn, {fqn: calleeFqn, kind: "outbound-method"});
                     }
                 }
-            }
-        }
-
-        if (diagramContext.showDiagramCallees !== false) {
-            traverse(rootMethod.fqn, rootMethod.callMethods);
+            });
         }
 
         const domainFqnSet = Jig.data.domain.getDomainFqnSet();
@@ -616,17 +621,6 @@ const UsecaseApp = (() => {
             const visited = new Set();
 
             /**
-             * @param {string} fqn
-             * @returns {string}
-             */
-            function getMethodSimpleName(fqn) {
-                const hashIdx = fqn.indexOf('#');
-                if (hashIdx === -1) return fqn;
-                const parenIdx = fqn.indexOf('(', hashIdx);
-                return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
-            }
-
-            /**
              * @param {string} key
              * @param {string} label
              * @param {string} kind
@@ -649,52 +643,29 @@ const UsecaseApp = (() => {
                 return ensureParticipant(key, label, "usecase");
             }
 
-            /**
-             * @param {string} effectiveCallerFqn
-             * @param {string[]} callMethods
-             * @param {Set<string>} inliningPath
-             */
-            function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
-                if (!callMethods) return;
-                for (const calleeFqn of callMethods) {
-                    const caller = participants.get(effectiveCallerFqn);
-                    if (diagramContext.methodMap.has(calleeFqn)) {
-                        const m = diagramContext.methodMap.get(calleeFqn);
-                        const isUc = m.kind === "usecase";
-                        if (diagramContext.showDiagramInternalMethods || isUc) {
-                            const callee = ensureUsecaseParticipant(calleeFqn);
-                            const label = diagramContext.showDiagramArguments
-                                ? buildArgumentsLabel(m.parameters, typeLabel)
-                                : '';
-                            calls.push({from: caller.id, to: callee.id, label});
-                            if (!visited.has(calleeFqn)) {
-                                visited.add(calleeFqn);
-                                traverse(calleeFqn, m.callMethods, new Set());
-                            }
-                        } else {
-                            if (!inliningPath.has(calleeFqn)) {
-                                const nextPath = new Set(inliningPath);
-                                nextPath.add(calleeFqn);
-                                traverse(effectiveCallerFqn, m.callMethods, nextPath);
-                            }
-                        }
-                    } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
-                        if (!diagramContext.showDiagramOutboundPorts) continue;
-                        const classFqn = getClassFqnFromMethodFqn(calleeFqn);
-                        const methodName = getMethodSimpleName(calleeFqn);
-                        const callee = ensureParticipant(classFqn, Jig.glossary.getTypeTerm(classFqn).title, "outbound");
-                        const argumentsLabel = diagramContext.showDiagramArguments
-                            ? buildArgumentsLabel(resolveCalleeParameters(calleeFqn, diagramContext), typeLabel)
-                            : '';
-                        const label = argumentsLabel ? `${methodName}(${argumentsLabel})` : methodName;
-                        calls.push({from: caller.id, to: callee.id, label});
-                    }
-                }
-            }
-
             ensureUsecaseParticipant(rootMethod.fqn);
             visited.add(rootMethod.fqn);
-            traverse(rootMethod.fqn, rootMethod.callMethods);
+            traverseCallGraph(rootMethod.fqn, rootMethod.callMethods, diagramContext, visited, {
+                onVisibleCallee: (callerFqn, calleeFqn, m) => {
+                    const caller = participants.get(callerFqn);
+                    const callee = ensureUsecaseParticipant(calleeFqn);
+                    const label = diagramContext.showDiagramArguments
+                        ? buildArgumentsLabel(m.parameters, typeLabel)
+                        : '';
+                    calls.push({from: caller.id, to: callee.id, label});
+                },
+                onOutboundCallee: (callerFqn, calleeFqn) => {
+                    const caller = participants.get(callerFqn);
+                    const classFqn = getClassFqnFromMethodFqn(calleeFqn);
+                    const methodName = Jig.glossary.methodSimpleName(calleeFqn);
+                    const callee = ensureParticipant(classFqn, Jig.glossary.getTypeTerm(classFqn).title, "outbound");
+                    const argumentsLabel = diagramContext.showDiagramArguments
+                        ? buildArgumentsLabel(resolveCalleeParameters(calleeFqn, diagramContext), typeLabel)
+                        : '';
+                    const label = argumentsLabel ? `${methodName}(${argumentsLabel})` : methodName;
+                    calls.push({from: caller.id, to: callee.id, label});
+                }
+            });
 
             return {
                 participants: participantKeys.map(k => participants.get(k)),
@@ -744,11 +715,10 @@ const UsecaseApp = (() => {
 
         const handlerFqns = state.handlerFqns;
         const filterText = state.sidebarFilterText.toLowerCase();
-        const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
 
         // テキストフィルタ: クラス名/所属パッケージ名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
         const filteredItems = usecases.flatMap(usecase => {
-            const visibleMethods = usecase.methods.filter(isVisibleMethod);
+            const visibleMethods = visibleUsecaseMethodsOf(usecase, handlerFqns);
             if (visibleMethods.length === 0) return [];
             if (!filterText) return [{usecase, methods: visibleMethods}];
 
@@ -850,6 +820,7 @@ const UsecaseApp = (() => {
             };
             currentUsecaseDiagram.nodes.forEach(node => {
                 const nodeId = fqnToNodeId(node.fqn);
+                if (addLinkedClassNode(builder, node, typeLabel)) return;
                 if (node.kind === "inbound-method") {
                     const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
@@ -860,10 +831,6 @@ const UsecaseApp = (() => {
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "outbound");
                     builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(classFqn), node.fqn);
-                } else if (node.kind === "domain-type") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "domain");
-                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
                 } else if (node.kind === "usecase") {
                     const {subgraph} = ensureClassSubgraph(node.fqn);
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
@@ -1246,6 +1213,7 @@ const UsecaseApp = (() => {
         ['display-target-all', 'display-target-handlers-only'].forEach(id => {
             const radio = document.getElementById(id);
             if (radio) radio.addEventListener('change', () => {
+                if (!state.data) return; // 前回initでデータなしになっていた場合、古いリスナーが残っていても何もしない
                 const handlersOnly = document.getElementById('display-target-handlers-only')?.checked ?? false;
                 state.handlerFqns = handlersOnly ? buildHandlerFqns() : null;
                 const usecases = state.data.usecases;

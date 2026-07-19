@@ -41,6 +41,8 @@ java -jar jig-cli/build/libs/jig-cli.jar
 cp jig-core/src/main/resources/templates/assets/usecase.js build/jig/assets/usecase.js
 ```
 
+ただし `jig-*.js`（jig-util / jig-i18n 等）を変更した場合、ページが読み込むのはビルド時に結合される `jig-bundle.js` なので個別コピーでは反映されない。手動結合はビルド定義との乖離リスクがあるためせず、素直に `bootJar` → 実行をやり直すこと。
+
 `templates/*.html` 自体（`{{...}}` プレースホルダ）を変更した場合は、プレースホルダ展開が必要なため上記コピーでは反映されない。素直に `bootJar` → 実行をやり直す。
 
 ## 4. 簡易サーバーで配信

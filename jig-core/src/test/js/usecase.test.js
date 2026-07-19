@@ -507,8 +507,9 @@ test.describe('usecase.js', () => {
             assert.ok(code.includes('graph LR'));
             // 内部メソッド間の関連があること
             assert.ok(code.includes('->'));
-            // クラス単位の図にはsubgraphが含まれない（単純なグラフ）
-            assert.ok(!code.includes('subgraph'));
+            // クラス単位の図はクラス自身がsubgraphの枠になる
+            const classSubgraphId = Jig.util.fqnToId("sg", 'com.example.ServiceA');
+            assert.ok(code.includes(`subgraph ${classSubgraphId}`));
         });
 
         test('show-diagram-domain-typesがONの場合、クラス単位の図にドメインモデルノードが表示される', () => {
@@ -2568,6 +2569,28 @@ test.describe('usecase.js', () => {
             const source = generator('LR', {});
             assert.ok(source.includes(`subgraph ${classASubgraphId}`), 'クラスがsubgraphの枠になる');
             assert.ok(source.includes(methodANodeId) && source.includes(methodBNodeId), 'メソッド単位ノードを含む');
+        });
+
+        test('1クラスのみのパッケージでは、メソッド単位表示とクラス単位のユースケース図が同じソースになる', () => {
+            const usecaseA = {
+                fqn: 'pkg.ServiceA',
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {fqn: 'pkg.ServiceA#method1()', visibility: 'PUBLIC', callMethods: ['pkg.ServiceA#method2()']},
+                    {fqn: 'pkg.ServiceA#method2()', visibility: 'PUBLIC', callMethods: []}
+                ]
+            };
+            const context = buildContext();
+
+            const packageGenerator = UsecaseApp.createPackageDiagramGenerator([usecaseA], () => context);
+            packageGenerator.buildExtraMenuItems(() => {}).find(i => i.label === 'メソッド単位').onSelect();
+            const packageSource = packageGenerator('LR', {});
+
+            const classGenerator = UsecaseApp.createClassDiagramGenerator(usecaseA, null, () => context);
+            const classSource = classGenerator('LR', {});
+
+            assert.equal(packageSource, classSource);
         });
     });
 });

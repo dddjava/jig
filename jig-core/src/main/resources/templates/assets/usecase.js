@@ -1068,15 +1068,16 @@ const UsecaseApp = (() => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
             const classGraph = buildClassGraph(usecase, handlerFqns, contextMenu.getContext());
             const builder = Jig.mermaid.createBuilder();
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", usecase.fqn), typeLabel(usecase.fqn), 'LR');
             classGraph.nodes.forEach(node => {
                 const nodeId = fqnToNodeId(node.fqn);
                 if (addLinkedClassNode(builder, node, typeLabel)) return;
                 if (node.kind === "usecase") {
-                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "usecase");
                     builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
                 } else {
-                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "inactive");
                     builder.addTooltip(nodeId, node.fqn);
                 }

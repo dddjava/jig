@@ -722,9 +722,6 @@ td.fqn {
     margin: 0;
     display: grid;
     gap: 4px;
-    /* 9行分 + gap 8つ分。要素が多い場合はカードを広げずスクロールする */
-    max-height: calc(9lh + 32px);
-    overflow-y: auto;
 }
 
 body.hide-usecase-members .tab-member-section {

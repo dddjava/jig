@@ -43,6 +43,10 @@ npm run lint:css
 - それ以外（または混在） → `npm run test:full`
 - CSS のみの変更、または `docs` コミットに該当する変更のみテスト省略可
 
+### ブラウザでの見た目確認（Playwright）
+
+HTML/Mermaid図の見た目確認手順は `jig-core/src/test/playwright/README.md` を参照。JIGは自分自身を解析対象にでき、`java -jar jig-cli/build/libs/jig-cli.jar` をリポジトリルートで実行すると `./build/jig/` にサンプルドキュメント一式が生成される。
+
 ## アーキテクチャ
 
 ### モジュール構成

@@ -1571,6 +1571,30 @@ test.describe('usecase.js', () => {
                 assert.ok(result.calls[0].to.includes('_D_'));
             });
 
+            test('非表示メソッドのダイヤモンド合流は一度だけ展開され、呼び出しが重複しない(シーケンス図)', () => {
+                // A -> p1 -> x -> T と A -> p2 -> x -> T の合流。xの展開は1回で、A -> T は1本になる
+                const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#p1()', 'pkg.Cls#p2()'], kind: 'usecase'};
+                const methodMap = new Map([
+                    ['pkg.Cls#A()', {...rootMethod, kind: 'usecase'}],
+                    ['pkg.Cls#p1()', {fqn: 'pkg.Cls#p1()', callMethods: ['pkg.Cls#x()'], kind: 'method'}],
+                    ['pkg.Cls#p2()', {fqn: 'pkg.Cls#p2()', callMethods: ['pkg.Cls#x()'], kind: 'method'}],
+                    ['pkg.Cls#x()', {fqn: 'pkg.Cls#x()', callMethods: ['pkg.Cls#T()'], kind: 'method'}],
+                    ['pkg.Cls#T()', {fqn: 'pkg.Cls#T()', callMethods: [], kind: 'usecase'}]
+                ]);
+
+                const result = SequenceDiagram.buildDiagram(rootMethod, {
+                    methodMap,
+                    outboundOperationSet: new Set(),
+                    showDiagramInternalMethods: false,
+                    showDiagramOutboundPorts: true
+                });
+
+                assert.equal(result.participants.length, 2);
+                assert.equal(result.calls.length, 1);
+                assert.ok(result.calls[0].from.includes('_A_'));
+                assert.ok(result.calls[0].to.includes('_T_'));
+            });
+
             test('showDiagramOutboundPortsがfalseの場合、外部ポートはパーティシパントとして追加されない', () => {
                 const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: ['ext.Cls#method()'], kind: 'usecase'};
                 const methodMap = new Map([['pkg.Cls#A()', {...rootMethod, kind: 'usecase'}]]);

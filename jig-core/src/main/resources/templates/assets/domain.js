@@ -763,29 +763,6 @@ const DomainApp = (() => {
     }
 
     function setupTypeDiagramPanel(panel, type, typeRelations, typesMap, diagramType) {
-        const outgoingCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "type-relation-outgoing"}
-        });
-        outgoingCheckbox.checked = true;
-        const incomingCheckbox = Jig.dom.createElement("input", {
-            attributes: {type: "checkbox", class: "type-relation-incoming"}
-        });
-        incomingCheckbox.checked = true;
-        panel.appendChild(Jig.dom.createElement("fieldset", {
-            className: "diagram-panel-options",
-            children: [
-                Jig.dom.createElement("legend", {textContent: "表示"}),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [incomingCheckbox, "関連元"]
-                }),
-                Jig.dom.createElement("label", {
-                    className: "diagram-panel-option",
-                    children: [outgoingCheckbox, "関連先"]
-                }),
-            ]
-        }));
-
         const extraControls = [];
         let getClassDefOptions = () => ({});
 
@@ -838,21 +815,21 @@ const DomainApp = (() => {
         }
 
         const settingsOverride = createDiagramSettingsOverride([
+            {key: 'showIncoming', label: '関連元', getGlobalValue: () => true},
+            {key: 'showOutgoing', label: '関連先', getGlobalValue: () => true},
             {key: 'showDeprecatedNodes', label: 'Deprecated ノード', getGlobalValue: () => domainSettings.showDeprecatedNodes}
         ]);
 
         const render = (container) => {
             renderDiagram(container, {
                 pkg: undefined, type, diagramType, typeRelations, typesMap,
-                showOutgoing: outgoingCheckbox.checked,
-                showIncoming: incomingCheckbox.checked,
                 ...getClassDefOptions(),
                 getSettingsOverrides: settingsOverride.getValues,
                 buildExtraMenuItems: settingsOverride.buildExtraMenuItems
             });
         };
         const container = Jig.mermaid.diagram.createAndRegister(panel, render);
-        [outgoingCheckbox, incomingCheckbox, ...extraControls].forEach(el => {
+        extraControls.forEach(el => {
             el.addEventListener('change', () => render(container));
         });
     }
@@ -1091,7 +1068,7 @@ const DomainApp = (() => {
     function renderDiagram(container, diagram) {
         const {
             pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap,
-            showOutgoing = true, showIncoming = true, showFields = true, showMethods = true,
+            showFields = true, showMethods = true,
             maxVisibility = 'PRIVATE',
             getSettingsOverrides = () => ({}), buildExtraMenuItems
         } = diagram;
@@ -1117,12 +1094,12 @@ const DomainApp = (() => {
             );
         } else if (diagramType === 'classDirect') {
             renderIfNonNull(
-                (dir, opts) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showPhysicalName: opts?.showPhysicalName, showDeprecatedNodes: getSettingsOverrides().showDeprecatedNodes}),
+                (dir, opts) => createTypeRelationDiagram(type, typeRelations, typesMap, dir, {showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'classDefinition') {
             renderIfNonNull(
-                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showOutgoing, showIncoming, showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName, showDeprecatedNodes: getSettingsOverrides().showDeprecatedNodes}),
+                (dir, opts) => createTypeClassDiagramSource(type, typeRelations, typesMap, dir, {showFields, showMethods, maxVisibility, showPhysicalName: opts?.showPhysicalName, ...getSettingsOverrides()}),
                 {enableLabelToggle: true}
             );
         } else if (diagramType === 'type') {

@@ -687,17 +687,24 @@ globalThis.Jig.dom = (() => {
         collapseBtn.dataset.initialized = 'true';
         const nav = collapseBtn.closest('nav');
         if (!nav) return;
+        const setCollapsed = (collapsed) => {
+            nav.classList.toggle('sidebar--collapsed', collapsed);
+            collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+        };
         collapseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const collapsed = nav.classList.toggle('sidebar--collapsed');
-            collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+            setCollapsed(!nav.classList.contains('sidebar--collapsed'));
         });
         nav.addEventListener('click', () => {
-            if (nav.classList.contains('sidebar--collapsed')) {
-                nav.classList.remove('sidebar--collapsed');
-                collapseBtn.setAttribute('aria-expanded', 'true');
-            }
+            if (nav.classList.contains('sidebar--collapsed')) setCollapsed(false);
         });
+        // 縦並びレイアウト（common.css の max-width: 900px と同期）ではデフォルト折りたたみ
+        const narrowLayout = typeof window !== "undefined" && window.matchMedia
+            ? window.matchMedia('(max-width: 900px)') : null;
+        if (narrowLayout) {
+            setCollapsed(narrowLayout.matches);
+            narrowLayout.addEventListener('change', (e) => setCollapsed(e.matches));
+        }
     }
 
     // Altキー押下中はトグルホバー時に見た目を変え、配下もまとめて開閉することを示す

@@ -352,8 +352,7 @@ main table thead {
 
 .split-view > nav.sidebar--collapsed {
     width: var(--sidebar-collapsed-width);
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0;
     cursor: pointer;
 }
 
@@ -382,6 +381,12 @@ main table thead {
     .split-view > nav {
         width: 100%;
         max-height: 40vh;
+    }
+
+    /* 縦並び時は横でなく上方向に閉じ、幅いっぱいの薄いバーとして表示する */
+    .split-view > nav.sidebar--collapsed {
+        width: 100%;
+        max-height: none;
     }
 
     .split-view > main,
@@ -1548,8 +1553,36 @@ body.jig-alt-held .in-page-sidebar__toggle[aria-expanded="false"]:hover::after {
     content: "◀";
 }
 
+/* 折りたたみ時はボタンの枠を消してバー全体に広げ、どこを押しても展開できる見た目にする */
+
+.sidebar--collapsed .sidebar-header {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.sidebar--collapsed .sidebar-collapse-btn {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+}
+
 .sidebar--collapsed .sidebar-collapse-btn::after {
     content: "▶";
+}
+
+@media (max-width: 900px) {
+    /* 縦並び時は上方向に開閉するため矢印の向きを変える */
+    .sidebar-collapse-btn::after {
+        content: "▲";
+    }
+
+    .sidebar--collapsed .sidebar-collapse-btn::after {
+        content: "▼";
+    }
+
+    .sidebar--collapsed .sidebar-collapse-btn {
+        height: 32px;
+    }
 }
 
 /* サイドバー 表示設定パネル */

@@ -831,6 +831,84 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('sidebar.initCollapseBtn', () => {
+        // matchMedia をスタブし、matches の初期値と change イベント発火を制御する
+        function stubMatchMedia(initialMatches) {
+            const listeners = [];
+            const mql = {
+                matches: initialMatches,
+                addEventListener: (type, fn) => { if (type === 'change') listeners.push(fn); },
+            };
+            window.matchMedia = () => mql;
+            return {
+                setMatches(matches) {
+                    mql.matches = matches;
+                    listeners.forEach(fn => fn({matches}));
+                }
+            };
+        }
+
+        function setupSidebarDom() {
+            document.body.insertAdjacentHTML('beforeend', `
+                <nav id="test-sidebar" class="in-page-sidebar">
+                    <div class="sidebar-header">
+                        <button id="sidebar-collapse-btn" aria-expanded="true"></button>
+                    </div>
+                </nav>`);
+            return {
+                nav: document.getElementById('test-sidebar'),
+                btn: document.getElementById('sidebar-collapse-btn'),
+            };
+        }
+
+        test('ボタンクリックで折りたたみと展開が切り替わる', () => {
+            stubMatchMedia(false);
+            const {nav, btn} = setupSidebarDom();
+            Jig.dom.sidebar.initCollapseBtn();
+
+            btn.click();
+            assert.ok(nav.classList.contains('sidebar--collapsed'));
+            assert.equal(btn.getAttribute('aria-expanded'), 'false');
+
+            btn.click();
+            assert.ok(!nav.classList.contains('sidebar--collapsed'));
+            assert.equal(btn.getAttribute('aria-expanded'), 'true');
+        });
+
+        test('折りたたみ状態ではnavのどこをクリックしても展開する', () => {
+            stubMatchMedia(false);
+            const {nav, btn} = setupSidebarDom();
+            Jig.dom.sidebar.initCollapseBtn();
+
+            btn.click();
+            nav.click();
+            assert.ok(!nav.classList.contains('sidebar--collapsed'));
+            assert.equal(btn.getAttribute('aria-expanded'), 'true');
+        });
+
+        test('縦並びレイアウトではデフォルトで折りたたまれる', () => {
+            stubMatchMedia(true);
+            const {nav, btn} = setupSidebarDom();
+            Jig.dom.sidebar.initCollapseBtn();
+
+            assert.ok(nav.classList.contains('sidebar--collapsed'));
+            assert.equal(btn.getAttribute('aria-expanded'), 'false');
+        });
+
+        test('レイアウト切替時にデフォルト状態（縦並び=折りたたみ、横並び=展開）へ戻る', () => {
+            const media = stubMatchMedia(false);
+            const {nav} = setupSidebarDom();
+            Jig.dom.sidebar.initCollapseBtn();
+            assert.ok(!nav.classList.contains('sidebar--collapsed'));
+
+            media.setMatches(true);
+            assert.ok(nav.classList.contains('sidebar--collapsed'));
+
+            media.setMatches(false);
+            assert.ok(!nav.classList.contains('sidebar--collapsed'));
+        });
+    });
+
     test.describe('type.resolver', () => {
         test('デフォルトは null', () => {
             assert.equal(Jig.dom.type.getResolver(), null);

@@ -4,12 +4,6 @@
     padding-top: 1rem;
 }
 
-.glossary .search-option label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
 .glossary .kind-option-title {
     margin: 0 0 8px 0;
     font-weight: bold;
@@ -26,28 +20,13 @@
     gap: 8px 16px;
 }
 
-.glossary .radio-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 16px;
-}
+/* チェックボックス選択肢内のバッジサイズ調整 */
 
-/* チェックボックス/ラジオボタン選択肢内のバッジサイズ調整 */
-
-.glossary .checkbox-options .kind-badge,
-.glossary .radio-options .kind-badge {
+.glossary .checkbox-options .kind-badge {
     width: 1.1em;
     height: 1.1em;
     font-size: var(--jig-font-size-2xs);
     margin-right: 0;
-}
-
-.glossary input[type="text"] {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
 }
 
 .glossary .display-option {

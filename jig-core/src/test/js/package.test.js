@@ -159,17 +159,6 @@ test.describe('package.js', () => {
 
     test.describe('フィルタ', () => {
         test.describe('ロジック', () => {
-            test('normalizePackageFilterValue: 空文字または空白のみの文字列は空の配列を返す', () => {
-                assert.deepEqual(PackageApp.normalizePackageFilterValue(''), []);
-                assert.deepEqual(PackageApp.normalizePackageFilterValue('   '), []);
-            });
-
-            test('normalizePackageFilterValue: 改行区切りの文字列を配列として返す', () => {
-                assert.deepEqual(PackageApp.normalizePackageFilterValue('app.domain\napp.other'), ['app.domain', 'app.other']);
-                assert.deepEqual(PackageApp.normalizePackageFilterValue('  app.domain  \n  app.other  '), ['app.domain', 'app.other']);
-                assert.deepEqual(PackageApp.normalizePackageFilterValue('app.domain\n\napp.other'), ['app.domain', 'app.other']);
-            });
-
             test('normalizeAggregationDepthValue: 数値化する', () => {
                 assert.equal(PackageApp.normalizeAggregationDepthValue('2'), 2);
                 assert.equal(PackageApp.normalizeAggregationDepthValue('0'), 0);
@@ -216,22 +205,6 @@ test.describe('package.js', () => {
                     {ancestor: undefined, relative: 'other.pkg'}); // 親がいない
             });
 
-            test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
-                const visibility = PackageApp.buildPackageRowVisibility(
-                    ['app.domain', 'app.other'],
-                    ['app.domain']
-                );
-                assert.deepEqual(visibility, [true, false]);
-            });
-
-            test('buildPackageRowVisibility: 複数パッケージフィルタのうちいずれかに一致するものを表示する', () => {
-                const visibility = PackageApp.buildPackageRowVisibility(
-                    ['app.domain.model', 'app.domain.service', 'app.other'],
-                    ['app.domain.model', 'app.other']
-                );
-                assert.deepEqual(visibility, [true, false, true]);
-            });
-
             const packages = [
                 {fqn: 'app.a'},
                 {fqn: 'app.b'},
@@ -243,55 +216,6 @@ test.describe('package.js', () => {
                 {from: 'app.b', to: 'app.c'},
                 {from: 'app.c', to: 'lib.d'},
             ];
-
-            test('collectRelatedSet: directモードは隣接のみを含める', () => {
-                const aggregationDepth = 0;
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.domain.c'},
-                ];
-
-                const related = PackageApp.collectFocusSet('app.domain.a', relations, aggregationDepth, '0', '1');
-
-                assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
-            });
-
-            test('collectFocusSet: allモードは推移的に辿る', () => {
-                const aggregationDepth = 0;
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.domain.c'},
-                ];
-
-                const focusSet = PackageApp.collectFocusSet('app.domain.a', relations, aggregationDepth, '-1', '-1');
-
-                assert.deepEqual(
-                    Array.from(focusSet).sort(),
-                    ['app.domain.a', 'app.domain.b', 'app.domain.c']
-                );
-            });
-
-            test('collectFocusSet: 依存元なし、依存先直接の場合', () => {
-                const aggregationDepth = 0;
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.c', to: 'app.a'},
-                    {from: 'app.a', to: 'app.d'},
-                ];
-                const focusSet = PackageApp.collectFocusSet('app.a', relations, aggregationDepth, '0', '1');
-                assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.b', 'app.d']); // a -> b, a -> d (direct callees)
-            });
-
-            test('collectFocusSet: 依存元直接、依存先なしの場合', () => {
-                const aggregationDepth = 0;
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.c', to: 'app.a'},
-                    {from: 'app.d', to: 'app.a'},
-                ];
-                const focusSet = PackageApp.collectFocusSet('app.a', relations, aggregationDepth, '1', '0');
-                assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.c', 'app.d']); // c -> a, d -> a (direct callers)
-            });
 
             test('collectExploreNodeSets: 直接モードで起点の依存元・依存先を収集する', () => {
                 const relations = [
@@ -416,35 +340,6 @@ test.describe('package.js', () => {
 
     test.describe('テーブル', () => {
         test.describe('ロジック', () => {
-            test('aggregatePackageData: depth=0はそのまま返す', () => {
-                const packages = [{fqn: 'app.domain.a', classCount: 1}];
-                const relations = [{from: 'app.domain.a', to: 'app.other.b'}];
-                const result = PackageApp.aggregatePackageData(packages, relations, 0);
-                assert.equal(result.packages, packages);
-                assert.equal(result.relations, relations);
-            });
-
-            test('aggregatePackageData: depth指定でパッケージと関連を集約する', () => {
-                const packages = [
-                    {fqn: 'app.domain.a', classCount: 2},
-                    {fqn: 'app.domain.b', classCount: 3},
-                    {fqn: 'app.other.c', classCount: 1},
-                ];
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.other.c'},
-                    {from: 'app.domain.b', to: 'app.other.c'}, // 集約後は重複
-                    {from: 'app.domain.a', to: 'app.domain.b'}, // 集約後は自己ループ→除外
-                ];
-
-                const result = PackageApp.aggregatePackageData(packages, relations, 2);
-
-                assert.equal(result.packages.length, 2);
-                const domain = result.packages.find(p => p.fqn === 'app.domain');
-                assert.equal(domain.classCount, 5);
-                assert.equal(result.relations.length, 1);
-                assert.equal(result.relations[0].from, 'app.domain');
-                assert.equal(result.relations[0].to, 'app.other');
-            });
         });
 
         test.describe('UI', () => {
@@ -832,18 +727,6 @@ test.describe('package.js', () => {
 
                 assert.equal(testContext.transitiveReductionEnabled, false);
             });
-        });
-    });
-
-    test.describe('filterByPackageFilter', () => {
-        test('フィルタありの場合パッケージと関連を絞り込む', () => {
-            const packages = [{fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'lib.c'}];
-            const relations = [{from: 'app.a', to: 'app.b'}, {from: 'app.a', to: 'lib.c'}];
-            const result = PackageApp.filterByPackageFilter(packages, relations, ['app']);
-            assert.equal(result.packages.length, 2);
-            assert.equal(result.relations.length, 1);
-            assert.equal(result.relations[0].from, 'app.a');
-            assert.equal(result.relations[0].to, 'app.b');
         });
     });
 

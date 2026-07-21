@@ -137,8 +137,8 @@ const LibraryDependencyApp = (() => {
         visibleLibraries.forEach(g => {
             const id = nodeId(g.id);
             libraryIdByNodeId.set(id, g.id);
-            lines.push(`    ${id}@{shape: doc, label: \"${escape(g.displayName)}\"}`);
-            lines.push(`    click ${id} handleLibraryClick \"${escape(g.displayName)}\"`);
+            lines.push(`    ${id}@{shape: doc, label: "${escape(g.displayName)}"}`);
+            lines.push(`    click ${id} handleLibraryClick "${escape(g.displayName)}"`);
         });
 
         visibleEdges.forEach(e => {
@@ -182,11 +182,9 @@ const LibraryDependencyApp = (() => {
         const segmentLabel = (parentFqn && node.fqn.startsWith(parentFqn + '.'))
             ? node.fqn.substring(parentFqn.length + 1)
             : node.fqn;
-        const physicalLabel = segmentLabel;
-        const termLabel = packageTermTitle(node.fqn) || segmentLabel;
-        const label = showPhysicalName ? physicalLabel : termLabel;
+        const label = showPhysicalName ? segmentLabel : (packageTermTitle(node.fqn) || segmentLabel);
         if (node.children.size === 0) {
-            lines.push(`${pad(indent)}${nodeId(node.fqn)}@{shape: st-rect, label: \"${escape(label)}\"}`);
+            lines.push(`${pad(indent)}${nodeId(node.fqn)}@{shape: st-rect, label: "${escape(label)}"}`);
             return;
         }
         if (!node.isLeaf && node.children.size === 1) {
@@ -195,11 +193,11 @@ const LibraryDependencyApp = (() => {
             return;
         }
         const groupId = `${nodeId(node.fqn)}_grp`;
-        lines.push(`${pad(indent)}subgraph ${groupId} [\"${escape(label)}\"]`);
+        lines.push(`${pad(indent)}subgraph ${groupId} ["${escape(label)}"]`);
         if (node.isLeaf) {
             const selfId = nodeId(node.fqn);
             const selfLabel = showPhysicalName ? node.fqn : (packageTermTitle(node.fqn) || node.fqn);
-            lines.push(`${pad(indent + 1)}${selfId}@{shape: st-rect, label: \"${escape(selfLabel)}\"}`);
+            lines.push(`${pad(indent + 1)}${selfId}@{shape: st-rect, label: "${escape(selfLabel)}"}`);
             parentSelfIds.push(selfId);
         }
         renderTreeChildren(node, lines, indent + 1, node.fqn, parentSelfIds, showPhysicalName);

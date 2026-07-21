@@ -84,50 +84,6 @@ const PackageApp = (() => {
         return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
-    function aggregatePackageData(packages, relations, depth) {
-        if (!depth || depth <= 0) return {packages, relations};
-
-        const packageMap = new Map();
-        packages.forEach(pkg => {
-            const aggFqn = Jig.util.getAggregatedFqn(pkg.fqn, depth);
-            if (!packageMap.has(aggFqn)) {
-                packageMap.set(aggFqn, {fqn: aggFqn, classCount: 0});
-            }
-            packageMap.get(aggFqn).classCount += (pkg.classCount ?? 0);
-        });
-
-        const relationKeys = new Set();
-        const aggregatedRelations = [];
-        relations.forEach(rel => {
-            const from = Jig.util.getAggregatedFqn(rel.from, depth);
-            const to = Jig.util.getAggregatedFqn(rel.to, depth);
-            if (from === to) return;
-            const key = `${from}::${to}`;
-            if (!relationKeys.has(key)) {
-                relationKeys.add(key);
-                aggregatedRelations.push({from, to});
-            }
-        });
-
-        return {packages: Array.from(packageMap.values()), relations: aggregatedRelations};
-    }
-
-    function filterByPackageFilter(packages, relations, packageFilterFqn) {
-        if (packageFilterFqn.length === 0) return {packages, relations};
-        return {
-            packages: packages.filter(pkg => Jig.util.isWithinPackageFilters(pkg.fqn, packageFilterFqn)),
-            relations: relations.filter(r =>
-                Jig.util.isWithinPackageFilters(r.from, packageFilterFqn) &&
-                Jig.util.isWithinPackageFilters(r.to, packageFilterFqn)),
-        };
-    }
-
-    function normalizePackageFilterValue(value) {
-        const trimmed = (value ?? '').trim();
-        if (!trimmed) return [];
-        return trimmed.split('\n').map(s => s.trim()).filter(s => s);
-    }
-
     function normalizeAggregationDepthValue(value) {
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : 0;
@@ -144,10 +100,6 @@ const PackageApp = (() => {
         if (!domainPackageRoots?.length) return 0;
         const minDepth = Math.min(...domainPackageRoots.map(fqn => Jig.util.getPackageDepth(fqn)));
         return minDepth + 1;
-    }
-
-    function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
-        return rowFqns.map(fqn => Jig.util.isWithinPackageFilters(fqn, packageFilterFqn));
     }
 
     function traverseGraph(root, adjacencyMap) {
@@ -178,42 +130,6 @@ const PackageApp = (() => {
             Jig.util.addToSetMap(adjacency, key, value);
         });
         return adjacency;
-    }
-
-    function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, focusCalleeMode) {
-        if (!root) return new Set();
-
-        const focusSet = new Set([root]);
-
-        if (focusCallerMode !== '0') {
-            if (focusCallerMode === '1') {
-                relations.forEach(relation => {
-                    const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                    const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                    if (to === root) focusSet.add(from);
-                });
-            } else {
-                const reverseAdjacency = buildAdjacency(relations, aggregationDepth, true);
-                const callers = traverseGraph(root, reverseAdjacency);
-                callers.forEach(caller => focusSet.add(caller));
-            }
-        }
-
-        if (focusCalleeMode !== '0') {
-            if (focusCalleeMode === '1') {
-                relations.forEach(relation => {
-                    const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                    const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                    if (from === root) focusSet.add(to);
-                });
-            } else {
-                const forwardAdjacency = buildAdjacency(relations, aggregationDepth, false);
-                const callees = traverseGraph(root, forwardAdjacency);
-                callees.forEach(callee => focusSet.add(callee));
-            }
-        }
-
-        return focusSet;
     }
 
     function collectExploreNodeSets(targetPackages, relations, callerMode, calleeMode) {
@@ -1428,14 +1344,9 @@ const PackageApp = (() => {
         parsePackageRelationData,
         getGlossaryTitle,
         getMaxPackageDepth,
-        aggregatePackageData,
-        filterByPackageFilter,
-        normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,
         getInitialAggregationDepth,
-        buildPackageRowVisibility,
-        collectFocusSet,
         collectExploreNodeSets,
         buildVisibleDiagramElements,
         buildPackageTableRowData,

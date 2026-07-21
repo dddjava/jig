@@ -31,7 +31,7 @@ const InboundApp = (() => {
             });
         }
 
-        const allFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
+        const allFqns = new Set(entrypointFqns);
         controller.relations.forEach(edge => {
             allFqns.add(edge.from);
             allFqns.add(edge.to);

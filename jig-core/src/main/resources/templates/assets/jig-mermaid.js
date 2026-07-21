@@ -191,25 +191,27 @@ globalThis.Jig.mermaid = (() => {
         }
 
         /**
+         * パッケージ関連図の共通部分（ヘッダ・ノード・エッジ・親パッケージのclassDef）を組み立てる。
+         * 表示する親パッケージの追加条件と、末尾に足すスタイル行は呼び出し側が hooks で与える。
+         *
          * @param {Set<string>} packageFqns
          * @param {Relation[]} uniqueRelations
          * @param {MermaidDiagramSourceOptions} options
+         * @param {{keepParentFqn?: function(string): boolean, appendStyles?: function(string[], Map<string, string>, Set<string>): void}} [hooks]
          */
-        function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
-            const {diagramDirection, focusedPackageFqn, clickHandlerName, nodeClickUrlCallback} = options;
+        function buildPackageDiagramSource(packageFqns, uniqueRelations, options, hooks = {}) {
+            const {diagramDirection, clickHandlerName, nodeClickUrlCallback, showPhysicalName} = options;
+            const {keepParentFqn, appendStyles} = hooks;
 
             // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
             const allParentFqns = buildParentFqns(packageFqns);
             const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
 
-            // 関連のない親パッケージを packageFqns から除外
+            // 関連のない親パッケージを packageFqns から除外する（keepParentFqn で個別に残せる）
             const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
-                // 親パッケージの場合、関連を持つものだけを含める
-                if (allParentFqns.has(fqn)) {
-                    return parentFqnsWithRelations.has(fqn);
-                }
-                // 親パッケージでない場合は常に含める
-                return true;
+                if (!allParentFqns.has(fqn)) return true;
+                if (keepParentFqn?.(fqn)) return true;
+                return parentFqnsWithRelations.has(fqn);
             }));
 
             const lines = [
@@ -220,7 +222,7 @@ globalThis.Jig.mermaid = (() => {
                 "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
                 "---",
                 `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName});
             const subgraphNodeIds = new Map();
 
             const nodeLines = buildDiagramNodeLines(
@@ -234,7 +236,7 @@ globalThis.Jig.mermaid = (() => {
                     nodeClickUrlCallback,
                     parentFqnsWithRelations,
                     subgraphNodeIds,
-                    showPhysicalName: options.showPhysicalName,
+                    showPhysicalName,
                 }
             );
             const {
@@ -247,15 +249,29 @@ globalThis.Jig.mermaid = (() => {
             edgeLines.forEach(line => lines.push(line));
             linkStyles.forEach(styleLine => lines.push(styleLine));
 
-            // ノードのスタイルを指定。どちらも存在しない場合もあるが、classDefに害はないので出力する。
+            // 親パッケージが存在しない場合もあるが、classDefに害はないので常に出力する。
             // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
             lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
-            if (focusedPackageFqn && nodeIdByFqn.has(focusedPackageFqn)) {
-                // 選択されたものがあれば強調表示する
-                lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
-            }
+            appendStyles?.(lines, nodeIdByFqn, packageFqnsToDisplay);
 
             return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+        }
+
+        /**
+         * @param {Set<string>} packageFqns
+         * @param {Relation[]} uniqueRelations
+         * @param {MermaidDiagramSourceOptions} options
+         */
+        function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
+            const {focusedPackageFqn} = options;
+            return buildPackageDiagramSource(packageFqns, uniqueRelations, options, {
+                appendStyles: (lines, nodeIdByFqn) => {
+                    // 選択されたものがあれば強調表示する
+                    if (focusedPackageFqn && nodeIdByFqn.has(focusedPackageFqn)) {
+                        lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
+                    }
+                }
+            });
         }
 
         /**
@@ -266,69 +282,29 @@ globalThis.Jig.mermaid = (() => {
          * @returns {{source: string, nodeIdToFqn: Map<string, string>}}
          */
         function buildExploreDiagramSource(packageFqns, uniqueRelations, options) {
-            const {targetFqns, callerFqns, calleeFqns, diagramDirection, clickHandlerName} = options;
+            const {targetFqns, callerFqns, calleeFqns} = options;
+            return buildPackageDiagramSource(packageFqns, uniqueRelations, options, {
+                // 明示的に選択されたターゲットは関連の有無によらず常に表示する
+                keepParentFqn: fqn => !!targetFqns?.has(fqn),
+                appendStyles: (lines, nodeIdByFqn, packageFqnsToDisplay) => {
+                    lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
+                    lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');
+                    lines.push('classDef exploreCallee fill:#FFF0E6,stroke:#CC6600,stroke-width:2px');
 
-            const allParentFqns = buildParentFqns(packageFqns);
-            const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
-
-            const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
-                if (allParentFqns.has(fqn)) {
-                    // 明示的に選択されたターゲットは関連の有無によらず常に表示する
-                    if (targetFqns.has(fqn)) return true;
-                    return parentFqnsWithRelations.has(fqn);
-                }
-                return true;
-            }));
-
-            const lines = [
-                "---",
-                "config:",
-                "  theme: 'default'",
-                "  themeVariables:",
-                "    clusterBkg: '#ffffde'",
-                "---",
-                `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
-            const subgraphNodeIds = new Map();
-
-            const nodeLines = buildDiagramNodeLines(
-                packageFqnsToDisplay,
-                nodeIdByFqn,
-                {
-                    nodeIdToFqn,
-                    nodeLabelById,
-                    escapeMermaidText,
-                    clickHandlerName,
-                    parentFqnsWithRelations,
-                    subgraphNodeIds,
-                    showPhysicalName: options.showPhysicalName,
-                }
-            );
-            const {edgeLines, linkStyles} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
-
-            nodeLines.forEach(line => lines.push(line));
-            edgeLines.forEach(line => lines.push(line));
-            linkStyles.forEach(styleLine => lines.push(styleLine));
-
-            lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
-            lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
-            lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');
-            lines.push('classDef exploreCallee fill:#FFF0E6,stroke:#CC6600,stroke-width:2px');
-
-            // 各ノードにクラスを適用（優先度: target > caller > callee）
-            packageFqnsToDisplay.forEach(fqn => {
-                if (!nodeIdByFqn.has(fqn)) return;
-                const nodeId = nodeIdByFqn.get(fqn);
-                if (targetFqns && targetFqns.has(fqn)) {
-                    lines.push(`class ${nodeId} exploreTarget`);
-                } else if (callerFqns && callerFqns.has(fqn)) {
-                    lines.push(`class ${nodeId} exploreCaller`);
-                } else if (calleeFqns && calleeFqns.has(fqn)) {
-                    lines.push(`class ${nodeId} exploreCallee`);
+                    // 各ノードにクラスを適用（優先度: target > caller > callee）
+                    packageFqnsToDisplay.forEach(fqn => {
+                        if (!nodeIdByFqn.has(fqn)) return;
+                        const nodeId = nodeIdByFqn.get(fqn);
+                        if (targetFqns?.has(fqn)) {
+                            lines.push(`class ${nodeId} exploreTarget`);
+                        } else if (callerFqns?.has(fqn)) {
+                            lines.push(`class ${nodeId} exploreCaller`);
+                        } else if (calleeFqns?.has(fqn)) {
+                            lines.push(`class ${nodeId} exploreCallee`);
+                        }
+                    });
                 }
             });
-
-            return {source: lines.join('\n'), nodeIdToFqn};
         }
 
         /**

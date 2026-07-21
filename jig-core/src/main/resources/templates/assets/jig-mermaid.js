@@ -279,7 +279,7 @@ globalThis.Jig.mermaid = (() => {
          * @param {Set<string>} packageFqns - 表示するパッケージFQNセット
          * @param {Relation[]} uniqueRelations - 表示する関連
          * @param {{targetFqns: Set<string>, callerFqns: Set<string>, calleeFqns: Set<string>, diagramDirection: string, clickHandlerName: string}} options
-         * @returns {{source: string, nodeIdToFqn: Map<string, string>}}
+         * @returns {{source: string, nodeIdToFqn: Map<string, string>, mutualPairs: Set<string>}}
          */
         function buildExploreDiagramSource(packageFqns, uniqueRelations, options) {
             const {targetFqns, callerFqns, calleeFqns} = options;

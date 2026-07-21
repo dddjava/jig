@@ -474,7 +474,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                ListOutputApp.renderTable('controller-list', 'controller', items);
+                ListOutputApp.renderTable('controller', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -504,7 +504,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                ListOutputApp.renderTable('service-list', 'service', items);
+                ListOutputApp.renderTable('service', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -536,7 +536,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                ListOutputApp.renderTable('repository-list', 'repository', items);
+                ListOutputApp.renderTable('repository', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -566,7 +566,7 @@ test.describe('list-output.js', () => {
                     classCount: 10,
                 }];
 
-                ListOutputApp.renderTable('business-package-list', 'businessPackage', items);
+                ListOutputApp.renderTable('businessPackage', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -594,7 +594,7 @@ test.describe('list-output.js', () => {
                     incomingClassCount: 3,
                 }];
 
-                ListOutputApp.renderTable('business-all-list', 'businessAll', items);
+                ListOutputApp.renderTable('businessAll', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -624,7 +624,7 @@ test.describe('list-output.js', () => {
                     usageCount: 5,
                 }];
 
-                ListOutputApp.renderTable('business-enum-list', 'businessEnum', items);
+                ListOutputApp.renderTable('businessEnum', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -651,7 +651,7 @@ test.describe('list-output.js', () => {
                     methodCount: 3,
                 }];
 
-                ListOutputApp.renderTable('business-collection-list', 'businessCollection', items);
+                ListOutputApp.renderTable('businessCollection', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -679,7 +679,7 @@ test.describe('list-output.js', () => {
                     memberName: "name",
                 }];
 
-                ListOutputApp.renderTable('business-validation-list', 'businessValidation', items);
+                ListOutputApp.renderTable('businessValidation', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -704,7 +704,7 @@ test.describe('list-output.js', () => {
                     methodSignature: "doSomething()",
                 }];
 
-                ListOutputApp.renderTable('business-smell-list', 'businessSmell', items);
+                ListOutputApp.renderTable('businessSmell', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];

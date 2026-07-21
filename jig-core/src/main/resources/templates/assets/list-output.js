@@ -163,8 +163,9 @@ const ListOutputApp = (() => {
         return Jig.dom.buildCsv(headerDefinitions[name], rows);
     }
 
-    function renderTable(tableId, name, items) {
+    function renderTable(name, items) {
         const cols = columns[name];
+        const {tableId} = TABLE_BINDINGS.find(b => b.name === name);
         Jig.dom.renderTableRows(tableId, items,
             (row, item) => cols.forEach(c => row.appendChild(Jig.dom.createCell(c.get(item), c.type))),
             {clear: true}
@@ -252,7 +253,7 @@ const ListOutputApp = (() => {
         TABLE_BINDINGS.forEach(b => renderTableHeader(b.tableId, headerDefinitions[b.name]));
 
         const data = getListData();
-        TABLE_BINDINGS.forEach(b => renderTable(b.tableId, b.name, b.get(data)));
+        TABLE_BINDINGS.forEach(b => renderTable(b.name, b.get(data)));
 
         document.querySelectorAll(".list-output-tabs .tab-button").forEach(button => {
             button.addEventListener("click", () => activateTabGroup(button.dataset.tabGroup, button.dataset.tab));

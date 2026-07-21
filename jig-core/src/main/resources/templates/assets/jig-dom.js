@@ -777,7 +777,7 @@ globalThis.Jig.dom = (() => {
 
     function setupSortableTables() {
         function sortTable(event) {
-            // th の中に input などの子要素を置くページがあるため、target ではなく th 自身を使う
+            // th が子要素を持つ場合に target ではその子要素になり列位置を特定できない
             const headerColumn = event.currentTarget;
             const table = headerColumn.closest("table");
             const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);

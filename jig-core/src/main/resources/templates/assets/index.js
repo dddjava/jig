@@ -122,6 +122,8 @@ const IndexApp = (() => {
         }
 
         updateRelativeTime();
+        // 相対時間は data-i18n を持たないため、言語切り替え時に自分で描き直す
+        document.addEventListener("jig:locale-change", updateRelativeTime);
     }
 
     function updateRelativeTime() {
@@ -168,11 +170,6 @@ const IndexApp = (() => {
 })();
 
 Jig.bootstrap.register("index", IndexApp.init);
-
-if (typeof document !== "undefined") {
-    // 相対時間は data-i18n を持たないため、言語切り替え時に自分で描き直す
-    document.addEventListener("jig:locale-change", IndexApp.updateRelativeTime);
-}
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = IndexApp;

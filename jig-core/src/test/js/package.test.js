@@ -339,9 +339,6 @@ test.describe('package.js', () => {
     });
 
     test.describe('テーブル', () => {
-        test.describe('ロジック', () => {
-        });
-
         test.describe('UI', () => {
             test('renderHierarchyPackageList: クラス数・関連数を表示する', () => {
                 setGlossaryData({

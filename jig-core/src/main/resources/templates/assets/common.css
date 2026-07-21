@@ -988,8 +988,7 @@ label {
     cursor: pointer;
 }
 
-.checkbox-options label,
-.radio-options label {
+.checkbox-options label {
     display: flex;
     align-items: center;
     gap: 8px;

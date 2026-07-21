@@ -18,10 +18,11 @@ const DEFAULT_HTML = '<!DOCTYPE html><html><body></body></html>';
 
 /**
  * @param {string} [html] ページのHTML
+ * @param {ConstructorParameters<typeof JSDOM>[1]} [options] JSDOM のオプション（url など）
  * @returns {JSDOM} 生成した jsdom。window 固有の値が必要な場合に使う
  */
-function setupDom(html = DEFAULT_HTML) {
-    const dom = new JSDOM(html);
+function setupDom(html = DEFAULT_HTML, options) {
+    const dom = new JSDOM(html, options);
     global.window = dom.window;
     WINDOW_GLOBALS.forEach(name => {
         global[name] = dom.window[name];
@@ -30,6 +31,9 @@ function setupDom(html = DEFAULT_HTML) {
 }
 
 function teardownDom() {
+    // 閉じないと jsdom のタイマーが動き続け、global を消したあとにイベントハンドラが走って落ちる。
+    // jsdom を経由しないスタブを載せているテストもあるため close の有無で判定する
+    if (typeof global.window?.close === "function") global.window.close();
     delete global.window;
     WINDOW_GLOBALS.forEach(name => {
         delete global[name];

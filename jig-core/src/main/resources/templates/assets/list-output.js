@@ -188,10 +188,6 @@ const ListOutputApp = (() => {
         },
     };
 
-    const headerDefinitions = Object.fromEntries(
-        Object.entries(TABLES).map(([name, {columns}]) => [name, columns.map(c => c.label)])
-    );
-
     function tableOf(name) {
         const table = TABLES[name];
         if (!table) throw new Error(`未知の一覧種別です: ${name}`);
@@ -201,7 +197,7 @@ const ListOutputApp = (() => {
     function buildCsv(name, items) {
         const {columns} = tableOf(name);
         const rows = items.map(item => columns.map(c => c.get(item)));
-        return Jig.dom.buildCsv(headerDefinitions[name], rows);
+        return Jig.dom.buildCsv(columns.map(c => c.label), rows);
     }
 
     function renderTable(name, items) {
@@ -255,10 +251,7 @@ const ListOutputApp = (() => {
 
         const thead = Jig.dom.createElement("thead");
         const tr = Jig.dom.createElement("tr");
-        headerDefinitions[name].forEach(headerText => {
-            const th = Jig.dom.i18nText("th", headerText);
-            tr.appendChild(th);
-        });
+        tableOf(name).columns.forEach(c => tr.appendChild(Jig.dom.i18nText("th", c.label)));
         thead.appendChild(tr);
         table.prepend(thead);
     }

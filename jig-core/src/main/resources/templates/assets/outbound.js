@@ -738,15 +738,14 @@ const OutboundApp = (() => {
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
         if (!visibility.port) return null;
-        const portCardId = Jig.util.fqnToId("port", portFqn);
         if (visibility.operation) {
             const portOpId = Jig.util.fqnToId("portOp", portOpFqn);
             builder.addNodeToSubgraph(builder.ensureSubgraph(portSubgraphs, portFqn, portLabel), portOpId, portOpName, 'method');
             builder.addClass(portOpId, "outbound");
-            builder.addClick(portFqn, `#${portCardId}`, portFqn);
             builder.addClick(portOpId, `#${portOpId}`, portOpFqn);
             return portOpId;
         } else {
+            const portCardId = Jig.util.fqnToId("port", portFqn);
             builder.addNode(portCardId, portLabel, 'class');
             builder.addClass(portCardId, "outbound");
             builder.addClick(portCardId, `#${portCardId}`, portFqn);

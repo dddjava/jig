@@ -26,6 +26,11 @@ globalThis.Jig.i18n = (() => {
             "購読先で絞り込み": "Filter by subscription",
             "スケジュールで絞り込み": "Filter by schedule",
             "出力日時": "Generated at",
+            // 相対時間（{n} は経過数に置換される）
+            "{n}日前": "{n} days ago",
+            "{n}時間前": "{n} hours ago",
+            "{n}分前": "{n} minutes ago",
+            "たった今": "just now",
             "主要パッケージ関連図": "Key package diagram",
             "ドメインパッケージ": "Domain package",
             "最上位パッケージ": "Top-level package",

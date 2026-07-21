@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {JSDOM} = require('jsdom');
 
-const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-dom.js', 'jig-bootstrap.js'];
+const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-i18n.js', 'jig-dom.js', 'jig-bootstrap.js'];
 
 function modulePath(name) {
     return require.resolve(`../../main/resources/templates/assets/${name}`);
@@ -28,6 +28,8 @@ function setupDom(html = '<!DOCTYPE html><html><body></body></html>') {
     global.window = dom.window;
     global.document = dom.window.document;
     global.location = dom.window.location;
+    // jig-i18n.js の言語切り替えイベントを document.dispatchEvent に渡せるようにする
+    global.CustomEvent = dom.window.CustomEvent;
     return dom;
 }
 
@@ -132,6 +134,36 @@ test.describe('index.js', () => {
 
             const occurrences = el.textContent.split('分前').length - 1;
             assert.equal(occurrences, 1);
+        });
+
+        test('英語に切り替えると相対時刻も英語で表示される', () => {
+            const timestamp = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000 - 1000);
+            const el = document.createElement('span');
+            el.id = 'jig-timestamp';
+            el.setAttribute('data-jig-timestamp', timestamp.toISOString());
+            el.textContent = timestamp.toISOString();
+            document.body.appendChild(el);
+
+            globalThis.Jig.i18n.setLanguage('en');
+            IndexApp.updateRelativeTime();
+
+            assert.match(el.textContent, /\(3 days ago\)$/);
+        });
+
+        test('言語切り替えイベントで相対時刻を描き直す', () => {
+            const timestamp = new Date(Date.now() - 500);
+            const el = document.createElement('span');
+            el.id = 'jig-timestamp';
+            el.setAttribute('data-jig-timestamp', timestamp.toISOString());
+            el.textContent = timestamp.toISOString();
+            document.body.appendChild(el);
+
+            IndexApp.init();
+            assert.match(el.textContent, /\(たった今\)$/);
+
+            globalThis.Jig.i18n.setLanguage('en');
+
+            assert.match(el.textContent, /\(just now\)$/);
         });
     });
 

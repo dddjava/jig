@@ -122,6 +122,8 @@ const IndexApp = (() => {
         }
 
         updateRelativeTime();
+        // 相対時間は data-i18n を持たないため、言語切り替え時に自分で描き直す
+        document.addEventListener("jig:locale-change", updateRelativeTime);
     }
 
     function updateRelativeTime() {
@@ -141,18 +143,21 @@ const IndexApp = (() => {
         const diffHour = Math.floor(diffMin / 60);
         const diffDay = Math.floor(diffHour / 24);
 
-        let relativeTime = "";
+        // 数値を含むため data-i18n では扱えない。キーの {n} を経過数に置換する
+        const relative = (key, count) => Jig.i18n.t(key).replace("{n}", count);
+        let relativeTime;
         if (diffDay > 0) {
-            relativeTime = `${diffDay}日前`;
+            relativeTime = relative("{n}日前", diffDay);
         } else if (diffHour > 0) {
-            relativeTime = `${diffHour}時間前`;
+            relativeTime = relative("{n}時間前", diffHour);
         } else if (diffMin > 0) {
-            relativeTime = `${diffMin}分前`;
+            relativeTime = relative("{n}分前", diffMin);
         } else {
-            relativeTime = "たった今";
+            relativeTime = Jig.i18n.t("たった今");
         }
 
-        element.textContent = `${element.textContent.split(' (')[0]} (${relativeTime})`;
+        // 表示のベースは data 属性の値。再実行しても相対時間が積み重ならない
+        element.textContent = `${timestampStr} (${relativeTime})`;
     }
 
     return {

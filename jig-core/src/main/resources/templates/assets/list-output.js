@@ -192,14 +192,20 @@ const ListOutputApp = (() => {
         Object.entries(TABLES).map(([name, {columns}]) => [name, columns.map(c => c.label)])
     );
 
+    function tableOf(name) {
+        const table = TABLES[name];
+        if (!table) throw new Error(`未知の一覧種別です: ${name}`);
+        return table;
+    }
+
     function buildCsv(name, items) {
-        const {columns} = TABLES[name];
+        const {columns} = tableOf(name);
         const rows = items.map(item => columns.map(c => c.get(item)));
         return Jig.dom.buildCsv(headerDefinitions[name], rows);
     }
 
     function renderTable(name, items) {
-        const {columns} = TABLES[name];
+        const {columns} = tableOf(name);
         Jig.dom.renderTableRows(tableIdOf(name), items,
             (row, item) => columns.forEach(c => row.appendChild(Jig.dom.createCell(c.get(item), c.type))),
             {clear: true}
@@ -243,13 +249,13 @@ const ListOutputApp = (() => {
         };
     }
 
-    function renderTableHeader(tableElementId, headers) {
-        const table = document.getElementById(tableElementId);
+    function renderTableHeader(name) {
+        const table = document.getElementById(tableIdOf(name));
         if (!table) return;
 
         const thead = Jig.dom.createElement("thead");
         const tr = Jig.dom.createElement("tr");
-        headers.forEach(headerText => {
+        headerDefinitions[name].forEach(headerText => {
             const th = Jig.dom.i18nText("th", headerText);
             tr.appendChild(th);
         });
@@ -271,19 +277,17 @@ const ListOutputApp = (() => {
     }
 
     function init() {
-        const names = Object.keys(TABLES);
-        names.forEach(name => renderTableHeader(tableIdOf(name), headerDefinitions[name]));
-
         const data = getListData();
-        names.forEach(name => renderTable(name, TABLES[name].items(data)));
+
+        Object.entries(TABLES).forEach(([name, {items}]) => {
+            renderTableHeader(name);
+            renderTable(name, items(data));
+            document.getElementById(csvButtonIdOf(name))?.addEventListener("click",
+                () => Jig.dom.downloadCsv(buildCsv(name, items(data)), csvFileOf(name)));
+        });
 
         document.querySelectorAll(".list-output-tabs .tab-button").forEach(button => {
             button.addEventListener("click", () => activateTabGroup(button.dataset.tabGroup, button.dataset.tab));
-        });
-
-        names.forEach(name => {
-            document.getElementById(csvButtonIdOf(name))?.addEventListener("click",
-                () => Jig.dom.downloadCsv(buildCsv(name, TABLES[name].items(data)), csvFileOf(name)));
         });
     }
 
@@ -291,16 +295,9 @@ const ListOutputApp = (() => {
         init,
         getListData,
         formatFieldTypes,
-        getTypeLabel,
-        getPackageLabel,
-        getReturnTypeLabel,
-        getParameterTypeLabels,
-        getMethodLabel,
         buildCsv,
         renderTable,
         activateTabGroup,
-        headerDefinitions,
-        renderTableHeader,
     };
 })();
 

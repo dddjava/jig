@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {JSDOM} = require('jsdom');
+const {setupDom, teardownDom} = require('./jsdom-env');
 
 // bundle に含まれる順で並べる。reloadJigModules で require.cache クリア → 再 require する。
 const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-glossary.js', 'jig-i18n.js', 'jig-dom.js'];
@@ -20,7 +20,7 @@ test.describe('jig-dom.js', () => {
 
     test.beforeEach(() => {
         // jsdom でブラウザ環境をセットアップ
-        const dom = new JSDOM(`
+        const dom = setupDom(`
             <!DOCTYPE html>
             <html>
             <head></head>
@@ -33,12 +33,6 @@ test.describe('jig-dom.js', () => {
             </html>
         `);
 
-        global.window = dom.window;
-        global.document = dom.window.document;
-        global.location = dom.window.location;
-        // jig-dom.js 内の `new Event(...)` が jsdom の EventTarget と同じレルムになるようにする
-        global.Event = dom.window.Event;
-
         global.marked = {
             parse: (text) => `<p>${text}</p>`
         };
@@ -48,6 +42,8 @@ test.describe('jig-dom.js', () => {
         reloadJigModules();
         Jig = global.Jig;
     });
+
+    test.afterEach(teardownDom);
 
     test.describe('createElement', () => {
         test('tagName だけで要素を作成', () => {
@@ -1206,7 +1202,7 @@ test.describe('jig-dom.js', () => {
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1218,9 +1214,6 @@ test.describe('jig-dom.js', () => {
                 </html>
             `);
 
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
             delete globalThis.Jig;
 
             require('../../main/resources/templates/assets/jig-util.js');
@@ -1242,7 +1235,7 @@ test.describe('jig-dom.js', () => {
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1254,9 +1247,6 @@ test.describe('jig-dom.js', () => {
                 </html>
             `);
 
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
             delete globalThis.Jig;
 
             require('../../main/resources/templates/assets/jig-util.js');
@@ -1289,7 +1279,7 @@ test.describe('jig-dom.js', () => {
 
     test.describe('initCommonUi - setupHeaderNavigation', () => {
         test('navigationData.links からナビゲーションドロップダウンを生成', () => {
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1300,10 +1290,6 @@ test.describe('jig-dom.js', () => {
                 </html>
             `, {url: 'http://example.com/domain.html'});
 
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
-            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 links: [
                     {href: 'glossary.html', label: 'Glossary'},
@@ -1323,7 +1309,7 @@ test.describe('jig-dom.js', () => {
         });
 
         test('body.index クラスがある場合、ナビは生成されない', () => {
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body class="index">
@@ -1334,10 +1320,6 @@ test.describe('jig-dom.js', () => {
                 </html>
             `);
 
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
-            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 links: [{href: 'index.html', label: 'Index'}]
             };
@@ -1350,7 +1332,7 @@ test.describe('jig-dom.js', () => {
         });
 
         test('navigationData がない場合、ナビは生成されない', () => {
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1361,10 +1343,6 @@ test.describe('jig-dom.js', () => {
                 </html>
             `);
 
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
-            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = undefined;
 
             reloadJigModules();
@@ -1375,7 +1353,7 @@ test.describe('jig-dom.js', () => {
         });
 
         test('nav の trigger とリンクに data-i18n が付与される', () => {
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1386,10 +1364,6 @@ test.describe('jig-dom.js', () => {
                 </html>
             `, {url: 'http://example.com/domain.html'});
 
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
-            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 locale: 'ja',
                 links: [
@@ -1414,7 +1388,7 @@ test.describe('jig-dom.js', () => {
 
     test.describe('initCommonUi - setupLanguageSwitcher', () => {
         test('ヘッダ右上に言語スイッチャーが生成される', () => {
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1424,10 +1398,6 @@ test.describe('jig-dom.js', () => {
                 </body>
                 </html>
             `, {url: 'http://example.com/domain.html'});
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
-            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {locale: 'ja', links: []};
 
             reloadJigModules();
@@ -1440,7 +1410,7 @@ test.describe('jig-dom.js', () => {
         });
 
         test('スイッチャーのクリックで setLanguage が呼ばれ trigger が更新される', () => {
-            const dom = new JSDOM(`
+            const dom = setupDom(`
                 <!DOCTYPE html>
                 <html>
                 <body>
@@ -1451,10 +1421,6 @@ test.describe('jig-dom.js', () => {
                 </body>
                 </html>
             `, {url: 'http://example.com/domain.html'});
-            global.window = dom.window;
-            global.document = dom.window.document;
-            global.location = dom.window.location;
-            global.CustomEvent = dom.window.CustomEvent;
             global.navigationData = {
                 locale: 'ja',
                 links: [],

@@ -1,16 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {JSDOM} = require('jsdom');
+const {setupDom, teardownDom} = require('./jsdom-env');
 
 test.describe('jig-i18n.js', () => {
     let Jig;
 
-    function setupDom(bodyHtml, {lang = 'ja', titleHtml = '<title data-i18n>インサイト</title>'} = {}) {
-        const dom = new JSDOM(`<!DOCTYPE html><html lang="${lang}"><head>${titleHtml}</head><body>${bodyHtml}</body></html>`);
-        global.window = dom.window;
-        global.document = dom.window.document;
-        global.NodeFilter = dom.window.NodeFilter;
-        global.CustomEvent = dom.window.CustomEvent;
+    function setupPage(bodyHtml, {lang = 'ja', titleHtml = '<title data-i18n>インサイト</title>'} = {}) {
+        setupDom(`<!DOCTYPE html><html lang="${lang}"><head>${titleHtml}</head><body>${bodyHtml}</body></html>`);
     }
 
     function loadI18n() {
@@ -27,15 +23,10 @@ test.describe('jig-i18n.js', () => {
         delete globalThis.navigationData;
     });
 
-    test.afterEach(() => {
-        delete global.window;
-        delete global.document;
-        delete global.NodeFilter;
-        delete global.CustomEvent;
-    });
+    test.afterEach(teardownDom);
 
     test('lang=ja のときは翻訳しない', () => {
-        setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
+        setupPage('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
         Jig = loadI18n();
 
         Jig.apply();
@@ -45,7 +36,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('data-i18n を持つ要素のみ翻訳する', () => {
-        setupDom('<h1 data-i18n>インサイト</h1><p>インサイト</p>', {lang: 'en'});
+        setupPage('<h1 data-i18n>インサイト</h1><p>インサイト</p>', {lang: 'en'});
         Jig = loadI18n();
 
         Jig.apply();
@@ -57,7 +48,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('data-i18n="key" で明示キーを指定できる', () => {
-        setupDom('<button data-i18n="custom.label">なにか</button>', {lang: 'en'});
+        setupPage('<button data-i18n="custom.label">なにか</button>', {lang: 'en'});
         Jig = loadI18n();
         Jig.builtinDictionaries.en['custom.label'] = 'Custom Label';
 
@@ -67,7 +58,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('辞書に無いキーはそのまま', () => {
-        setupDom('<h1 data-i18n>未知の単語</h1>', {lang: 'en'});
+        setupPage('<h1 data-i18n>未知の単語</h1>', {lang: 'en'});
         Jig = loadI18n();
 
         Jig.apply();
@@ -76,7 +67,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('<html lang> が空ならデフォルトで ja として扱う', () => {
-        setupDom('<h1 data-i18n>インサイト</h1>', {lang: ''});
+        setupPage('<h1 data-i18n>インサイト</h1>', {lang: ''});
         Jig = loadI18n();
 
         Jig.apply();
@@ -85,7 +76,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('data-i18n のない要素は同じ語でも放置する', () => {
-        setupDom('<p>入力</p><li>出力</li><dd>フィールド</dd>', {lang: 'en'});
+        setupPage('<p>入力</p><li>出力</li><dd>フィールド</dd>', {lang: 'en'});
         Jig = loadI18n();
 
         Jig.apply();
@@ -96,7 +87,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('複数の data-i18n 要素が辞書から翻訳される', () => {
-        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>', {lang: 'en'});
+        setupPage('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>', {lang: 'en'});
         Jig = loadI18n();
 
         Jig.apply();
@@ -106,7 +97,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('setLanguage で切り替えられ、ja に戻すと原文が復元する', () => {
-        setupDom('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>', {lang: 'ja'});
+        setupPage('<h1 data-i18n>インサイト</h1><button data-i18n>入力</button>', {lang: 'ja'});
         Jig = loadI18n();
 
         Jig.apply();
@@ -126,7 +117,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('setLanguage は jig:locale-change イベントを発火する', () => {
-        setupDom('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
+        setupPage('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
         Jig = loadI18n();
 
         const received = [];
@@ -139,7 +130,7 @@ test.describe('jig-i18n.js', () => {
     });
 
     test('availableLanguages は ja と builtinDictionaries のキーから導出する', () => {
-        setupDom('');
+        setupPage('');
         Jig = loadI18n();
 
         const langs = Jig.availableLanguages();

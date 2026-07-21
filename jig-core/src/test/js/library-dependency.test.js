@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {JSDOM} = require('jsdom');
+const {setupDom, teardownDom} = require('./jsdom-env');
 
 const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-dom.js', 'jig-bootstrap.js'];
 
@@ -21,14 +21,6 @@ function reloadJigModules() {
     return require(modulePath('library-dependency.js'));
 }
 
-function setupDom(html = '<!DOCTYPE html><html><body></body></html>') {
-    const dom = new JSDOM(html);
-    global.window = dom.window;
-    global.document = dom.window.document;
-    global.location = dom.window.location;
-    return dom;
-}
-
 test.describe('library-dependency.js', () => {
     let App;
 
@@ -36,6 +28,8 @@ test.describe('library-dependency.js', () => {
         setupDom();
         App = reloadJigModules();
     });
+
+    test.afterEach(teardownDom);
 
     test.describe('computeMaxDepth', () => {
         test('最も深いFQNの階層数を返す', () => {

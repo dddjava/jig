@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {JSDOM} = require('jsdom');
+const {setupDom, teardownDom} = require('./jsdom-env');
 
 const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-i18n.js', 'jig-dom.js', 'jig-bootstrap.js'];
 
@@ -23,16 +23,6 @@ function reloadJigModules() {
     return require(modulePath('index.js'));
 }
 
-function setupDom(html = '<!DOCTYPE html><html><body></body></html>') {
-    const dom = new JSDOM(html);
-    global.window = dom.window;
-    global.document = dom.window.document;
-    global.location = dom.window.location;
-    // jig-i18n.js の言語切り替えイベントを document.dispatchEvent に渡せるようにする
-    global.CustomEvent = dom.window.CustomEvent;
-    return dom;
-}
-
 test.describe('index.js', () => {
     let IndexApp;
 
@@ -40,6 +30,8 @@ test.describe('index.js', () => {
         setupDom();
         IndexApp = reloadJigModules();
     });
+
+    test.afterEach(teardownDom);
 
     test.describe('updateRelativeTime', () => {
         test('要素が存在しない場合は何もしない', () => {

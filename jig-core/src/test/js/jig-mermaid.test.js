@@ -6,8 +6,11 @@ require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 
 const mermaid = require('../../main/resources/templates/assets/jig-mermaid.js')
+const {setupDom, teardownDom} = require('./jsdom-env');
 
 test.describe('jig-mermaid.js', () => {
+
+    test.afterEach(teardownDom);
 
     test.describe('builder', () => {
         const sut = mermaid.builder;
@@ -605,12 +608,8 @@ test.describe('jig-mermaid.js', () => {
     });
 
     test.describe('renderMarkdownDiagrams', () => {
-        const {JSDOM} = require('jsdom');
-
         function setup(html) {
-            const dom = new JSDOM(`<!DOCTYPE html><body><div class="markdown">${html}</div></body>`);
-            global.window = dom.window;
-            global.document = dom.window.document;
+            const dom = setupDom(`<!DOCTYPE html><body><div class="markdown">${html}</div></body>`);
             // 遅延描画の発火を防ぐため IntersectionObserver は no-op にする
             const NoopObserver = class {
                 observe() {}
@@ -654,12 +653,8 @@ test.describe('jig-mermaid.js', () => {
     });
 
     test.describe('setupLazyMermaidRender', () => {
-        const {JSDOM} = require('jsdom');
-
         function setupGlobals(html) {
-            const dom = new JSDOM(`<!DOCTYPE html><body>${html}</body></html>`);
-            global.window = dom.window;
-            global.document = dom.window.document;
+            const dom = setupDom(`<!DOCTYPE html><body>${html}</body></html>`);
             // IntersectionObserver不使用の分岐（全diagramを即時キューに積む）を使う
             delete global.window.IntersectionObserver;
             return dom.window.document;
@@ -691,8 +686,6 @@ test.describe('jig-mermaid.js', () => {
     });
 
     test.describe('diagram.unregisterWithin', () => {
-        const {JSDOM} = require('jsdom');
-
         class FakeIntersectionObserver {
             constructor(callback) {
                 this.callback = callback;
@@ -704,9 +697,7 @@ test.describe('jig-mermaid.js', () => {
         }
 
         function setup() {
-            const dom = new JSDOM('<!DOCTYPE html><body><div id="root"></div><div id="outside-parent"></div></body>');
-            global.window = dom.window;
-            global.document = dom.window.document;
+            const dom = setupDom('<!DOCTYPE html><body><div id="root"></div><div id="outside-parent"></div></body>');
             global.window.IntersectionObserver = FakeIntersectionObserver;
             global.IntersectionObserver = FakeIntersectionObserver;
             return dom.window.document;
@@ -803,12 +794,8 @@ test.describe('jig-mermaid.js', () => {
     });
 
     test.describe('renderWithControls の表示切り替えメニュー', () => {
-        const {JSDOM} = require('jsdom');
-
         function setupGlobals() {
-            const dom = new JSDOM(`<!DOCTYPE html><body><div class="target"></div></body></html>`);
-            global.window = dom.window;
-            global.document = dom.window.document;
+            const dom = setupDom(`<!DOCTYPE html><body><div class="target"></div></body></html>`);
             const mermaidStub = {run: () => Promise.resolve(), initialize: () => {}};
             global.window.mermaid = mermaidStub;
             globalThis.mermaid = mermaidStub;

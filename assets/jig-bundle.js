@@ -869,7 +869,7 @@ globalThis.Jig.dom = (() => {
         const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
         if (resolved?.href) {
             return createElement('a', {
-                className: classes,
+                className: [classes, 'type-ref-link'].filter(Boolean).join(' '),
                 attributes: {href: resolved.href},
                 textContent: title
             });
@@ -1397,17 +1397,24 @@ globalThis.Jig.dom = (() => {
         collapseBtn.dataset.initialized = 'true';
         const nav = collapseBtn.closest('nav');
         if (!nav) return;
+        const setCollapsed = (collapsed) => {
+            nav.classList.toggle('sidebar--collapsed', collapsed);
+            collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+        };
         collapseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const collapsed = nav.classList.toggle('sidebar--collapsed');
-            collapseBtn.setAttribute('aria-expanded', String(!collapsed));
+            setCollapsed(!nav.classList.contains('sidebar--collapsed'));
         });
         nav.addEventListener('click', () => {
-            if (nav.classList.contains('sidebar--collapsed')) {
-                nav.classList.remove('sidebar--collapsed');
-                collapseBtn.setAttribute('aria-expanded', 'true');
-            }
+            if (nav.classList.contains('sidebar--collapsed')) setCollapsed(false);
         });
+        // 縦並びレイアウト（common.css の max-width: 900px と同期）ではデフォルト折りたたみ
+        const narrowLayout = typeof window !== "undefined" && window.matchMedia
+            ? window.matchMedia('(max-width: 900px)') : null;
+        if (narrowLayout) {
+            setCollapsed(narrowLayout.matches);
+            narrowLayout.addEventListener('change', (e) => setCollapsed(e.matches));
+        }
     }
 
     // Altキー押下中はトグルホバー時に見た目を変え、配下もまとめて開閉することを示す
@@ -2822,17 +2829,28 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderTooLargeDiagram(diagram, source, {messageText, onRender} = {}) {
-            if (!diagram) return;
+        // 図の代わりにメッセージを表示する状態へリセットし、メッセージ要素を返す
+        function resetDiagramWithMessage(diagram, messageText) {
             diagram.classList.add("too-large");
             diagram.textContent = "";
 
-            const container = document.createElement("div");
-            container.className = "mermaid-too-large";
-
             const message = document.createElement("p");
             message.className = "mermaid-too-large__message";
-            message.textContent = messageText ?? "図が大きいため表示を制限しています";
+            message.textContent = messageText;
+            return message;
+        }
+
+        function renderEmptyDiagram(diagram, messageText) {
+            if (!diagram) return;
+            diagram.appendChild(resetDiagramWithMessage(diagram, messageText));
+        }
+
+        function renderTooLargeDiagram(diagram, source, {messageText, onRender} = {}) {
+            if (!diagram) return;
+            const message = resetDiagramWithMessage(diagram, messageText ?? "図が大きいため表示を制限しています");
+
+            const container = document.createElement("div");
+            container.className = "mermaid-too-large";
             container.appendChild(message);
 
             const actions = document.createElement("div");
@@ -2934,17 +2952,6 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
-        function ensureCopySourceButton(container, source) {
-            const button = ensureMermaidControlButton(container, "mermaid-copy-button", "Copy Source", "⧉");
-            if (!button) return null;
-            button.onclick = () => {
-                const text = source != null ? String(source) : "";
-                if (!text) return;
-                copyMermaidText(text, button);
-            };
-            return button;
-        }
-
         function findRenderedMermaidSvg(container) {
             if (!container) return null;
             return container.querySelector(":scope > .mermaid svg");
@@ -2974,13 +2981,6 @@ globalThis.Jig.mermaid = (() => {
             flashButtonLabel(button, "Downloaded");
         }
 
-        function ensureDownloadButton(container) {
-            const button = ensureMermaidControlButton(container, "mermaid-download-button", "Download SVG", "⬇");
-            if (!button) return null;
-            button.onclick = () => downloadMermaidSvg(container, button);
-            return button;
-        }
-
         function openMermaidSvgInNewTab(container, button) {
             const svg = findRenderedMermaidSvg(container);
             if (!svg) {
@@ -3007,24 +3007,92 @@ globalThis.Jig.mermaid = (() => {
             return button;
         }
 
-        function ensureDirectionButton(container, currentDirection, onUpdate) {
-            if (!container || !currentDirection) return null;
-            const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
-            if (!button) return null;
-            button.onclick = () => {
-                const newDirection = (currentDirection === "LR") ? "TB" : "LR";
-                onUpdate(newDirection);
-            };
-            return button;
+        // 個別ダイアグラムの表示切り替え（向き・表示名など）をまとめるコンテキストメニュー。
+        // サイドバーの表示設定（全体設定）とは独立に、ダイアグラムごとにホバーで開閉・選択する
+        // （開閉はCSSの:hoverのみで制御し、JS側では開閉状態を持たない）。
+        function ensureMermaidMenuWrapper(container) {
+            if (!container) return null;
+            let menu = container.querySelector(":scope > .mermaid-menu");
+            if (!menu) {
+                menu = document.createElement("div");
+                menu.className = "mermaid-menu";
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "mermaid-menu-button";
+                button.textContent = "⋮";
+                button.setAttribute("aria-haspopup", "true");
+                button.setAttribute("aria-label", "表示切り替え");
+                button.title = "表示切り替え";
+                button.dataset.tooltip = "表示切り替え";
+
+                const dropdown = document.createElement("ul");
+                dropdown.className = "mermaid-menu-dropdown";
+                dropdown.setAttribute("role", "menu");
+
+                menu.appendChild(button);
+                menu.appendChild(dropdown);
+                container.insertBefore(menu, container.firstChild);
+            }
+            return menu;
         }
 
-        function ensureLabelToggleButton(container, showPhysicalName, onToggle) {
-            if (!container) return null;
-            const label = showPhysicalName ? "用語名を表示" : "物理名を表示";
-            const button = ensureMermaidControlButton(container, "mermaid-label-toggle-button", label, "T");
-            if (!button) return null;
-            button.onclick = onToggle;
-            return button;
+        // container ごとの表示切り替え項目（向き・表示名など）をコンテキストメニューとして描画する。
+        // 項目が空でもメニューボタンは常に表示する。
+        function ensureDiagramMenu(container, items) {
+            const menu = ensureMermaidMenuWrapper(container);
+            if (!menu) return null;
+
+            const dropdown = menu.querySelector(".mermaid-menu-dropdown");
+            if (!dropdown) return null;
+
+            dropdown.innerHTML = "";
+            items.forEach((item) => {
+                if (item.separator) {
+                    const separator = document.createElement("li");
+                    separator.className = "mermaid-menu-separator";
+                    separator.setAttribute("role", "separator");
+                    dropdown.appendChild(separator);
+                    return;
+                }
+
+                const li = document.createElement("li");
+                li.className = "mermaid-menu-item";
+                li.tabIndex = 0;
+                if (item.checked != null) {
+                    // ON/OFFの状態を持つ項目は、文言の違いだけに頼らずスイッチ表示で視認性を上げる
+                    li.setAttribute("role", "menuitemcheckbox");
+                    li.classList.add("mermaid-menu-item--switch");
+                    li.setAttribute("aria-checked", String(item.checked));
+
+                    const labelEl = document.createElement("span");
+                    labelEl.className = "mermaid-menu-item__label";
+                    labelEl.textContent = item.label;
+
+                    const switchEl = document.createElement("span");
+                    switchEl.className = "mermaid-menu-item__switch";
+                    switchEl.setAttribute("aria-hidden", "true");
+
+                    li.appendChild(labelEl);
+                    li.appendChild(switchEl);
+                } else {
+                    li.setAttribute("role", "menuitem");
+                    li.textContent = item.label;
+                }
+                li.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    item.onSelect(li);
+                });
+                li.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        item.onSelect(li);
+                    }
+                });
+                dropdown.appendChild(li);
+            });
+
+            return {menu, dropdown};
         }
 
         function ensureEdgeWarningPanel(container) {
@@ -3131,6 +3199,31 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
+        /**
+         * サイドバーの表示設定（全体設定）や動的な既定値に対して、ダイアグラムごとの上書きを保持しつつ
+         * コンテキストメニュー項目を組み立てる共通ヘルパー。
+         * @param {{key: string, label: string, getGlobalValue: function(): boolean}[]} toggles
+         * @returns {{getValues: function(): object, buildExtraMenuItems: function(function(): void): object[]}}
+         */
+        function createDiagramSettingsOverride(toggles) {
+            let overrides = {};
+            const effectiveValue = ({key, getGlobalValue}) => overrides[key] !== undefined ? overrides[key] : getGlobalValue();
+            return {
+                getValues: () => Object.fromEntries(toggles.map(t => [t.key, effectiveValue(t)])),
+                buildExtraMenuItems: (rerender) => toggles.map(toggle => {
+                    const currentValue = effectiveValue(toggle);
+                    return {
+                        label: toggle.label,
+                        checked: currentValue,
+                        onSelect: () => {
+                            overrides = {...overrides, [toggle.key]: !currentValue};
+                            rerender();
+                        }
+                    };
+                })
+            };
+        }
+
         function renderWithControls(targetEl, diagramFn, {direction, enableLabelToggle, showControls = true} = {}) {
             if (!targetEl) return;
 
@@ -3163,18 +3256,62 @@ globalThis.Jig.mermaid = (() => {
                 const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
 
                 if (showControls) {
-                    ensureCopySourceButton(container, currentSource);
-                    ensureDownloadButton(container);
                     ensureZoomButton(container);
-                    if (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource)) {
-                        ensureDirectionButton(container, newDirection, renderDiagram);
-                    }
-                    if (enableLabelToggle) {
-                        ensureLabelToggleButton(container, showPhysicalName, () => {
-                            showPhysicalName = !showPhysicalName;
-                            renderDiagram(newDirection);
+
+                    const actionItems = [
+                        {
+                            label: "ソースをコピー",
+                            onSelect: (el) => {
+                                const text = currentSource != null ? String(currentSource) : "";
+                                if (!text) return;
+                                copyMermaidText(text, el);
+                            }
+                        },
+                        {
+                            label: "SVGをダウンロード",
+                            onSelect: (el) => downloadMermaidSvg(container, el)
+                        }
+                    ];
+
+                    const viewItems = [];
+                    if (newDirection && (/^\s*(?:graph|flowchart)\s/m.test(currentSource) || /^\s*classDiagram\b/m.test(currentSource))) {
+                        viewItems.push({
+                            label: newDirection === "LR" ? "レイアウト方向を縦にする" : "レイアウト方向を横にする",
+                            onSelect: () => renderDiagram(newDirection === "LR" ? "TB" : "LR")
                         });
                     }
+                    if (enableLabelToggle) {
+                        viewItems.push({
+                            label: showPhysicalName ? "表示名を用語名にする" : "表示名を物理名にする",
+                            onSelect: () => {
+                                showPhysicalName = !showPhysicalName;
+                                renderDiagram(newDirection);
+                            }
+                        });
+                    }
+
+                    // diagramFn 側（呼び出し元）がダイアグラム固有の追加メニュー項目（例: 含める要素の切り替え）
+                    // を持つ場合はここに連結する。rerender は同じ向きでの再描画のみを行う。
+                    let extraItems = [];
+                    if (typeof diagramFn.buildExtraMenuItems === "function") {
+                        const items = diagramFn.buildExtraMenuItems(() => renderDiagram(newDirection));
+                        if (Array.isArray(items)) extraItems = items;
+                    }
+
+                    // グループ間にのみ区切り線を挟む（空のグループは無視する）
+                    const menuItems = [actionItems, viewItems, extraItems]
+                        .filter(group => group.length > 0)
+                        .flatMap((group, index) => index === 0 ? group : [{separator: true}, ...group]);
+
+                    ensureDiagramMenu(container, menuItems);
+                }
+
+                if (!currentSource) {
+                    diagramEl.style.display = "";
+                    setEdgeWarning(container, {visible: false});
+                    renderEmptyDiagram(diagramEl, "表示設定により表示できる内容がありません");
+                    setRendering(container, false);
+                    return;
                 }
 
                 if (isTooLarge(currentSource)) {
@@ -3371,6 +3508,7 @@ globalThis.Jig.mermaid = (() => {
             flashButtonLabel,
             renderTooLargeDiagram,
             renderWithControls,
+            createDiagramSettingsOverride,
             setupLazyMermaidRender,
             initializeMermaid,
             setRendering
@@ -3457,6 +3595,24 @@ globalThis.Jig.mermaid = (() => {
         }
 
         /**
+         * 指定要素配下に登録済みのダイアグラムをすべて登録解除する。
+         * DOMを作り直して再登録する前に呼び出し、古いレンダリングクロージャと
+         * IntersectionObserverの購読が蓄積し続けないようにする。
+         * @param {HTMLElement} rootElement
+         */
+        function unregisterWithin(rootElement) {
+            if (!rootElement) return;
+            const remaining = diagramRegistry.filter(({container}) => {
+                if (!rootElement.contains(container)) return true;
+                renderedContainers.delete(container);
+                observerMap.get(container)?.disconnect();
+                observerMap.delete(container);
+                return false;
+            });
+            diagramRegistry.splice(0, diagramRegistry.length, ...remaining);
+        }
+
+        /**
          * 表示範囲内のダイアグラムのみ再レンダリング
          * @param {Function} [shouldRerender] - 再レンダリング判定関数（省略時は全て）
          */
@@ -3519,6 +3675,7 @@ globalThis.Jig.mermaid = (() => {
 
         return {
             register,
+            unregisterWithin,
             rerenderVisible,
             createAndRegister,
         };
@@ -3752,6 +3909,8 @@ globalThis.Jig.i18n = (() => {
             "メンバ": "Members",
             "ハンドラのみ": "Handlers only",
             "入力・出力": "Input/Output",
+            "呼び出し元": "Callers",
+            "呼び出し先": "Callees",
             "内部メソッド": "Internal methods",
             "出力インタフェース": "Outbound interface",
             "ドメインモデル": "Domain model",
@@ -3819,6 +3978,7 @@ globalThis.Jig.i18n = (() => {
             "スケジュール": "Schedule",
             "出力ポート / 操作": "Outbound port / operation",
             "列挙値": "Enum values",
+            "構成要素": "Contents",
             // glossary attribute meta
             "属性情報": "Attributes",
             "単純名": "Simple name",

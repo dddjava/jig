@@ -21,6 +21,102 @@ const UsecaseApp = (() => {
     const makeEdgeKey = (from, to) => `${from} ${to}`;
 
     /**
+     * 未登録のエッジだけを追加する
+     * @param {Set<string>} edgeSet
+     * @param {DiagramEdge[]} edges
+     */
+    function addEdgeOnce(edgeSet, edges, from, to, dotted = false) {
+        const edgeKey = makeEdgeKey(from, to);
+        if (edgeSet.has(edgeKey)) return;
+        edgeSet.add(edgeKey);
+        edges.push(dotted ? {from, to, dotted: true} : {from, to});
+    }
+
+    /**
+     * 未登録のノードだけを追加する
+     * @param {Set<string>} addedFqns
+     * @param {DiagramNode[]} nodes
+     */
+    function addNodeOnce(addedFqns, nodes, fqn, kind) {
+        if (addedFqns.has(fqn)) return;
+        addedFqns.add(fqn);
+        nodes.push({fqn, kind});
+    }
+
+    // 図の表示対象トグル。checkbox idとDiagramContextキーの対応を一元管理する
+    const DIAGRAM_TOGGLES = [
+        {id: 'show-diagram-callers', key: 'showDiagramCallers'},
+        {id: 'show-diagram-callees', key: 'showDiagramCallees'},
+        {id: 'show-diagram-internal-methods', key: 'showDiagramInternalMethods'},
+        {id: 'show-diagram-inbound-classes', key: 'showDiagramInboundClasses'},
+        {id: 'show-diagram-outbound-ports', key: 'showDiagramOutboundPorts'},
+        {id: 'show-diagram-domain-types', key: 'showDiagramDomainTypes'},
+        {id: 'show-diagram-arguments', key: 'showDiagramArguments'}
+    ];
+
+    // クラス図・パッケージ図で共通のコンテキストメニュー項目
+    const CLASS_LEVEL_DIAGRAM_MENU_TOGGLES = [
+        {key: 'showDiagramInboundClasses', label: '入力インタフェース'},
+        {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+        {key: 'showDiagramDomainTypes', label: 'ドメインモデル'}
+    ];
+
+    // パッケージ図固有のコンテキストメニュー項目。ノード粒度をクラス単位/メソッド単位で切り替える
+    const PACKAGE_DIAGRAM_MENU_TOGGLES = [
+        ...CLASS_LEVEL_DIAGRAM_MENU_TOGGLES,
+        {key: 'showDiagramMethodLevel', label: 'メソッド単位'}
+    ];
+
+    /**
+     * 図の有無の判定用に、表示対象トグルをすべてONにしたコンテキストを返す。
+     *
+     * 設計契約: コンテナの有無は現在のトグル状態に依存させず「いずれかのトグルで
+     * 内容が生まれ得るか」で判定する。トグル変更は既存コンテナの再描画のみで
+     * コンテナを再生成せず、また図ごとのメニューでグローバルOFFのトグルも
+     * その図だけONにできるため。DIAGRAM_TOGGLESを走査するので新しいトグルの
+     * 追加時に個別対応は不要。図の有無判定は必ずこのコンテキストで行うこと。
+     * @param {DiagramContext} diagramContext
+     * @returns {DiagramContext}
+     */
+    function withAllDiagramToggles(diagramContext) {
+        const context = {...diagramContext};
+        DIAGRAM_TOGGLES.forEach(({key}) => context[key] = true);
+        return context;
+    }
+
+    /**
+     * クラス図・パッケージ図で使う表示対象トグルと関連データをコンテキストから取り出す
+     * @param {DiagramContext} diagramContext
+     */
+    function resolveClassLevelDiagramContext(diagramContext) {
+        return {
+            outboundOperationSet: diagramContext.outboundOperationSet || new Set(),
+            inboundCallerIndex: diagramContext.inboundCallerIndex ?? buildInboundCallerIndex(),
+            showDiagramOutboundPorts: diagramContext.showDiagramOutboundPorts ?? true,
+            showDiagramDomainTypes: diagramContext.showDiagramDomainTypes ?? false,
+            showDiagramInboundClasses: diagramContext.showDiagramInboundClasses ?? true,
+        };
+    }
+
+    /**
+     * inboundクラスからの呼び出し関係を、呼び出し先クラスFQNで引けるインデックスにする
+     * @returns {Map<string, {callerClassFqn: string, calleeMethodFqn: string}[]>}
+     */
+    function buildInboundCallerIndex() {
+        const map = new Map();
+        Jig.data.inbound.getControllers().forEach(controller => {
+            (controller.relations || []).forEach(relation => {
+                if (!relation?.from || !relation?.to) return;
+                Jig.util.pushToMap(map, getClassFqnFromMethodFqn(relation.to), {
+                    callerClassFqn: getClassFqnFromMethodFqn(relation.from),
+                    calleeMethodFqn: relation.to
+                });
+            });
+        });
+        return map;
+    }
+
+    /**
      * メソッドのパラメータ・戻り値からドメイン型ノード・エッジを収集する
      * @param {UsecaseMethod} method
      * @param {string} methodFqn
@@ -35,22 +131,14 @@ const UsecaseApp = (() => {
                 .filter(domainFqn => domainFqnSet.has(domainFqn))
                 .forEach(domainFqn => {
                     addDomainNode(domainFqn);
-                    const edgeKey = makeEdgeKey(domainFqn, methodFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: domainFqn, to: methodFqn, dotted: true});
-                    }
+                    addEdgeOnce(edgeSet, edges, domainFqn, methodFqn, true);
                 });
         });
         Jig.util.collectTypeRefFqns(method.returnTypeRef)
             .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
             .forEach(returnFqn => {
                 addDomainNode(returnFqn);
-                const edgeKey = makeEdgeKey(methodFqn, returnFqn);
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: methodFqn, to: returnFqn, dotted: true});
-                }
+                addEdgeOnce(edgeSet, edges, methodFqn, returnFqn, true);
             });
     }
 
@@ -99,6 +187,43 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * 出力インタフェースのオペレーションFQNからパラメータリストを引けるようにする
+     * @param {OutboundData} outboundData
+     * @returns {Map<string, MethodParameter[]>}
+     */
+    function buildOutboundOperationParameterMap(outboundData) {
+        const map = new Map();
+        (outboundData?.outboundPorts || []).forEach(port => {
+            (port.operations || []).forEach(op => map.set(op.fqn, op.parameters || []));
+        });
+        return map;
+    }
+
+    /**
+     * 呼び出し先メソッドFQNからパラメータリストを取得する（内部メソッド/出力インタフェースの両方に対応）
+     * @param {string} calleeFqn
+     * @param {DiagramContext} diagramContext
+     * @returns {MethodParameter[]}
+     */
+    function resolveCalleeParameters(calleeFqn, diagramContext) {
+        const method = diagramContext.methodMap?.get(calleeFqn);
+        if (method) return method.parameters || [];
+        return diagramContext.outboundOperationParameterMap?.get(calleeFqn) || [];
+    }
+
+    /**
+     * パラメータリストから呼び出しエッジのラベル用テキストを組み立てる。
+     * 実引数の値ではなく、呼び出し先メソッドの仮引数の型を示す。
+     * @param {MethodParameter[]} parameters
+     * @param {function(string): string} typeLabel
+     * @returns {string}
+     */
+    function buildArgumentsLabel(parameters, typeLabel) {
+        if (!parameters || parameters.length === 0) return '';
+        return parameters.map(param => typeLabel(param.typeRef?.fqn)).join(', ');
+    }
+
+    /**
      * @param {Usecase[]} usecases
      * @returns {Map<string, UsecaseMethod>}
      */
@@ -129,12 +254,78 @@ const UsecaseApp = (() => {
         Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (!relation?.from || !relation?.to) return;
-                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
-                if (methodMap.has(callerClassFqn)) return;
+                if (methodMap.has(relation.from)) return; // 呼び出し元がusecase内メソッドなら上のループで登録済み
                 addEntry(relation.to, {fqn: relation.from, kind: "inbound-method"});
             });
         });
         return map;
+    }
+
+    /**
+     * @param {string} kind
+     * @param {DiagramContext} diagramContext
+     * @returns {boolean}
+     */
+    function shouldIncludeMethodNode(kind, diagramContext) {
+        return diagramContext.showDiagramInternalMethods || kind === "usecase";
+    }
+
+    /**
+     * 呼び出し先を辿り、対象外の内部メソッドは読み飛ばして（インライン化して）
+     * 対象への呼び出しを収集する共通骨格。対象判定・インライン化対象は呼び出し側が与える。
+     * 内部メソッドは走査全体で一度だけ展開する（循環と、分岐合流するDAGでの指数的な再走査を防ぐ）。
+     * @param {string[]} callMethods
+     * @param {{isTarget: function(string): boolean, inlinableMethodOf: function(string): (UsecaseMethod|undefined), onTargetCallee: function(string): void, onOtherCallee: function(string): void}} config
+     */
+    function traverseWithInlining(callMethods, config) {
+        const {isTarget, inlinableMethodOf, onTargetCallee, onOtherCallee} = config;
+        const expanded = new Set();
+        (function walk(callMethods) {
+            (callMethods || []).forEach(calleeFqn => {
+                if (isTarget(calleeFqn)) {
+                    onTargetCallee(calleeFqn);
+                    return;
+                }
+                const inlinable = inlinableMethodOf(calleeFqn);
+                if (inlinable) {
+                    if (expanded.has(calleeFqn)) return;
+                    expanded.add(calleeFqn);
+                    walk(inlinable.callMethods);
+                } else {
+                    onOtherCallee(calleeFqn);
+                }
+            });
+        })(callMethods);
+    }
+
+    /**
+     * 呼び出し先を辿り、非表示の内部メソッドは読み飛ばして（インライン化して）
+     * 可視ノード／出力インタフェースへの呼び出しを収集する。可視ノードは新たな呼び出し元として
+     * さらに辿る。usecase図（ノード・エッジ）とシーケンス図（参加者・呼び出し）の両方が同じ辿り方を使う。
+     * @param {string} effectiveCallerFqn
+     * @param {string[]} callMethods
+     * @param {DiagramContext} diagramContext
+     * @param {Set<string>} visited
+     * @param {{onVisibleCallee: function(string, string, UsecaseMethod): void, onOutboundCallee: function(string, string): void}} handlers
+     */
+    function traverseCallGraph(effectiveCallerFqn, callMethods, diagramContext, visited, handlers) {
+        const methodMap = diagramContext.methodMap;
+        traverseWithInlining(callMethods, {
+            isTarget: fqn => methodMap.has(fqn) && shouldIncludeMethodNode(methodMap.get(fqn).kind, diagramContext),
+            inlinableMethodOf: fqn => methodMap.get(fqn),
+            onTargetCallee: calleeFqn => {
+                const m = methodMap.get(calleeFqn);
+                handlers.onVisibleCallee(effectiveCallerFqn, calleeFqn, m);
+                if (visited.has(calleeFqn)) return;
+                visited.add(calleeFqn);
+                traverseCallGraph(calleeFqn, m.callMethods, diagramContext, visited, handlers);
+            },
+            onOtherCallee: calleeFqn => {
+                if (!diagramContext.outboundOperationSet.has(calleeFqn)) return;
+                if (!diagramContext.showDiagramOutboundPorts) return;
+                handlers.onOutboundCallee(effectiveCallerFqn, calleeFqn);
+            }
+        });
     }
 
     /**
@@ -151,10 +342,6 @@ const UsecaseApp = (() => {
         nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
         visited.add(rootMethod.fqn);
 
-        function shouldIncludeMethodNode(kind) {
-            return diagramContext.showDiagramInternalMethods || kind === "usecase";
-        }
-
         const reverseCallerMap = diagramContext.reverseCallerMap;
 
         /**
@@ -169,7 +356,7 @@ const UsecaseApp = (() => {
             if (diagramContext.showDiagramInternalMethods) {
                 callers.forEach(caller => {
                     if (caller.fqn === rootFqn) return;
-                    if (!shouldIncludeMethodNode(caller.kind)) return;
+                    if (!shouldIncludeMethodNode(caller.kind, diagramContext)) return;
                     visible.set(caller.fqn, caller.kind);
                 });
                 return visible;
@@ -220,60 +407,31 @@ const UsecaseApp = (() => {
             return visible;
         }
 
-        collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
-            const edgeKey = makeEdgeKey(callerFqn, rootMethod.fqn);
-            if (!edgeSet.has(edgeKey)) {
-                edgeSet.add(edgeKey);
-                edges.push({from: callerFqn, to: rootMethod.fqn});
-            }
-            if (!nodes.has(callerFqn)) {
-                nodes.set(callerFqn, {fqn: callerFqn, kind});
-            }
-        });
+        if (diagramContext.showDiagramCallers !== false) {
+            collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
+                addEdgeOnce(edgeSet, edges, callerFqn, rootMethod.fqn);
+                if (!nodes.has(callerFqn)) {
+                    nodes.set(callerFqn, {fqn: callerFqn, kind});
+                }
+            });
+        }
 
-        /**
-         * @param {string} effectiveCallerFqn
-         * @param {string[]} callMethods
-         * @param {Set<string>} inliningPath
-         */
-        function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
-            if (!callMethods) return;
-            for (const calleeFqn of callMethods) {
-                if (diagramContext.methodMap.has(calleeFqn)) {
-                    const m = diagramContext.methodMap.get(calleeFqn);
-                    if (shouldIncludeMethodNode(m.kind)) {
-                        const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
-                        if (!edgeSet.has(edgeKey)) {
-                            edgeSet.add(edgeKey);
-                            edges.push({from: effectiveCallerFqn, to: calleeFqn});
-                        }
-                        if (!visited.has(calleeFqn)) {
-                            visited.add(calleeFqn);
-                            nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
-                            traverse(calleeFqn, m.callMethods, new Set());
-                        }
-                    } else {
-                        if (!inliningPath.has(calleeFqn)) {
-                            const nextPath = new Set(inliningPath);
-                            nextPath.add(calleeFqn);
-                            traverse(effectiveCallerFqn, m.callMethods, nextPath);
-                        }
+        if (diagramContext.showDiagramCallees !== false) {
+            traverseCallGraph(rootMethod.fqn, rootMethod.callMethods, diagramContext, visited, {
+                onVisibleCallee: (callerFqn, calleeFqn, m) => {
+                    addEdgeOnce(edgeSet, edges, callerFqn, calleeFqn);
+                    if (!nodes.has(calleeFqn)) {
+                        nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
                     }
-                } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
-                    if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const edgeKey = makeEdgeKey(effectiveCallerFqn, calleeFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: effectiveCallerFqn, to: calleeFqn});
-                    }
+                },
+                onOutboundCallee: (callerFqn, calleeFqn) => {
+                    addEdgeOnce(edgeSet, edges, callerFqn, calleeFqn);
                     if (!nodes.has(calleeFqn)) {
                         nodes.set(calleeFqn, {fqn: calleeFqn, kind: "outbound-method"});
                     }
                 }
-            }
+            });
         }
-
-        traverse(rootMethod.fqn, rootMethod.callMethods);
 
         const domainFqnSet = Jig.data.domain.getDomainFqnSet();
         if (diagramContext.showDiagramDomainTypes && domainFqnSet.size > 0) {
@@ -292,62 +450,206 @@ const UsecaseApp = (() => {
     }
 
     /**
-     * @param {Usecase} usecase
-     * @param {Set<string>|null} handlerFqns ハンドラのみ表示時のFQN集合、nullはすべて表示
-     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     * 呼び出し先を辿り、集計対象外の非公開メソッドは読み飛ばして（インライン化して）
+     * 集計対象メソッドへの呼び出しを収集する。集計対象でも非公開でもない呼び出し先は
+     * onOtherCallee に渡す（出力インタフェース判定などは呼び出し側で行う）。
+     * @param {string[]} callMethods
+     * @param {{targetMethodFqns: Set<string>, internalMethodMap: Map<string, UsecaseMethod>, onTargetCallee: function(string): void, onOtherCallee: function(string): void}} config
      */
-    function buildClassGraph(usecase, handlerFqns = null) {
+    function collectInlinedCallees(callMethods, config) {
+        const {targetMethodFqns, internalMethodMap, onTargetCallee, onOtherCallee} = config;
+        traverseWithInlining(callMethods, {
+            isTarget: fqn => targetMethodFqns.has(fqn),
+            inlinableMethodOf: fqn => internalMethodMap.get(fqn),
+            onTargetCallee,
+            onOtherCallee
+        });
+    }
+
+    /**
+     * クラス単位・パッケージ単位のグラフ構築で共通の骨格（ノード・エッジの集約と、
+     * 出力インタフェース・ドメインモデル・入力インタフェースの収集）をまとめたビルダー。
+     * ノード粒度（クラスFQN/メソッドFQN）による違いは各buildXxxGraphが指定する。
+     * @param {DiagramContext} diagramContext
+     */
+    function createClassLevelGraphBuilder(diagramContext) {
         /** @type {DiagramNode[]} */
         const nodes = [];
         /** @type {DiagramEdge[]} */
         const edges = [];
         const edgeSet = new Set();
         const domainNodeSet = new Set();
-        const classMethods = [...usecase.methods.filter(m => isUsecase(m) && (!handlerFqns || handlerFqns.has(m.fqn))), ...usecase.staticMethods];
-        const methodFqns = new Set(classMethods.map(m => m.fqn));
-        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
-
-        classMethods.forEach(method => {
-            const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
-            nodes.push({fqn: method.fqn, kind});
-
-            (method.callMethods || []).forEach(calleeFqn => {
-                if (methodFqns.has(calleeFqn)) {
-                    const edgeKey = makeEdgeKey(method.fqn, calleeFqn);
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: method.fqn, to: calleeFqn});
-                    }
-                }
-            });
-
-            collectDomainTypeNodesAndEdges(method, method.fqn, domainFqnSet, edgeSet, edges, domainFqn => {
-                if (!domainNodeSet.has(domainFqn)) {
-                    domainNodeSet.add(domainFqn);
-                    nodes.push({fqn: domainFqn, kind: "domain-type"});
-                }
-            });
-        });
-
+        const outboundNodeSet = new Set();
         const inboundNodeSet = new Set();
-        Jig.data.inbound.getControllers().forEach(controller => {
-            (controller.relations || []).forEach(relation => {
-                if (!relation?.from || !relation?.to) return;
-                if (!methodFqns.has(relation.to)) return;
-                const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
-                if (!inboundNodeSet.has(callerClassFqn)) {
-                    inboundNodeSet.add(callerClassFqn);
-                    nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
+        const {outboundOperationSet, inboundCallerIndex, showDiagramOutboundPorts, showDiagramDomainTypes, showDiagramInboundClasses}
+            = resolveClassLevelDiagramContext(diagramContext);
+
+        return {
+            addNode(node) {
+                nodes.push(node);
+            },
+            addEdge(from, to) {
+                addEdgeOnce(edgeSet, edges, from, to);
+            },
+            /** 呼び出し先が出力インタフェースならoutbound-classノードとエッジを追加する */
+            addOutboundEdgeIfVisible(fromFqn, calleeFqn) {
+                if (!showDiagramOutboundPorts || !outboundOperationSet.has(calleeFqn)) return;
+                const outboundClassFqn = getClassFqnFromMethodFqn(calleeFqn);
+                addNodeOnce(outboundNodeSet, nodes, outboundClassFqn, "outbound-class");
+                addEdgeOnce(edgeSet, edges, fromFqn, outboundClassFqn);
+            },
+            /** メソッドのパラメータ・戻り値からanchorFqnに紐づくドメイン型ノード・エッジを追加する */
+            collectDomainEdges(method, anchorFqn) {
+                if (!showDiagramDomainTypes) return;
+                collectDomainTypeNodesAndEdges(method, anchorFqn, domainFqnSet, edgeSet, edges,
+                    domainFqn => addNodeOnce(domainNodeSet, nodes, domainFqn, "domain-type"));
+            },
+            /**
+             * inboundクラスからの呼び出しエッジを追加する。エッジの向き先は
+             * resolveTargetで決め、nullを返した呼び出しはスキップする。
+             * @param {Set<string>} classFqns
+             * @param {function({classFqn: string, callerClassFqn: string, calleeMethodFqn: string}): string|null} resolveTarget
+             */
+            collectInboundEdges(classFqns, resolveTarget) {
+                if (!showDiagramInboundClasses) return;
+                classFqns.forEach(classFqn => {
+                    (inboundCallerIndex.get(classFqn) || []).forEach(({callerClassFqn, calleeMethodFqn}) => {
+                        const targetFqn = resolveTarget({classFqn, callerClassFqn, calleeMethodFqn});
+                        if (!targetFqn) return;
+                        addNodeOnce(inboundNodeSet, nodes, callerClassFqn, "inbound-class");
+                        addEdgeOnce(edgeSet, edges, callerClassFqn, targetFqn);
+                    });
+                });
+            },
+            build() {
+                return {nodes, edges};
+            },
+        };
+    }
+
+    /**
+     * 公開メソッド（ユースケースとstaticメソッド）をノードとするメソッド単位のグラフを組み立てる。
+     * buildClassGraph（1クラス）とbuildPackageMethodGraph（パッケージ全体）の共通実装。
+     * 非公開メソッド経由の呼び出しはインライン化して集計対象メソッドへのエッジにする。
+     * @param {Usecase[]} usecases
+     * @param {DiagramContext} diagramContext
+     * @param {{includeUsecaseMethod: function(UsecaseMethod): boolean, nodeOf: function(UsecaseMethod, Usecase, boolean): DiagramNode, skipInboundCallersInScope: boolean}} spec
+     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     */
+    function buildMethodLevelGraph(usecases, diagramContext, spec) {
+        const builder = createClassLevelGraphBuilder(diagramContext);
+        const classFqns = new Set(usecases.map(usecase => usecase.fqn));
+        const methodFqns = new Set();
+        const internalMethodMap = new Map();
+        /** @type {{method: UsecaseMethod, usecase: Usecase, isStatic: boolean}[]} */
+        const targets = [];
+        usecases.forEach(usecase => {
+            usecase.methods.forEach(method => {
+                if (!isUsecase(method)) {
+                    internalMethodMap.set(method.fqn, method);
+                } else if (spec.includeUsecaseMethod(method)) {
+                    methodFqns.add(method.fqn);
+                    targets.push({method, usecase, isStatic: false});
                 }
-                const edgeKey = makeEdgeKey(callerClassFqn, relation.to);
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: callerClassFqn, to: relation.to});
-                }
+            });
+            usecase.staticMethods.forEach(method => {
+                methodFqns.add(method.fqn);
+                targets.push({method, usecase, isStatic: true});
             });
         });
 
-        return {nodes, edges};
+        targets.forEach(({method, usecase, isStatic}) => {
+            builder.addNode(spec.nodeOf(method, usecase, isStatic));
+            collectInlinedCallees(method.callMethods, {
+                targetMethodFqns: methodFqns,
+                internalMethodMap,
+                onTargetCallee: calleeFqn => builder.addEdge(method.fqn, calleeFqn),
+                onOtherCallee: calleeFqn => builder.addOutboundEdgeIfVisible(method.fqn, calleeFqn)
+            });
+            builder.collectDomainEdges(method, method.fqn);
+        });
+
+        builder.collectInboundEdges(classFqns, ({callerClassFqn, calleeMethodFqn}) => {
+            if (spec.skipInboundCallersInScope && classFqns.has(callerClassFqn)) return null;
+            return methodFqns.has(calleeMethodFqn) ? calleeMethodFqn : null;
+        });
+
+        return builder.build();
+    }
+
+    /**
+     * @param {Usecase} usecase
+     * @param {Set<string>|null} handlerFqns ハンドラのみ表示時のFQN集合、nullはすべて表示
+     * @param {DiagramContext} [diagramContext]
+     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     */
+    function buildClassGraph(usecase, handlerFqns = null, diagramContext = {}) {
+        return buildMethodLevelGraph([usecase], diagramContext, {
+            includeUsecaseMethod: method => !handlerFqns || handlerFqns.has(method.fqn),
+            nodeOf: (method, _usecase, isStatic) => ({
+                fqn: method.fqn,
+                kind: isUsecase(method) ? "usecase" : (isStatic ? "static-method" : "method")
+            }),
+            skipInboundCallersInScope: false
+        });
+    }
+
+    /**
+     * パッケージに含まれるクラスをユースケースと見立てたグラフを組み立てる。
+     * クラス間の呼び出しは全メソッド由来、ドメインモデルの入出力は公開インタフェース（ユースケースとstaticメソッド）由来とする。
+     * @param {Usecase[]} packageUsecases
+     * @param {DiagramContext} [diagramContext]
+     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     */
+    function buildPackageGraph(packageUsecases, diagramContext = {}) {
+        const builder = createClassLevelGraphBuilder(diagramContext);
+        const classFqns = new Set(packageUsecases.map(usecase => usecase.fqn));
+
+        packageUsecases.forEach(usecase => {
+            builder.addNode({fqn: usecase.fqn, kind: "usecase"});
+
+            const collectCallEdges = (method) => {
+                (method.callMethods || []).forEach(calleeFqn => {
+                    const calleeClassFqn = getClassFqnFromMethodFqn(calleeFqn);
+                    if (calleeClassFqn === usecase.fqn) return;
+                    if (classFqns.has(calleeClassFqn)) {
+                        builder.addEdge(usecase.fqn, calleeClassFqn);
+                    } else {
+                        builder.addOutboundEdgeIfVisible(usecase.fqn, calleeFqn);
+                    }
+                });
+            };
+
+            usecase.methods.forEach(method => {
+                collectCallEdges(method);
+                if (isUsecase(method)) builder.collectDomainEdges(method, usecase.fqn);
+            });
+            usecase.staticMethods.forEach(method => {
+                collectCallEdges(method);
+                builder.collectDomainEdges(method, usecase.fqn);
+            });
+        });
+
+        builder.collectInboundEdges(classFqns, ({classFqn, callerClassFqn}) =>
+            classFqns.has(callerClassFqn) ? null : classFqn);
+
+        return builder.build();
+    }
+
+    /**
+     * パッケージに含まれるクラスの公開メソッド（ユースケースとstaticメソッド）をユースケースと見立てたグラフを組み立てる。
+     * クラスはノードをまとめるための subgraph 情報（classFqn）としてのみ扱う。
+     * @param {Usecase[]} packageUsecases
+     * @param {DiagramContext} [diagramContext]
+     * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+     */
+    function buildPackageMethodGraph(packageUsecases, diagramContext = {}) {
+        return buildMethodLevelGraph(packageUsecases, diagramContext, {
+            includeUsecaseMethod: () => true,
+            nodeOf: (method, usecase) => ({fqn: method.fqn, kind: "usecase", classFqn: usecase.fqn}),
+            skipInboundCallersInScope: true
+        });
     }
 
     const SequenceDiagram = {
@@ -357,6 +659,8 @@ const UsecaseApp = (() => {
          * @returns {SequenceDiagram}
          */
         buildDiagram(rootMethod, diagramContext) {
+            // シーケンス図は物理名切り替えに対応していないため常に用語名表示
+            const {type: typeLabel} = Jig.glossary.makeLabels(false);
             /** @type {string[]} */
             const participantKeys = [];
             /** @type {Map<string, SequenceParticipant>} */
@@ -364,17 +668,6 @@ const UsecaseApp = (() => {
             /** @type {SequenceCall[]} */
             const calls = [];
             const visited = new Set();
-
-            /**
-             * @param {string} fqn
-             * @returns {string}
-             */
-            function getMethodSimpleName(fqn) {
-                const hashIdx = fqn.indexOf('#');
-                if (hashIdx === -1) return fqn;
-                const parenIdx = fqn.indexOf('(', hashIdx);
-                return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
-            }
 
             /**
              * @param {string} key
@@ -399,45 +692,29 @@ const UsecaseApp = (() => {
                 return ensureParticipant(key, label, "usecase");
             }
 
-            /**
-             * @param {string} effectiveCallerFqn
-             * @param {string[]} callMethods
-             * @param {Set<string>} inliningPath
-             */
-            function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
-                if (!callMethods) return;
-                for (const calleeFqn of callMethods) {
-                    const caller = participants.get(effectiveCallerFqn);
-                    if (diagramContext.methodMap.has(calleeFqn)) {
-                        const m = diagramContext.methodMap.get(calleeFqn);
-                        const isUc = m.kind === "usecase";
-                        if (diagramContext.showDiagramInternalMethods || isUc) {
-                            const callee = ensureUsecaseParticipant(calleeFqn);
-                            calls.push({from: caller.id, to: callee.id, label: ''});
-                            if (!visited.has(calleeFqn)) {
-                                visited.add(calleeFqn);
-                                traverse(calleeFqn, m.callMethods, new Set());
-                            }
-                        } else {
-                            if (!inliningPath.has(calleeFqn)) {
-                                const nextPath = new Set(inliningPath);
-                                nextPath.add(calleeFqn);
-                                traverse(effectiveCallerFqn, m.callMethods, nextPath);
-                            }
-                        }
-                    } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
-                        if (!diagramContext.showDiagramOutboundPorts) continue;
-                        const classFqn = getClassFqnFromMethodFqn(calleeFqn);
-                        const methodName = getMethodSimpleName(calleeFqn);
-                        const callee = ensureParticipant(classFqn, Jig.glossary.getTypeTerm(classFqn).title, "outbound");
-                        calls.push({from: caller.id, to: callee.id, label: methodName});
-                    }
-                }
-            }
-
             ensureUsecaseParticipant(rootMethod.fqn);
             visited.add(rootMethod.fqn);
-            traverse(rootMethod.fqn, rootMethod.callMethods);
+            traverseCallGraph(rootMethod.fqn, rootMethod.callMethods, diagramContext, visited, {
+                onVisibleCallee: (callerFqn, calleeFqn, m) => {
+                    const caller = participants.get(callerFqn);
+                    const callee = ensureUsecaseParticipant(calleeFqn);
+                    const label = diagramContext.showDiagramArguments
+                        ? buildArgumentsLabel(m.parameters, typeLabel)
+                        : '';
+                    calls.push({from: caller.id, to: callee.id, label});
+                },
+                onOutboundCallee: (callerFqn, calleeFqn) => {
+                    const caller = participants.get(callerFqn);
+                    const classFqn = getClassFqnFromMethodFqn(calleeFqn);
+                    const methodName = Jig.glossary.methodSimpleName(calleeFqn);
+                    const callee = ensureParticipant(classFqn, Jig.glossary.getTypeTerm(classFqn).title, "outbound");
+                    const argumentsLabel = diagramContext.showDiagramArguments
+                        ? buildArgumentsLabel(resolveCalleeParameters(calleeFqn, diagramContext), typeLabel)
+                        : '';
+                    const label = argumentsLabel ? `${methodName}(${argumentsLabel})` : methodName;
+                    calls.push({from: caller.id, to: callee.id, label});
+                }
+            });
 
             return {
                 participants: participantKeys.map(k => participants.get(k)),
@@ -487,11 +764,10 @@ const UsecaseApp = (() => {
 
         const handlerFqns = state.handlerFqns;
         const filterText = state.sidebarFilterText.toLowerCase();
-        const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
 
         // テキストフィルタ: クラス名/所属パッケージ名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
         const filteredItems = usecases.flatMap(usecase => {
-            const visibleMethods = usecase.methods.filter(isVisibleMethod);
+            const visibleMethods = visibleUsecaseMethodsOf(usecase, handlerFqns);
             if (visibleMethods.length === 0) return [];
             if (!filterText) return [{usecase, methods: visibleMethods}];
 
@@ -549,14 +825,42 @@ const UsecaseApp = (() => {
     }
 
     /**
+     * サイドバーの表示設定（全体設定）に対して、ダイアグラムごとの上書きを保持しつつ
+     * コンテキストメニュー項目を組み立てる共通ヘルパー。jig-mermaid.js の
+     * createDiagramSettingsOverride（domain.js と共有）に、DiagramContext形式での取得を足したもの。
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @param {{key: string, label: string}[]} toggles
+     * @returns {{getContext: function(): DiagramContext, buildExtraMenuItems: function(function(): void): object[]}}
+     */
+    function createDiagramContextOverrideMenu(buildCurrentDiagramContext, toggles) {
+        const settingsOverride = Jig.mermaid.render.createDiagramSettingsOverride(
+            toggles.map(({key, label}) => ({key, label, getGlobalValue: () => !!buildCurrentDiagramContext()[key]}))
+        );
+        return {
+            getContext: () => ({...buildCurrentDiagramContext(), ...settingsOverride.getValues()}),
+            buildExtraMenuItems: settingsOverride.buildExtraMenuItems
+        };
+    }
+
+    /**
      * @param {UsecaseMethod} method
      * @param {function(): DiagramContext} buildCurrentDiagramContext
      * @returns {function}
      */
     function createUsecaseDiagramGenerator(method, buildCurrentDiagramContext) {
-        return (dir, opts) => {
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
+            {key: 'showDiagramCallers', label: '呼び出し元'},
+            {key: 'showDiagramCallees', label: '呼び出し先'},
+            {key: 'showDiagramInternalMethods', label: '内部メソッド'},
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+            {key: 'showDiagramDomainTypes', label: 'ドメインモデル'},
+            {key: 'showDiagramArguments', label: '引数'}
+        ]);
+
+        const generator = (dir, opts) => {
             const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
-            const currentUsecaseDiagram = buildUsecaseDiagram(method, buildCurrentDiagramContext());
+            const context = contextMenu.getContext();
+            const currentUsecaseDiagram = buildUsecaseDiagram(method, context);
             const builder = Jig.mermaid.createBuilder();
             const classSubgraphs = new Map();
             const ensureClassSubgraph = (fqn) => {
@@ -565,6 +869,7 @@ const UsecaseApp = (() => {
             };
             currentUsecaseDiagram.nodes.forEach(node => {
                 const nodeId = fqnToNodeId(node.fqn);
+                if (addLinkedClassNode(builder, node, typeLabel)) return;
                 if (node.kind === "inbound-method") {
                     const {subgraph, classFqn} = ensureClassSubgraph(node.fqn);
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
@@ -575,10 +880,6 @@ const UsecaseApp = (() => {
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "outbound");
                     builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(classFqn), node.fqn);
-                } else if (node.kind === "domain-type") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "domain");
-                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
                 } else if (node.kind === "usecase") {
                     const {subgraph} = ensureClassSubgraph(node.fqn);
                     builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
@@ -593,10 +894,39 @@ const UsecaseApp = (() => {
                 }
             });
             currentUsecaseDiagram.edges.forEach(edge => {
-                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+                const label = (!edge.dotted && context.showDiagramArguments)
+                    ? buildArgumentsLabel(resolveCalleeParameters(edge.to, context), typeLabel)
+                    : "";
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), label, edge.dotted ?? false);
             });
             return builder.build(dir);
         };
+
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
+
+        return generator;
+    }
+
+    /**
+     * @param {UsecaseMethod} method
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {function}
+     */
+    function createSequenceDiagramGenerator(method, buildCurrentDiagramContext) {
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, [
+            {key: 'showDiagramInternalMethods', label: '内部メソッド'},
+            {key: 'showDiagramOutboundPorts', label: '出力インタフェース'},
+            {key: 'showDiagramArguments', label: '引数'}
+        ]);
+
+        const generator = () => {
+            const sequenceDiagram = SequenceDiagram.buildDiagram(method, contextMenu.getContext());
+            return SequenceDiagram.buildCode(sequenceDiagram);
+        };
+
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
+
+        return generator;
     }
 
     /**
@@ -617,11 +947,12 @@ const UsecaseApp = (() => {
             }));
         }
 
-        const currentContext = buildCurrentDiagramContext();
-        const usecaseDiagram = buildUsecaseDiagram(method, currentContext);
+        // 図の有無は全トグルONの文脈で判定する（描画自体は現在のトグル状態に従う）
+        const gateContext = withAllDiagramToggles(buildCurrentDiagramContext());
+        const usecaseDiagram = buildUsecaseDiagram(method, gateContext);
         const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-        const sequenceDiagram = SequenceDiagram.buildDiagram(method, currentContext);
+        const sequenceDiagram = SequenceDiagram.buildDiagram(method, gateContext);
         const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
         const hasSequenceDiagram = sequenceDiagramCode !== null;
 
@@ -654,11 +985,7 @@ const UsecaseApp = (() => {
             if (hasSequenceDiagram) {
                 Jig.mermaid.diagram.createAndRegister(sequenceTarget, (sequenceContainer) => {
                     sequenceContainer.innerHTML = "";
-                    const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, buildCurrentDiagramContext());
-                    const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
-                    if (currentSequenceDiagramCode) {
-                        Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
-                    }
+                    Jig.mermaid.render.renderWithControls(sequenceContainer, createSequenceDiagramGenerator(method, buildCurrentDiagramContext));
                 });
             }
         }
@@ -683,13 +1010,14 @@ const UsecaseApp = (() => {
             }));
         }
 
-        const classGraph = buildClassGraph(usecase, handlerFqns);
+        // 図の有無は全トグルONの文脈で判定する（描画自体は現在のトグル状態に従う）
+        const classGraph = buildClassGraph(usecase, handlerFqns, withAllDiagramToggles(buildCurrentDiagramContext()));
         if (classGraph.edges.length > 0) {
             const classDiagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container class-diagram"});
             section.appendChild(classDiagramContainer);
             Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
                 mmdContainer.innerHTML = "";
-                Jig.mermaid.render.renderWithControls(mmdContainer, createClassDiagramGenerator(classGraph), {direction: 'LR', enableLabelToggle: true});
+                Jig.mermaid.render.renderWithControls(mmdContainer, createClassDiagramGenerator(usecase, handlerFqns, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
             });
         }
 
@@ -727,29 +1055,100 @@ const UsecaseApp = (() => {
     }
 
     /**
-     * @param {{nodes: DiagramNode[], edges: DiagramEdge[]}} classGraph
+     * inbound-class/outbound-class/domain-typeのノードをリンク付きでbuilderへ追加する。
+     * @param {MermaidBuilder} builder
+     * @param {DiagramNode} node
+     * @param {function(string): string} typeLabel
+     * @returns {boolean} 該当するkindを追加した場合true
+     */
+    function addLinkedClassNode(builder, node, typeLabel) {
+        const nodeId = fqnToNodeId(node.fqn);
+        if (node.kind === "inbound-class") {
+            builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+            builder.addClass(nodeId, "inbound");
+            builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
+        } else if (node.kind === "outbound-class") {
+            builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+            builder.addClass(nodeId, "outbound");
+            builder.addClick(nodeId, Jig.mermaid.nav.outboundPortUrl(node.fqn), node.fqn);
+        } else if (node.kind === "domain-type") {
+            builder.addNode(nodeId, typeLabel(node.fqn), 'class');
+            builder.addClass(nodeId, "domain");
+            builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * パッケージに含まれるクラスをユースケースと見立てたユースケース図のジェネレータ
+     * @param {Usecase[]} packageUsecases
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
      * @returns {function}
      */
-    function createClassDiagramGenerator(classGraph) {
-        return (dir, opts) => {
-            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+    function createPackageDiagramGenerator(packageUsecases, buildCurrentDiagramContext) {
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, PACKAGE_DIAGRAM_MENU_TOGGLES);
+
+        const generator = (dir, opts) => {
+            const {type: typeLabel, method: mLabel, pkg: pkgLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const context = contextMenu.getContext();
+            const methodLevel = !!context.showDiagramMethodLevel;
+            const packageGraph = methodLevel
+                ? buildPackageMethodGraph(packageUsecases, context)
+                : buildPackageGraph(packageUsecases, context);
             const builder = Jig.mermaid.createBuilder();
-            classGraph.nodes.forEach(node => {
+            const subgraphs = new Map();
+            packageGraph.nodes.forEach(node => {
+                if (addLinkedClassNode(builder, node, typeLabel)) return;
                 const nodeId = fqnToNodeId(node.fqn);
-                if (node.kind === "inbound-class") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "inbound");
-                    builder.addClick(nodeId, Jig.mermaid.nav.inboundAdapterUrl(node.fqn), node.fqn);
-                } else if (node.kind === "domain-type") {
-                    builder.addNode(nodeId, typeLabel(node.fqn), 'class');
-                    builder.addClass(nodeId, "domain");
-                    builder.addClick(nodeId, Jig.mermaid.nav.domainTypeUrl(node.fqn), node.fqn);
-                } else if (node.kind === "usecase") {
-                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                if (methodLevel) {
+                    const subgraph = builder.ensureSubgraph(subgraphs, Jig.util.fqnToId("sg", node.classFqn), typeLabel(node.classFqn), 'LR');
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "usecase");
                     builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
                 } else {
-                    builder.addNode(nodeId, mLabel(node.fqn), 'method');
+                    const packageFqn = Jig.util.getPackageFqnFromTypeFqn(node.fqn);
+                    const subgraph = builder.ensureSubgraph(subgraphs, Jig.util.fqnToId("sg", packageFqn), pkgLabel(packageFqn), 'LR');
+                    builder.addNodeToSubgraph(subgraph, nodeId, typeLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    builder.addClick(nodeId, "#" + fqnToTypeId(node.fqn), node.fqn);
+                }
+            });
+            packageGraph.edges.forEach(edge => {
+                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
+            });
+            return builder.build(dir);
+        };
+
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
+
+        return generator;
+    }
+
+    /**
+     * @param {Usecase} usecase
+     * @param {Set<string>|null} handlerFqns
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     * @returns {function}
+     */
+    function createClassDiagramGenerator(usecase, handlerFqns, buildCurrentDiagramContext) {
+        const contextMenu = createDiagramContextOverrideMenu(buildCurrentDiagramContext, CLASS_LEVEL_DIAGRAM_MENU_TOGGLES);
+
+        const generator = (dir, opts) => {
+            const {type: typeLabel, method: mLabel} = Jig.glossary.makeLabels(opts?.showPhysicalName);
+            const classGraph = buildClassGraph(usecase, handlerFqns, contextMenu.getContext());
+            const builder = Jig.mermaid.createBuilder();
+            const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", usecase.fqn), typeLabel(usecase.fqn), 'LR');
+            classGraph.nodes.forEach(node => {
+                const nodeId = fqnToNodeId(node.fqn);
+                if (addLinkedClassNode(builder, node, typeLabel)) return;
+                if (node.kind === "usecase") {
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
+                    builder.addClass(nodeId, "usecase");
+                    builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn), node.fqn);
+                } else {
+                    builder.addNodeToSubgraph(subgraph, nodeId, mLabel(node.fqn), 'method');
                     builder.addClass(nodeId, "inactive");
                     builder.addTooltip(nodeId, node.fqn);
                 }
@@ -759,6 +1158,10 @@ const UsecaseApp = (() => {
             });
             return builder.build(dir);
         };
+
+        generator.buildExtraMenuItems = contextMenu.buildExtraMenuItems;
+
+        return generator;
     }
 
     /**
@@ -768,6 +1171,8 @@ const UsecaseApp = (() => {
     function renderUsecaseList(usecases) {
         const container = document.getElementById("usecase-list");
         if (!container) return;
+        // 破棄するDOMに紐づくダイアグラム登録を解除してから作り直す
+        Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
 
         if (!usecases || usecases.length === 0) {
@@ -777,17 +1182,16 @@ const UsecaseApp = (() => {
 
         const methodMap = buildMethodMap(usecases);
         const reverseCallerMap = buildReverseCallerMap(methodMap);
+        const inboundCallerIndex = buildInboundCallerIndex();
 
         const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
+        const outboundOperationParameterMap = buildOutboundOperationParameterMap(Jig.data.outbound.get());
 
-        const buildCurrentDiagramContext = () => ({
-            methodMap,
-            reverseCallerMap,
-            outboundOperationSet,
-            showDiagramInternalMethods: document.getElementById('show-diagram-internal-methods').checked,
-            showDiagramOutboundPorts: document.getElementById('show-diagram-outbound-ports').checked,
-            showDiagramDomainTypes: document.getElementById('show-diagram-domain-types').checked,
-        });
+        const buildCurrentDiagramContext = () => {
+            const context = {methodMap, reverseCallerMap, inboundCallerIndex, outboundOperationSet, outboundOperationParameterMap};
+            DIAGRAM_TOGGLES.forEach(({id, key}) => context[key] = document.getElementById(id).checked);
+            return context;
+        };
 
         const handlerFqns = state.handlerFqns;
 
@@ -799,9 +1203,31 @@ const UsecaseApp = (() => {
         // 用語（package-info）を持つパッケージはクラスを直接含まなくても見出しと説明を表示する
         const sections = Jig.util.flattenPackageTree(visibleUsecases, ({usecase}) => usecase.fqn, Jig.glossary.hasTerm);
         sections.forEach(({fqn: packageFqn, items: packageUsecases}) => {
-            container.appendChild(Jig.dom.createPackageHeading(fqnToPackageId(packageFqn), packageFqn));
+            const heading = Jig.dom.createPackageHeading(fqnToPackageId(packageFqn), packageFqn);
+            container.appendChild(heading);
+            appendPackageDiagram(heading, packageUsecases.map(({usecase}) => usecase), buildCurrentDiagramContext);
             packageUsecases.forEach(({usecase, visibleMethods}) =>
                 container.appendChild(renderUsecaseCard(usecase, visibleMethods, handlerFqns, buildCurrentDiagramContext)));
+        });
+    }
+
+    /**
+     * パッケージ見出しに、パッケージ内クラスをユースケースと見立てたユースケース図を追加する。
+     * クラス間の関連がない場合は追加しない。
+     * @param {HTMLElement} headingSection
+     * @param {Usecase[]} packageUsecases
+     * @param {function(): DiagramContext} buildCurrentDiagramContext
+     */
+    function appendPackageDiagram(headingSection, packageUsecases, buildCurrentDiagramContext) {
+        if (packageUsecases.length === 0) return;
+        // 図の有無は全トグルONの文脈で判定する（描画自体は現在のトグル状態に従う）
+        const packageGraph = buildPackageGraph(packageUsecases, withAllDiagramToggles(buildCurrentDiagramContext()));
+        if (packageGraph.edges.length === 0) return;
+        const diagramContainer = Jig.dom.createElement("div", {className: "jig-card-section diagram-container package-diagram"});
+        headingSection.appendChild(diagramContainer);
+        Jig.mermaid.diagram.createAndRegister(diagramContainer, (mmdContainer) => {
+            mmdContainer.innerHTML = "";
+            Jig.mermaid.render.renderWithControls(mmdContainer, createPackageDiagramGenerator(packageUsecases, buildCurrentDiagramContext), {direction: 'LR', enableLabelToggle: true});
         });
     }
 
@@ -815,9 +1241,7 @@ const UsecaseApp = (() => {
             {id: 'show-details', class: 'hide-usecase-details'},
             {id: 'show-descriptions', class: 'hide-usecase-descriptions'},
             {id: 'show-declarations', class: 'hide-usecase-declarations'},
-            {id: 'show-diagram-internal-methods', reRender: true},
-            {id: 'show-diagram-outbound-ports', reRender: true},
-            {id: 'show-diagram-domain-types', reRender: true}
+            ...DIAGRAM_TOGGLES.map(({id}) => ({id, reRender: true}))
         ];
 
         controls.forEach(control => {
@@ -840,6 +1264,7 @@ const UsecaseApp = (() => {
         ['display-target-all', 'display-target-handlers-only'].forEach(id => {
             const radio = document.getElementById(id);
             if (radio) radio.addEventListener('change', () => {
+                if (!state.data) return; // 前回initでデータなしになっていた場合、古いリスナーが残っていても何もしない
                 const handlersOnly = document.getElementById('display-target-handlers-only')?.checked ?? false;
                 state.handlerFqns = handlersOnly ? buildHandlerFqns() : null;
                 const usecases = state.data.usecases;
@@ -884,9 +1309,17 @@ const UsecaseApp = (() => {
         init,
         state,
         buildOutboundOperationSet,
+        buildOutboundOperationParameterMap,
+        buildArgumentsLabel,
         buildReverseCallerMap,
         buildUsecaseDiagram,
         buildClassGraph,
+        buildPackageGraph,
+        buildPackageMethodGraph,
+        createUsecaseDiagramGenerator,
+        createSequenceDiagramGenerator,
+        createClassDiagramGenerator,
+        createPackageDiagramGenerator,
         SequenceDiagram,
         render,
         renderSidebar,

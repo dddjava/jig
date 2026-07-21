@@ -6,6 +6,11 @@
     min-width: 0;
 }
 
+/* パッケージ見出し内のパッケージ図。見出し下端の罫線と密着しないよう間隔を空ける */
+.usecase .package-diagram {
+    margin-bottom: 12px;
+}
+
 .usecase .depends {
     background-color: #ffffff;
     padding: 12px;

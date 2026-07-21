@@ -86,6 +86,7 @@ const ListOutputApp = (() => {
             {label: "SELECT", get: i => formatFieldTypes(i.selectTables)},
             {label: "UPDATE", get: i => formatFieldTypes(i.updateTables)},
             {label: "DELETE", get: i => formatFieldTypes(i.deleteTables)},
+            {label: "UNKNOWN", get: i => formatFieldTypes(i.unknownTables)},
             {label: "関連元クラス数", get: i => i.callerTypeCount ?? "", type: "number"},
             {label: "関連元メソッド数", get: i => i.callerMethodCount ?? "", type: "number"},
         ],

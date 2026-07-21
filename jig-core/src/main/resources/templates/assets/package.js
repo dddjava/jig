@@ -1266,7 +1266,7 @@ const PackageApp = (() => {
             });
             const tr = Jig.dom.createElement('tr', {
                 children: headerKeys.map((key, i) => {
-                    if (key === null) return Jig.dom.createElement('th', {className: 'no-sort'});
+                    if (key === null) return Jig.dom.createElement('th');
                     if (i === 1) {
                         // 「定義名」セルには絞り込み input を内包する
                         const input = Jig.dom.createElement('input', {
@@ -1290,7 +1290,6 @@ const PackageApp = (() => {
 
     function init() {
         renderPackageTableHeaders();
-        Jig.dom.setupSortableTables();
         const renderedTabs = new Set();
         setupTabControl(tabName => {
             if (!renderedTabs.has(tabName)) {

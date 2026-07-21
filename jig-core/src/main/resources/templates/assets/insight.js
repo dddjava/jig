@@ -90,7 +90,7 @@ const InsightApp = (() => {
 
                 zoomFamilyTables(table, row);
                 // ズーム解除ボタンを表示
-                document.getElementById("cancel-zoom").classList.remove("hidden");
+                document.getElementById("cancel-zoom")?.classList.remove("hidden");
             });
         });
     }

@@ -777,7 +777,8 @@ globalThis.Jig.dom = (() => {
 
     function setupSortableTables() {
         function sortTable(event) {
-            const headerColumn = event.target;
+            // th の中に input などの子要素を置くページがあるため、target ではなく th 自身を使う
+            const headerColumn = event.currentTarget;
             const table = headerColumn.closest("table");
             const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
 
@@ -807,7 +808,8 @@ globalThis.Jig.dom = (() => {
                 return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
             });
 
-            rows.forEach(row => table.querySelector("tbody").appendChild(row));
+            const tbody = table.querySelector("tbody");
+            rows.forEach(row => tbody.appendChild(row));
 
             headerColumn.dataset.orderFlag = (!orderFlag).toString();
         }

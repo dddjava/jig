@@ -755,24 +755,24 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idA} --> ${idB}`), `association エッジが含まれること: ${result}`);
         });
 
-        test('kinds に「継承クラス」を含む場合 ..|> を使用する', () => {
+        test('kinds に「継承クラス」を含む場合 <|-- を使用する', () => {
             const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
             const typeA = typesMap.get('org.example.A');
             const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['継承クラス']}];
             const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
             const idA = Jig.util.fqnToId("n", 'org.example.A');
             const idB = Jig.util.fqnToId("n", 'org.example.B');
-            assert.ok(result.includes(`${idA} ..|> ${idB}`), `realization エッジが含まれること: ${result}`);
+            assert.ok(result.includes(`${idB} <|-- ${idA}`), `inheritance エッジが含まれること: ${result}`);
         });
 
-        test('kinds に「実装インタフェース」を含む場合 --|> を使用する', () => {
+        test('kinds に「実装インタフェース」を含む場合 ..|> を使用する', () => {
             const typesMap = makeTypesMap(['org.example.A', 'org.example.B']);
             const typeA = typesMap.get('org.example.A');
             const typeRelations = [{from: 'org.example.A', to: 'org.example.B', kinds: ['実装インタフェース']}];
             const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
             const idA = Jig.util.fqnToId("n", 'org.example.A');
             const idB = Jig.util.fqnToId("n", 'org.example.B');
-            assert.ok(result.includes(`${idB} <|-- ${idA}`), `inheritance エッジが含まれること: ${result}`);
+            assert.ok(result.includes(`${idA} ..|> ${idB}`), `realization エッジが含まれること: ${result}`);
         });
 
         test('kinds がそれ以外の場合 ..> を使用する', () => {
@@ -812,7 +812,7 @@ test.describe('domain.js', () => {
             const result = createTypeClassDiagramSource(typeA, typeRelations, typesMap);
             const idA = Jig.util.fqnToId("n", 'org.example.A');
             const idB = Jig.util.fqnToId("n", 'org.example.B');
-            assert.ok(result.includes(`${idA} ..|> ${idB}`), `継承クラスが優先されること: ${result}`);
+            assert.ok(result.includes(`${idB} <|-- ${idA}`), `継承クラスが優先されること: ${result}`);
         });
 
         test('フィールドのジェネリクス型が ~ 構文で表示される', () => {

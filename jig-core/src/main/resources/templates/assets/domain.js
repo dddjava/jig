@@ -309,8 +309,8 @@ const DomainApp = (() => {
 
         function edgeTypeFromKinds(kinds) {
             if (!kinds) return 'dependency';
-            if (kinds.includes('継承クラス')) return 'realization';
-            if (kinds.includes('実装インタフェース')) return 'inheritance';
+            if (kinds.includes('継承クラス')) return 'inheritance';
+            if (kinds.includes('実装インタフェース')) return 'realization';
             if (kinds.includes('フィールド型') || kinds.includes('フィールド型引数')) return 'association';
             return 'dependency';
         }

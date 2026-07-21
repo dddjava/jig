@@ -1246,6 +1246,15 @@ globalThis.Jig.mermaid = (() => {
             panel.style.display = visible ? "" : "none";
         }
 
+        // diagramFn（呼び出し元のソース生成）の例外を画面に出す。捕捉しないと
+        // 描画開始時に立てた is-rendering が下りず、ローディング表示のまま止まる。
+        function showDiagramSourceError(diagramEl, container, error) {
+            console.error("Diagram source generation error:", error);
+            if (diagramEl) diagramEl.style.display = "none";
+            setEdgeWarning(container, {visible: true, message: `図の生成に失敗しました: ${error?.message ?? error}`});
+            setRendering(container, false);
+        }
+
         function baseMermaidConfig(maxEdges) {
             return {
                 startOnLoad: false,
@@ -1362,7 +1371,14 @@ globalThis.Jig.mermaid = (() => {
             const renderDiagram = (newDirection) => {
                 const generation = ++renderGeneration;
                 setRendering(container, true);
-                const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
+                let generated;
+                try {
+                    generated = diagramFn(newDirection, {showPhysicalName});
+                } catch (error) {
+                    showDiagramSourceError(diagramEl, container, error);
+                    return;
+                }
+                const currentSource = generated ?? "";
 
                 if (showControls) {
                     ensureZoomButton(container);
@@ -1482,7 +1498,13 @@ globalThis.Jig.mermaid = (() => {
 
             let initialDirection = direction;
             if (!initialDirection) {
-                const text = diagramFn("LR", {showPhysicalName: false});
+                let text;
+                try {
+                    text = diagramFn("LR", {showPhysicalName: false});
+                } catch (error) {
+                    showDiagramSourceError(diagramEl, container, error);
+                    return;
+                }
                 const graphMatch = text?.match(/^\s*(?:graph|flowchart)\s+(TB|TD|LR)\b/m);
                 const classDiagMatch = text?.match(/^\s*direction\s+(TB|LR)\b/m);
                 initialDirection = graphMatch?.[1] ?? classDiagMatch?.[1] ?? "LR";

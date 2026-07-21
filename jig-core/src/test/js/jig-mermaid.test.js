@@ -793,6 +793,33 @@ test.describe('jig-mermaid.js', () => {
             assert.equal(doc.querySelectorAll('.mermaid-menu-separator').length, 1, 'アクション群と表示切替群の間に区切り線が1本入る');
         });
 
+        test('生成関数が例外を投げても is-rendering を残さずエラーを表示する', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+
+            mermaid.render.renderWithControls(target, () => {
+                throw new Error('生成に失敗');
+            }, {direction: 'LR'});
+
+            const container = doc.querySelector('.mermaid-diagram');
+            assert.equal(container.classList.contains('is-rendering'), false, 'is-renderingが残留しない');
+            const warning = container.querySelector('.mermaid-edge-warning');
+            assert.notEqual(warning.style.display, 'none', 'エラー表示が出ている');
+            assert.match(warning.querySelector('.mermaid-edge-warning__message').textContent, /生成に失敗/);
+        });
+
+        test('向き未指定で生成関数が例外を投げても is-rendering を残さない', () => {
+            const doc = setupGlobals();
+            const target = doc.querySelector('.target');
+
+            mermaid.render.renderWithControls(target, () => {
+                throw new Error('生成に失敗');
+            });
+
+            const container = doc.querySelector('.mermaid-diagram');
+            assert.equal(container.classList.contains('is-rendering'), false, 'is-renderingが残留しない');
+        });
+
         test('向き・表示名のどちらも対象外の図でもコピー/ダウンロードの項目とメニューボタンは常に表示する', () => {
             const doc = setupGlobals();
             const target = doc.querySelector('.target');

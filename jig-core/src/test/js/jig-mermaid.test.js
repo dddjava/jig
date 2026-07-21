@@ -716,7 +716,7 @@ test.describe('jig-mermaid.js', () => {
          * ダイアグラムを登録し、observerの交差通知でレンダリング済みにしたうえで
          * rerenderVisibleの表示判定に掛かるようgetBoundingClientRectを差し替える
          */
-        function registerRendered(parent) {
+        function registerRendered(parent, renderFn) {
             const container = document.createElement('div');
             parent.appendChild(container);
             let renderCount = 0;
@@ -726,7 +726,10 @@ test.describe('jig-mermaid.js', () => {
                 originalObserve.call(this, target);
                 observer = this;
             };
-            mermaid.diagram.register(container, () => renderCount++);
+            mermaid.diagram.register(container, () => {
+                renderCount++;
+                if (renderFn) renderFn();
+            });
             FakeIntersectionObserver.prototype.observe = originalObserve;
             observer.callback([{isIntersecting: true, target: container}]);
             container.getBoundingClientRect = () => ({top: 10, bottom: 20});
@@ -743,6 +746,45 @@ test.describe('jig-mermaid.js', () => {
 
             assert.equal(inside.getRenderCount(), 1, '登録解除後は再レンダリングされない');
             assert.equal(inside.observer.disconnected, true, 'observerの購読が解除される');
+        });
+
+        test('描画関数が例外を投げても is-rendering を残さずエラーを表示する', () => {
+            const doc = setup();
+            const container = doc.createElement('div');
+            doc.getElementById('root').appendChild(container);
+
+            let observer = null;
+            const originalObserve = FakeIntersectionObserver.prototype.observe;
+            FakeIntersectionObserver.prototype.observe = function (target) {
+                originalObserve.call(this, target);
+                observer = this;
+            };
+            mermaid.diagram.register(container, () => {
+                throw new Error('描画に失敗');
+            });
+            FakeIntersectionObserver.prototype.observe = originalObserve;
+
+            assert.doesNotThrow(() => observer.callback([{isIntersecting: true, target: container}]));
+            assert.equal(container.classList.contains('is-rendering'), false, 'is-renderingが残留しない');
+            assert.match(container.querySelector('.mermaid-edge-warning__message').textContent, /描画に失敗/);
+
+            mermaid.diagram.unregisterWithin(doc.getElementById('root'));
+        });
+
+        test('rerenderVisible は一部の描画が失敗しても残りのダイアグラムを描画する', () => {
+            const doc = setup();
+            const root = doc.getElementById('root');
+            const failing = registerRendered(root, () => {
+                throw new Error('描画に失敗');
+            });
+            const healthy = registerRendered(root);
+
+            assert.doesNotThrow(() => mermaid.diagram.rerenderVisible());
+
+            assert.equal(healthy.getRenderCount(), 2, '失敗したダイアグラムの後ろも再レンダリングされる');
+
+            mermaid.diagram.unregisterWithin(root);
+            assert.ok(failing.container);
         });
 
         test('指定要素の配下にないコンテナは登録解除されない', () => {

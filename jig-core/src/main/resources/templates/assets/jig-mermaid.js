@@ -1246,12 +1246,12 @@ globalThis.Jig.mermaid = (() => {
             panel.style.display = visible ? "" : "none";
         }
 
-        // diagramFn（呼び出し元のソース生成）の例外を画面に出す。捕捉しないと
+        // 呼び出し元のコード（ソース生成・描画関数）が投げた例外を画面に出す。捕捉しないと
         // 描画開始時に立てた is-rendering が下りず、ローディング表示のまま止まる。
-        function showDiagramSourceError(diagramEl, container, error) {
-            console.error("Diagram source generation error:", error);
+        function showDiagramError(container, error, diagramEl = null) {
+            console.error("Diagram rendering error:", error);
             if (diagramEl) diagramEl.style.display = "none";
-            setEdgeWarning(container, {visible: true, message: `図の生成に失敗しました: ${error?.message ?? error}`});
+            setEdgeWarning(container, {visible: true, message: `図の描画に失敗しました: ${error?.message ?? error}`});
             setRendering(container, false);
         }
 
@@ -1375,7 +1375,7 @@ globalThis.Jig.mermaid = (() => {
                 try {
                     generated = diagramFn(newDirection, {showPhysicalName});
                 } catch (error) {
-                    showDiagramSourceError(diagramEl, container, error);
+                    showDiagramError(container, error, diagramEl);
                     return;
                 }
                 const currentSource = generated ?? "";
@@ -1502,7 +1502,7 @@ globalThis.Jig.mermaid = (() => {
                 try {
                     text = diagramFn("LR", {showPhysicalName: false});
                 } catch (error) {
-                    showDiagramSourceError(diagramEl, container, error);
+                    showDiagramError(container, error, diagramEl);
                     return;
                 }
                 const graphMatch = text?.match(/^\s*(?:graph|flowchart)\s+(TB|TD|LR)\b/m);
@@ -1642,7 +1642,8 @@ globalThis.Jig.mermaid = (() => {
             createDiagramSettingsOverride,
             setupLazyMermaidRender,
             initializeMermaid,
-            setRendering
+            setRendering,
+            showDiagramError
         }
     })();
 
@@ -1660,6 +1661,22 @@ globalThis.Jig.mermaid = (() => {
             }
             const rect = element.getBoundingClientRect();
             return rect.top < window.innerHeight && rect.bottom > 0;
+        }
+
+        /**
+         * renderFn は呼び出し元のコード。例外がここを抜けると IntersectionObserver の
+         * コールバックや設定変更ハンドラごと中断し、同じループの他のダイアグラムまで
+         * 描画されなくなる。捕捉して当該ダイアグラムだけを失敗として表示する。
+         * @returns {boolean} 描画できたか
+         */
+        function renderSafely(container, renderFn) {
+            try {
+                renderFn();
+                return true;
+            } catch (error) {
+                Jig.mermaid.render.showDiagramError(container, error);
+                return false;
+            }
         }
 
         function fixHashScrollAfterRender(renderedContainer) {
@@ -1706,12 +1723,11 @@ globalThis.Jig.mermaid = (() => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
                             renderedContainers.add(entry.target);
+                            observer.unobserve(entry.target); // 一度だけレンダリング
                             const d = diagramRegistry.find(d => d.container === entry.target);
-                            if (d) {
-                                d.renderFn();
+                            if (d && renderSafely(entry.target, d.renderFn)) {
                                 fixHashScrollAfterRender(entry.target);
                             }
-                            observer.unobserve(entry.target); // 一度だけレンダリング
                         }
                     });
                 }, {rootMargin: '100px'});
@@ -1721,7 +1737,7 @@ globalThis.Jig.mermaid = (() => {
             } else {
                 // IntersectionObserver 非サポート時は即座にレンダリング
                 renderedContainers.add(container);
-                renderFn();
+                renderSafely(container, renderFn);
             }
         }
 
@@ -1754,7 +1770,7 @@ globalThis.Jig.mermaid = (() => {
                     // 表示範囲内のみ再レンダリング
                     if (isVisible(container)) {
                         if (!shouldRerender || shouldRerender(container)) {
-                            renderFn();
+                            renderSafely(container, renderFn);
                         }
                     } else {
                         // 表示範囲外は削除のみで、スクロール時に自動再レンダリング

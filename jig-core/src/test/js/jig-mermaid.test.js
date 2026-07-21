@@ -238,6 +238,23 @@ test.describe('jig-mermaid.js', () => {
             assert.ok(clickLine.includes('href "#anchor-app.a"'), `click ... href "..." の形式のはず: ${clickLine}`);
         });
 
+        test('buildDiagramNodeLines: クリックハンドラ名とURLコールバックの併用は失敗する', () => {
+            const visibleSet = new Set(['app.a']);
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = sut.buildDiagramNodeMaps(visibleSet);
+            assert.throws(() => sut.buildDiagramNodeLines(
+                visibleSet,
+                nodeIdByFqn,
+                {
+                    nodeIdToFqn,
+                    nodeLabelById,
+                    escapeMermaidText: text => text,
+                    clickHandlerName: 'test-handler-name',
+                    nodeClickUrlCallback: (fqn) => `#anchor-${fqn}`,
+                    parentFqnsWithRelations: new Set()
+                }
+            ));
+        });
+
 
         test.describe('MermaidBuilder.applyThemeClassDefs', () => {
             test('全テーマのclassDefを追加する', () => {

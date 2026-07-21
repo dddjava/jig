@@ -19,7 +19,7 @@ jobs:
       ORG_GRADLE_PROJECT_version: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5.5.0
+      - uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
           java-version: '21'

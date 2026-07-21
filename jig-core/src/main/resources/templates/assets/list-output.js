@@ -153,7 +153,6 @@ const ListOutputApp = (() => {
         ],
     };
 
-    // 後方互換: 既存の参照（テスト等）向けに headers のみの形でも公開する
     const headerDefinitions = Object.fromEntries(
         Object.entries(columns).map(([name, cols]) => [name, cols.map(c => c.label)])
     );
@@ -208,27 +207,6 @@ const ListOutputApp = (() => {
             },
         };
     }
-
-    // 後方互換のための薄いラッパー（テスト・外部参照用）
-    const buildControllerCsv = items => buildCsv("controller", items);
-    const buildServiceCsv = items => buildCsv("service", items);
-    const buildRepositoryCsv = items => buildCsv("repository", items);
-    const buildBusinessPackageCsv = items => buildCsv("businessPackage", items);
-    const buildBusinessAllCsv = items => buildCsv("businessAll", items);
-    const buildBusinessEnumCsv = items => buildCsv("businessEnum", items);
-    const buildBusinessCollectionCsv = items => buildCsv("businessCollection", items);
-    const buildBusinessValidationCsv = items => buildCsv("businessValidation", items);
-    const buildBusinessSmellCsv = items => buildCsv("businessSmell", items);
-
-    const renderControllerTable = items => renderTable("controller-list", "controller", items);
-    const renderServiceTable = items => renderTable("service-list", "service", items);
-    const renderRepositoryTable = items => renderTable("repository-list", "repository", items);
-    const renderBusinessPackageTable = items => renderTable("business-package-list", "businessPackage", items);
-    const renderBusinessAllTable = items => renderTable("business-all-list", "businessAll", items);
-    const renderBusinessEnumTable = items => renderTable("business-enum-list", "businessEnum", items);
-    const renderBusinessCollectionTable = items => renderTable("business-collection-list", "businessCollection", items);
-    const renderBusinessValidationTable = items => renderTable("business-validation-list", "businessValidation", items);
-    const renderBusinessSmellTable = items => renderTable("business-smell-list", "businessSmell", items);
 
     function renderTableHeader(tableElementId, headers) {
         const table = document.getElementById(tableElementId);
@@ -295,24 +273,8 @@ const ListOutputApp = (() => {
         getReturnTypeLabel,
         getParameterTypeLabels,
         getMethodLabel,
-        buildControllerCsv,
-        buildServiceCsv,
-        buildRepositoryCsv,
-        buildBusinessPackageCsv,
-        buildBusinessAllCsv,
-        buildBusinessEnumCsv,
-        buildBusinessCollectionCsv,
-        buildBusinessValidationCsv,
-        buildBusinessSmellCsv,
-        renderControllerTable,
-        renderServiceTable,
-        renderRepositoryTable,
-        renderBusinessPackageTable,
-        renderBusinessAllTable,
-        renderBusinessEnumTable,
-        renderBusinessCollectionTable,
-        renderBusinessValidationTable,
-        renderBusinessSmellTable,
+        buildCsv,
+        renderTable,
         activateTabGroup,
         headerDefinitions,
         renderTableHeader,

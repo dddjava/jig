@@ -143,7 +143,7 @@ function setupJig() {
 
 test.describe('list-output.js', () => {
     test.describe('CSV', () => {
-        test.describe('buildControllerCsv', () => {
+        test.describe('buildCsv: controller', () => {
             test('CSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.ExampleController": {title: "例"}}};
                 const items = [
@@ -158,7 +158,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildControllerCsv(items);
+                const csv = ListOutputApp.buildCsv('controller', items);
 
                 assert.equal(
                     csv,
@@ -168,7 +168,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildServiceCsv', () => {
+        test.describe('buildCsv: service', () => {
             test('SERVICEのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {
                     terms: {
@@ -197,7 +197,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildServiceCsv(items);
+                const csv = ListOutputApp.buildCsv('service', items);
 
                 assert.equal(
                     csv,
@@ -207,7 +207,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildRepositoryCsv', () => {
+        test.describe('buildCsv: repository', () => {
             test('REPOSITORYのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {
                     terms: {
@@ -234,7 +234,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildRepositoryCsv(items);
+                const csv = ListOutputApp.buildCsv('repository', items);
 
                 assert.equal(
                     csv,
@@ -244,7 +244,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildBusinessPackageCsv', () => {
+        test.describe('buildCsv: businessPackage', () => {
             test('BUSINESS_PACKAGEのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.business": {title: "業務パッケージ"}}};
                 const items = [
@@ -254,7 +254,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildBusinessPackageCsv(items);
+                const csv = ListOutputApp.buildCsv('businessPackage', items);
 
                 assert.equal(
                     csv,
@@ -264,7 +264,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildBusinessAllCsv', () => {
+        test.describe('buildCsv: businessAll', () => {
             test('BUSINESS_ALLのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.business.BusinessRule": {title: "ビジネスルール"}}};
                 const items = [
@@ -281,7 +281,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildBusinessAllCsv(items);
+                const csv = ListOutputApp.buildCsv('businessAll', items);
 
                 assert.equal(
                     csv,
@@ -291,7 +291,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildBusinessEnumCsv', () => {
+        test.describe('buildCsv: businessEnum', () => {
             test('BUSINESS_ENUMのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.business.Status": {title: "状態"}}};
                 const items = [
@@ -308,7 +308,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildBusinessEnumCsv(items);
+                const csv = ListOutputApp.buildCsv('businessEnum', items);
 
                 assert.equal(
                     csv,
@@ -318,7 +318,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildBusinessCollectionCsv', () => {
+        test.describe('buildCsv: businessCollection', () => {
             test('BUSINESS_COLLECTIONのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.business.Users": {title: "利用者一覧"}}};
                 const items = [
@@ -333,7 +333,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildBusinessCollectionCsv(items);
+                const csv = ListOutputApp.buildCsv('businessCollection', items);
 
                 assert.equal(
                     csv,
@@ -343,7 +343,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildBusinessValidationCsv', () => {
+        test.describe('buildCsv: businessValidation', () => {
             test('BUSINESS_VALIDATIONのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.business.User": {title: "利用者"}}};
                 const items = [
@@ -357,7 +357,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildBusinessValidationCsv(items);
+                const csv = ListOutputApp.buildCsv('businessValidation', items);
 
                 assert.equal(
                     csv,
@@ -367,7 +367,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('buildBusinessSmellCsv', () => {
+        test.describe('buildCsv: businessSmell', () => {
             test('BUSINESS_SMELLのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = {terms: {"com.example.business.Smell": {title: "におい"}}};
                 const items = [
@@ -385,7 +385,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = ListOutputApp.buildBusinessSmellCsv(items);
+                const csv = ListOutputApp.buildCsv('businessSmell', items);
 
                 assert.equal(
                     csv,
@@ -452,7 +452,7 @@ test.describe('list-output.js', () => {
     });
 
     test.describe('テーブル描画', () => {
-        test.describe('renderControllerTable', () => {
+        test.describe('renderTable: controller', () => {
             test('CONTROLLERのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
@@ -474,7 +474,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                ListOutputApp.renderControllerTable(items);
+                ListOutputApp.renderTable('controller-list', 'controller', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -486,7 +486,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderServiceTable', () => {
+        test.describe('renderTable: service', () => {
             test('SERVICEのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
@@ -504,7 +504,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                ListOutputApp.renderServiceTable(items);
+                ListOutputApp.renderTable('service-list', 'service', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -516,7 +516,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderRepositoryTable', () => {
+        test.describe('renderTable: repository', () => {
             test('REPOSITORYのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
@@ -536,7 +536,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                ListOutputApp.renderRepositoryTable(items);
+                ListOutputApp.renderTable('repository-list', 'repository', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -552,7 +552,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderBusinessPackageTable', () => {
+        test.describe('renderTable: businessPackage', () => {
             test('BUSINESS_PACKAGEのテーブルを描画する', () => {
                 const doc = setupDocument();
                 globalThis.glossaryData = {terms: {}};
@@ -566,7 +566,7 @@ test.describe('list-output.js', () => {
                     classCount: 10,
                 }];
 
-                ListOutputApp.renderBusinessPackageTable(items);
+                ListOutputApp.renderTable('business-package-list', 'businessPackage', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -577,7 +577,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderBusinessAllTable', () => {
+        test.describe('renderTable: businessAll', () => {
             test('BUSINESS_ALLのテーブルを描画する', () => {
                 const doc = setupDocument();
                 globalThis.glossaryData = {terms: {}};
@@ -594,7 +594,7 @@ test.describe('list-output.js', () => {
                     incomingClassCount: 3,
                 }];
 
-                ListOutputApp.renderBusinessAllTable(items);
+                ListOutputApp.renderTable('business-all-list', 'businessAll', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -609,7 +609,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderBusinessEnumTable', () => {
+        test.describe('renderTable: businessEnum', () => {
             test('BUSINESS_ENUMのテーブルを描画する', () => {
                 const doc = setupDocument();
                 globalThis.glossaryData = {terms: {}};
@@ -624,7 +624,7 @@ test.describe('list-output.js', () => {
                     usageCount: 5,
                 }];
 
-                ListOutputApp.renderBusinessEnumTable(items);
+                ListOutputApp.renderTable('business-enum-list', 'businessEnum', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -635,7 +635,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderBusinessCollectionTable', () => {
+        test.describe('renderTable: businessCollection', () => {
             test('BUSINESS_COLLECTIONのテーブルを描画する', () => {
                 const doc = setupDocument();
                 globalThis.glossaryData = {terms: {}};
@@ -651,7 +651,7 @@ test.describe('list-output.js', () => {
                     methodCount: 3,
                 }];
 
-                ListOutputApp.renderBusinessCollectionTable(items);
+                ListOutputApp.renderTable('business-collection-list', 'businessCollection', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -664,7 +664,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderBusinessValidationTable', () => {
+        test.describe('renderTable: businessValidation', () => {
             test('BUSINESS_VALIDATIONのテーブルを描画する', () => {
                 const doc = setupDocument();
                 globalThis.glossaryData = {terms: {}};
@@ -679,7 +679,7 @@ test.describe('list-output.js', () => {
                     memberName: "name",
                 }];
 
-                ListOutputApp.renderBusinessValidationTable(items);
+                ListOutputApp.renderTable('business-validation-list', 'businessValidation', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -689,7 +689,7 @@ test.describe('list-output.js', () => {
             });
         });
 
-        test.describe('renderBusinessSmellTable', () => {
+        test.describe('renderTable: businessSmell', () => {
             test('BUSINESS_SMELLのテーブルを描画する', () => {
                 const doc = setupDocument();
                 globalThis.glossaryData = {terms: {}};
@@ -704,7 +704,7 @@ test.describe('list-output.js', () => {
                     methodSignature: "doSomething()",
                 }];
 
-                ListOutputApp.renderBusinessSmellTable(items);
+                ListOutputApp.renderTable('business-smell-list', 'businessSmell', items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];

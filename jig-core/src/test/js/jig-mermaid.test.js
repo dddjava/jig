@@ -252,7 +252,7 @@ test.describe('jig-mermaid.js', () => {
                     nodeClickUrlCallback: (fqn) => `#anchor-${fqn}`,
                     parentFqnsWithRelations: new Set()
                 }
-            ));
+            ), /clickHandlerName と nodeClickUrlCallback は同時に指定できません/);
         });
 
 

@@ -388,25 +388,25 @@ globalThis.Jig.mermaid = (() => {
          */
         function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
             const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback, showPhysicalName} = options;
-
-            const packageFqnList = Array.from(packageFqns).sort();
-            const parentFqns = buildParentFqns(packageFqns);
-            const rootGroup = buildDiagramGroupTree(packageFqnList, nodeIdByFqn);
             // 同時に指定すると1ノードに click 行が2本出て、Mermaid のクリック挙動が後勝ちで不定になる
             if (clickHandlerName && nodeClickUrlCallback) {
                 throw new Error("clickHandlerName と nodeClickUrlCallback は同時に指定できません");
             }
+
+            const packageFqnList = Array.from(packageFqns).sort();
+            const parentFqns = buildParentFqns(packageFqns);
+            const rootGroup = buildDiagramGroupTree(packageFqnList, nodeIdByFqn);
 
             const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
                 const fqn = nodeIdToFqn.get(nodeId);
                 const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
                 const nodeDefinition = getNodeDefinition(nodeId, displayLabel, 'package');
                 lines.push(nodeDefinition);
-                const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
-                if (clickHandlerName) {
-                    lines.push(`click ${nodeId} ${clickHandlerName} "${tooltip}"`);
-                } else if (nodeClickUrlCallback && fqn) {
-                    lines.push(`click ${nodeId} href "${escapeMermaidText(nodeClickUrlCallback(fqn))}" "${tooltip}"`);
+                if (clickHandlerName || (nodeClickUrlCallback && fqn)) {
+                    const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
+                    lines.push(clickHandlerName
+                        ? `click ${nodeId} ${clickHandlerName} "${tooltip}"`
+                        : `click ${nodeId} href "${escapeMermaidText(nodeClickUrlCallback(fqn))}" "${tooltip}"`);
                 }
                 if (fqn && parentFqns.has(fqn)) {
                     lines.push(`class ${nodeId} parentPackage`);

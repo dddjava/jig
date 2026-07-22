@@ -24,10 +24,11 @@ plugins {
 ### プロジェクトのビルドおよびJIGの実行
 
 ```
-$ gradle clean build jig
+$ gradle jigReports
 ```
 
 `build/jig` ディレクトリにJIGドキュメントが出力されます。
+`jigReports` はコンパイル（`classes`）に依存しているため、コンパイルは自動的に先行して実行されます。
 
 ## JIGの設定
 
@@ -45,16 +46,21 @@ jig {
 設定できる項目は [JigConfig.java](./src/main/java/org/dddjava/jig/gradle/JigConfig.java) を参照してください。
 
 ### タスクの依存・前後設定
-JIGは `*.class` が出力されていることを前提にしています。
-そのため前述のように `clean` および `build` タスクを実行することで正しいドキュメントが得られます。
-`clean` を実行しなければ以前に出力された `*.class` ファイルが残っていると不正なドキュメントになる可能性があります。
-また、 `build` を実行しなければ「何も得られない」もしくは「コードを変えているのに何も変わらない」と言ったことが起こります。
+JIGは `*.class` および Java ソースを入力とします。
+これらはタスクの入力として宣言されており、コンパイルタスクへの依存も張られています。
+そのため `jigReports` を単体で実行すればコンパイルが先行し、入力に変更がなければ `UP-TO-DATE` としてスキップされます。
 
-そのため以下のように `jigReports` タスク実行時は必ず `clean` および `classes` が実行されるようにしておくと安定したJIGドキュメントが得られます。
+なお、削除したクラスの `*.class` がビルドディレクトリに残っていると、それが解析対象に含まれてしまう可能性があります。
+確実にクリーンな状態から出力したい場合は `clean` を併用してください。
+
+```
+$ gradle clean jigReports
+```
+
+`clean` との実行順序はGradleが保証しないため、常にこの順序としたい場合は以下を記述します。
 
 ```gradle
-classes.mustRunAfter(clean)
-jigReports.dependsOn(clean, classes)
+jigReports.mustRunAfter(clean)
 ```
 
 

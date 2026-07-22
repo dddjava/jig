@@ -57,10 +57,12 @@ JIGは `*.class` および Java ソースを入力とします。
 $ gradle clean jigReports
 ```
 
-`clean` との実行順序はGradleが保証しないため、常にこの順序としたい場合は以下を記述します。
+ただし順序制約のないタスクの実行順はGradleが保証しません。
+`clean` がコンパイルの後に実行されると、`jigReports` は `*.class` が消えた状態で解析することになります。
+`jigReports` 自身に `mustRunAfter(clean)` を記述してもコンパイルタスクは拘束されないため、次のように `classes` に対して記述してください。
 
 ```gradle
-jigReports.mustRunAfter(clean)
+classes.mustRunAfter(clean)
 ```
 
 

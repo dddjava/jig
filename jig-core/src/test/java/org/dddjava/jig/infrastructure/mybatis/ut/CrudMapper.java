@@ -1,9 +1,12 @@
-package stub.infrastructure.datasource;
+package org.dddjava.jig.infrastructure.mybatis.ut;
 
 import org.apache.ibatis.annotations.*;
 
+/**
+ * XMLベースとアノテーションベースのCRUDが同じテーブルに対して認識できることを確認する。
+ */
 @Mapper
-public interface CanonicalMapper {
+public interface CrudMapper {
 
     void insert();
 
@@ -24,10 +27,4 @@ public interface CanonicalMapper {
 
     @Delete("delete from crud_test")
     void annotationDelete();
-
-    String japanese();
-
-    void illegal();
-
-    int sequence_postgresql();
 }

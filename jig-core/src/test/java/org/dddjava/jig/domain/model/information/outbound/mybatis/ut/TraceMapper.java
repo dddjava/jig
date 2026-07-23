@@ -1,4 +1,4 @@
-package stub.infrastructure.datasource.trace;
+package org.dddjava.jig.domain.model.information.outbound.mybatis.ut;
 
 import org.apache.ibatis.annotations.Mapper;
 

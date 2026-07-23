@@ -2,11 +2,18 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="stub.infrastructure.datasource.trace.TraceMapper">
+<mapper namespace="org.dddjava.jig.infrastructure.mybatis.ut.DynamicSqlMapper">
 
     <select id="binding" resultType="boolean">
+        <bind name="keyLength" value="key.length()"/>
         SELECT true
-        FROM trace_table
+        FROM fuga
         WHERE identifier = #{key}
+        <include refid="include"/>
     </select>
+
+    <sql id="include">
+        AND 1 = 1
+    </sql>
+
 </mapper>

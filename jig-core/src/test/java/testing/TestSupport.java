@@ -47,22 +47,20 @@ public class TestSupport {
         );
     }
 
+    private static final String TEST_SOURCE_ROOT_PROPERTY = "jig.core.testSourceRoot";
+
+    /**
+     * jig-core の {@code src/test/java} の絶対パス。jig-core/build.gradle の {@code test} タスクが
+     * システムプロパティとして渡す。Gradle 経由の実行を前提としており、IDE から個別実行する場合は
+     * このプロパティを別途渡す必要がある。
+     */
     public static Path getTestSourceRootPath() {
-        return projectRootPath().resolve("src").resolve("test").resolve("java");
-    }
-
-    private static Path projectRootPath() {
-        URI uri = defaultPackageClassURI();
-        Path path = Paths.get(uri).toAbsolutePath();
-
-        // jig-core のパスまで後ろから辿る
-        while (!path.endsWith("jig-core")) {
-            path = path.getParent();
-            if (path == null) {
-                throw new IllegalStateException("プロジェクト名変わった？");
-            }
+        String configured = System.getProperty(TEST_SOURCE_ROOT_PROPERTY);
+        if (configured == null) {
+            throw new IllegalStateException(
+                    "システムプロパティ " + TEST_SOURCE_ROOT_PROPERTY + " が未設定です。jig-core の test タスクから実行してください。");
         }
-        return path;
+        return Paths.get(configured);
     }
 
     public static JigType buildJigType(Class<?> definitionClass) {

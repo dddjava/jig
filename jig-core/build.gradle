@@ -95,6 +95,11 @@ tasks.named('contractTest') {
     systemProperty 'jig.fixtures.root', fixturesRoot.get().asFile.absolutePath
 }
 
+// testing.TestSupport がビルドレイアウトを逆算せずに済むよう、src/test/java の絶対パスを渡す
+tasks.named('test') {
+    systemProperty 'jig.core.testSourceRoot', file('src/test/java').absolutePath
+}
+
 def bundleJsOutputDir = layout.buildDirectory.dir("generated/resources/bundle")
 def bundleJsTask = tasks.register("bundleJs") {
     def inputFiles = files(

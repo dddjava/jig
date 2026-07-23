@@ -74,7 +74,7 @@ jig-core/src/test/js/contract/              # 生成 HTML/データとの境界
 jig-core/src/test/playwright/               # Playwright による実ブラウザ検証
 ```
 
-`jig-test-fixtures` は Gradle の `java-test-fixtures` 機能ではなく、`settings.gradle.kts` に追加する独立モジュールとして実現する。fixture は `jig-core` `jig-cli` `jig-gradle-plugin` の三モジュールから参照するため一箇所に集約する必要があり、`java-test-fixtures` を `jig-core` に付けると Maven Central へ公開する `jig-core` の POM に `testFixtures` variant が現れてしまう。独立モジュールは公開対象から外す。他モジュールが依存できるのは fixture 読み込み・正規化 API とリソースだけであり、本番コードへの依存は禁止する。
+`jig-test-fixtures` は Gradle の `java-test-fixtures` 機能ではなく、`settings.gradle.kts` に追加する独立モジュールとして実現する。fixture は `jig-core` `jig-cli` `jig-gradle-plugin` の三モジュールから参照するため一箇所に集約する必要がある。公開する `jig-core` のライフサイクルと依存関係から fixture を完全に分離し、fixture 用の依存を公開成果物へ波及させないためである。独立モジュールは公開対象から外す。他モジュールが依存できるのは fixture 読み込み・正規化 API とリソースだけであり、本番コードへの依存は禁止する。
 
 Gradle プラグインの TestKit テストは `src/functionalTest` へ分離せず、既存の `src/test` に置いたままにする。分離しても実行タイミングは変わらず（下記のとおり PR で全サポートバージョンを実行する）、ソースセットを増やす便益がないためである。階層としては E2E に属するが、モジュール全体が小さいため物理的な分離は行わない。
 
@@ -133,25 +133,25 @@ fixture は次の規則に従う。
 
 ## ビルドと実行インターフェース
 
-開発者と CI が同じ入口を使えるよう、Gradle を Java テストの唯一の入口、npm を Web テストの唯一の入口にする。各タスクは名前から隔離度と所要時間を判断できるようにする。既存の `npm run test` と `npm run test:full` は名前を変えず、意味も現状のまま維持する。
+開発者と CI が同じ品質検証を実行できるよう、Gradle を Java テストの唯一の入口、npm を Web テストの唯一の入口にする。各タスクは名前から隔離度と所要時間を判断できるようにする。`npm run test` は既存の Web Unit/Component 専用入口として維持する。`npm run test:full` は新しい PR 相当の集約入口へ更新し、導入済みの Web Contract/E2E、CSS lint、および `./gradlew clean build qualityCheck` を実行する。Playwright E2E を導入しない間は、その呼び出しを含めない。
 
 | 入口 | 内容 | 期待時間 | 用途 |
 | --- | --- | --- | --- |
 | `./gradlew test` | 全モジュールの Unit/Component と Gradle TestKit | 短い〜中程度 | 開発中・PR |
 | `./gradlew contractTest` | 公開形式の Contract | 短い | PR |
 | `./gradlew e2eTest` | CLI と最小の生成シナリオ | 中程度 | PR |
-| `./gradlew qualityCheck` | 上記 Gradle 側の PR 対象を束ねる | 中程度 | PR の Java 側入口 |
+| `./gradlew qualityCheck` | `check` と E2E を束ねる | 中程度 | PR の Java 側品質入口 |
 | `npm run test` | Web の Unit/Component（現状どおり） | 短い | 開発中・PR |
 | `npm run test:contract` | Web と生成物の Contract | 短い | PR |
 | `npm run test:e2e` | Playwright の最小 E2E（導入する場合） | 中程度 | PR |
-| `npm run test:full` | Web テストと Gradle テストの通し実行（現状どおり） | 中程度 | 開発中 |
+| `npm run test:full` | CSS lint、導入済みの Web 全テスト、`clean build qualityCheck` の通し実行 | 中程度 | 開発中・PR |
 
 `check` を `qualityCheck` に依存させてはならない。`check` は `build` から呼ばれるため、そうすると e2eTest まで `build` に載り、「重い検証は明示タスクへ分離する」という方針と矛盾する。依存の向きは逆にする。
 
 - `check` — Unit/Component/Contract まで。`build` が重くならない範囲に留める。
 - `qualityCheck` — `check` と `e2eTest` を束ねる集約タスク。PR CI はこれを呼ぶ。
 
-これに伴い CI のコマンドを `./gradlew build` から `./gradlew qualityCheck` へ変える。`build` だけがどのテストを含むかを暗黙に決める状態をなくす。
+PR CI は `build` を省略せず、`./gradlew build qualityCheck` を実行する。`build` は公開・配布する JAR、sources JAR、Javadoc JAR を含む成果物の組み立てを検証し、`qualityCheck` は Contract/E2E を明示的に追加する。開発者向けの `npm run test:full` は両方を実行する。これにより、成果物の検証を維持したまま、`build` だけでは分からない重い検証を明示する。
 
 npm scripts に `test:contract` / `test:e2e` を追加する際は、CLAUDE.md の「テスト実行ポリシー」節（どの変更でどの入口を使うか）も同時に更新する。
 
@@ -161,11 +161,11 @@ PR では速いフィードバックと失敗原因の分離を優先する。ma
 
 | パイプライン | 実行内容 | 成功条件 |
 | --- | --- | --- |
-| PR gate | Java Unit/Component、Contract、Gradle TestKit の**全サポートバージョン**、CLI E2E、Web Unit/Contract（および導入時は E2E）、CSS lint、アーキテクチャ規則 | すべて成功。生成物・スナップショットに未承認の差分がない |
+| PR gate | `./gradlew build qualityCheck`、Web Unit/Contract（および導入時は E2E）、CSS lint、アーキテクチャ規則 | Gradle TestKit の**全サポートバージョン**を含め、すべて成功。公開・配布成果物と生成物・スナップショットに未承認の差分がない |
 | main upkeep | PR gate に加え、Ubuntu と Windows での Java 実行 | すべて成功。OS 依存の差分がない |
 | release candidate | 配布物から CLI・プラグインを利用する E2E、公開サイトのスモークテスト、外部ライブラリ・実 CDN との結線、脆弱性確認 | リリース対象の成果物で成功 |
 
-release candidate は既存の `release.yml`（タグ push でビルドと Draft リリース作成を行う。Maven Central / Gradle Plugin Portal への公開は CircleCI 側）に検証ステップを足す形で実現し、別ワークフローを増やさない。
+release candidate の検証は、Maven Central と Gradle Plugin Portal へ公開する CircleCI の `publish` ジョブで、公開コマンドより**前**に実行する。現在のようにタグ push で並行起動する `release.yml` にだけ検証を置いても、CircleCI の公開を止められないためである。`publish` ジョブは「配布物を組み立てる → release candidate の E2E・スモークテスト・外部結線・脆弱性確認 → 公開」の順に分割する。`release.yml` は同じ検証結果を再利用できる場合のみ Draft リリースを作成し、公開可否の判定責務は持たない。新しいパイプラインは作らない。
 
 性能とメモリ消費は自動の合否判定を CI に置かない。基準値の維持コストとノイズに見合わないためである。必要になった時点で自己解析を入力とした計測を手動で行い、退行が疑われる変更のレビューで参照する。
 
@@ -188,7 +188,7 @@ release candidate は既存の `release.yml`（タグ push でビルドと Draft
 ### 必須
 
 1. この設計をもとに `docs/adr/` の既存 ADR と同じ形式（状況／決定／トレードオフ／採用ガイドライン／結論）で ADR を書き起こして承認し、サポート対象の JDK、Gradle、ブラウザを明文化する。現状 JDK は 21 単一である事実を出発点として記す。
-2. テストタスク（`contractTest` `e2eTest` `qualityCheck`）、`jig-test-fixtures` モジュール、fixture の命名・正規化・スナップショット更新手順だけを導入し、CI の入口を `build` から `qualityCheck` へ切り替える。この時点では既存テストを移動しない。
+2. テストタスク（`contractTest` `e2eTest` `qualityCheck`）、`jig-test-fixtures` モジュール、fixture の命名・正規化・スナップショット更新手順を導入する。PR CI は `build` を維持したまま `qualityCheck` を追加し、`npm run test:full` と CLAUDE.md のテスト実行ポリシーを PR 相当の検証を実行する内容へ更新する。この時点では既存テストを移動しない。
 3. 最重要の公開シナリオ（CLI の最小生成、Gradle のクリーン実行、主要ページの描画）を E2E/Contract として先に固定する。
 4. 生成物の文字列比較を構造比較と限定スナップショットへ置き換え、出力契約を安定化する。
 

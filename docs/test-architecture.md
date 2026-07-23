@@ -11,7 +11,7 @@
 | 1 | ADR の書き起こし | 完了 |
 | 2 | `contractTest` / `e2eTest` / `qualityCheck` と JaCoCo | 完了 |
 | 3 | `jig-test-fixtures` と解析対象バージョンの契約検証 | 完了 |
-| 4 | 最重要の公開シナリオを E2E/Contract で固定する | — |
+| 4 | 最重要の公開シナリオを E2E/Contract で固定する | 完了 |
 | 5 | 生成物の文字列比較を構造比較と限定スナップショットへ置き換える | — |
 | 6 | `jig-core` の既存テストを分類して移す | 必須段階の完了後に判断 |
 | 7 | Playwright E2E の導入可否を判断する | 必須段階の完了後に判断 |
@@ -24,24 +24,21 @@
 - `testing.TestSupport` が `DefaultPackageClass.class` の位置からテスト出力ディレクトリを逆算している。`JigFixtures` へ置き換えて消す。
 - 調査用の `learning` が `src/test/java/learning` と `src/test/java/org/dddjava/jig/infrastructure/javaparser/learning` の二箇所にあり、CI で実行されている。
 - 生成物の検証に文字列比較が残っている。
-- Web 側に Contract テストがなく、`npm run test:contract` も未定義。実ブラウザ検証は手動手順（`jig-core/src/test/playwright/README.md`）に依存している。
+- 実ブラウザ検証は手動手順（`jig-core/src/test/playwright/README.md`）に依存している。
 
 ## 用意する代表プロジェクト
 
-`minimal-java` と `bytecode-compat` は作成済み。残りは必要になった段階で追加する。追加手順は `jig-test-fixtures/README.md` を参照。
+`minimal-java` `showcase` `bytecode-compat` は作成済み。残りは段階 6 で既存テストを移すときに追加する。追加手順は `jig-test-fixtures/README.md` を参照。
 
-| fixture | 固定する契約 | 必要になる段階 |
-| --- | --- | --- |
-| `showcase` | 主要画面が意味のある内容で描画される（Web の Contract と E2E の入力） | 4 |
-| `multi-module-gradle` | 複数モジュール、クラスパス、ソースセットの収集 | 4 |
-| `invalid-input` | 不正・欠損・読めない入力の失敗または継続方針 | 4 |
-| `spring-data` | Spring Data JDBC の認識規則 | 6 |
-| `mybatis` | Mapper と SQL の認識規則 | 6 |
-| `bytecode-only` | ソースなしクラスファイルの解析 | 6 |
+| fixture | 固定する契約 |
+| --- | --- |
+| `spring-data` | Spring Data JDBC の認識規則 |
+| `mybatis` | Mapper と SQL の認識規則 |
+| `bytecode-only` | ソースなしクラスファイルの解析 |
 
-`showcase` は、各ドキュメントが空表示にならない程度の型・関連・Javadoc・パッケージ階層を持つ典型プロジェクトとする。画面検証の入力を JIG 自身の解析結果に頼らないために用意する。自己解析の結果は対象クラス数が少なく「1 クラスだけのパッケージ」のような特定条件を満たすデータが存在せず、また JIG 自身のコード変更で入力が動くため画面の期待値が安定しない（`jig-core/src/test/playwright/README.md`）。
+マルチモジュール構成と不正入力には専用の fixture を作らない。前者は既存の代表プロジェクトを並べて展開すれば足り、後者は壊れたクラスファイルをテスト内で書き出すほうがリポジトリに壊れたバイナリを置くより扱いやすいためである。
 
-代表プロジェクトのテンポラリへの展開は、TestKit から fixture を使う段階で `JigFixtures` に追加する。成果物比較の正規化とスナップショット更新手順は段階 5 で追加する。
+成果物比較の正規化とスナップショット更新手順は段階 5 で追加する。
 
 ## Playwright E2E を導入するかの判断（段階 7）
 

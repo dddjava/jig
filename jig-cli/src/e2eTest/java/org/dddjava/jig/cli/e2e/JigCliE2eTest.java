@@ -9,10 +9,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -62,12 +64,59 @@ class JigCliE2eTest {
         assertEquals(0, result.exitCode, result.output);
     }
 
-    private static Result runCli(Path projectDirectory, Path outputDirectory) throws Exception {
-        Process process = new ProcessBuilder(
+    @Test
+    void 複数モジュールが並ぶ構成でも全てのモジュールを収集する(@TempDir Path workDirectory) throws Exception {
+        Path projectDirectory = workDirectory.resolve("project");
+        JigFixtures.project("minimal-java").deployTo(projectDirectory.resolve("module-a"), FIXTURE_RELEASE);
+        JigFixtures.project("showcase").deployTo(projectDirectory.resolve("module-b"), FIXTURE_RELEASE);
+        Path outputDirectory = workDirectory.resolve("out");
+
+        Result result = runCli(projectDirectory, outputDirectory);
+        assertEquals(0, result.exitCode, result.output);
+
+        String data = readAll(outputDirectory.resolve("data"));
+        assertTrue(data.contains("fixture.minimal.domain"), () -> "module-a を収集していません: " + result.output);
+        assertTrue(data.contains("showcase.domain.order"), () -> "module-b を収集していません: " + result.output);
+    }
+
+    @Test
+    void 読めないクラスファイルがあっても解析を継続する(@TempDir Path workDirectory) throws Exception {
+        Path projectDirectory = JigFixtures.project("minimal-java")
+                .deployTo(workDirectory.resolve("project"), FIXTURE_RELEASE);
+        Files.writeString(
+                projectDirectory.resolve("build/classes/java/main/Broken.class"),
+                "これはクラスファイルではない");
+        Path outputDirectory = workDirectory.resolve("out");
+
+        Result result = runCli(projectDirectory, outputDirectory);
+
+        assertEquals(0, result.exitCode, result.output);
+        assertTrue(readAll(outputDirectory.resolve("data")).contains("MinimalValue"),
+                () -> "読めた分の解析結果が出ていません: " + result.output);
+    }
+
+    @Test
+    void 不正な設定値は原因を示してエラー終了する(@TempDir Path workDirectory) throws Exception {
+        Path projectDirectory = Files.createDirectories(workDirectory.resolve("project"));
+
+        Result result = runCli(projectDirectory, workDirectory.resolve("out"),
+                "--jig.document.types=NoSuchDocument");
+
+        assertNotEquals(0, result.exitCode, result.output);
+        assertTrue(result.output.contains("jig.document.types"), () -> "設定キーが示されていません: " + result.output);
+        assertTrue(result.output.contains("NoSuchDocument"), () -> "不正な値が示されていません: " + result.output);
+    }
+
+    private static Result runCli(Path projectDirectory, Path outputDirectory, String... additionalArguments)
+            throws Exception {
+        List<String> command = new ArrayList<>(List.of(
                 javaCommand(),
                 "-jar", System.getProperty("jig.cli.jar"),
                 "--project.path=" + projectDirectory,
-                "--jig.output.directory=" + outputDirectory)
+                "--jig.output.directory=" + outputDirectory));
+        command.addAll(List.of(additionalArguments));
+
+        Process process = new ProcessBuilder(command)
                 .redirectErrorStream(true)
                 .start();
 

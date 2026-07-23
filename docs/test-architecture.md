@@ -13,10 +13,10 @@
 | 3 | `jig-test-fixtures` と解析対象バージョンの契約検証 | 完了 |
 | 4 | 最重要の公開シナリオを E2E/Contract で固定する | 完了 |
 | 5 | 生成物の検証を構造比較へ置き換える | 完了 |
-| 6 | `jig-core` の既存テストを分類して移す | 完了（`stub` の分解を除く） |
+| 6 | `jig-core` の既存テストを分類して移す | 完了 |
 | 7 | Playwright E2E の導入可否を判断する | — |
 
-必須段階（1〜5）は完了した。段階 6 は `learning` の分離と `TestSupport` のパス逆算解消までを行い、`stub` の分解は見送った（理由は後述）。段階 7 は必須段階が安定してから着手する。
+必須段階（1〜5）は完了した。段階 6 は `learning` の分離、`TestSupport` のパス逆算解消に加え、`stub` を共有コーパスとして使っていた8個のテストすべてを、意図ごとの小さな fixture を使う形へ再実装した（詳細は後述）。段階 7 は必須段階が安定してから着手する。
 
 各段階の完了条件は「新しい層に同等以上の公開契約テストがあり、CI で安定していること」とする。カバレッジ値だけを完了条件にしない。既存テストは一括で置換せず、同じ保証を保ったまま移してから旧テストを削除する。
 
@@ -24,22 +24,23 @@
 
 - 実ブラウザ検証は手動手順（`jig-core/src/test/playwright/README.md`）に依存している。
 
-## `stub` を分解しない判断
+## `stub` の共有コーパス依存を解消した経緯
 
-`jig-core` の `src/test/java` にある fixture 相当は約170（`stub` 配下に約110、それ以外に約60）。このうち `stub` は、8個の `@JigTest` テスト（`JigExecutorTest` `JigDocumentGeneratorAssetsTest` `JigTypesTest` `JigServiceTest` `SpringDataJdbcStatementReaderTest` `MyBatisStatementReaderTest` `OutboundAdapterExecutionTest` `MethodSmellsTest`）が「1つの共有コーパス」として使っている。`testing.JigTest`（JUnit拡張）が `stub` 全体を一括解析して `JigRepository` を注入する仕組みのため、`stub` は「1プロジェクト1意図」という代表プロジェクトの原則（`docs/adr/test_architecture_policy.md`）に反する寄せ集めになっている。
+`stub` はもともと、8個の `@JigTest` テスト（`JigExecutorTest` `JigDocumentGeneratorAssetsTest` `JigTypesTest` `JigServiceTest` `SpringDataJdbcStatementReaderTest` `MyBatisStatementReaderTest` `OutboundAdapterExecutionTest` `MethodSmellsTest`）が「1つの共有コーパス」として使っていた。`testing.JigTest`（JUnit拡張）が `stub` 全体を一括解析して `JigRepository` を注入する仕組みのため、`stub` は「1プロジェクト1意図」という代表プロジェクトの原則（`docs/adr/test_architecture_policy.md`）に反する寄せ集めになっていた。
 
-原則には反するが、今回は `jig-test-fixtures` への分解・移設を**見送る**。理由は次の二点。
+既存の `stub` を `jig-test-fixtures` へ分解・移設するのではなく、**各テストを意図ごとの小さな fixture でゼロから再実装し、共有コーパスへの依存を断つ**方針で解消した。
 
-- 8個のテストが同じコーパスを前提に書かれているため、分解すると各テストの入力を作り直す必要があり、影響範囲が広い。
-- `stub/infrastructure/datasource/**` の MyBatis 関連は `MyBatisStatementsReader` が `Resources.getResourceAsStream`（MyBatis の内部API）で XML マッパーを**JVM 実行時クラスパス経由**で読む。これは JIG 自身の `SourceBasePath`（ファイルシステム走査）とは別の経路であり、`stub` を別モジュールへ移すと jig-core のテスト実行時クラスパスに別モジュールの成果物を混在させる形になる。
+- 実は解析結果を必要としていなかったテスト（`JigDocumentGeneratorAssetsTest`）は `@JigTest` を外して直接組み立てる形にした。
+- 実質的な検証がなかったテスト（`JigServiceTest`）や、他の Contract テストと重複していたケース（`JigExecutorTest` の一部）は退役させた。
+- 可視性判定・package-info の扱い（`JigTypesTest`）、メソッドスメル検出（`MethodSmellsTest`）は、`TestSupport.buildJigType(s)`（ASM で個別クラスを読む）を使い、テスト直下の小さなクラスに置き換えた。`stub` はもちろん `jig-test-fixtures` も不要だった。
+- Spring Data JDBC の認識規則（`SpringDataJdbcStatementReaderTest` と `OutboundAdapterExecutionTest` の一部）は、`SpringDataJdbcStatementsReader.readFrom(JigTypes)` が**純粋関数**（ファイルシステム・クラスパス不要）であることを確認し、`org.dddjava.jig.domain.model.information.outbound.springdata.ut` 配下の小さな fixture クラス群を `TestSupport.buildJigTypes(...)` で読んで直接呼び出す形にした。
+- MyBatis の認識規則（`MyBatisStatementReaderTest` と `OutboundAdapterExecutionTest` の残り）は、`MyBatisStatementsReader` が `Resources.getResourceAsStream`（MyBatis の内部API）で XML マッパーを読む際に**親クラスローダーへの委譲**で解決されることを確認し、`jig-core` 自身の `src/test/java` / `src/test/resources` に fixture を同居させた（`org.dddjava.jig.infrastructure.mybatis.ut`、`org.dddjava.jig.domain.model.information.outbound.mybatis.ut`）。jig-test-fixtures のような別モジュールに置くと、jig-core のテスト実行時クラスパスに別モジュールの成果物を混在させる形になるため避けた。
 
-この判断を覆すのは、他モジュール（`jig-cli` `jig-gradle-plugin`）が `stub` 相当の入力を必要とするようになったとき、または `stub` を意図ごとに分割する具体的な必要が生じたときとする。
-
-`sample/data`（Spring Data サンプル一式、約30）は `SampleDataWriterTest`専用の入力で、アサーションのないコード生成タスクである（issue #1126）。廃止の方向だが今回は対象外とする。`infrastructure/asm/ut` `.../javaparser/ut` の解析対象と `org/springframework` 配下の模造アノテーション（計約30）は、それぞれ単一のテストに対応する Component-test-local な fixture であり、代表プロジェクトへ移す動機がない。
+結果、`@JigTest` の共有コーパス経由でしか動かないテストはなくなった。`stub/domain/model/**` の一部は今も残っているが、これは ASM/JavaParser 層の Component テストが `TestSupport.buildJigType(Class)` で**個別クラスを対象に**読む、正しい規模の Component-test-local fixture であり、問題ではない。`sample/data`（Spring Data サンプル一式、約30）は `SampleDataWriterTest` 専用の入力で、アサーションのないコード生成タスクである（issue #1126）。廃止の方向だが今回は対象外とする。
 
 ## 用意する代表プロジェクト
 
-`minimal-java` `showcase` `bytecode-compat` は作成済み。`spring-data` `mybatis` `bytecode-only` は、上記の理由により `stub` からの抽出を見送ったため未作成のまま残る。将来 `stub` の分解に着手する場合の追加手順は `jig-test-fixtures/README.md` を参照。
+`minimal-java` `showcase` `bytecode-compat` は作成済み。`spring-data` と `mybatis` は、上記のとおり `jig-test-fixtures` を使わずに解消したため作らない（前者は純粋関数なので不要、後者はクラスパス経由の読み込みのため jig-core ローカルに留めた）。`bytecode-only`（ソースなしクラスファイルの解析）だけが未着手で残る。
 
 マルチモジュール構成と不正入力には専用の fixture を作らない。前者は既存の代表プロジェクトを並べて展開すれば足り、後者は壊れたクラスファイルをテスト内で書き出すほうがリポジトリに壊れたバイナリを置くより扱いやすいためである。
 

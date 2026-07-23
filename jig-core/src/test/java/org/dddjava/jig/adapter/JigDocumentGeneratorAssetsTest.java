@@ -1,29 +1,36 @@
 package org.dddjava.jig.adapter;
 
-import org.dddjava.jig.domain.model.documents.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.junit.jupiter.api.Test;
-import testing.JigTest;
+import org.junit.jupiter.api.io.TempDir;
+import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.configuration.JigSettings;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@JigTest
 class JigDocumentGeneratorAssetsTest {
 
     @Test
-    void templatesAssets配下の全ファイルをコピーする(JigDocumentGenerator sut, JigDocumentContext jigDocumentContext)
+    void templatesAssets配下の全ファイルをコピーする(@TempDir Path outputDirectory)
             throws IOException, URISyntaxException {
+        // この検証は解析結果を必要としないため、解析入力（fixture）を用意せずConfigurationだけで組み立てる
+        var settings = new JigSettings(outputDirectory, Optional.empty(), JigDocument.canonical(), Locale.JAPANESE);
+        var sut = Configuration.from(settings).jigDocumentGenerator();
+
         sut.generateSharedAssets();
 
-        Path copiedAssetsDirectory = jigDocumentContext.outputDirectory().resolve("assets");
+        Path copiedAssetsDirectory = outputDirectory.resolve("assets");
         Set<String> copied = collectRelativeFilePaths(copiedAssetsDirectory);
         Set<String> expected = collectTemplateAssetsRelativePaths();
         // 型定義はコピーしない

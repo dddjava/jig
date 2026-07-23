@@ -13,29 +13,33 @@
 | 3 | `jig-test-fixtures` と解析対象バージョンの契約検証 | 完了 |
 | 4 | 最重要の公開シナリオを E2E/Contract で固定する | 完了 |
 | 5 | 生成物の検証を構造比較へ置き換える | 完了 |
-| 6 | `jig-core` の既存テストを分類して移す | — |
+| 6 | `jig-core` の既存テストを分類して移す | 完了（`stub` の分解を除く） |
 | 7 | Playwright E2E の導入可否を判断する | — |
 
-必須段階（1〜5）は完了した。残る 6・7 は必須段階が安定してから着手する。
+必須段階（1〜5）は完了した。段階 6 は `learning` の分離と `TestSupport` のパス逆算解消までを行い、`stub` の分解は見送った（理由は後述）。段階 7 は必須段階が安定してから着手する。
 
 各段階の完了条件は「新しい層に同等以上の公開契約テストがあり、CI で安定していること」とする。カバレッジ値だけを完了条件にしない。既存テストは一括で置換せず、同じ保証を保ったまま移してから旧テストを削除する。
 
 ## 残っている課題
 
-- `jig-core` の `src/test/java` にある fixture 相当が約 170。内訳は `stub` 配下に約 110、それ以外に約 60（`sample/data` の Spring Data サンプル一式、`infrastructure/asm/ut` と `.../javaparser/ut` の解析対象、`org/springframework` 配下の模造アノテーション）。
-- `testing.TestSupport` が `DefaultPackageClass.class` の位置からテスト出力ディレクトリを逆算している。`JigFixtures` へ置き換えて消す。
-- 調査用の `learning` が `src/test/java/learning` と `src/test/java/org/dddjava/jig/infrastructure/javaparser/learning` の二箇所にあり、CI で実行されている。
 - 実ブラウザ検証は手動手順（`jig-core/src/test/playwright/README.md`）に依存している。
+
+## `stub` を分解しない判断
+
+`jig-core` の `src/test/java` にある fixture 相当は約170（`stub` 配下に約110、それ以外に約60）。このうち `stub` は、8個の `@JigTest` テスト（`JigExecutorTest` `JigDocumentGeneratorAssetsTest` `JigTypesTest` `JigServiceTest` `SpringDataJdbcStatementReaderTest` `MyBatisStatementReaderTest` `OutboundAdapterExecutionTest` `MethodSmellsTest`）が「1つの共有コーパス」として使っている。`testing.JigTest`（JUnit拡張）が `stub` 全体を一括解析して `JigRepository` を注入する仕組みのため、`stub` は「1プロジェクト1意図」という代表プロジェクトの原則（`docs/adr/test_architecture_policy.md`）に反する寄せ集めになっている。
+
+原則には反するが、今回は `jig-test-fixtures` への分解・移設を**見送る**。理由は次の二点。
+
+- 8個のテストが同じコーパスを前提に書かれているため、分解すると各テストの入力を作り直す必要があり、影響範囲が広い。
+- `stub/infrastructure/datasource/**` の MyBatis 関連は `MyBatisStatementsReader` が `Resources.getResourceAsStream`（MyBatis の内部API）で XML マッパーを**JVM 実行時クラスパス経由**で読む。これは JIG 自身の `SourceBasePath`（ファイルシステム走査）とは別の経路であり、`stub` を別モジュールへ移すと jig-core のテスト実行時クラスパスに別モジュールの成果物を混在させる形になる。
+
+この判断を覆すのは、他モジュール（`jig-cli` `jig-gradle-plugin`）が `stub` 相当の入力を必要とするようになったとき、または `stub` を意図ごとに分割する具体的な必要が生じたときとする。
+
+`sample/data`（Spring Data サンプル一式、約30）は `SampleDataWriterTest`専用の入力で、アサーションのないコード生成タスクである（issue #1126）。廃止の方向だが今回は対象外とする。`infrastructure/asm/ut` `.../javaparser/ut` の解析対象と `org/springframework` 配下の模造アノテーション（計約30）は、それぞれ単一のテストに対応する Component-test-local な fixture であり、代表プロジェクトへ移す動機がない。
 
 ## 用意する代表プロジェクト
 
-`minimal-java` `showcase` `bytecode-compat` は作成済み。残りは段階 6 で既存テストを移すときに追加する。追加手順は `jig-test-fixtures/README.md` を参照。
-
-| fixture | 固定する契約 |
-| --- | --- |
-| `spring-data` | Spring Data JDBC の認識規則 |
-| `mybatis` | Mapper と SQL の認識規則 |
-| `bytecode-only` | ソースなしクラスファイルの解析 |
+`minimal-java` `showcase` `bytecode-compat` は作成済み。`spring-data` `mybatis` `bytecode-only` は、上記の理由により `stub` からの抽出を見送ったため未作成のまま残る。将来 `stub` の分解に着手する場合の追加手順は `jig-test-fixtures/README.md` を参照。
 
 マルチモジュール構成と不正入力には専用の fixture を作らない。前者は既存の代表プロジェクトを並べて展開すれば足り、後者は壊れたクラスファイルをテスト内で書き出すほうがリポジトリに壊れたバイナリを置くより扱いやすいためである。
 

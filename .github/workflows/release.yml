@@ -22,7 +22,10 @@ jobs:
       - uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
-          java-version: '21'
+          # 25はfixtureを最新LTSのクラスファイルへコンパイルするために使う。21をJAVA_HOMEにする
+          java-version: |
+            25
+            21
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
       - name: Run Build

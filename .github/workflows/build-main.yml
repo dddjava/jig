@@ -19,7 +19,10 @@ jobs:
       - uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
+          # 25はfixtureを最新LTSのクラスファイルへコンパイルするために使う
+          java-version: |
+            25
+            ${{ matrix.java-version }}
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
       - name: Set UTF-8 encoding for Windows
@@ -63,7 +66,9 @@ jobs:
       - uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: |
+            25
+            21
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
       - name: Build classes

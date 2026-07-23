@@ -26,7 +26,10 @@ jobs:
         uses: actions/setup-java@v5.6.0
         with:
           distribution: 'temurin'
-          java-version: '21'
+          # 25はfixtureを最新LTSのクラスファイルへコンパイルするために使う。21をJAVA_HOMEにする
+          java-version: |
+            25
+            21
       - name: Set up Node.js
         uses: actions/setup-node@v7.0.0
         with:

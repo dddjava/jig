@@ -83,6 +83,16 @@ dependencies {
     // テストで読み取るのに使用するアノテーションなど
     testImplementation(libs.swagger.annotations.jakarta)
     testImplementation(libs.jakarta.validation.api)
+
+    // api依存のバージョンはBOM解決なので、contractTestのclasspathにもBOMが要る
+    contractTestImplementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+    contractTestImplementation project(':jig-test-fixtures')
+}
+
+def fixturesRoot = project(':jig-test-fixtures').layout.buildDirectory.dir('fixtures')
+tasks.named('contractTest') {
+    dependsOn ':jig-test-fixtures:fixtures'
+    systemProperty 'jig.fixtures.root', fixturesRoot.get().asFile.absolutePath
 }
 
 def bundleJsOutputDir = layout.buildDirectory.dir("generated/resources/bundle")

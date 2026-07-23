@@ -93,6 +93,40 @@ await page.waitForTimeout(500); // 再描画待ち
 - 図の存在確認には `.diagram-container` の派生クラス（`.class-diagram` `.package-diagram` 等、`usecase.js` の `Jig.dom.createElement("div", {className: "jig-card-section diagram-container ..."})` 呼び出しを参照）を使うと的確に絞り込める。
 - 自己解析結果（`build/jig`）のクラス数は少ないため、「特定の条件（1クラスのみのパッケージ等）を満たすデータ」がサンプルに存在しないことがある。無理に実データで揃えようとせず、次項のjsdom比較かPlaywright側でモックデータ（`globalThis.usecaseData = {...}` を差し込んでから `UsecaseApp.init()`）を使うほうが早い。
 
+## ノードクリックを検証する
+
+Mermaidが描画したノードのDOM idは `flowchart-<nodeId>-<連番>` （classDiagramは `classId-<nodeId>-<連番>`）になる。連番は予測できないので、前方一致か `clickable` クラスで絞る。
+
+```js
+// click ディレクティブが付いたノードにだけ Mermaid が clickable を付ける
+const target = page.locator('#library-dependency-diagram g.clickable').first();
+await target.click();
+```
+
+クリック対象を「図にあるノード」から適当に選ぶと、クリック非対象のノードを踏んで「動いていない」と誤認する。ライブラリ依存図では内部パッケージのツリーノードは選択対象外で、`click` 行が出るのはライブラリノードだけ。
+
+ツールチップはSVG内の `title` ではなく、body直下の `.mermaidTooltip` にhoverで表示される。
+
+## Mermaidの securityLevel による挙動差を確認する
+
+JIGのページを再ビルドせず、CDNのMermaidだけを読み込んだ空ページで比較すると速い。
+
+```js
+await page.setContent(`<div id="target"></div>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"><\/script>`,
+  {waitUntil: 'networkidle'});
+await page.evaluate(async (level) => {
+    mermaid.initialize({startOnLoad: false, securityLevel: level});
+    const {svg, bindFunctions} = await mermaid.render('id1', source);
+    document.getElementById('target').innerHTML = svg;
+    if (bindFunctions) bindFunctions(document.getElementById('target'));
+}, 'strict');
+```
+
+確認済みの挙動（11.12.0）: ラベルのHTMLは securityLevel によらずDOMPurifyを通るため、`onerror` などのイベントハンドラ属性はどのレベルでも除去される。差が出るのは `click <id> <関数名>` の関数コールバックで、これは `loose` でのみ実行される。`click <id> href` と `setTooltip` はどのレベルでも動く。
+
+なお、既に `mermaid.initialize` 済みのJIGページ上で `initialize` を呼び直しても `securityLevel` の変更が反映されないことがある。レベル比較は上記の空ページで行うこと。
+
 ## ブラウザを起動せずMermaidソースをテキスト比較する（軽量版）
 
 見た目の一致・差分を「スクリーンショットの目視」ではなく「生成されたMermaidソース文字列の diff」で確認したい場合、jsdom + 対象JSファイルの直接requireで十分なことが多い。ブラウザ起動より高速。

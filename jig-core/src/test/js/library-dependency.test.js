@@ -14,8 +14,11 @@ function reloadJigModules() {
     delete globalThis.Jig;
     ASSET_MODULES.forEach(m => require(modulePath(m)));
 
+    const clickHandlers = new Map();
     globalThis.Jig.mermaid = {
         render: {renderWithControls: () => {}},
+        registerClickHandler: (name, handler) => clickHandlers.set(name, handler),
+        getClickHandler: name => clickHandlers.get(name),
     };
 
     return require(modulePath('library-dependency.js'));

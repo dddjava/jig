@@ -652,6 +652,68 @@ test.describe('jig-mermaid.js', () => {
         });
     });
 
+    test.describe('bindDiagramClicks', () => {
+        function setupDiagram(...nodeDomIds) {
+            const nodes = nodeDomIds.map(id => `<div id="${id}"></div>`).join('');
+            const dom = setupDom(`<!DOCTYPE html><body><div class="mermaid">${nodes}</div></body>`);
+            return dom.window.document.querySelector('.mermaid');
+        }
+
+        test('登録済みハンドラが対応するノードのクリックで呼ばれる', () => {
+            const diagram = setupDiagram('flowchart-P1-0');
+            const clicked = [];
+            mermaid.registerClickHandler('bindTestHandler', nodeId => clicked.push(nodeId));
+
+            mermaid.bindDiagramClicks(diagram, 'graph LR\nclick P1 bindTestHandler "tip"');
+            diagram.querySelector('#flowchart-P1-0').click();
+
+            assert.deepEqual(clicked, ['P1']);
+        });
+
+        test('classDiagram のノードもバインドされる', () => {
+            const diagram = setupDiagram('classId-C1-3');
+            const clicked = [];
+            mermaid.registerClickHandler('bindTestClassHandler', nodeId => clicked.push(nodeId));
+
+            mermaid.bindDiagramClicks(diagram, 'classDiagram\nclick C1 bindTestClassHandler "tip"');
+            diagram.querySelector('#classId-C1-3').click();
+
+            assert.deepEqual(clicked, ['C1']);
+        });
+
+        test('未登録のハンドラ名はバインドしない', () => {
+            // 解析対象のJavadoc由来の図も同じ描画経路を通るため、任意の関数を呼べてはいけない
+            const diagram = setupDiagram('flowchart-X-0');
+            let called = false;
+            globalThis.unregisteredHandler = () => { called = true; };
+            try {
+                mermaid.bindDiagramClicks(diagram, 'graph LR\nclick X unregisteredHandler');
+                diagram.querySelector('#flowchart-X-0').click();
+
+                assert.equal(called, false);
+            } finally {
+                delete globalThis.unregisteredHandler;
+            }
+        });
+
+        test('href のクリックはmermaidに任せてバインドしない', () => {
+            const diagram = setupDiagram('flowchart-H-0');
+            let called = false;
+            mermaid.registerClickHandler('href', () => { called = true; });
+
+            mermaid.bindDiagramClicks(diagram, 'graph LR\nclick H href "./other.html"');
+            diagram.querySelector('#flowchart-H-0').click();
+
+            assert.equal(called, false);
+        });
+
+        test('click を含まないソースでは何もしない', () => {
+            const diagram = setupDiagram('flowchart-N-0');
+
+            assert.doesNotThrow(() => mermaid.bindDiagramClicks(diagram, 'graph LR\nA-->B'));
+        });
+    });
+
     test.describe('setupLazyMermaidRender', () => {
         function setupGlobals(html) {
             const dom = setupDom(`<!DOCTYPE html><body>${html}</body></html>`);

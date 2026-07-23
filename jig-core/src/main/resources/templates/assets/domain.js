@@ -72,12 +72,11 @@ const DomainApp = (() => {
     // nodeId → url。FQN から決定的に導出されるため描画ごとにクリアせず蓄積してよい。
     const _typeNavRegistry = new Map();
     const _typeNavHandlerName = '_jigDomNavType';
-    if (typeof window !== 'undefined') {
-        window[_typeNavHandlerName] = (nodeId) => {
-            const url = _typeNavRegistry.get(nodeId);
-            if (url) window.location.href = url;
-        };
-    }
+    const navigateToType = (nodeId) => {
+        const url = _typeNavRegistry.get(nodeId);
+        if (url) window.location.href = url;
+    };
+    Jig.mermaid.registerClickHandler(_typeNavHandlerName, navigateToType);
 
     function _registerTypeNavClick(builder, fqn) {
         const nodeId = fqnToMermaidId(fqn);

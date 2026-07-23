@@ -671,7 +671,7 @@ test.describe('package.js', () => {
 
                 PackageApp.registerHierarchyDiagramClickHandler(testContext);
 
-                global.window[PackageApp.HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME]('P1');
+                globalThis.Jig.mermaid.getClickHandler(PackageApp.HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME)('P1');
 
                 assert.deepEqual(testContext.packageFilterFqn, ['app.example']);
             });
@@ -761,7 +761,7 @@ test.describe('package.js', () => {
             PackageApp.exploreState.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
 
             PackageApp.registerExploreDiagramClickHandler(PackageApp.exploreState);
-            global.window[PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME]('P1');
+            globalThis.Jig.mermaid.getClickHandler(PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME)('P1');
 
             assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, ['app.example']);
         });
@@ -771,7 +771,7 @@ test.describe('package.js', () => {
             PackageApp.exploreState.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
 
             PackageApp.registerExploreDiagramClickHandler(PackageApp.exploreState);
-            global.window[PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME]('P1');
+            globalThis.Jig.mermaid.getClickHandler(PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME)('P1');
 
             assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, ['app.example']);
         });
@@ -779,7 +779,7 @@ test.describe('package.js', () => {
         test('存在しないノードIDのクリックは無視する', () => {
             PackageApp.exploreState.diagramNodeIdToFqn = new Map();
             PackageApp.registerExploreDiagramClickHandler(PackageApp.exploreState);
-            global.window[PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME]('NonExistent');
+            globalThis.Jig.mermaid.getClickHandler(PackageApp.EXPLORE_DIAGRAM_CLICK_HANDLER_NAME)('NonExistent');
             assert.deepEqual(PackageApp.exploreState.exploreTargetPackages, []);
         });
     });

@@ -43,12 +43,11 @@ const LibraryDependencyApp = (() => {
             Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, {direction: currentDirection, enableLabelToggle: true});
         };
 
-        // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。
         // 引数は sanitize 済みのノード ID なので、元の group.id へ逆引きする。
-        globalThis.handleLibraryClick = (nodeIdArg) => {
+        Jig.mermaid.registerClickHandler("handleLibraryClick", (nodeIdArg) => {
             const groupId = libraryIdByNodeId.get(nodeIdArg);
             if (groupId) toggleSelection(groupId);
-        };
+        });
 
         const rerender = () => {
             renderDiagram();

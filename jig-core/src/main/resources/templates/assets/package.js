@@ -1134,18 +1134,16 @@ const PackageApp = (() => {
     }
 
     function registerHierarchyDiagramClickHandler(context) {
-        if (typeof window === 'undefined') return;
-        window[HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+        Jig.mermaid.registerClickHandler(HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME, function (nodeId) {
             const fqn = context.diagramNodeIdToFqn.get(nodeId);
             if (!fqn) return;
             context.packageFilterFqn = [fqn];
             renderHierarchyDiagramAndTable(context);
-        };
+        });
     }
 
     function registerExploreDiagramClickHandler(context) {
-        if (typeof window === 'undefined') return;
-        window[EXPLORE_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+        Jig.mermaid.registerClickHandler(EXPLORE_DIAGRAM_CLICK_HANDLER_NAME, function (nodeId) {
             const fqn = context.diagramNodeIdToFqn.get(nodeId);
             if (!fqn) return;
             if (!context.exploreTargetPackages.includes(fqn)) {
@@ -1153,7 +1151,7 @@ const PackageApp = (() => {
                 renderExplorePackageList(context);
                 renderExploreDiagram(context);
             }
-        };
+        });
     }
 
     function renderTab(tabName) {

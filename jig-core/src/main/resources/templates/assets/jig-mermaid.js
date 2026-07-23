@@ -88,6 +88,7 @@ globalThis.Jig.mermaid = (() => {
                 this.clicks.push(`click ${id} href "${url}"${tooltipPart}`);
             }
 
+            // mermaidはツールチップ単独の構文を持たないため、何も登録していないハンドラ名を置く
             addTooltip(id, tooltip) {
                 if (!id || !tooltip || this.clickSet.has(id)) return;
                 this.clickSet.add(id);
@@ -811,12 +812,60 @@ globalThis.Jig.mermaid = (() => {
         }
     })();
 
+    // mermaid の click 関数コールバックは securityLevel が loose のときしか動かず、loose では
+    // ラベルのHTMLがサニタイズされない。描画後のSVGへ自前でバインドし、loose を避ける。
+    const clickHandlers = new Map();
+
+    /**
+     * 図のノードクリックに使うハンドラを名前で登録する。
+     * 解析対象のJavadoc由来の図も同じ描画経路を通るため、登録済みの名前だけをバインドする。
+     *
+     * @param {string} name - 図のソースの click ディレクティブに書く名前
+     * @param {(nodeId: string) => void} handler
+     */
+    function registerClickHandler(name, handler) {
+        if (!name || typeof handler !== "function") return;
+        clickHandlers.set(name, handler);
+    }
+
+    function getClickHandler(name) {
+        return clickHandlers.get(name);
+    }
+
+    // mermaid がノードに振るDOM id。flowchartとclassDiagramでプレフィックスが異なる
+    const NODE_DOM_ID_PATTERN = /^(?:flowchart|classId)-(.+)-\d+$/;
+
+    function collectClickBindings(source) {
+        const bindings = new Map();
+        for (const [, nodeId, handlerName] of source.matchAll(/^\s*click\s+(\S+)\s+(\S+)/gm)) {
+            if (handlerName !== "href") bindings.set(nodeId, handlerName);
+        }
+        return bindings;
+    }
+
+    function bindDiagramClicks(diagram, source) {
+        if (!diagram || !source || typeof diagram.querySelectorAll !== "function") return;
+        const bindings = collectClickBindings(source);
+        if (bindings.size === 0) return;
+        diagram.querySelectorAll('[id^="flowchart-"], [id^="classId-"]').forEach(element => {
+            const nodeId = NODE_DOM_ID_PATTERN.exec(element.id)?.[1];
+            const handler = getClickHandler(bindings.get(nodeId));
+            if (!handler) return;
+            element.addEventListener("click", () => handler(nodeId));
+        });
+    }
+
     function renderMermaidDiagram(diagram) {
+        const source = diagram.textContent;
         const renderResult = globalThis.mermaid.run({nodes: [diagram]});
-        if (typeof renderResult.catch === 'function') {
-            renderResult.catch(error => {
-                console.error('Mermaid rendering error:', error);
-            });
+        if (renderResult && typeof renderResult.then === 'function') {
+            renderResult
+                .then(() => bindDiagramClicks(diagram, source))
+                .catch(error => {
+                    console.error('Mermaid rendering error:', error);
+                });
+        } else {
+            bindDiagramClicks(diagram, source);
         }
         return renderResult;
     }
@@ -825,8 +874,9 @@ globalThis.Jig.mermaid = (() => {
         const DEFAULT_MAX_TEXT_SIZE = 50000;
         const EXTENDED_MAX_TEXT_SIZE = 200000;
         const DEFAULT_MAX_EDGES = 500;
-        // click の関数コールバック（package図のノードクリック等）は mermaid 実装上 loose でのみ有効なため strict にできない
-        const MERMAID_SECURITY_LEVEL = "loose";
+        // loose は解析対象のJavadocに書かれた click ディレクティブから任意のグローバル関数を呼べる。
+        // ノードクリックは registerClickHandler で描画後にバインドするため loose にする必要はない。
+        const MERMAID_SECURITY_LEVEL = "strict";
 
         // 描画済み SVG をコンテナ単位・ソース文字列キーでキャッシュする。
         // 同一ソースの再描画（チェック切替の往復・向き切替の戻しなど）で mermaid.run を回避する。
@@ -1974,6 +2024,9 @@ globalThis.Jig.mermaid = (() => {
         render,
         diagram,
         renderMarkdownDiagrams,
+        registerClickHandler,
+        getClickHandler,
+        bindDiagramClicks,
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
@@ -1982,10 +2035,6 @@ globalThis.Jig.mermaid = (() => {
         nav,
     };
 })();
-
-if (typeof window !== "undefined") {
-    window._jigNoop = () => {};
-}
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {

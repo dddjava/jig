@@ -45,6 +45,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
       - name: Build
         run: ./gradlew build qualityCheck
+      # 生成サイトを入力とするため、Gradle の contractTest より後に実行する
+      - name: Run JS contract tests
+        run: npm run test:contract:js
       - name: Upload Failure Report
         uses: actions/upload-artifact@v7
         if: failure()

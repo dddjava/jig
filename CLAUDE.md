@@ -20,8 +20,8 @@ npm run test:pr
 # Java テストのみ
 ./gradlew test
 
-# 公開形式の Contract のみ
-./gradlew contractTest
+# 公開形式の Contract のみ（Java + 生成サイトを読む JS）
+npm run test:contract
 
 # check + E2E + カバレッジレポート（PR CI と同じ Java 側入口）
 ./gradlew qualityCheck

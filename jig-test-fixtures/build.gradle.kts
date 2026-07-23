@@ -57,6 +57,7 @@ val latestLtsRelease = if (System.getenv("CIRCLECI") == "true") emptyList() else
 
 val fixtureTasks = listOf(
     registerFixtureProject("minimal-java", listOf(21)),
+    registerFixtureProject("showcase", listOf(21)),
     registerFixtureProject("bytecode-compat", listOf(8, 21) + latestLtsRelease),
 ).flatten()
 

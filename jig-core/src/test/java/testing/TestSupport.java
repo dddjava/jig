@@ -41,9 +41,19 @@ public class TestSupport {
     }
 
     public static SourceBasePaths getRawSourceLocations() {
+        return sourceLocationsFor("stub");
+    }
+
+    /**
+     * jig-core の test ソースセット配下にある、単一の意図を持つ小さな fixture パッケージを解析対象にする。
+     * `stub` のような巨大な共有コーパスを増やさず、テストごとに独立した入力を持たせたい場合に使う。
+     *
+     * @param packageRelativePath クラス出力・ソースの両方に共通するパッケージの相対パス（例: {@code "org/dddjava/jig/application/ut/domain/model"}）
+     */
+    public static SourceBasePaths sourceLocationsFor(String packageRelativePath) {
         return new SourceBasePaths(
-                new SourceBasePath(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve("stub"))),
-                new SourceBasePath(Collections.singletonList(getTestSourceRootPath().resolve("stub")))
+                new SourceBasePath(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve(packageRelativePath))),
+                new SourceBasePath(Collections.singletonList(getTestSourceRootPath().resolve(packageRelativePath)))
         );
     }
 

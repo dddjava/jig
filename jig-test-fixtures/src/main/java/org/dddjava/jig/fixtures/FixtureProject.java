@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,6 +63,36 @@ public final class FixtureProject {
      */
     public Path sources() {
         return existing(directory.resolve("sources"), "ソース");
+    }
+
+    /**
+     * 利用者のプロジェクトと同じレイアウトへ展開する。
+     *
+     * CLI と Gradle プラグインは `build/classes/java/main` と `src/main/java` を既定で探すため、
+     * 別プロセスから起動する検証はこの形の入力を必要とする。
+     *
+     * @return 展開先ディレクトリ
+     */
+    public Path deployTo(Path targetDirectory, int release) {
+        copyRecursively(classes(release), targetDirectory.resolve("build/classes/java/main"));
+        copyRecursively(sources(), targetDirectory.resolve("src/main/java"));
+        return targetDirectory;
+    }
+
+    private void copyRecursively(Path from, Path to) {
+        try (Stream<Path> paths = Files.walk(from)) {
+            for (Path path : paths.collect(Collectors.toList())) {
+                Path destination = to.resolve(from.relativize(path).toString());
+                if (Files.isDirectory(path)) {
+                    Files.createDirectories(destination);
+                } else {
+                    Files.createDirectories(destination.getParent());
+                    Files.copy(path, destination, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException("代表プロジェクト '" + name + "' を展開できません: " + to, e);
+        }
     }
 
     private Path existing(Path path, String description) {

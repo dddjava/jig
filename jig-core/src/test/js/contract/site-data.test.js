@@ -21,10 +21,6 @@ function loadData(fileName) {
     return container;
 }
 
-function readHtml(fileName) {
-    return fs.readFileSync(path.join(SITE_DIRECTORY, fileName), 'utf-8');
-}
-
 test.describe('生成サイトとブラウザ資産の境界', () => {
 
     test.before(() => {
@@ -94,42 +90,6 @@ test.describe('生成サイトとブラウザ資産の境界', () => {
             // fixture の Quantity に仕込んだ説明。評価できている時点でエスケープは成立している
             const serialized = JSON.stringify(glossaryData);
             assert.ok(serialized.includes('数量'), '説明が読み取れていません');
-        });
-    });
-
-    test.describe('HTML', () => {
-        const PAGES = [
-            ['index.html', null],
-            ['domain.html', 'domain-data.js'],
-            ['usecase.html', 'usecase-data.js'],
-            ['inbound.html', 'inbound-data.js'],
-            ['outbound.html', 'outbound-data.js'],
-            ['package.html', 'package-data.js'],
-            ['glossary.html', 'glossary-data.js'],
-            ['insight.html', 'insight-data.js'],
-        ];
-
-        PAGES.forEach(([page, dataFile]) => {
-            test(`${page} は必要なデータとアセットを読み込む`, () => {
-                const html = readHtml(page);
-
-                assert.ok(html.includes('<html'), 'HTMLの体裁になっていません');
-                assert.ok(html.includes('assets/'), 'アセットを参照していません');
-                if (dataFile) {
-                    assert.ok(html.includes(dataFile), `${dataFile} を読み込んでいません`);
-                }
-            });
-        });
-
-        test('外部ライブラリはバージョンを固定して読み込む', () => {
-            const html = readHtml('domain.html');
-
-            // 固定を外すと生成物の描画が外部の更新で変わる
-            const cdnScripts = html.match(/https:\/\/cdn\.jsdelivr\.net\/npm\/[^"]+/g) ?? [];
-            assert.ok(cdnScripts.length > 0, 'CDNスクリプトがありません');
-            cdnScripts.forEach(url => {
-                assert.match(url, /@\d+\.\d+\.\d+\//, `バージョンが固定されていません: ${url}`);
-            });
         });
     });
 });

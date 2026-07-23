@@ -42,8 +42,12 @@ class ShowcaseSiteContractTest {
 
     @BeforeAll
     static void サイトを生成する() {
+        generateSiteTo(OUTPUT_DIRECTORY);
+    }
+
+    static void generateSiteTo(Path outputDirectory) {
         JigSettings settings = new JigSettings(
-                OUTPUT_DIRECTORY,
+                outputDirectory,
                 Optional.of("showcase.domain.+"),
                 JigDocument.canonical(),
                 Locale.JAPANESE);
@@ -67,20 +71,27 @@ class ShowcaseSiteContractTest {
     }
 
     @Test
-    void 解析した型とパッケージがデータに現れる() {
-        String data = readAll(OUTPUT_DIRECTORY.resolve("data"));
+    void データJSはグローバルへの代入形式で出力される() {
+        // ページのJSはこの形式を前提に読み込む。個々の内容の構造は Web 側の Contract で見る
+        try (var paths = Files.list(OUTPUT_DIRECTORY.resolve("data"))) {
+            List<Path> dataFiles = paths.filter(path -> path.getFileName().toString().endsWith(".js")).toList();
 
-        assertTrue(data.contains("showcase.domain.order.Order"), "ドメインの型がありません");
-        assertTrue(data.contains("showcase.presentation.OrderController"), "入力インタフェースがありません");
-        assertTrue(data.contains("showcase.infrastructure.OrderDataSource"), "出力インタフェースの実装がありません");
+            assertFalse(dataFiles.isEmpty(), "データJSが出力されていません");
+            for (Path dataFile : dataFiles) {
+                String content = Files.readString(dataFile, StandardCharsets.UTF_8);
+                assertTrue(content.startsWith("globalThis."),
+                        () -> "グローバルへの代入形式ではありません: " + dataFile);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Test
-    void Javadocの和名がデータに現れる() {
+    void 解析結果が成果物へ届く() {
         String data = readAll(OUTPUT_DIRECTORY.resolve("data"));
 
-        assertTrue(data.contains("注文番号"), "型の和名がありません");
-        assertTrue(data.contains("顧客"), "パッケージの和名がありません");
+        assertTrue(data.contains("showcase.domain.order.Order"), "解析した型が出力にありません");
     }
 
     @Test

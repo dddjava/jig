@@ -3,6 +3,16 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
+// PR相当のJava側品質入口。checkにE2Eとカバレッジレポートを足す。
+// checkをこのタスクに依存させると重い検証がbuildに載るため、依存の向きは逆にしない。
+tasks.register("qualityCheck") {
+    group = "verification"
+    description = "check・E2E・カバレッジレポートを束ねる"
+    dependsOn subprojects.collect { "${it.path}:check" }
+    dependsOn subprojects.collect { "${it.path}:jacocoTestReport" }
+    dependsOn ":jig-cli:e2eTest"
+}
+
 nexusPublishing {
     repositories {
         sonatype {

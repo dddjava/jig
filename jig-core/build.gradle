@@ -1,5 +1,6 @@
 plugins {
     id 'jig.java-conventions'
+    id 'jig.contract-test-conventions'
     id 'java-library'
     id 'maven-publish'
     id 'signing'

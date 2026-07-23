@@ -1,6 +1,7 @@
 plugins {
     id("jig.base-conventions")
     `java-library`
+    jacoco
 }
 
 java {
@@ -33,6 +34,14 @@ tasks.named<Jar>("jar") {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+// カバレッジは監視のために収集する。しきい値による合否判定は置かない
+tasks.named<JacocoReport>("jacocoTestReport") {
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
 
 val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")

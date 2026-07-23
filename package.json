@@ -4,7 +4,8 @@
   "scripts": {
     "test": "node --test jig-core/src/test/js/*.test.js",
     "test:coverage": "node --test --experimental-test-coverage jig-core/src/test/js/*.test.js",
-    "test:full": "npm run test && ./gradlew clean test",
+    "test:full": "npm run test && ./gradlew clean test contractTest",
+    "test:pr": "npm run lint:css && npm run test && ./gradlew clean build qualityCheck",
     "lint:css": "stylelint \"jig-core/src/main/resources/templates/**/*.css\""
   },
   "devDependencies": {

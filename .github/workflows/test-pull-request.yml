@@ -41,11 +41,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build qualityCheck
       - name: Upload Failure Report
         uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: test-failure-reports
           path: jig-*/build/reports/tests/
+          retention-days: 3
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-reports
+          path: jig-*/build/reports/jacoco/
           retention-days: 3

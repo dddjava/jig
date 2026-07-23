@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("jig.java-conventions")
+    id("jig.e2e-test-conventions")
     id("org.springframework.boot")
 }
 

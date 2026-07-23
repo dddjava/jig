@@ -13,7 +13,7 @@ import org.dddjava.jig.infrastructure.configuration.JigSettings;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,12 +34,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class BytecodeCompatibilityContractTest {
 
+    static final String FIXTURE = "bytecode-compat";
     static final int LOWER_BOUND_RELEASE = 8;
     static final int TOOLCHAIN_RELEASE = 21;
-    static final int LATEST_LTS_RELEASE = 25;
+
+    /**
+     * 生成されるバージョンはビルド環境で変わりうるため、配置済みのものを対象にする。
+     */
+    static IntStream 配置済みの比較対象() {
+        return JigFixtures.project(FIXTURE).availableReleases().stream()
+                .mapToInt(Integer::intValue)
+                .filter(release -> release != TOOLCHAIN_RELEASE);
+    }
 
     @ParameterizedTest
-    @ValueSource(ints = {LOWER_BOUND_RELEASE, LATEST_LTS_RELEASE})
+    @MethodSource("配置済みの比較対象")
     void クラスファイルのバージョンが変わっても同じ型情報が得られる(int release) {
         assertEquals(analyze(TOOLCHAIN_RELEASE), analyze(release));
     }
@@ -57,7 +67,7 @@ class BytecodeCompatibilityContractTest {
      * 型・種別・メンバー名を、宣言順や読み取り順に依存しない文字列へまとめる。
      */
     private static String analyze(int release) {
-        FixtureProject project = JigFixtures.project("bytecode-compat");
+        FixtureProject project = JigFixtures.project(FIXTURE);
         SourceBasePaths sourceBasePaths = new SourceBasePaths(
                 new SourceBasePath(List.of(project.classes(release))),
                 new SourceBasePath(List.of(project.sources())));

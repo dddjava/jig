@@ -37,12 +37,27 @@ fun registerFixtureProject(name: String, releases: List<Int>): List<TaskProvider
         into(fixturesRoot.map { it.dir("$name/sources") })
     }
 
-    return compileTasks + syncSources
+    // 生成したバージョンを宣言する。ディレクトリの有無で判定すると、
+    // 生成対象を減らしたときに以前の出力が残って利用側が誤認する
+    val writeReleases = tasks.register("writeFixtureReleases-$name") {
+        val releasesFile = fixturesRoot.map { it.file("$name/releases.txt") }
+        inputs.property("releases", releases)
+        outputs.file(releasesFile)
+        doLast {
+            releasesFile.get().asFile.writeText(releases.joinToString("\n"))
+        }
+    }
+
+    return compileTasks + syncSources + writeReleases
 }
+
+// CircleCIはJDK21のイメージで動くため、最新LTSのクラスファイル生成はtoolchainの自動取得を伴う。
+// 同じ検証をGitHub Actions側（PR gate・main upkeep・release）で行っているので、ここでは作らない。
+val latestLtsRelease = if (System.getenv("CIRCLECI") == "true") emptyList() else listOf(25)
 
 val fixtureTasks = listOf(
     registerFixtureProject("minimal-java", listOf(21)),
-    registerFixtureProject("bytecode-compat", listOf(8, 21, 25)),
+    registerFixtureProject("bytecode-compat", listOf(8, 21) + latestLtsRelease),
 ).flatten()
 
 val fixtures = tasks.register("fixtures") {

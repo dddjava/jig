@@ -58,8 +58,10 @@ public class ClassOrJavaSourceCollector {
             return List.of();
         }
         try (Stream<Path> pathStream = Files.walk(basePath)) {
+            // Files.walkの列挙順はファイルシステム依存で不定なため、以降の解析結果を再現可能にするためにソートする
             return pathStream
                     .filter(path -> path.getFileName().toString().endsWith(suffix))
+                    .sorted()
                     .toList();
         } catch (IOException e) {
             jigEventRepository.registerパスの収集に失敗しました(basePath, e);

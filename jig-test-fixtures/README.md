@@ -2,7 +2,7 @@
 
 JIG の入力となる代表プロジェクトを提供するテスト専用モジュール。公開成果物には含めない。
 
-設計の位置づけは `docs/test-architecture.md` を参照。
+設計の位置づけは `docs/adr/test_architecture_policy.md` を参照。
 
 ## 代表プロジェクトを追加する
 

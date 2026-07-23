@@ -53,7 +53,7 @@ npm run lint:css
 - コミット前・PR 前 → `npm run test:pr`（PR CI と同じ組合せ）
 - CSS のみの変更、または `docs` コミットに該当する変更のみテスト省略可
 
-テストの階層とタスクの対応は `docs/test-architecture.md` を参照。`check` は Unit/Component/Contract まで、E2E は `qualityCheck` から実行する。
+テストの階層とタスクの対応は `docs/adr/test_architecture_policy.md` を参照。`check` は Unit/Component/Contract まで、E2E は `qualityCheck` から実行する。
 
 ### ブラウザでの見た目確認（Playwright）
 

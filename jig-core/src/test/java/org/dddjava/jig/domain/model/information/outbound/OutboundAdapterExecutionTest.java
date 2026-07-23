@@ -2,26 +2,23 @@ package org.dddjava.jig.domain.model.information.outbound;
 
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.junit.jupiter.api.Test;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcCrudDelegatingOutbohndAdapter;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcNameOutboundAdapter;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository;
 import stub.infrastructure.datasource.trace.TraceHelper;
 import stub.infrastructure.datasource.trace.TraceMapper;
 import stub.infrastructure.datasource.trace.TraceOutboundAdapter;
 import testing.JigTest;
-import testing.PersistenceTestSupport;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Spring Data JDBC を経由するケースは
+ * {@code org.dddjava.jig.domain.model.information.outbound.springdata.SpringDataJdbcOutboundAdapterExecutionTest}
+ * が stub 非依存の小さな fixture で検証している。ここに残るのは MyBatis 経由のトレースのみ。
+ */
 @JigTest
 class OutboundAdapterExecutionTest {
 
@@ -69,39 +66,5 @@ class OutboundAdapterExecutionTest {
         assertEquals(
                 PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(TraceMapper.class.getCanonicalName()), "binding"),
                 persistenceAccessorIdList.getFirst());
-    }
-
-    @Test
-    void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
-        var outboundAdapters = buildOutboundAdapters(jigService, jigRepository);
-
-        var targetOutboundAdapter = findOutboundAdapter(outboundAdapters, SpringDataJdbcNameOutboundAdapter.class);
-        var execution = findExecution(targetOutboundAdapter, "save");
-
-        PersistenceAccessorOperation persistenceAccessorOperation = execution.persistenceAccessorOperations().stream()
-                .filter(found -> found.id().equals(
-                        PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
-                .findAny()
-                .orElseThrow();
-
-        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
-        assertEquals(List.of("spring_data_table_name"), PersistenceTestSupport.tableNames(persistenceAccessorOperation.targetOperationTypes()));
-    }
-
-    @Test
-    void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
-        var outboundAdapters = buildOutboundAdapters(jigService, jigRepository);
-
-        var targetOutboundAdapter = findOutboundAdapter(outboundAdapters, SpringDataJdbcCrudDelegatingOutbohndAdapter.class);
-        var execution = findExecution(targetOutboundAdapter, "save");
-
-        PersistenceAccessorOperation persistenceAccessorOperation = execution.persistenceAccessorOperations().stream()
-                .filter(found -> found.id().equals(
-                        PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
-                .findAny()
-                .orElseThrow();
-
-        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
-        assertEquals(List.of("spring_data_table_name"), PersistenceTestSupport.tableNames(persistenceAccessorOperation.targetOperationTypes()));
     }
 }

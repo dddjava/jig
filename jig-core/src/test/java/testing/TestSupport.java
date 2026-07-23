@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
@@ -74,9 +75,23 @@ public class TestSupport {
     }
 
     public static JigType buildJigType(Class<?> definitionClass) {
+        return buildJigTypes(definitionClass).orderedStream().findFirst().orElseThrow();
+    }
+
+    /**
+     * 複数のクラスを実際にコンパイルされたクラスファイルからASMで読み取り、相互参照が解決された
+     * {@link JigTypes} にまとめる。jig-test-fixtures のような別モジュールを用意するほどではない、
+     * 単一の意図を持つ小さな fixture（同一テスト内の複数クラスなど）向け。
+     *
+     * 引数に渡さなかったクラスは「解析対象に含まれていない」ことを表せる
+     * （名前ベースの推測ロジックなど、未解析の型を前提にした挙動の確認に使う）。
+     */
+    public static JigTypes buildJigTypes(Class<?>... definitionClasses) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
-        ClassDeclaration classDeclaration = sut.classDeclaration(getPathFromClass(definitionClass)).orElseThrow();
-        return JigTypeFactory.createJigTypes(List.of(classDeclaration)).orderedStream().findFirst().orElseThrow();
+        List<ClassDeclaration> classDeclarations = List.of(definitionClasses).stream()
+                .map(clz -> sut.classDeclaration(getPathFromClass(clz)).orElseThrow())
+                .toList();
+        return JigTypeFactory.createJigTypes(classDeclarations);
     }
 
     private static Path getPathFromClass(Class<?> definitionClass) {

@@ -1,15 +1,14 @@
-package stub.infrastructure.datasource.springdata;
+package org.dddjava.jig.domain.model.information.outbound.springdata.ut;
 
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.List;
 
-@Table("spring_data_jdbc_orders_with_items")
-public class SpringDataJdbcOrderWithItems {
-
+@Table("orders_with_items")
+public class OrderWithItems {
     Long id;
 
     @MappedCollection
-    List<SpringDataJdbcOrderItem> items;
+    List<OrderItem> items;
 }

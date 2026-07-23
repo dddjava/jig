@@ -36,7 +36,7 @@
 - Spring Data JDBC の認識規則（`SpringDataJdbcStatementReaderTest` と `OutboundAdapterExecutionTest` の一部）は、`SpringDataJdbcStatementsReader.readFrom(JigTypes)` が**純粋関数**（ファイルシステム・クラスパス不要）であることを確認し、`org.dddjava.jig.domain.model.information.outbound.springdata.ut` 配下の小さな fixture クラス群を `TestSupport.buildJigTypes(...)` で読んで直接呼び出す形にした。
 - MyBatis の認識規則（`MyBatisStatementReaderTest` と `OutboundAdapterExecutionTest` の残り）は、`MyBatisStatementsReader` が `Resources.getResourceAsStream`（MyBatis の内部API）で XML マッパーを読む際に**親クラスローダーへの委譲**で解決されることを確認し、`jig-core` 自身の `src/test/java` / `src/test/resources` に fixture を同居させた（`org.dddjava.jig.infrastructure.mybatis.ut`、`org.dddjava.jig.domain.model.information.outbound.mybatis.ut`）。jig-test-fixtures のような別モジュールに置くと、jig-core のテスト実行時クラスパスに別モジュールの成果物を混在させる形になるため避けた。
 
-結果、`@JigTest` の共有コーパス経由でしか動かないテストはなくなった。`stub/domain/model/**` の一部は今も残っているが、これは ASM/JavaParser 層の Component テストが `TestSupport.buildJigType(Class)` で**個別クラスを対象に**読む、正しい規模の Component-test-local fixture であり、問題ではない。`sample/data`（Spring Data サンプル一式、約30）は `SampleDataWriterTest` 専用の入力で、アサーションのないコード生成タスクである（issue #1126）。廃止の方向だが今回は対象外とする。
+結果、`@JigTest` の共有コーパス経由でしか動かないテストはなくなった。`stub/domain/model/**` の一部は今も残っているが、これは ASM/JavaParser 層の Component テストが `TestSupport.buildJigType(Class)` で**個別クラスを対象に**読む、正しい規模の Component-test-local fixture であり、問題ではない。`sample/data`（Spring Data サンプル一式、約30）を専用入力にしていた `SampleDataWriterTest` は、アサーションのないコード生成タスクだったため `sample/data` ごと廃止した（issue #1126）。表示確認用サンプルデータの生成先だった `templates/data/` も不要になったため削除した。
 
 ## 用意する代表プロジェクト
 

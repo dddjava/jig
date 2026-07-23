@@ -63,7 +63,9 @@ class SiteDeterminismContractTest {
     private static String normalize(String content) {
         return content
                 // キャッシュバスティングは実行時刻から作られる
-                .replaceAll("\\?v=\\d+", "?v=NORMALIZED");
+                .replaceAll("\\?v=\\d+", "?v=NORMALIZED")
+                // 出力日時（index.html の jig-timestamp）も実行時刻から作られ、二度の実行の間で秒が変わりうる
+                .replaceAll("data-jig-timestamp=\"[^\"]*\">[^<]*", "data-jig-timestamp=\"NORMALIZED\">NORMALIZED");
     }
 
     private static String readIfText(Path file) throws IOException {

@@ -1,15 +1,10 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.application.JigRepository;
-import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import stub.domain.model.smell.SmelledClass;
-import stub.domain.model.smell.SmelledRecord;
-import testing.JigTest;
 import testing.TestSupport;
 
 import java.util.List;
@@ -19,17 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-
-@JigTest
 class MethodSmellsTest {
 
-    @Test
-    void 注意メソッドの抽出(JigService jigService, JigRepository jigRepository) {
-        MethodSmells methodSmells = jigService.methodSmells(jigRepository);
+    private static MethodSmells methodSmellsOf(Class<?> clz) {
+        return MethodSmells.from(new JigTypes(List.of(TestSupport.buildJigType(clz))));
+    }
 
-        var detectedSmells = methodSmells.list().stream()
-                .filter(methodSmell -> methodSmell.method().declaringType().equals(TestSupport.getTypeIdFromClass(SmelledClass.class)))
-                .toList();
+    @Test
+    void 注意メソッドの抽出() {
+        var detectedSmells = methodSmellsOf(SmelledClass.class).list();
 
         assertEquals(9, detectedSmells.size(), detectedSmells.toString());
 
@@ -52,12 +45,10 @@ class MethodSmellsTest {
         return detectedSmells.stream().filter(methodSmell -> methodSmell.method().name().equals(methodName)).findAny().orElseThrow();
     }
 
-
     @MethodSource
     @ParameterizedTest(name = "{index} {1} :: {0}")
     void メンバ未使用の判定(Class<?> clz, String name, boolean expected) {
-        var jigType = TestSupport.buildJigType(clz);
-        MethodSmells methodSmells = MethodSmells.from(new JigTypes(List.of(jigType)));
+        var methodSmells = methodSmellsOf(clz);
 
         // smellListに入っていないものは警告なしの判定になるのでfilterとanyMatchで検証
         assertEquals(expected, methodSmells.list().stream()
@@ -101,12 +92,8 @@ class MethodSmellsTest {
      * record componentの判別によりrecordで生成されるaccessorが注意メソッドから除外できている。
      */
     @Test
-    void 注意メソッドの抽出_record(JigService jigService, JigRepository jigRepository) {
-        MethodSmells methodSmells = jigService.methodSmells(jigRepository);
-
-        var detectedSmells = methodSmells.list().stream()
-                .filter(methodSmell -> methodSmell.method().declaringType().equals(TestSupport.getTypeIdFromClass(SmelledRecord.class)))
-                .toList();
+    void 注意メソッドの抽出_record() {
+        var detectedSmells = methodSmellsOf(SmelledRecord.class).list();
 
         assertEquals(1, detectedSmells.size(), detectedSmells.toString());
 

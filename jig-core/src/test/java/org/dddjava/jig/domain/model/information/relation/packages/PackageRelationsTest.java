@@ -1,7 +1,6 @@
-package org.dddjava.jig.domain.model.documents.diagrams;
+package org.dddjava.jig.domain.model.information.relation.packages;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
@@ -11,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PackageEdgeDiagramTest {
+class PackageRelationsTest {
 
     @Test
     void 出力されない() {

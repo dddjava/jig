@@ -95,8 +95,8 @@ tasks.named('contractTest') {
     systemProperty 'jig.fixtures.root', fixturesRoot.get().asFile.absolutePath
 }
 
-// testing.TestSupport がビルドレイアウトを逆算せずに済むよう、src/test/java の絶対パスを渡す
 tasks.named('test') {
+    // testing.TestSupport がビルドレイアウトを逆算せずに済むよう、src/test/java の絶対パスを渡す
     systemProperty 'jig.core.testSourceRoot', file('src/test/java').absolutePath
 }
 

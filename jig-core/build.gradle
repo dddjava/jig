@@ -63,6 +63,10 @@ java {
     withSourcesJar()
 }
 
+configurations {
+    mockitoAgent
+}
+
 dependencies {
     implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 
@@ -79,6 +83,12 @@ dependencies {
     testRuntimeOnly("ch.qos.logback:logback-classic")
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.springframework:spring-web")
+
+    // Java 21+ でのMockitoの自己アタッチ警告を避けるため、javaagentとして明示的に読み込む
+    mockitoAgent(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+    mockitoAgent("org.mockito:mockito-core") {
+        transitive = false
+    }
 
     // テストで読み取るのに使用するアノテーションなど
     testImplementation(libs.swagger.annotations.jakarta)
@@ -98,6 +108,7 @@ tasks.named('contractTest') {
 tasks.named('test') {
     // testing.TestSupport がビルドレイアウトを逆算せずに済むよう、src/test/java の絶対パスを渡す
     systemProperty 'jig.core.testSourceRoot', file('src/test/java').absolutePath
+    jvmArgs "-javaagent:${configurations.mockitoAgent.singleFile}"
 }
 
 def bundleJsOutputDir = layout.buildDirectory.dir("generated/resources/bundle")

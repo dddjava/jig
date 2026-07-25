@@ -1,13 +1,6 @@
 package org.dddjava.jig.contract;
 
-import org.dddjava.jig.JigExecutor;
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
-import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
-import org.dddjava.jig.fixtures.FixtureProject;
-import org.dddjava.jig.fixtures.JigFixtures;
-import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigSettings;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,9 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ShowcaseSiteContractTest {
 
-    static final String FIXTURE = "showcase";
-    static final int FIXTURE_RELEASE = 21;
-
     /**
      * jig-core をカレントとする相対パス。Web 側からは jig-core/build/contract-site/showcase として参照する。
      */
@@ -42,25 +30,10 @@ class ShowcaseSiteContractTest {
 
     @BeforeAll
     static void サイトを生成する() {
-        generateSiteTo(OUTPUT_DIRECTORY);
-    }
+        List<JigDocument> documents = ShowcaseSite.generateTo(OUTPUT_DIRECTORY);
 
-    static void generateSiteTo(Path outputDirectory) {
-        JigSettings settings = new JigSettings(
-                outputDirectory,
-                Optional.of("showcase.domain.+"),
-                JigDocument.canonical(),
-                Locale.JAPANESE);
-
-        FixtureProject project = JigFixtures.project(FIXTURE);
-        SourceBasePaths sourceBasePaths = new SourceBasePaths(
-                new SourceBasePath(List.of(project.classes(FIXTURE_RELEASE))),
-                new SourceBasePath(List.of(project.sources())));
-
-        var results = JigExecutor.standard(Configuration.from(settings), sourceBasePaths).listResult();
-        assertTrue(results.stream().map(result -> result.jigDocument()).toList()
-                        .containsAll(JigDocument.canonical()),
-                () -> "生成されなかったドキュメントがあります: " + results);
+        assertTrue(documents.containsAll(JigDocument.canonical()),
+                () -> "生成されなかったドキュメントがあります: " + documents);
     }
 
     @Test

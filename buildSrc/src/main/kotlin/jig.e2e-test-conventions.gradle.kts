@@ -25,3 +25,9 @@ testing {
         }
     }
 }
+
+// カバレッジのレポートにe2eTestの実行分を含めるため、順序を固定する。
+// 別プロセスで起動するCLI自体は計測されず、含まれるのはテスト側のJVMで動いた分だけ
+tasks.named<JacocoReport>("jacocoTestReport") {
+    mustRunAfter(tasks.named("e2eTest"))
+}

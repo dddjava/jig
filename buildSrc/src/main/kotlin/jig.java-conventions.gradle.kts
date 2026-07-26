@@ -38,6 +38,10 @@ tasks.named<Test>("test") {
 
 // カバレッジは監視のために収集する。しきい値による合否判定は置かない
 tasks.named<JacocoReport>("jacocoTestReport") {
+    // 既定はtestタスクの分だけを読む。contractTest/e2eTestの実行分も監視対象に含める。
+    // 実行していないスイートの分を要求しないよう、存在するexecだけを拾うfileTreeで渡す
+    executionData(objects.fileTree().from(layout.buildDirectory.dir("jacoco")).matching { include("*.exec") })
+
     reports {
         xml.required = true
         html.required = true

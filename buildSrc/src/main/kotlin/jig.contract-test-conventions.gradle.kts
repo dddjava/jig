@@ -29,3 +29,8 @@ testing {
 tasks.named("check") {
     dependsOn(testing.suites.named("contractTest"))
 }
+
+// カバレッジのレポートにcontractTestの実行分を含めるため、順序を固定する
+tasks.named<JacocoReport>("jacocoTestReport") {
+    mustRunAfter(tasks.named("contractTest"))
+}

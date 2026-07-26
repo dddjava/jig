@@ -3,6 +3,8 @@ package org.dddjava.jig.contract;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -18,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * 代表プロジェクトからサイトを生成できることの契約。
  *
- * 生成物は Web 側の Contract テスト（jig-core/src/test/js/contract）も読むため、
- * ビルドが指定する場所へ出力する。
+ * ここで見るのは成果物の構成（どのファイルが対で揃うか、データJSの読み込み形式）まで。
+ * 個々のページのDOM構造とデータの内容は Web 側の Contract テスト（jig-core/src/test/js/contract）が見る。
+ *
+ * 生成物はその Web 側も読むため、ビルドが指定する場所へ出力する。
  */
 class ShowcaseSiteContractTest {
 
@@ -49,10 +53,27 @@ class ShowcaseSiteContractTest {
     }
 
     @Test
-    void 入口となるページとデータが出力される() {
+    void 入口となるページと資産が出力される() {
         assertTrue(Files.isRegularFile(OUTPUT_DIRECTORY.resolve("index.html")));
-        assertTrue(Files.isDirectory(OUTPUT_DIRECTORY.resolve("data")));
+        assertTrue(Files.isRegularFile(OUTPUT_DIRECTORY.resolve("data").resolve("navigation-data.js")));
         assertTrue(Files.isDirectory(OUTPUT_DIRECTORY.resolve("assets")));
+    }
+
+    /**
+     * ドキュメントを追加したときに、ページかデータJSの片方だけを出す状態で通らないようにする。
+     */
+    @ParameterizedTest
+    @MethodSource("標準ドキュメント")
+    void 標準ドキュメントはページとデータJSの対で出力される(JigDocument jigDocument) {
+        Path page = OUTPUT_DIRECTORY.resolve(jigDocument.fileName() + ".html");
+        Path data = OUTPUT_DIRECTORY.resolve("data").resolve(jigDocument.fileName() + "-data.js");
+
+        assertTrue(Files.isRegularFile(page), () -> "ページがありません: " + page);
+        assertTrue(Files.isRegularFile(data), () -> "データJSがありません: " + data);
+    }
+
+    static List<JigDocument> 標準ドキュメント() {
+        return JigDocument.canonical();
     }
 
     @Test
@@ -73,35 +94,9 @@ class ShowcaseSiteContractTest {
     }
 
     @Test
-    void 解析結果が成果物へ届く() {
-        String data = readAll(OUTPUT_DIRECTORY.resolve("data"));
+    void 解析結果がドメインモデルのデータへ届く() {
+        String data = GeneratedSite.read(OUTPUT_DIRECTORY.resolve("data").resolve("domain-data.js"));
 
-        assertTrue(data.contains("showcase.domain.order.Order"), "解析した型が出力にありません");
-    }
-
-    @Test
-    void 生成したHTMLが空でない() {
-        try (var paths = Files.list(OUTPUT_DIRECTORY)) {
-            List<Path> htmlFiles = paths.filter(path -> path.getFileName().toString().endsWith(".html")).toList();
-
-            assertFalse(htmlFiles.isEmpty(), "HTMLが出力されていません");
-            for (Path htmlFile : htmlFiles) {
-                assertTrue(Files.size(htmlFile) > 0, () -> "空のHTMLがあります: " + htmlFile);
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private static String readAll(Path directory) {
-        try (var paths = Files.walk(directory)) {
-            StringBuilder sb = new StringBuilder();
-            for (Path file : paths.filter(Files::isRegularFile).toList()) {
-                sb.append(Files.readString(file, StandardCharsets.UTF_8));
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        assertTrue(data.contains("showcase.domain.order.Order"), () -> "解析した型が出力にありません: " + data);
     }
 }

@@ -1,8 +1,8 @@
 /**
  * Java 側の Contract テストが出力する生成サイトの場所と、その読み取り。
  *
- * 出力先を決めているのは jig-core/build.gradle の contractSiteRoot で、
- * ここはそれと対になる JS 側の唯一の参照点。個々のテストでパスを組み立てない。
+ * 出力先は jig-core/build.gradle の contractSiteRoot と ShowcaseSiteContractTest が決めている。
+ * ここはそれと対になる JS 側の唯一の参照点で、個々のテストではパスを組み立てない。
  */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');

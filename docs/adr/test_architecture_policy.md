@@ -98,7 +98,9 @@ JIG の入力はクラスファイルであり、Java ソースをリソース�
    - 既存の代表プロジェクトの組み合わせや、テスト内での加工で表せる入力には新しい fixture を作りません。マルチモジュール構成は既存プロジェクトを並べて展開すれば足り、壊れたクラスファイルはテスト内で書き出すほうが、リポジトリに壊れたバイナリを置くより扱いやすいためです。
    - 複数の実装クラスが1つの巨大な fixture を共有している状態を見つけたら、fixture を分解するのではなく、**契約ごとに小さな fixture を新設してテストを書き直し**、共有への依存を断ってから旧テストを消します。分解は「どの部分がどのテストに要るか」の見極めが難しく、共有側に手を入れる影響範囲も広いためです。
    - fixture の置き場所は対象コードの性質で決めます。ファイルシステム経由の入力（`SourceBasePaths` を渡すもの）だけを必要とする、あるいは `JigTypes` を受け取る純粋関数を検証する場合は `TestSupport.buildJigTypes(Class...)` で個別クラスを直接読めば足り、`jig-test-fixtures` は不要です。実行時クラスパス経由（`ClassLoader` 越しにリソースを読む MyBatis など）の入力は、jig-core 自身の `src/test/java`／`src/test/resources` に同居させます。別モジュールに置くと、そのモジュールの成果物が jig-core のテスト実行時クラスパスに混在する形になるためです。
+   - jig-core 自身の test 配下に置く fixture は、対象コードのパッケージ配下に `ut` パッケージを作ってまとめます。ディレクトリごと解析させる入力はテストクラスと混ざらないよう必須です。テストと同じパッケージに package-private で置いてよいのは、そのテストだけが `TestSupport.buildJigType(s)` で個別に読むものに限ります。
    - 実ライブラリを読み取る契約は、ライブラリの最小公開 API を模した fixture を優先します。実ライブラリとの結線確認だけを Compatibility または E2E に一件置きます。
+   - 模した fixture は本物と同じ FQN で `src/test/java` に置きます（`org/springframework/**` など）。同じ FQN の本物をテスト依存に足すと衝突するため、依存を追加するときは既存の模した fixture と提供パッケージが重ならないことを確認します。アノテーションの所在そのものが契約になっている場合（Swagger の `@Operation`・`@Schema` など）は、模さずに実ライブラリを読ませます。
    - 期待値を固定する検証の入力に、JIG の自己解析結果を使いません。入力が製品コードと共に動くため、無関係な変更で期待値が壊れます。自己解析は大きな入力に対する挙動の確認にだけ使います。
 
 3. **観測点を作るとき**
@@ -107,7 +109,7 @@ JIG の入力はクラスファイルであり、Java ソースをリソース�
 
 4. **自動検査を追加するとき**
    - 本番コードのパッケージ間依存は自動検査しません。規則を機械的に定義する便益より、規則と実装の乖離を保守する手間が上回るためです。
-   - カバレッジは JaCoCo で収集しますが、しきい値による合否判定を置きません。変更行カバレッジ・公開シナリオの網羅・失敗の再現性・テスト時間を継続監視します。
+   - カバレッジは JaCoCo で収集しますが、しきい値による合否判定を置きません。変更行カバレッジ・公開シナリオの網羅・失敗の再現性・テスト時間を継続監視します。収集対象には Contract と E2E の実行分も含めます。下位層へ寄せた結果と、上位層へ寄せた結果を同じ土俵で見るためです。
    - 性能・変異解析のような重い自動検証は導入しません。パイプラインを増やして検証を分散させることもしません。運用コストに見合わないためです。
 
 5. **モジュールごとの置き場所**
@@ -145,10 +147,10 @@ JIG の入力はクラスファイルであり、Java ソースをリソース�
 | Java 8 でコンパイルしたクラスを解析できる | 互換性契約 | Compatibility |
 | `jig-cli.jar` を実行するとサイトが出力される | 起動契約 | E2E |
 
-fixture の入力は API から受け取り、パスを組み立てません。
+fixture の入力は API から受け取り、テストがパスを組み立てません。逆算が要る場合も `TestSupport` の内側に閉じます。
 
 ```java
-// NG: ビルドレイアウトを前提にパスを逆算する
+// NG: テストがビルドレイアウトを前提にパスを逆算する
 var classes = Paths.get(TestSupport.defaultPackageClassURI()).resolve("stub");
 
 // OK: fixture モジュールの API から受け取る
@@ -156,7 +158,12 @@ var project = JigFixtures.project("bytecode-compat");
 var sourceBasePaths = new SourceBasePaths(
         new SourceBasePath(List.of(project.classes(21))),
         new SourceBasePath(List.of(project.sources())));
+
+// OK: jig-core 自身の test 配下に置いた fixture は TestSupport が解決する
+var sourceBasePaths = TestSupport.sourceLocationsFor("org/dddjava/jig/application/ut/domain/model");
 ```
+
+`TestSupport` の中も、ソースの所在はビルドから受け取ります（`jig.core.testSourceRoot`）。クラス出力の所在だけは実行時クラスパスから解決しており、これは逆算ではなく classpath そのものを使うためです。ビルドがテストへ渡す値は CLAUDE.md の「テストが必要とするシステムプロパティ」にあります。
 
 テストの入口は隔離度と所要時間が名前から分かるようにします。実行方法は CLAUDE.md の「テスト実行ポリシー」を参照してください。
 

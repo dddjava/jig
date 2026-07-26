@@ -55,6 +55,17 @@ npm run lint:css
 
 テストの階層とタスクの対応は `docs/adr/test_architecture_policy.md` を参照。`check` は Unit/Component/Contract まで、E2E は `qualityCheck` から実行する。
 
+### テストが必要とするシステムプロパティ
+
+入力の場所はテストが逆算せず、Gradle のタスクが渡す。未設定なら理由を示して失敗する。IDE から直接実行する場合は同じ値を VM 引数で渡す。
+
+| プロパティ | 渡すタスク | 値 |
+|---|---|---|
+| `jig.core.testSourceRoot` | `:jig-core:test` | `jig-core/src/test/java` の絶対パス |
+| `jig.fixtures.root` | `:jig-core:contractTest` / `:jig-cli:e2eTest` | `jig-test-fixtures/build/fixtures` の絶対パス |
+| `jig.contract.siteRoot` | `:jig-core:contractTest` | 生成サイトの出力先（`jig-core/build/contract-site`） |
+| `jig.cli.jar` | `:jig-cli:e2eTest` | 実行する `jig-cli.jar` の絶対パス |
+
 ### ブラウザでの見た目確認（Playwright）
 
 HTML/Mermaid図の見た目確認手順は `jig-core/src/test/playwright/README.md` を参照。JIGは自分自身を解析対象にでき、`java -jar jig-cli/build/libs/jig-cli.jar` をリポジトリルートで実行すると `./build/jig/` にサンプルドキュメント一式が生成される。

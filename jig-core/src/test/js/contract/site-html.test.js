@@ -11,8 +11,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const {JSDOM} = require('jsdom');
-
-const SITE_DIRECTORY = path.resolve(__dirname, '../../../../build/contract-site/showcase');
+const {SITE_DIRECTORY, assertSiteGenerated, loadData} = require('./site-directory');
 
 // ページと、そのページが読み込むデータJS
 const PAGES = [
@@ -42,11 +41,7 @@ function localReferences(document) {
 
 test.describe('生成HTMLの構造', () => {
 
-    test.before(() => {
-        assert.ok(
-            fs.existsSync(SITE_DIRECTORY),
-            `生成サイトがありません: ${SITE_DIRECTORY} / 先に ./gradlew :jig-core:contractTest を実行してください`);
-    });
+    test.before(assertSiteGenerated);
 
     PAGES.forEach(([page, dataFile]) => {
         test.describe(page, () => {
@@ -109,12 +104,7 @@ test.describe('生成HTMLの構造', () => {
     });
 
     test('index からすべてのページへ辿れる', () => {
-        const {navigationData} = (() => {
-            const source = fs.readFileSync(path.join(SITE_DIRECTORY, 'data', 'navigation-data.js'), 'utf-8');
-            const container = {};
-            new Function('globalThis', source)(container);
-            return container;
-        })();
+        const {navigationData} = loadData('navigation-data.js');
 
         navigationData.links.forEach(link => {
             assert.ok(

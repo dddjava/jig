@@ -6,28 +6,11 @@
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-
-const SITE_DIRECTORY = path.resolve(__dirname, '../../../../build/contract-site/showcase');
-
-/**
- * データJSはグローバルへ代入する形式なので、ブラウザと同じ意味論で評価して結果を取り出す。
- */
-function loadData(fileName) {
-    const source = fs.readFileSync(path.join(SITE_DIRECTORY, 'data', fileName), 'utf-8');
-    const container = {};
-    new Function('globalThis', source)(container);
-    return container;
-}
+const {assertSiteGenerated, loadData} = require('./site-directory');
 
 test.describe('生成サイトとブラウザ資産の境界', () => {
 
-    test.before(() => {
-        assert.ok(
-            fs.existsSync(SITE_DIRECTORY),
-            `生成サイトがありません: ${SITE_DIRECTORY} / 先に ./gradlew :jig-core:contractTest を実行してください`);
-    });
+    test.before(assertSiteGenerated);
 
     test.describe('データJS', () => {
         // ページのJSが参照するグローバル名。変わると読み込み側が壊れる

@@ -100,9 +100,15 @@ dependencies {
 }
 
 def fixturesRoot = project(':jig-test-fixtures').layout.buildDirectory.dir('fixtures')
+// 生成サイトはJS側のContractテスト（src/test/js/contract/site-directory.js）も読む。
+// 出力先はここが唯一の決定者で、Javaへはシステムプロパティで渡す
+def contractSiteRoot = layout.buildDirectory.dir('contract-site')
 tasks.named('contractTest') {
     dependsOn ':jig-test-fixtures:fixtures'
     systemProperty 'jig.fixtures.root', fixturesRoot.get().asFile.absolutePath
+    systemProperty 'jig.contract.siteRoot', contractSiteRoot.get().asFile.absolutePath
+    // 生成サイトを消したときにup-to-dateで素通りしないよう出力として宣言する
+    outputs.dir(contractSiteRoot)
 }
 
 tasks.named('test') {

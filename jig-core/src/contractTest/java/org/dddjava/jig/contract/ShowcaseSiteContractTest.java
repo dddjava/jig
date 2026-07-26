@@ -19,14 +19,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 代表プロジェクトからサイトを生成できることの契約。
  *
  * 生成物は Web 側の Contract テスト（jig-core/src/test/js/contract）も読むため、
- * 作業ディレクトリからの固定の場所へ出力する。
+ * ビルドが指定する場所へ出力する。
  */
 class ShowcaseSiteContractTest {
 
     /**
-     * jig-core をカレントとする相対パス。Web 側からは jig-core/build/contract-site/showcase として参照する。
+     * 生成サイトの出力先。Web 側の Contract テストも同じ場所を読む。
      */
-    static final Path OUTPUT_DIRECTORY = Paths.get("build", "contract-site", "showcase");
+    static final Path OUTPUT_DIRECTORY = siteRoot().resolve("showcase");
+
+    /**
+     * 出力先はビルドがシステムプロパティ {@code jig.contract.siteRoot} で渡す。
+     */
+    private static Path siteRoot() {
+        String configured = System.getProperty("jig.contract.siteRoot");
+        if (configured == null) {
+            throw new IllegalStateException(
+                    "システムプロパティ jig.contract.siteRoot が未設定です。jig-core の contractTest タスクから実行してください。");
+        }
+        return Paths.get(configured);
+    }
 
     @BeforeAll
     static void サイトを生成する() {

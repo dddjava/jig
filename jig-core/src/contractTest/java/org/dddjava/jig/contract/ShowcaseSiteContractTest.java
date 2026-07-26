@@ -64,12 +64,14 @@ class ShowcaseSiteContractTest {
      */
     @ParameterizedTest
     @MethodSource("標準ドキュメント")
-    void 標準ドキュメントはページとデータJSの対で出力される(JigDocument jigDocument) {
+    void 標準ドキュメントはページとデータJSの対で出力される(JigDocument jigDocument) throws IOException {
         Path page = OUTPUT_DIRECTORY.resolve(jigDocument.fileName() + ".html");
         Path data = OUTPUT_DIRECTORY.resolve("data").resolve(jigDocument.fileName() + "-data.js");
 
         assertTrue(Files.isRegularFile(page), () -> "ページがありません: " + page);
         assertTrue(Files.isRegularFile(data), () -> "データJSがありません: " + data);
+        assertTrue(Files.size(page) > 0, () -> "ページが空です: " + page);
+        assertTrue(Files.size(data) > 0, () -> "データJSが空です: " + data);
     }
 
     static List<JigDocument> 標準ドキュメント() {

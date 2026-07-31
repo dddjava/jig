@@ -2,24 +2,17 @@
 
 ## 状況 (Context)
 
-JIG が生成する HTML は、静的テンプレート・JSON データ・クライアントサイド JS で構成され、図は Mermaid がブラウザ上で描画します。したがってブラウザは JIG の実行環境の一部ですが、対象範囲が明文化されていませんでした。
+JIG が生成する HTML は、静的テンプレート・JSON データ・クライアントサイド JS で構成され、図は Mermaid がブラウザ上で描画します。ブラウザごとの実装差が利用者の閲覧結果に影響するため、サポート範囲と検証方法を定めます。
 
-現在の実装から、実質的な制約は既に決まっています。
-
-- **`file://` で直接開けることが前提**です。HTTP サーバーを介さずローカルで参照することを主要なユースケースとしており、`docs/adr/browser_storage_policy.md` はこの前提から `localStorage` の使用を禁止しています。
-- **CSS が比較的新しい機能を使っています**。`@layer` と `:has()` を使用しており、`docs/adr/css_cascade_layer_policy.md` に対応状況（`@layer` は Chrome 99 / Firefox 97 / Safari 15.4、`:has()` は Chrome 105 / Firefox 121 / Safari 15.4）を記録しています。
-- **JS はオプショナルチェーン・Nullish 合体（`?.` `??` `??=`）を前提にしています**。これらは上記 CSS 機能より広く対応されています。
-- **外部ライブラリを CDN からバージョン固定で読み込んでいます**（`templates/partials/cdn-scripts.html` の DOMPurify・marked・Mermaid）。生成された HTML の閲覧にはネットワーク接続が必要です。
-
-検証面では、JS テストは Node.js 組み込み test runner と jsdom で完結しており、`package.json` に `playwright` を含めていません。実ブラウザでの確認は手動手順（`jig-core/src/test/playwright/README.md`）に依存しています。jsdom は CSS のレイアウトや Mermaid の実描画を検証できないため、これらは自動検証の対象外です。
-
-Playwright は一度導入していました（2026-05、`98dc558af9`）。しかし OS 別 PNG スクリーンショットのスナップショット比較に依存する構成で、`docs/adr/test_architecture_policy.md` の「生成物の検証は構造・意味を優先する」方針と相容れず、テスト再編と同時期に撤去しました（`4f0c36316e`）。撤去後の手動手順は実際に不具合を捕捉した実績があります（`bcdf45871`: Mermaid の securityLevel を strict にした修正）。自動化しなければ見逃す具体的な漏れは、現時点では確認できていません。
+- `file://` と HTTP(S) の両方で閲覧できることが利用形態の前提です。
+- テンプレートは CSS と JavaScript の標準機能を利用し、外部ライブラリは CDN から読み込みます。
+- jsdom はレイアウトや Mermaid の実描画を再現できないため、構造検証と実ブラウザ検証には異なる役割があります。
 
 ## 決定 (Decision)
 
 1. **サポート対象は Chromium 系（Chrome・Edge）、Firefox、Safari の安定版最新 2 バージョン**とします。
 
-2. **これより古いバージョンの下限は、テンプレートが使用する CSS/JS 機能から導かれるものとし、固定のバージョン一覧を維持しません**。現時点の実質的な下限は `:has()` の対応状況（Chrome 105 / Firefox 121 / Safari 15.4）です。バージョン一覧を独立して保守すると、実装と乖離しても気付けないためです。
+2. **これより古いバージョンの下限は、テンプレートが使用する CSS/JS 機能から導かれるものとし、固定のバージョン一覧を維持しません**。独立した一覧は実装と乖離しやすいためです。
 
 3. **新しい CSS/JS 機能を採用するときは、対応状況を確認し記録します**。下限が上がる場合はその旨を明記します。`docs/adr/css_cascade_layer_policy.md` の記述方法を先例とします。
 
@@ -54,24 +47,11 @@ Playwright は一度導入していました（2026-05、`98dc558af9`）。し�
    - 表示規則・データ変換・イベント配線は jsdom で検証します。
    - CSS のレイアウト、Mermaid の実描画、スクロール挙動は jsdom で原理的に検証できないため、実ブラウザで確認します。
    - 実ブラウザ検証を自動化する場合は Chromium に限り、画面ごとに「ページが読み込める」「主要データが描画される」「主要導線が操作できる」を確認します。
-   - Playwright の自動導入を再検討するのは、jsdom で検証できない不具合（実描画・レイアウト・スクロール）が手動確認で繰り返し見つかる、または見落としによる不具合流出が実際に発生した時点とします。それまでは手動手順と jsdom ベースの Contract テストで運用します。
+   - 実ブラウザ検証の自動化は、jsdom で検証できない不具合を継続して検知する必要が生じた場合に検討します。
 
 3. **外部ライブラリを更新するとき**
    - `templates/partials/cdn-scripts.html` のバージョンと、テストで使用する依存のバージョンを同時に更新します。
    - 更新後、Mermaid の描画と Markdown のサニタイズを実ブラウザで確認します。
-
-## 実装例
-
-CDN 参照はバージョンを固定します。
-
-```html
-<!-- templates/partials/cdn-scripts.html -->
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.11/dist/purify.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
-```
-
-下限に影響する機能を使うときは、対応状況をコメントではなく ADR に記録します。個々の CSS ファイルに対応バージョンを書くと、機能の使用箇所が増えたときに記述が分散するためです。
 
 ## 結論 (Consequences)
 

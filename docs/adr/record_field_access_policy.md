@@ -41,7 +41,7 @@
    - 一括置換や静的解析などでのチェックは行いません。
 
 ## 実装例
-### 修正前
+### 避ける例
 ```java
 public String simpleText() {
     // アクセサメソッドを使用
@@ -49,7 +49,7 @@ public String simpleText() {
 }
 ```
 
-### 修正後
+### 推奨例
 ```java
 public String simpleText() {
     // フィールド直接アクセスを使用

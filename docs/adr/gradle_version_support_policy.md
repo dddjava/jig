@@ -1,16 +1,12 @@
 # Gradleバージョンサポートポリシー
 
 ## 状況 (Context)
-JIGはGradleプラグインを提供しており、様々なGradleバージョンで動作する必要があります。しかし、すべてのGradleバージョンをサポートすることは現実的ではなく、サポート範囲を明確に定義する必要があります。
+JIG は Gradle プラグインを提供します。すべての Gradle バージョンを同じ水準で検証することはできないため、サポート対象を明確にします。
 
 ## 決定 (Decision)
-JIGのGradleプラグインは、以下のGradleバージョンをサポートします：
-1. 最新のメジャーバージョン（例：8.x系）
-2. 一つ前のメジャーバージョン（例：7.x系）
+JIG の Gradle プラグインは、Gradle Wrapper が使用する最新メジャーバージョンと、一つ前のメジャーバージョンの最終リリースをサポートします。
 
-具体的には：
-- 最新のメジャーバージョンの最新リリース
-- 一つ前のメジャーバージョンの最終リリース（または最新リリース）
+具体的な対象バージョンと、そのバージョンを実行できる JRE の上限は `SupportGradleVersion` を唯一の定義とします。
 
 ## トレードオフ (Trade-Offs)
 このポリシーには以下のトレードオフがあります：
@@ -28,8 +24,8 @@ JIGのGradleプラグインは、以下のGradleバージョンをサポート�
 以下のガイドラインに従います：
 
 1. **テスト対象バージョン**
-   - 自動テストでは、サポート対象の全バージョンに対してテストを実行する
-   - `SupportGradleVersion` enumで明示的にサポートバージョンを定義する
+   - 自動テストでは、実行中の JRE で動かせるサポート対象の全バージョンに対して TestKit テストを実行する
+   - `SupportGradleVersion` でサポートバージョンと JRE 制約を定義する
 
 2. **バージョン更新**
    - 新しいメジャーバージョンがリリースされた場合、適切なタイミングでサポート対象を更新する
@@ -38,32 +34,6 @@ JIGのGradleプラグインは、以下のGradleバージョンをサポート�
 3. **互換性の維持**
    - 可能な限り、サポート対象バージョン間での互換性を維持する
    - 互換性を破る変更が必要な場合は、明確に文書化する
-
-## 実装例
-```java
-public enum SupportGradleVersion {
-    /**
-     * JIGが使用しているGradleのバージョン（最新）
-     */
-    CURRENT(GradleVersion.current().getVersion()),
-    /**
-     * 一つ前のメジャーバージョンの最終
-     */
-    PREVIOUS_MAJOR_LATEST("8.14.3");
-
-    private final String version;
-
-    SupportGradleVersion(String version) {
-        this.version = version;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-}
-```
-
-`CURRENT` は JIG プロジェクト自身が使用している Gradle バージョン（最新メジャーの最新リリース相当）を、`PREVIOUS_MAJOR_LATEST` は一つ前のメジャーバージョンの最終リリースを指す。
 
 ## 結論 (Consequences)
 - 明確なサポートポリシーにより、開発とテストのフォーカスが絞られる

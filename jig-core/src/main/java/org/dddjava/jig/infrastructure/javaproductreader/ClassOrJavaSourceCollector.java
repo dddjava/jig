@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -53,17 +54,25 @@ public class ClassOrJavaSourceCollector {
     }
 
     private List<Path> collectSourcePathList(Path basePath, String suffix) {
-        if (!Files.exists(basePath)) {
-            jigEventRepository.register指定されたパスが存在しない(basePath);
-            return List.of();
-        }
-        try (Stream<Path> pathStream = Files.walk(basePath)) {
-            // Files.walkの列挙順はファイルシステム依存で不定なため、以降の解析結果を再現可能にするためにソートする
-            return pathStream
-                    .filter(path -> path.getFileName().toString().endsWith(suffix))
-                    .sorted()
-                    .toList();
+        try {
+            if (!Files.exists(basePath)) {
+                jigEventRepository.register指定されたパスが存在しない(basePath);
+                return List.of();
+            }
+            try (Stream<Path> pathStream = Files.walk(basePath)) {
+                // Files.walkの列挙順はファイルシステム依存で不定なため、以降の解析結果を再現可能にするためにソートする
+                return pathStream
+                        .filter(path -> path.getFileName().toString().endsWith(suffix))
+                        .sorted()
+                        .toList();
+            }
         } catch (IOException e) {
+            jigEventRepository.registerパスの収集に失敗しました(basePath, e);
+            return List.of();
+        } catch (UncheckedIOException e) {
+            jigEventRepository.registerパスの収集に失敗しました(basePath, e.getCause());
+            return List.of();
+        } catch (SecurityException e) {
             jigEventRepository.registerパスの収集に失敗しました(basePath, e);
             return List.of();
         }

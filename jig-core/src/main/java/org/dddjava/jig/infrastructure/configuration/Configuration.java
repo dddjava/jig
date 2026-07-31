@@ -7,7 +7,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
-// Configurationという名前だけど実態は設定されたインスタンスを管理している（SpringのApplicationContextみたいな感じになっている）
+// Configurationという名前だけど実態は設定済みの実行コンテキストを管理している（SpringのApplicationContextみたいな感じになっている）
 public record Configuration(
         GlossaryRepository glossaryRepository,
         JigEventRepository jigEventRepository,
@@ -32,5 +32,14 @@ public record Configuration(
                 jigDocumentGenerator,
                 jigService
         );
+    }
+
+    /**
+     * 同じ設定で独立した実行コンテキストを生成する。
+     *
+     * 用語集、イベント、各サービスは実行ごとの状態を持つため、Configurationを再利用しても共有しない。
+     */
+    public Configuration newExecution() {
+        return from(settings);
     }
 }

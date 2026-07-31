@@ -26,9 +26,10 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static JigResult standard(Configuration configuration, SourceBasePaths sourceBasePaths) {
+        Configuration executionConfiguration = configuration.newExecution();
         try {
-            return JigMetrics.init(configuration)
-                    .record(() -> new JigExecutor(configuration).execute(sourceBasePaths));
+            return JigMetrics.init(executionConfiguration)
+                    .record(() -> new JigExecutor(executionConfiguration).execute(sourceBasePaths));
         } finally {
             TypeId.clearCache();
             PackageId.clearCache();

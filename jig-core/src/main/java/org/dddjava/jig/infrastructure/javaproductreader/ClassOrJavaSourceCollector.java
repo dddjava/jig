@@ -66,16 +66,17 @@ public class ClassOrJavaSourceCollector {
                         .sorted()
                         .toList();
             }
-        } catch (IOException e) {
-            jigEventRepository.registerパスの収集に失敗しました(basePath, e);
-            return List.of();
-        } catch (UncheckedIOException e) {
-            jigEventRepository.registerパスの収集に失敗しました(basePath, e.getCause());
-            return List.of();
-        } catch (SecurityException e) {
-            jigEventRepository.registerパスの収集に失敗しました(basePath, e);
+        } catch (IOException | UncheckedIOException | SecurityException e) {
+            jigEventRepository.registerパスの収集に失敗しました(basePath, originalException(e));
             return List.of();
         }
+    }
+
+    private static Exception originalException(Exception e) {
+        if (e instanceof UncheckedIOException uncheckedIOException) {
+            return uncheckedIOException.getCause();
+        }
+        return e;
     }
 
     public FilesystemSources collectSources(SourceBasePaths sourceBasePaths) {

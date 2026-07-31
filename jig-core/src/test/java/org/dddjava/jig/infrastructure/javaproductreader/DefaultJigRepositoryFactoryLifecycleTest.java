@@ -1,14 +1,26 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
+import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.documents.JigDocument;
+import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigSettings;
+import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
+import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
+import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 import testing.TestSupport;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -33,5 +45,26 @@ class DefaultJigRepositoryFactoryLifecycleTest {
                 TestSupport.sourceLocationsFor("org/dddjava/jig/application/ut/domain/model"));
         assertFalse(secondRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
         assertTrue(firstRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
+    }
+
+    @Test
+    void テキストソースのパース失敗をイベントとして記録する(@TempDir Path tempDirectory) throws IOException {
+        Files.writeString(tempDirectory.resolve("Broken.java"), "class Broken {");
+        var eventRepository = Mockito.spy(new JigEventRepository(Locale.JAPANESE));
+        var factory = new DefaultJigRepositoryFactory(
+                new ClassOrJavaSourceCollector(eventRepository),
+                new AsmClassSourceReader(),
+                new JavaparserReader(),
+                new MyBatisStatementsReader(),
+                eventRepository,
+                new OnMemoryGlossaryRepository());
+        var sourceLocations = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/ut");
+        var sourceBasePaths = new SourceBasePaths(
+                sourceLocations.classFileBasePath(),
+                new SourceBasePath(List.of(tempDirectory)));
+
+        factory.createJigRepository(sourceBasePaths);
+
+        Mockito.verify(eventRepository).recordEvent(ReadStatus.テキストソース読み込み一部失敗);
     }
 }

@@ -14,6 +14,9 @@ public enum ReadStatus {
     バイナリソースなし(new LocalizedMessage(
             "バイナリソース(*.class)が見つかりませんでした。出力ディレクトリの指定を確認してください。",
             "Binary Source file(*.class) was not found. Check the output directory specification.")),
+    テキストソース読み込み一部失敗(new LocalizedMessage(
+            "テキストソースの読み込みに一部失敗しました。Javadocなどテキストソース由来の情報に欠落が存在します。",
+            "Partial loading of text sources failed. Information derived from text sources, such as Javadoc, may be missing.")),
     SQLなし(new LocalizedMessage(
             "SQLが見つかりませんでした。SQLを実装していない場合やMyBatis・Spring Data JDBCを使用していない場合は正常です。CRUDに関わる情報が出力されません。",
             "SQL was not found. It is normal if you do not implement SQL or if you are not using MyBatis/Spring Data JDBC. If this message appears, CRUD is not output in the data source list.")),

@@ -46,7 +46,11 @@ public class JavaparserReader {
 
     public ParseResult parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
-            CompilationUnit cu = javaParser.parse(path).getResult()
+            var parseResult = javaParser.parse(path);
+            if (!parseResult.isSuccessful()) {
+                throw new IllegalStateException(path + " のパースに失敗しました");
+            }
+            CompilationUnit cu = parseResult.getResult()
                     .orElseThrow(() -> new IllegalStateException(path + " のパースに失敗しました"));
 
             String packageName = cu.getPackageDeclaration()
@@ -55,7 +59,7 @@ public class JavaparserReader {
                     .orElse("");
             JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
             cu.accept(classVisitor, glossaryRepository);
-            return new ParseResult(classVisitor.javaSourceModel(), classVisitor.declaredTypeIds(), path);
+            return new ParseResult(classVisitor.javaSourceModel(), classVisitor.declaredTypeIds(), path, true);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。このエラーはローカルenumが存在する場合などに発生します。処理は続行します。", path, e);
             return ParseResult.empty(path);
@@ -65,22 +69,37 @@ public class JavaparserReader {
     /**
      * 1つのJavaファイルのパース結果
      */
-    public record ParseResult(JavaSourceModel sourceModel, List<TypeId> declaredTypeIds, Path sourcePath) {
+    public record ParseResult(JavaSourceModel sourceModel, List<TypeId> declaredTypeIds, Path sourcePath, boolean succeeded) {
+        public ParseResult(JavaSourceModel sourceModel, List<TypeId> declaredTypeIds, Path sourcePath) {
+            this(sourceModel, declaredTypeIds, sourcePath, true);
+        }
+
         public static ParseResult empty(Path sourcePath) {
-            return new ParseResult(JavaSourceModel.empty(), List.of(), sourcePath);
+            return new ParseResult(JavaSourceModel.empty(), List.of(), sourcePath, false);
         }
     }
 
     public Optional<PackageId> loadPackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
+        return parsePackageInfoJavaFile(path, glossaryRepository).packageId();
+    }
+
+    public PackageInfoParseResult parsePackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
-            CompilationUnit cu = javaParser.parse(path).getResult()
+            var parseResult = javaParser.parse(path);
+            if (!parseResult.isSuccessful()) {
+                throw new IllegalStateException(path + " のパースに失敗しました");
+            }
+            CompilationUnit cu = parseResult.getResult()
                     .orElseThrow(() -> new IllegalStateException(path + " のパースに失敗しました"));
 
-            return loadPackageInfoJavaFile(cu, glossaryRepository);
+            return new PackageInfoParseResult(loadPackageInfoJavaFile(cu, glossaryRepository), path, true);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
-            return Optional.empty();
+            return new PackageInfoParseResult(Optional.empty(), path, false);
         }
+    }
+
+    public record PackageInfoParseResult(Optional<PackageId> packageId, Path sourcePath, boolean succeeded) {
     }
 
     Optional<PackageId> loadPackageInfoJavaFile(CompilationUnit cu, GlossaryRepository glossaryRepository) {

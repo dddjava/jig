@@ -103,16 +103,21 @@ public class DefaultJigRepositoryFactory {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
             Map<PackageId, Path> packageSourcePathMap = new HashMap<>();
-            Metrics.timer(metricName, "phase", "package_info_parsing").record(() ->
-                    javaFilePaths.packageInfoPaths().forEach(path ->
-                            javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository)
-                                    .ifPresent(packageId -> packageSourcePathMap.put(packageId, path)))
-            );
+            List<JavaparserReader.PackageInfoParseResult> packageInfoParseResults = Metrics.timer(metricName, "phase", "package_info_parsing").record(() ->
+                    javaFilePaths.packageInfoPaths().stream()
+                            .map(path -> javaparserReader.parsePackageInfoJavaFile(path, glossaryRepository))
+                            .toList());
+            packageInfoParseResults.forEach(result -> result.packageId()
+                    .ifPresent(packageId -> packageSourcePathMap.put(packageId, result.sourcePath())));
 
             List<JavaparserReader.ParseResult> parseResults = Objects.requireNonNull(Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                             .toList()));
+            if (packageInfoParseResults.stream().anyMatch(result -> !result.succeeded())
+                    || parseResults.stream().anyMatch(result -> !result.succeeded())) {
+                jigEventRepository.recordEvent(ReadStatus.テキストソース読み込み一部失敗);
+            }
             JavaSourceModel javaSourceModel = parseResults.stream()
                     .map(JavaparserReader.ParseResult::sourceModel)
                     .reduce(JavaSourceModel::merge)

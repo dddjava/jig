@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,10 +31,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DefaultJigRepositoryFactoryLifecycleTest {
 
     @Test
-    void 同じ設定から作った実行コンテキストは解析状態を共有しない(@TempDir Path outputDirectory) {
+    void 同じFactoryを再利用しても解析状態を共有しない(@TempDir Path outputDirectory) {
         var configuration = Configuration.from(new JigSettings(
                 outputDirectory, Optional.empty(), JigDocument.canonical(), Locale.JAPANESE));
-        var firstRepository = DefaultJigRepositoryFactory.init(configuration.newExecution()).createJigRepository(
+        var factory = DefaultJigRepositoryFactory.init(configuration);
+        var firstRepository = factory.createJigRepository(
                 TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/ut"));
         assertFalse(firstRepository.fetchJigTypes().isEmpty());
 
@@ -41,7 +43,7 @@ class DefaultJigRepositoryFactoryLifecycleTest {
         var previousTermId = new TermId("org.dddjava.jig.infrastructure.javaparser.ut.package_info_javadoc");
         assertTrue(firstRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
 
-        var secondRepository = DefaultJigRepositoryFactory.init(configuration.newExecution()).createJigRepository(
+        var secondRepository = factory.createJigRepository(
                 TestSupport.sourceLocationsFor("org/dddjava/jig/application/ut/domain/model"));
         assertFalse(secondRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
         assertTrue(firstRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
@@ -50,14 +52,16 @@ class DefaultJigRepositoryFactoryLifecycleTest {
     @Test
     void テキストソースのパース失敗をイベントとして記録する(@TempDir Path tempDirectory) throws IOException {
         Files.writeString(tempDirectory.resolve("Broken.java"), "class Broken {");
-        var eventRepository = Mockito.spy(new JigEventRepository(Locale.JAPANESE));
+        var eventRepositoryReference = new AtomicReference<JigEventRepository>();
         var factory = new DefaultJigRepositoryFactory(
-                new ClassOrJavaSourceCollector(eventRepository),
                 new AsmClassSourceReader(),
                 new JavaparserReader(),
                 new MyBatisStatementsReader(),
-                eventRepository,
-                new OnMemoryGlossaryRepository());
+                () -> {
+                    var eventRepository = Mockito.spy(new JigEventRepository(Locale.JAPANESE));
+                    eventRepositoryReference.set(eventRepository);
+                    return new DefaultJigRepositoryFactory.AnalysisState(eventRepository, new OnMemoryGlossaryRepository());
+                });
         var sourceLocations = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/ut");
         var sourceBasePaths = new SourceBasePaths(
                 sourceLocations.classFileBasePath(),
@@ -65,6 +69,6 @@ class DefaultJigRepositoryFactoryLifecycleTest {
 
         factory.createJigRepository(sourceBasePaths);
 
-        Mockito.verify(eventRepository).recordEvent(ReadStatus.テキストソース読み込み一部失敗);
+        Mockito.verify(eventRepositoryReference.get()).recordEvent(ReadStatus.テキストソース読み込み一部失敗);
     }
 }

@@ -30,42 +30,39 @@ import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DefaultJigRepositoryFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultJigRepositoryFactory.class);
 
-    private final ClassOrJavaSourceCollector sourceCollector;
-
     private final AsmClassSourceReader asmClassSourceReader;
     private final JavaparserReader javaparserReader;
     private final MyBatisStatementsReader myBatisStatementsReader;
+    private final Supplier<AnalysisState> analysisStateFactory;
 
-    private final JigEventRepository jigEventRepository;
-    private final GlossaryRepository glossaryRepository;
-
-    public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
-        this.sourceCollector = sourceCollector;
+    DefaultJigRepositoryFactory(AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, Supplier<AnalysisState> analysisStateFactory) {
         this.asmClassSourceReader = asmClassSourceReader;
         this.javaparserReader = javaparserReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
-        this.glossaryRepository = glossaryRepository;
-        this.jigEventRepository = jigEventRepository;
+        this.analysisStateFactory = analysisStateFactory;
     }
 
     public static DefaultJigRepositoryFactory init(Configuration configuration) {
         return new DefaultJigRepositoryFactory(
-                new ClassOrJavaSourceCollector(configuration.jigEventRepository()),
                 new AsmClassSourceReader(),
                 new JavaparserReader(),
                 new MyBatisStatementsReader(),
-                configuration.jigEventRepository(), configuration.glossaryRepository()
+                () -> new AnalysisState(
+                        new JigEventRepository(configuration.settings().locale()),
+                        new OnMemoryGlossaryRepository())
         );
     }
 
@@ -74,9 +71,12 @@ public class DefaultJigRepositoryFactory {
     }
 
     public JigRepository createJigRepository(SourceBasePaths sourceBasePaths, Optional<Path> repositoryRoot) {
+        AnalysisState analysisState = analysisStateFactory.get();
+        JigEventRepository jigEventRepository = analysisState.jigEventRepository();
+        GlossaryRepository glossaryRepository = analysisState.glossaryRepository();
         Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
         try {
-            FilesystemSources sources = sourceCollector.collectSources(sourceBasePaths);
+            FilesystemSources sources = new ClassOrJavaSourceCollector(jigEventRepository).collectSources(sourceBasePaths);
             if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
             if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
@@ -85,7 +85,7 @@ public class DefaultJigRepositoryFactory {
                 return JigRepository.empty();
             }
 
-            return analyze(sources, repositoryRoot);
+            return analyze(sources, repositoryRoot, jigEventRepository, glossaryRepository);
         } finally {
             sample.stop(Timer.builder("jig.analysis.time")
                     .description("Time taken for code analysis")
@@ -97,7 +97,7 @@ public class DefaultJigRepositoryFactory {
     /**
      * プロジェクト情報を読み取る
      */
-    private JigRepository analyze(FilesystemSources sources, Optional<Path> repositoryRoot) {
+    private JigRepository analyze(FilesystemSources sources, Optional<Path> repositoryRoot, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         var metricName = "jig.analysis.time";
         return Objects.requireNonNull(Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
@@ -135,7 +135,7 @@ public class DefaultJigRepositoryFactory {
                             asmClassSourceReader.readClasses(sources.classFilePaths())));
 
             PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
-                    createPersistenceAccessorRepository(sources, classDeclarations)));
+                    createPersistenceAccessorRepository(sources, classDeclarations, jigEventRepository)));
 
             JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations);
 
@@ -148,7 +148,7 @@ public class DefaultJigRepositoryFactory {
             InboundAdapters.from(jigTypes).listEntrypoint().forEach(entrypoint ->
                     entrypoint.swaggerSummary().ifPresent(summary -> {
                         var termId = new TermId(entrypoint.jigMethod().fqn());
-                        registerSwaggerTerm(existingTermIds, termId, summary, TermKind.メソッド, "@Operation");
+                        registerSwaggerTerm(glossaryRepository, existingTermIds, termId, summary, TermKind.メソッド, "@Operation");
                     })
             );
             // @Schema(description) 由来のクラス用語
@@ -156,7 +156,7 @@ public class DefaultJigRepositoryFactory {
             jigTypes.stream().forEach(jigType ->
                     jigType.annotationValueOf(schemaTypeId, "description").ifPresent(description -> {
                         var termId = new TermId(jigType.fqn());
-                        registerSwaggerTerm(existingTermIds, termId, description, TermKind.クラス, "@Schema");
+                        registerSwaggerTerm(glossaryRepository, existingTermIds, termId, description, TermKind.クラス, "@Schema");
                     })
             );
 
@@ -215,7 +215,7 @@ public class DefaultJigRepositoryFactory {
         }));
     }
 
-    private void registerSwaggerTerm(Set<TermId> existingTermIds, TermId termId, String value, TermKind kind, String annotationName) {
+    private void registerSwaggerTerm(GlossaryRepository glossaryRepository, Set<TermId> existingTermIds, TermId termId, String value, TermKind kind, String annotationName) {
         if (existingTermIds.contains(termId)) {
             logger.debug("[JIG] {} はJavadocによる用語が登録済みのためSwagger {}をスキップします", termId.asText(), annotationName);
         } else {
@@ -228,7 +228,7 @@ public class DefaultJigRepositoryFactory {
      *
      * MyBatis関連はClassLoaderを使用する関係上、ここで処理しておく。
      */
-    private PersistenceAccessorRepository createPersistenceAccessorRepository(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
+    private PersistenceAccessorRepository createPersistenceAccessorRepository(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations, JigEventRepository jigEventRepository) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)
@@ -247,5 +247,8 @@ public class DefaultJigRepositoryFactory {
             jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
         }
         return persistenceAccessorsRepository;
+    }
+
+    record AnalysisState(JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
     }
 }

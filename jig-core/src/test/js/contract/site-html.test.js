@@ -60,6 +60,19 @@ test.describe('生成HTMLの構造', () => {
                 assert.ok(title.textContent.trim().length > 0, 'titleが空です');
             });
 
+            test('主要コンテンツのランドマークがある', () => {
+                const document = parse(page);
+
+                assert.equal(document.querySelectorAll('main').length, 1, 'mainランドマークが一つではありません');
+                const sidebarCollapseButton = document.querySelector('#sidebar-collapse-btn');
+                if (sidebarCollapseButton) {
+                    assert.match(
+                        sidebarCollapseButton.getAttribute('aria-expanded') ?? '',
+                        /^(true|false)$/,
+                        'サイドバー開閉状態がアクセシビリティツリーに示されていません');
+                }
+            });
+
             test('必要なデータとスクリプトを読み込む', () => {
                 const document = parse(page);
                 const scripts = Array.from(document.querySelectorAll('script[src]'))

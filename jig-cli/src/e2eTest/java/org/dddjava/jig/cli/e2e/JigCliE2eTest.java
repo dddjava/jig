@@ -28,7 +28,7 @@ class JigCliE2eTest {
     static final int FIXTURE_RELEASE = 21;
 
     @Test
-    void 最小のプロジェクトを解析してサイトを出力する(@TempDir Path workDirectory) throws Exception {
+    void 最小のプロジェクトを解析してサイトへ型情報を出力する(@TempDir Path workDirectory) throws Exception {
         Path projectDirectory = JigFixtures.project("minimal-java")
                 .deployTo(workDirectory.resolve("project"), FIXTURE_RELEASE);
         Path outputDirectory = workDirectory.resolve("out");
@@ -37,16 +37,6 @@ class JigCliE2eTest {
 
         assertEquals(0, result.exitCode, result.output);
         assertTrue(Files.isRegularFile(outputDirectory.resolve("index.html")), result.output);
-    }
-
-    @Test
-    void 解析した型が出力に現れる(@TempDir Path workDirectory) throws Exception {
-        Path projectDirectory = JigFixtures.project("minimal-java")
-                .deployTo(workDirectory.resolve("project"), FIXTURE_RELEASE);
-        Path outputDirectory = workDirectory.resolve("out");
-
-        Result result = runCli(projectDirectory, outputDirectory);
-        assertEquals(0, result.exitCode, result.output);
 
         // 出力形式ではなく「解析結果が成果物へ届いていること」を見る
         String data = readAll(outputDirectory.resolve("data"));

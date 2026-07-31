@@ -11,7 +11,7 @@ JIG はバイトコード（classファイル）からコードの設計を可�
 ### ビルド・テスト
 
 ```bash
-# 開発中の標準入口（JS + Java の Unit/Component/Contract）
+# 開発中の標準入口（JS + Java の Unit/Component/Contract/E2E）
 npm run test:full
 
 # コミット前・PR 前（CSS lint + JS + clean build qualityCheck）

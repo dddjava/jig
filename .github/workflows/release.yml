@@ -27,7 +27,7 @@ jobs:
             25
             21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.2.0
       - name: Set up Node.js
         uses: actions/setup-node@v7.0.0
         with:

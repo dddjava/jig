@@ -49,7 +49,7 @@ jobs:
         if: failure()
         with:
           name: test-failure-reports-release
-          path: build/reports/tests/
+          path: jig-*/build/reports/tests/
           retention-days: 3
       - name: Dogfooding
         run: java -jar jig-cli/build/libs/jig-cli.jar --outputDirectory=example

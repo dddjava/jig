@@ -16,6 +16,7 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -46,20 +47,18 @@ public class JavaparserReader {
 
     public ParseResult parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
-            var parseResult = javaParser.parse(path);
-            if (!parseResult.isSuccessful()) {
-                throw new IllegalStateException(path + " のパースに失敗しました");
-            }
-            CompilationUnit cu = parseResult.getResult()
-                    .orElseThrow(() -> new IllegalStateException(path + " のパースに失敗しました"));
-
-            String packageName = cu.getPackageDeclaration()
-                    .map(PackageDeclaration::getNameAsString)
-                    .map(name -> name + ".")
-                    .orElse("");
-            JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
-            cu.accept(classVisitor, glossaryRepository);
-            return new ParseResult(classVisitor.javaSourceModel(), classVisitor.declaredTypeIds(), path, true);
+            var parsed = parse(path);
+            return parsed.compilationUnit()
+                    .map(cu -> {
+                        String packageName = cu.getPackageDeclaration()
+                                .map(PackageDeclaration::getNameAsString)
+                                .map(name -> name + ".")
+                                .orElse("");
+                        JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
+                        cu.accept(classVisitor, glossaryRepository);
+                        return new ParseResult(classVisitor.javaSourceModel(), classVisitor.declaredTypeIds(), path, parsed.succeeded());
+                    })
+                    .orElseGet(() -> ParseResult.empty(path));
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。このエラーはローカルenumが存在する場合などに発生します。処理は続行します。", path, e);
             return ParseResult.empty(path);
@@ -70,10 +69,6 @@ public class JavaparserReader {
      * 1つのJavaファイルのパース結果
      */
     public record ParseResult(JavaSourceModel sourceModel, List<TypeId> declaredTypeIds, Path sourcePath, boolean succeeded) {
-        public ParseResult(JavaSourceModel sourceModel, List<TypeId> declaredTypeIds, Path sourcePath) {
-            this(sourceModel, declaredTypeIds, sourcePath, true);
-        }
-
         public static ParseResult empty(Path sourcePath) {
             return new ParseResult(JavaSourceModel.empty(), List.of(), sourcePath, false);
         }
@@ -85,14 +80,10 @@ public class JavaparserReader {
 
     public PackageInfoParseResult parsePackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
-            var parseResult = javaParser.parse(path);
-            if (!parseResult.isSuccessful()) {
-                throw new IllegalStateException(path + " のパースに失敗しました");
-            }
-            CompilationUnit cu = parseResult.getResult()
-                    .orElseThrow(() -> new IllegalStateException(path + " のパースに失敗しました"));
-
-            return new PackageInfoParseResult(loadPackageInfoJavaFile(cu, glossaryRepository), path, true);
+            var parsed = parse(path);
+            return parsed.compilationUnit()
+                    .map(cu -> new PackageInfoParseResult(loadPackageInfoJavaFile(cu, glossaryRepository), path, parsed.succeeded()))
+                    .orElseGet(() -> new PackageInfoParseResult(Optional.empty(), path, false));
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
             return new PackageInfoParseResult(Optional.empty(), path, false);
@@ -100,6 +91,20 @@ public class JavaparserReader {
     }
 
     public record PackageInfoParseResult(Optional<PackageId> packageId, Path sourcePath, boolean succeeded) {
+    }
+
+    /**
+     * 問題が報告されてもJavaparserが構築できたASTは使う。欠落は succeeded で呼び出し元へ伝える。
+     */
+    private ParsedFile parse(Path path) throws IOException {
+        var parseResult = javaParser.parse(path);
+        if (!parseResult.isSuccessful()) {
+            logger.warn("{} のパースで問題が報告されました。読み取れた範囲のみ使用します。 {}", path, parseResult.getProblems());
+        }
+        return new ParsedFile(parseResult.getResult(), parseResult.isSuccessful());
+    }
+
+    private record ParsedFile(Optional<CompilationUnit> compilationUnit, boolean succeeded) {
     }
 
     Optional<PackageId> loadPackageInfoJavaFile(CompilationUnit cu, GlossaryRepository glossaryRepository) {

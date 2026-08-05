@@ -48,18 +48,18 @@ class JigTypesTest {
     /**
      * package-info.java は通常 package-info.class を生成しないが、
      * RUNTIME保持のアノテーションを付けるとコンパイラが生成するようになる
-     * （{@link org.dddjava.jig.application.ut.domain.model.RuntimeRetainedAnnotation}）。
+     * （{@link org.dddjava.jig.application.sut.domain.model.RuntimeRetainedAnnotation}）。
      * このとき生成された package-info をドメインの型として扱わないことを確認する。
      */
     @Test
     void アノテーションつきのpackage_infoをドメインとして扱わない(@TempDir Path tempDir) {
         var configuration = Configuration.from(new JigSettings(
                 tempDir, Optional.empty(), JigDocument.canonical(), Locale.JAPANESE));
-        var sourceBasePaths = TestSupport.sourceLocationsFor("org/dddjava/jig/application/ut/domain/model");
+        var sourceBasePaths = TestSupport.sourceLocationsFor("org/dddjava/jig/application/sut/domain/model");
         var jigRepository = DefaultJigRepositoryFactory.init(configuration).createJigRepository(sourceBasePaths);
         var jigService = configuration.jigService();
 
-        var typeIdentifier = TypeId.valueOf("org.dddjava.jig.application.ut.domain.model.package-info");
+        var typeIdentifier = TypeId.valueOf("org.dddjava.jig.application.sut.domain.model.package-info");
 
         var jigTypes = jigService.jigTypes(jigRepository);
         assertFalse(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeに存在しない");

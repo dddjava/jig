@@ -45,7 +45,7 @@ public class TestSupport {
      * jig-core の test ソースセット配下にある、単一の意図を持つ小さな fixture パッケージを解析対象にする。
      * `stub` のような巨大な共有コーパスを増やさず、テストごとに独立した入力を持たせたい場合に使う。
      *
-     * @param packageRelativePath クラス出力・ソースの両方に共通するパッケージの相対パス（例: {@code "org/dddjava/jig/application/ut/domain/model"}）
+     * @param packageRelativePath クラス出力・ソースの両方に共通するパッケージの相対パス（例: {@code "org/dddjava/jig/application/sut/domain/model"}）
      */
     public static SourceBasePaths sourceLocationsFor(String packageRelativePath) {
         return new SourceBasePaths(

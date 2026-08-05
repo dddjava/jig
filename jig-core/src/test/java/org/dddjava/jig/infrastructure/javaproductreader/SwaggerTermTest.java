@@ -35,7 +35,7 @@ class SwaggerTermTest {
     static void 用語集を読み取る() {
         var configuration = Configuration.from(new JigSettings(
                 outputDirectory, Optional.empty(), JigDocument.canonical(), Locale.JAPANESE));
-        var sourceBasePaths = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaproductreader/ut");
+        var sourceBasePaths = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaproductreader/sut");
 
         glossary = DefaultJigRepositoryFactory.init(configuration)
                 .createJigRepository(sourceBasePaths)

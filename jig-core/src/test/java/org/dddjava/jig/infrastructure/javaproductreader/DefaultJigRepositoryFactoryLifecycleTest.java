@@ -36,15 +36,15 @@ class DefaultJigRepositoryFactoryLifecycleTest {
                 outputDirectory, Optional.empty(), JigDocument.canonical(), Locale.JAPANESE));
         var factory = DefaultJigRepositoryFactory.init(configuration);
         var firstRepository = factory.createJigRepository(
-                TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/ut"));
+                TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/sut"));
         assertFalse(firstRepository.fetchJigTypes().isEmpty());
 
         // 前回実行で収集した package-info の用語が、次回の解析結果に混ざらない。
-        var previousTermId = new TermId("org.dddjava.jig.infrastructure.javaparser.ut.package_info_javadoc");
+        var previousTermId = new TermId("org.dddjava.jig.infrastructure.javaparser.sut.package_info_javadoc");
         assertTrue(firstRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
 
         var secondRepository = factory.createJigRepository(
-                TestSupport.sourceLocationsFor("org/dddjava/jig/application/ut/domain/model"));
+                TestSupport.sourceLocationsFor("org/dddjava/jig/application/sut/domain/model"));
         assertFalse(secondRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
         assertTrue(firstRepository.fetchGlossary().terms().stream().anyMatch(term -> term.id().equals(previousTermId)));
     }
@@ -62,7 +62,7 @@ class DefaultJigRepositoryFactoryLifecycleTest {
                     eventRepositoryReference.set(eventRepository);
                     return new DefaultJigRepositoryFactory.AnalysisState(eventRepository, new OnMemoryGlossaryRepository());
                 });
-        var sourceLocations = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/ut");
+        var sourceLocations = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/javaparser/sut");
         var sourceBasePaths = new SourceBasePaths(
                 sourceLocations.classFileBasePath(),
                 new SourceBasePath(List.of(tempDirectory)));

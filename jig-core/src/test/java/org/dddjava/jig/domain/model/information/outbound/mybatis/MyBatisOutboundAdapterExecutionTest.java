@@ -6,10 +6,10 @@ import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorReposit
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapter;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapterExecution;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
-import org.dddjava.jig.domain.model.information.outbound.mybatis.ut.TraceHelper;
-import org.dddjava.jig.domain.model.information.outbound.mybatis.ut.TraceMapper;
-import org.dddjava.jig.domain.model.information.outbound.mybatis.ut.TraceOutboundAdapter;
-import org.dddjava.jig.domain.model.information.outbound.mybatis.ut.TraceOutboundPort;
+import org.dddjava.jig.domain.model.information.outbound.mybatis.sut.TraceHelper;
+import org.dddjava.jig.domain.model.information.outbound.mybatis.sut.TraceMapper;
+import org.dddjava.jig.domain.model.information.outbound.mybatis.sut.TraceOutboundAdapter;
+import org.dddjava.jig.domain.model.information.outbound.mybatis.sut.TraceOutboundPort;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class MyBatisOutboundAdapterExecutionTest {
 
-    private static final String FIXTURE_PACKAGE = "org/dddjava/jig/domain/model/information/outbound/mybatis/ut";
+    private static final String FIXTURE_PACKAGE = "org/dddjava/jig/domain/model/information/outbound/mybatis/sut";
 
     @Test
     void 中間クラスを経由した呼び出しでも永続化操作を解決できる() {

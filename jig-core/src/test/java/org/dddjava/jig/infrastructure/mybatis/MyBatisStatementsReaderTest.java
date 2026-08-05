@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperatio
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.infrastructure.mybatis.ut.*;
+import org.dddjava.jig.infrastructure.mybatis.sut.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,7 +32,7 @@ class MyBatisStatementsReaderTest {
         var headers = TestSupport.buildJigTypes(mapperClasses).list().stream()
                 .map(t -> t.jigTypeHeader())
                 .toList();
-        var classPaths = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/mybatis/ut").classSourceBasePaths();
+        var classPaths = TestSupport.sourceLocationsFor("org/dddjava/jig/infrastructure/mybatis/sut").classSourceBasePaths();
         return new MyBatisStatementsReader().readFrom(headers, classPaths).persistenceAccessorRepository();
     }
 

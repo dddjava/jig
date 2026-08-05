@@ -7,9 +7,9 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
-import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetMultipleTopLevelClass;
-import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass;
+import org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetCanonicalClass;
+import org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetMultipleTopLevelClass;
+import org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetNestedClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,10 +34,10 @@ class JavaparserReaderTest {
     }
 
     @CsvSource({
-            "ut/package_info_javadoc,          package-info.java, this is term title",
-            "ut/package_info_block_comment,    package-info.java, package_info_block_comment", // javadocでないものはそのままパッケージ名がtitleになる
-            "ut/package_info_no_comment,       package-info.java, package_info_no_comment", // コメントがないものはそのままパッケージ名がtitleになる
-            "ut/package_info_javadoc_tag_only, package-info.java, package_info_javadoc_tag_only", // javadocタグのみのものはパッケージ名がtitleになる
+            "sut/package_info_javadoc,          package-info.java, this is term title",
+            "sut/package_info_block_comment,    package-info.java, package_info_block_comment", // javadocでないものはそのままパッケージ名がtitleになる
+            "sut/package_info_no_comment,       package-info.java, package_info_no_comment", // コメントがないものはそのままパッケージ名がtitleになる
+            "sut/package_info_javadoc_tag_only, package-info.java, package_info_javadoc_tag_only", // javadocタグのみのものはパッケージ名がtitleになる
     })
     @ParameterizedTest
     void PackageInfoからタイトルを読み取れる(String packagePathText, String filePathText, String expected) {
@@ -55,13 +55,13 @@ class JavaparserReaderTest {
 
     @Test
     void 典型的なPackageInfoを読み取れる() {
-        Path path = Path.of("ut/package_info_typical", "package-info.java");
+        Path path = Path.of("sut/package_info_typical", "package-info.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.loadPackageInfoJavaFile(getJavaFilePath(path), glossaryRepository);
 
         PackageId packageId = TestSupport.getTypeIdFromClass(this.getClass())
-                .packageId().subpackageOf("ut", "package_info_typical");
+                .packageId().subpackageOf("sut", "package_info_typical");
         Term term = glossaryRepository.get(packageId);
 
         assertEquals("色々書いているpackage-info", term.title());
@@ -73,7 +73,7 @@ class JavaparserReaderTest {
 
     @Test
     void 典型的なクラスから読み取れる() {
-        Path path = Path.of("ut", "ParseTargetCanonicalClass.java");
+        Path path = Path.of("sut", "ParseTargetCanonicalClass.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
@@ -86,7 +86,7 @@ class JavaparserReaderTest {
 
     @Test
     void 典型的なクラスからメソッドを読み取れる() {
-        Path path = Path.of("ut", "ParseTargetCanonicalClass.java");
+        Path path = Path.of("sut", "ParseTargetCanonicalClass.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
@@ -101,7 +101,7 @@ class JavaparserReaderTest {
 
     @Test
     void 典型的なクラスからフィールドを読み取れる() {
-        Path path = Path.of("ut", "ParseTargetCanonicalClass.java");
+        Path path = Path.of("sut", "ParseTargetCanonicalClass.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
@@ -116,7 +116,7 @@ class JavaparserReaderTest {
 
     @Test
     void ネストしたクラスとメソッドを読み取れる() {
-        Path path = Path.of("ut", "ParseTargetNestedClass.java");
+        Path path = Path.of("sut", "ParseTargetNestedClass.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
@@ -126,21 +126,21 @@ class JavaparserReaderTest {
                 glossary, TestSupport.getTypeIdFromClass(ParseTargetNestedClass.class).value(),
                 TermKind.クラス
         );
-        var innerTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.Inner");
+        var innerTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetNestedClass.Inner");
         var innerTerm = TestSupport.termOf(glossary, innerTypeId.value(), TermKind.クラス);
         var innerMethodTerm = TestSupport.termOf(
                 glossary, JigMethodId.from(innerTypeId, "innerMethod", List.of()).value(),
                 TermKind.メソッド
         );
-        var innerEnumTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerEnum");
+        var innerEnumTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetNestedClass.InnerEnum");
         var innerEnumTerm = TestSupport.termOf(glossary, innerEnumTypeId.value(), TermKind.クラス);
-        var innerRecordTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerRecord");
+        var innerRecordTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetNestedClass.InnerRecord");
         var innerRecordTerm = TestSupport.termOf(glossary, innerRecordTypeId.value(), TermKind.クラス);
         var innerRecordMethodTerm = TestSupport.termOf(
                 glossary, JigMethodId.from(innerRecordTypeId, "label", List.of()).value(),
                 TermKind.メソッド
         );
-        var innerAnnotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerAnnotation");
+        var innerAnnotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetNestedClass.InnerAnnotation");
         var innerAnnotationTerm = TestSupport.termOf(glossary, innerAnnotationTypeId.value(), TermKind.クラス);
 
         assertEquals("外側クラスコメント", outerTerm.title());
@@ -154,14 +154,14 @@ class JavaparserReaderTest {
 
     @Test
     void トップレベルに複数クラスを定義した場合も読み取れる() {
-        Path path = Path.of("ut", "ParseTargetMultipleTopLevelClass.java");
+        Path path = Path.of("sut", "ParseTargetMultipleTopLevelClass.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
         var firstTypeId = TestSupport.getTypeIdFromClass(ParseTargetMultipleTopLevelClass.class);
-        var secondTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.SecondTopLevelClass");
+        var secondTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.sut.SecondTopLevelClass");
 
         var firstTerm = TestSupport.termOf(glossary, firstTypeId.value(), TermKind.クラス);
         var secondTerm = TestSupport.termOf(glossary, secondTypeId.value(), TermKind.クラス);
@@ -172,13 +172,13 @@ class JavaparserReaderTest {
 
     @Test
     void トップレベルのアノテーションを読み取れる() {
-        Path path = Path.of("ut", "ParseTargetTopLevelAnnotation.java");
+        Path path = Path.of("sut", "ParseTargetTopLevelAnnotation.java");
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var annotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetTopLevelAnnotation");
+        var annotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.sut.ParseTargetTopLevelAnnotation");
         var annotationTerm = TestSupport.termOf(glossary, annotationTypeId.value(), TermKind.クラス);
 
         assertEquals("トップレベルannotationコメント", annotationTerm.title());

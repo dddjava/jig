@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.outbound.*;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
-import org.dddjava.jig.domain.model.information.outbound.springdata.ut.*;
+import org.dddjava.jig.domain.model.information.outbound.springdata.sut.*;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 

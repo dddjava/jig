@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.infrastructure.asm.ut.MyClass;
-import org.dddjava.jig.infrastructure.asm.ut.MyGenericsMadnessInterface;
-import org.dddjava.jig.infrastructure.asm.ut.MyTypeModifierClass;
+import org.dddjava.jig.infrastructure.asm.sut.MyClass;
+import org.dddjava.jig.infrastructure.asm.sut.MyGenericsMadnessInterface;
+import org.dddjava.jig.infrastructure.asm.sut.MyTypeModifierClass;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -24,7 +24,7 @@ class AsmClassVisitorTest {
         var typeData = TestSupport.getJigTypeHeader(MyClass.class);
 
         assertEquals("MyClass", typeData.simpleName());
-        assertEquals("org.dddjava.jig.infrastructure.asm.ut.MyClass", typeData.fqn());
+        assertEquals("org.dddjava.jig.infrastructure.asm.sut.MyClass", typeData.fqn());
         assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
 
         // MyDeclarationAnnotationForSourceは含まれない
@@ -33,7 +33,7 @@ class AsmClassVisitorTest {
 
         assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
         assertEquals("MySuperClass<Integer, X, Long>", typeData.superType().orElseThrow().simpleNameWithGenerics());
-        assertEquals("org.dddjava.jig.infrastructure.asm.ut.MySuperClass<java.lang.Integer, X, java.lang.Long>", typeData.superType().orElseThrow().fqnWithGenerics());
+        assertEquals("org.dddjava.jig.infrastructure.asm.sut.MySuperClass<java.lang.Integer, X, java.lang.Long>", typeData.superType().orElseThrow().fqnWithGenerics());
         assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypeList().stream().map(JigTypeReference::simpleName).toList());
         assertEquals(List.of("MyInterface<Y, String>", "MyInterface2<String, Y>"),
                 typeData.interfaceTypeList().stream().map(JigTypeReference::simpleNameWithGenerics).toList());

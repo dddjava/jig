@@ -4,7 +4,7 @@ asm = "9.10.1"
 javaparser = "3.28.2"
 mybatis = "3.5.19"
 junit-bom = "6.1.2"
-swagger-annotations-jakarta = "2.2.52"
+swagger-annotations-jakarta = "2.2.53"
 jakarta-validation-api = "3.1.1"
 
 [libraries]

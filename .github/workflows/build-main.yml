@@ -24,7 +24,7 @@ jobs:
             25
             ${{ matrix.java-version }}
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.2.0
+        uses: gradle/actions/setup-gradle@v6.3.0
         with:
           # デフォルトのenhanced(closed-source) providerはWindowsでキャッシュ保存が
           # 常に失敗する既知不具合があるため、OSS実装のbasic providerを使う
@@ -89,7 +89,7 @@ jobs:
             25
             21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.2.0
+        uses: gradle/actions/setup-gradle@v6.3.0
       - name: Build classes
         run: ./gradlew build -x test
       - name: Download latest JIG CLI

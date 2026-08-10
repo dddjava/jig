@@ -42,7 +42,7 @@ jobs:
       - name: Run stylelint
         run: npm run lint:css
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.2.0
+        uses: gradle/actions/setup-gradle@v6.3.0
       - name: Build
         run: ./gradlew build qualityCheck
       # 生成サイトを入力とするため、Gradle の contractTest より後に実行する

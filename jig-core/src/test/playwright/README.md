@@ -35,6 +35,25 @@ java -jar jig-cli/build/libs/jig-cli.jar
 
 `./build/jig/` に `usecase.html` 等と `assets/`（JS/CSS）、`data/`（解析結果JSON）一式が生成される。
 
+### 解析対象が0件の出力を作る
+
+空ディレクトリで実行すると、全ドキュメントが0件の状態を再現できる。自己解析では埋まってしまう
+「対象がない場合」の見た目を確認するのに使う。
+
+```bash
+mkdir -p /tmp/emptyproj && cd /tmp/emptyproj
+java -jar /path/to/jig-cli/build/libs/jig-cli.jar
+```
+
+データファイル自体が無い状態（読み込み失敗）は、Playwright 側でリクエストを止めて再現する。
+**`page.route` の glob は `?v=` 付きのURLにマッチしない**ので、正規表現で指定すること。
+JIG のページは全アセットにキャッシュバスティングのクエリを付けている。
+
+```js
+// NG: '**/data/*-data.js' は data/domain-data.js?v=... にマッチしない
+await page.route(/\/data\/.*-data\.js/, route => route.abort());
+```
+
 **テンプレートHTML自体は変えず `assets/*.js` `assets/*.css` だけを変更した場合**は、jarの再ビルド・再実行をせずに該当ファイルを直接コピーするほうが速い（`build/` は `.gitignore` 対象なのでコピーしても差分は汚さない）。
 
 ```bash

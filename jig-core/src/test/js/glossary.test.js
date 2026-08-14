@@ -586,6 +586,18 @@ test.describe('glossary.js', () => {
             assert.ok(error.textContent.includes('glossary-data.js'), '読み込めなかったファイル名が示されること');
         });
 
+        test('用語が0件の場合、このドキュメントが空であることを表示する', () => {
+            const doc = setupDocument();
+            const main = doc.createElement('div');
+            main.id = 'glossary-main';
+            setGlossaryData({});
+
+            glossary.init();
+
+            const empty = main.children.find(el => el.className && el.className.includes('jig-empty'));
+            assert.ok(empty, 'jig-empty が表示されること');
+        });
+
         test('DOMContentLoaded で初期描画が行われる', () => {
             const doc = setupDocument();
             const body = doc.createElement('body');

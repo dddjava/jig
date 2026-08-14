@@ -916,12 +916,14 @@ test.describe('usecase.js', () => {
             });
         });
 
-        test('renderUsecaseAppList should handle empty data', () => {
+        test('対象が0件の場合、このドキュメントが空であることを表示する', () => {
             globalThis.usecaseData = {usecases: []};
             UsecaseApp.init();
 
             const mainList = document.getElementById('usecase-list');
-            assert.equal(mainList.textContent, 'データなし');
+            const empty = mainList.children.find(el => el.className && el.className.includes('jig-empty'));
+            assert.ok(empty, 'jig-empty が表示されること');
+            assert.equal(mainList.children.filter(el => el !== empty).length, 0, '中身のないセクションは描かないこと');
         });
 
         test('initControls should toggle body classes', () => {

@@ -145,6 +145,11 @@ const InboundApp = (() => {
             return;
         }
 
+        if ((state.data.inboundAdapters ?? []).length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("inbound-list"));
+            return;
+        }
+
         Jig.dom.sidebar.initCollapseBtn();
         Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
             state.sidebarFilterText = text;
@@ -502,10 +507,7 @@ const InboundApp = (() => {
         container.innerHTML = "";
         const usecaseData = Jig.data.usecase.get();
 
-        if (!adapters || adapters.length === 0) {
-            container.textContent = "データなし";
-            return;
-        }
+        if (!adapters || adapters.length === 0) return;
 
         const summaryCard = renderSummaryTable(adapters);
         if (summaryCard) container.appendChild(summaryCard);

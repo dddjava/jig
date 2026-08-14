@@ -51,6 +51,43 @@ test.describe('insight.js', () => {
             assert.equal(result.packages[0].fqn, 'app');
         });
 
+        test('0件のセクションは見出し・テーブル・ナビゲーションリンクごと取り除く', () => {
+            const doc = setupDocument();
+            buildInsightTables(doc);
+
+            const nav = doc.createElement('nav');
+            nav.id = 'insight-section-nav';
+            ['section-package', 'section-type', 'section-method'].forEach(id => {
+                const heading = doc.createElement('h2');
+                heading.id = id;
+                doc.body.appendChild(heading);
+                const link = doc.createElement('a');
+                link.setAttribute('href', `#${id}`);
+                nav.appendChild(link);
+            });
+            ['package-insight-list', 'type-insight-list', 'method-insight-list'].forEach(id => {
+                const table = doc.createElement('table');
+                table.id = id;
+                doc.body.appendChild(table);
+            });
+            doc.body.appendChild(nav);
+
+            global.insightData = {
+                packages: [], types: [], methods: [{
+                    fqn: 'app.Type#method()', packageFqn: 'app', typeFqn: 'app.Type',
+                    cyclomaticComplexity: 1, numberOfUsingTypes: 0, numberOfUsingMethods: 0,
+                    numberOfUsingFields: 0, numberOfUsingOwnFields: 0, numberOfUsingOwnMethods: 0, size: 1
+                }]
+            };
+
+            insight.init();
+
+            assert.equal(doc.getElementById('section-package'), null, '0件セクションの見出しは残さないこと');
+            assert.equal(doc.getElementById('package-insight-list'), null, '0件セクションの表は残さないこと');
+            assert.ok(doc.getElementById('section-method'), '対象があるセクションは残ること');
+            assert.equal(nav.querySelectorAll('a').length, 1, '残ったセクションのリンクだけになること');
+        });
+
         test('insightDataがない場合、init はエラーメッセージを表示する', () => {
             const doc = setupDocument();
             const main = doc.createElement('div');

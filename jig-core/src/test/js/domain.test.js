@@ -624,6 +624,26 @@ test.describe('domain.js', () => {
             assert.ok(main.children[0].textContent.includes('domain-data.js'), "エラーメッセージに data ファイル名が含まれること");
         });
 
+        test('型が0件の場合、このドキュメントが空であることを表示する', () => {
+            const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+
+            setupDomainData([], []);
+
+            DomainApp.init();
+
+            const empty = main.children.find(el => el.className && el.className.includes('jig-empty'));
+            assert.ok(empty, 'jig-empty が表示されること');
+            assert.equal(main.children.filter(el => el !== empty).length, 0, '中身のないセクションは描かないこと');
+
+            delete globalThis.domainData;
+        });
+
         test('解析対象が0件の domainData でもエラーにならず描画できる', () => {
             const doc = new DocumentStub();
             doc.body.classList.add("domain-model");
@@ -657,7 +677,7 @@ test.describe('domain.js', () => {
             doc.elementsById.set("domain-main", main);
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
 
-            setupDomainData([], []);
+            setupDomainData(['org.example'], [{fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []}]);
 
             DomainApp.init();
 
@@ -680,7 +700,7 @@ test.describe('domain.js', () => {
             doc.elementsById.set("domain-main", main);
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
 
-            setupDomainData([], []);
+            setupDomainData(['org.example'], [{fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []}]);
 
             DomainApp.init();
 

@@ -12,6 +12,15 @@ const LibraryDependencyApp = (() => {
             return;
         }
 
+        if ((data.libraries ?? []).length === 0) {
+            // 表示する依存が無いので、操作対象のないコントロールごと取り除く
+            document.querySelector(".controls")?.remove();
+            document.getElementById("library-dependency-diagram")?.remove();
+            document.getElementById("library-list")?.remove();
+            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            return;
+        }
+
         const diagramEl = document.getElementById("library-dependency-diagram");
         const javaStandardToggle = document.getElementById("show-java-standard-toggle");
         const depthSelect = document.getElementById("package-depth-select");

@@ -224,6 +224,13 @@ class Element {
         return child;
     }
 
+    prepend(child) {
+        if (!child || typeof child !== "object") return child;
+        child.parentNode = this;
+        this.children.unshift(child);
+        return child;
+    }
+
     insertBefore(newNode, referenceNode) {
         if (newNode && typeof newNode === "object") newNode.parentNode = this;
         if (!referenceNode) {
@@ -234,6 +241,20 @@ class Element {
         if (idx === -1) this.children.push(newNode);
         else this.children.splice(idx, 0, newNode);
         return newNode;
+    }
+
+    remove() {
+        const parent = this.parentNode;
+        if (parent) {
+            const idx = parent.children.indexOf(this);
+            if (idx !== -1) parent.children.splice(idx, 1);
+            this.parentNode = null;
+        }
+        // 取り除いた要素は getElementById で引けなくなる
+        const id = this.getAttribute("id");
+        if (id && this.ownerDocument?.elementsById.get(id) === this) {
+            this.ownerDocument.elementsById.delete(id);
+        }
     }
 
     removeAttribute(name) {

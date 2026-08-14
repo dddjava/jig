@@ -145,6 +145,27 @@ const InsightApp = (() => {
         })
     }
 
+    const SECTIONS = [
+        {dataKey: "packages", countId: "package-count", headingId: "section-package", tableId: "package-insight-list", render: renderPackageInsights},
+        {dataKey: "types", countId: "type-count", headingId: "section-type", tableId: "type-insight-list", render: renderTypeInsights},
+        {dataKey: "methods", countId: "method-count", headingId: "section-method", tableId: "method-insight-list", render: renderMethodInsights},
+    ];
+
+    /**
+     * 0件のセクションは見出し・テーブル・ナビゲーションリンクごと取り除く。
+     */
+    function removeSection(section) {
+        document.getElementById(section.headingId)?.remove();
+        document.getElementById(section.tableId)?.remove();
+
+        const nav = document.getElementById("insight-section-nav");
+        if (!nav) return;
+        nav.querySelectorAll("a").forEach(link => {
+            if (link.getAttribute("href") === `#${section.headingId}`) link.remove();
+        });
+        if (nav.querySelectorAll("a").length === 0) nav.remove();
+    }
+
     function init() {
         const insightData = parseInsightData();
         if (!insightData) {
@@ -152,12 +173,21 @@ const InsightApp = (() => {
             return;
         }
 
-        renderPackageInsights(insightData.packages || []);
-        renderTypeInsights(insightData.types || []);
-        renderMethodInsights(insightData.methods || []);
-        setInsightCount("package-count", (insightData.packages || []).length);
-        setInsightCount("type-count", (insightData.types || []).length);
-        setInsightCount("method-count", (insightData.methods || []).length);
+        const renderedSections = SECTIONS.filter(section => {
+            const items = insightData[section.dataKey] || [];
+            if (items.length === 0) {
+                removeSection(section);
+                return false;
+            }
+            section.render(items);
+            setInsightCount(section.countId, items.length);
+            return true;
+        });
+
+        if (renderedSections.length === 0) {
+            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            return;
+        }
 
         Jig.dom.setupSortableTables();
         setupZoomIcons();

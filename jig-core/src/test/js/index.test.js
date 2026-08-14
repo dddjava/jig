@@ -237,5 +237,23 @@ test.describe('index.js', () => {
 
             delete globalThis.packageData;
         });
+
+        test('図を1つも描けない場合は見出しごと取り除く', () => {
+            const section = document.createElement('section');
+            section.id = 'diagrams';
+            const container = document.createElement('div');
+            container.id = 'package-diagram';
+            section.appendChild(container);
+            document.body.appendChild(section);
+
+            globalThis.packageData = {packages: [], relations: [], domainPackageRoots: []};
+            globalThis.Jig.mermaid.createPackageLevelDiagram = () => null;
+
+            IndexApp.init();
+
+            assert.equal(document.getElementById('diagrams'), null, '図のセクションは残さないこと');
+
+            delete globalThis.packageData;
+        });
     });
 });

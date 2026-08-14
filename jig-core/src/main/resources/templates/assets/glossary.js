@@ -251,6 +251,10 @@ const GlossaryApp = (() => {
         }
 
         const terms = getGlossaryData();
+        if (terms.length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("glossary-main"));
+            return;
+        }
 
         const controls = {
             filterText: '',

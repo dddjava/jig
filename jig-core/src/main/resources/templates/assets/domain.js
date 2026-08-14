@@ -1213,6 +1213,11 @@ const DomainApp = (() => {
             return;
         }
 
+        if (Jig.data.domain.getTypes().length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("domain-main"));
+            return;
+        }
+
         initSettings();
 
         const typesMap = Jig.data.domain.getTypesMap();

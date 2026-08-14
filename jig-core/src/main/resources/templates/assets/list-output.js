@@ -256,6 +256,37 @@ const ListOutputApp = (() => {
         table.prepend(thead);
     }
 
+    /**
+     * 0件の一覧はタブボタンとパネルごと取り除く。
+     * @returns {string|null} 取り除いたタブが属していたグループ名
+     */
+    function removePanel(name) {
+        const panel = document.getElementById(`${kebabCase(name)}-panel`);
+        if (!panel) return null;
+
+        const group = panel.dataset.tabGroup;
+        const tab = panel.dataset.tab;
+        panel.remove();
+        document.querySelectorAll(`.tab-button[data-tab-group="${group}"][data-tab="${tab}"]`)
+            .forEach(button => button.remove());
+        return group;
+    }
+
+    /**
+     * グループ内のタブが全て無くなったら、そのグループを含む親のタブも取り除く。
+     * 残ったタブがあれば先頭を選択状態にする（初期表示のタブが消えた場合に何も表示されなくなるため）。
+     * @returns {boolean} グループにタブが残っているか
+     */
+    function reactivateGroup(group) {
+        const buttons = document.querySelectorAll(`.tab-button[data-tab-group="${group}"]`);
+        if (buttons.length === 0) {
+            removePanel(group);
+            return false;
+        }
+        activateTabGroup(group, buttons[0].dataset.tab);
+        return true;
+    }
+
     function activateTabGroup(group, tabName) {
         const tabs = document.querySelectorAll(`.list-output-tab[data-tab-group="${group}"]`);
         const buttons = document.querySelectorAll(`.tab-button[data-tab-group="${group}"]`);
@@ -277,12 +308,29 @@ const ListOutputApp = (() => {
 
         const data = getListData();
 
+        const emptiedGroups = new Set();
         Object.entries(TABLES).forEach(([name, {items}]) => {
+            if (items(data).length === 0) {
+                const group = removePanel(name);
+                if (group) emptiedGroups.add(group);
+                return;
+            }
             renderTableHeader(name);
             renderTable(name, items(data));
             document.getElementById(csvButtonIdOf(name))?.addEventListener("click",
                 () => Jig.dom.downloadCsv(buildCsv(name, items(data)), csvFileOf(name)));
         });
+
+        if (emptiedGroups.size > 0) {
+            emptiedGroups.forEach(group => reactivateGroup(group));
+            reactivateGroup("main");
+        }
+
+        if (document.querySelectorAll(".list-output-tab").length === 0) {
+            document.querySelectorAll(".list-output-tabs").forEach(tabs => tabs.remove());
+            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            return;
+        }
 
         document.querySelectorAll(".list-output-tabs .tab-button").forEach(button => {
             button.addEventListener("click", () => activateTabGroup(button.dataset.tabGroup, button.dataset.tab));

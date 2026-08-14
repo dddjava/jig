@@ -1,149 +1,21 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const {DocumentStub} = require('./dom-stub.js');
 
+global.window = {addEventListener: () => {}};
+global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
+require('../../main/resources/templates/assets/jig-i18n.js');
+require('../../main/resources/templates/assets/jig-dom.js');
 require('../../main/resources/templates/assets/jig-bootstrap.js');
 const ListOutputApp = require('../../main/resources/templates/assets/list-output.js');
-
-globalThis.Jig.dom ??= {};
-globalThis.Jig.dom.escapeCsvValue ??= (value) => {
-    const text = String(value ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    return `"${text.replace(/"/g, "\"\"")}"`;
-};
-globalThis.Jig.dom.buildCsv ??= (header, rows) => {
-    return [header, ...rows].map(row => row.map(globalThis.Jig.dom.escapeCsvValue).join(",")).join("\r\n");
-};
-
-class Element {
-    constructor(tagName) {
-        this.tagName = tagName;
-        this.children = [];
-        this._textContent = '';
-        this.innerHTML = '';
-        this.className = '';
-        this.parentElement = null;
-        this.dataset = {};
-        this.attributes = {};
-        this.classList = {
-            toggle: (name, force) => {
-                if (force) this.className = name;
-                else this.className = '';
-            }
-        };
-    }
-
-    get textContent() {
-        return this._textContent;
-    }
-
-    set textContent(value) {
-        this._textContent = String(value ?? '');
-    }
-
-    appendChild(child) {
-        child.parentElement = this;
-        if (child.tagName === 'fragment') {
-            this.children.push(...child.children);
-        } else {
-            this.children.push(child);
-        }
-        return child;
-    }
-
-    setAttribute(name, value) {
-        this.attributes[name] = value;
-    }
-}
-
-class DocumentStub {
-    constructor() {
-        this.elementsById = new Map();
-        this.allElements = [];
-    }
-
-    createElement(tagName) {
-        const element = new Element(tagName);
-        this.allElements.push(element);
-        return element;
-    }
-
-    createDocumentFragment() {
-        return new Element('fragment');
-    }
-
-    getElementById(id) {
-        return this.elementsById.get(id) || null;
-    }
-
-    querySelector(selector) {
-        const match = selector.match(/#([\w-]+)\s+tbody/);
-        if (match) {
-            const element = this.elementsById.get(match[1]);
-            if (element) {
-                return element.children.find(child => child.tagName === 'tbody');
-            }
-        }
-        return null;
-    }
-
-    querySelectorAll(selector) {
-        return this.allElements;
-    }
-}
 
 function setupDocument() {
     const doc = new DocumentStub();
     global.document = doc;
     return doc;
-}
-
-function setupJig() {
-    global.Jig ??= {};
-    global.Jig.dom ??= {};
-
-    // Jig.dom.createElementはdocument.createElementを使用する
-    global.Jig.dom.createElement = function createElement(tagName, options = {}) {
-        const element = global.document.createElement(tagName);
-        if (options.className) element.className = options.className;
-        if (options.textContent != null) element.textContent = options.textContent;
-        if (options.children) {
-            options.children.forEach(child => {
-                element.appendChild(child);
-            });
-        }
-        return element;
-    };
-
-    global.Jig.dom.createCell = function createCell(text, className) {
-        const cell = global.Jig.dom.createElement('td', {
-            className: className,
-            textContent: text
-        });
-        return cell;
-    };
-
-    global.Jig.dom.escapeCsvValue = function escapeCsvValue(value) {
-        const text = String(value ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-        return `"${text.replace(/"/g, "\"\"")}"`;
-    };
-
-    // 実際の描画は jig-dom.test.js で検証する。ここでは呼び出しの有無だけ記録する
-    global.Jig.dom.renderDataLoadError = function renderDataLoadError(container, dataFileName) {
-        global.Jig.dom.renderDataLoadError.lastCall = {container, dataFileName};
-    };
-
-    global.Jig.dom.renderTableRows = function renderTableRows(tableId, items, buildRow, {clear = false} = {}) {
-        const tableBody = global.document.querySelector(`#${tableId} tbody`);
-        if (!tableBody) return;
-        if (clear) tableBody.innerHTML = "";
-        items.forEach(item => {
-            const row = global.document.createElement("tr");
-            buildRow(row, item);
-            tableBody.appendChild(row);
-        });
-    };
 }
 
 test.describe('list-output.js', () => {
@@ -447,10 +319,88 @@ test.describe('list-output.js', () => {
         });
     });
     test.describe('init', () => {
+        // list-output.html のタブ構造（main > business/application > 各一覧）を最小限で再現する
+        function setupTabbedDocument(doc) {
+            const main = doc.createElement('main');
+            doc.selectors.set('main', main);
+            doc.body.appendChild(main);
+
+            const appendPanel = (id, group, tab) => {
+                const panel = doc.createElement('section');
+                panel.id = id;
+                panel.className = 'list-output-tab';
+                panel.setAttribute('data-tab-group', group);
+                panel.setAttribute('data-tab', tab);
+                main.appendChild(panel);
+
+                const table = doc.createElement('table');
+                table.id = `${id.replace('-panel', '')}-list`;
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                panel.appendChild(table);
+                doc.selectors.set(`#${table.id} tbody`, tbody);
+                return panel;
+            };
+            const appendButton = (group, tab) => {
+                const button = doc.createElement('button');
+                button.className = 'tab-button';
+                button.setAttribute('data-tab-group', group);
+                button.setAttribute('data-tab', tab);
+                main.appendChild(button);
+                return button;
+            };
+
+            appendPanel('business-panel', 'main', 'business');
+            appendPanel('application-panel', 'main', 'application');
+            appendButton('main', 'business');
+            appendButton('main', 'application');
+            ['package', 'all', 'enum', 'collection', 'validation', 'smell'].forEach(tab => {
+                appendPanel(`business-${tab}-panel`, 'business', tab);
+                appendButton('business', tab);
+            });
+            ['controller', 'service', 'repository'].forEach(tab => {
+                appendPanel(`${tab}-panel`, 'application', tab);
+                appendButton('application', tab);
+            });
+            return main;
+        }
+
+        test('0件の一覧はタブとパネルごと取り除く', () => {
+            const doc = setupDocument();
+            setupTabbedDocument(doc);
+            globalThis.glossaryData = {terms: {}};
+            globalThis.listData = {
+                businessRules: {packages: [{packageName: 'com.example', classCount: 1}]},
+                applications: {},
+            };
+
+            ListOutputApp.init();
+
+            assert.ok(doc.getElementById('business-package-panel'), '対象があるタブは残ること');
+            assert.equal(doc.getElementById('business-all-panel'), null, '0件のタブは残さないこと');
+            assert.equal(doc.getElementById('application-panel'), null, '中身が全て0件のグループは親タブごと消えること');
+            assert.equal(doc.querySelectorAll('.tab-button[data-tab-group="application"]').length, 0,
+                'グループのタブボタンも残さないこと');
+        });
+
+        test('全ての一覧が0件の場合、このドキュメントが空であることを表示する', () => {
+            const doc = setupDocument();
+            const main = setupTabbedDocument(doc);
+            globalThis.glossaryData = {terms: {}};
+            globalThis.listData = {businessRules: {}, applications: {}};
+
+            ListOutputApp.init();
+
+            const empty = main.children.find(el => el.className && el.className.includes('jig-empty'));
+            assert.ok(empty, 'jig-empty が表示されること');
+            assert.equal(doc.querySelectorAll('.list-output-tab').length, 0, 'パネルは残さないこと');
+        });
+
         test('listData がない場合、テーブルを描画せずエラー表示に切り替える', () => {
             const doc = setupDocument();
-            setupJig();
             delete globalThis.listData;
+            const main = doc.createElement('main');
+            doc.selectors.set('main', main);
             const table = doc.createElement('table');
             const tbody = doc.createElement('tbody');
             table.appendChild(tbody);
@@ -458,7 +408,9 @@ test.describe('list-output.js', () => {
 
             ListOutputApp.init();
 
-            assert.equal(Jig.dom.renderDataLoadError.lastCall.dataFileName, 'list-output-data.js');
+            const error = main.children.find(el => el.className && el.className.includes('jig-data-error'));
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('list-output-data.js'), '読み込めなかったファイル名が示されること');
             assert.equal(tbody.children.length, 0, 'テーブルは描画されないこと');
         });
     });
@@ -477,7 +429,6 @@ test.describe('list-output.js', () => {
         test.describe('renderTable: controller', () => {
             test('CONTROLLERのテーブルを描画する', () => {
                 const doc = setupDocument();
-                setupJig();
                 globalThis.glossaryData = {terms: {}};
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
@@ -511,7 +462,6 @@ test.describe('list-output.js', () => {
         test.describe('renderTable: service', () => {
             test('SERVICEのテーブルを描画する', () => {
                 const doc = setupDocument();
-                setupJig();
                 globalThis.glossaryData = {terms: {}};
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
@@ -541,7 +491,6 @@ test.describe('list-output.js', () => {
         test.describe('renderTable: repository', () => {
             test('REPOSITORYのテーブルを描画する', () => {
                 const doc = setupDocument();
-                setupJig();
                 globalThis.glossaryData = {terms: {}};
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
@@ -740,26 +689,27 @@ test.describe('list-output.js', () => {
         test.describe('activateTabGroup', () => {
             test('タブを切り替える', () => {
                 const doc = setupDocument();
-                const tab1 = doc.createElement('div');
-                tab1.dataset = {tabGroup: 'test', tab: 'one'};
-                const tab2 = doc.createElement('div');
-                tab2.dataset = {tabGroup: 'test', tab: 'two'};
-
-                const button1 = doc.createElement('button');
-                button1.dataset = {tabGroup: 'test', tab: 'one'};
-                const button2 = doc.createElement('button');
-                button2.dataset = {tabGroup: 'test', tab: 'two'};
-
-                doc.allElements.push(tab1, tab2, button1, button2);
+                const appendTabElement = (tagName, className, tab) => {
+                    const el = doc.createElement(tagName);
+                    el.className = className;
+                    el.setAttribute('data-tab-group', 'test');
+                    el.setAttribute('data-tab', tab);
+                    doc.body.appendChild(el);
+                    return el;
+                };
+                const tab1 = appendTabElement('div', 'list-output-tab', 'one');
+                const tab2 = appendTabElement('div', 'list-output-tab', 'two');
+                const button1 = appendTabElement('button', 'tab-button', 'one');
+                const button2 = appendTabElement('button', 'tab-button', 'two');
 
                 ListOutputApp.activateTabGroup('test', 'two');
 
-                assert.equal(tab1.className, '');
-                assert.equal(tab2.className, 'is-active');
-                assert.equal(button1.className, '');
-                assert.equal(button1.attributes['aria-selected'], 'false');
-                assert.equal(button2.className, 'is-active');
-                assert.equal(button2.attributes['aria-selected'], 'true');
+                assert.equal(tab1.classList.contains('is-active'), false);
+                assert.equal(tab2.classList.contains('is-active'), true);
+                assert.equal(button1.classList.contains('is-active'), false);
+                assert.equal(button1.getAttribute('aria-selected'), 'false');
+                assert.equal(button2.classList.contains('is-active'), true);
+                assert.equal(button2.getAttribute('aria-selected'), 'true');
             });
         });
     });

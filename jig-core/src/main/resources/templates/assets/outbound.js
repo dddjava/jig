@@ -342,8 +342,6 @@ const OutboundApp = (() => {
             container.appendChild(Jig.dom.createPackageHeading(Jig.util.fqnToId("package", packageFqn), packageFqn));
             items.forEach(group => appendPortCard(container, group, visibility));
         });
-
-        if (visibleGroups.length === 0) renderNoData(container);
     }
 
     function appendPortCard(container, group, visibility) {
@@ -440,8 +438,6 @@ const OutboundApp = (() => {
             });
             container.appendChild(persistenceCard);
         });
-
-        if (grouped.length === 0) renderNoData(container);
     }
 
     function renderExternalList(grouped, visibility = state.visibility || DEFAULT_VISIBILITY) {
@@ -473,8 +469,6 @@ const OutboundApp = (() => {
             });
             container.appendChild(externalCard);
         });
-
-        if (grouped.length === 0) renderNoData(container);
     }
 
     function renderCrudTable(grouped) {
@@ -483,10 +477,7 @@ const OutboundApp = (() => {
         container.innerHTML = "";
 
         const allPersistenceTargets = collectAllTargets(grouped);
-        if (allPersistenceTargets.length === 0) {
-            container.textContent = "永続化操作なし";
-            return;
-        }
+        if (allPersistenceTargets.length === 0) return;
 
         const headerRow = Jig.dom.createElement("tr", {
             children: [
@@ -554,10 +545,6 @@ const OutboundApp = (() => {
             className: "zebra crud-table",
             children: [Jig.dom.createElement("thead", {children: [headerRow]}), tbody]
         }));
-    }
-
-    function renderNoData(container) {
-        container.appendChild(Jig.dom.createElement("p", {className: "weak", textContent: "データなし"}));
     }
 
     function createDiagramContext() {
@@ -872,6 +859,12 @@ const OutboundApp = (() => {
         state.grouped = model.grouped;
         state.persistenceGrouped = model.persistenceGrouped;
         state.externalGrouped = model.externalGrouped;
+
+        // CRUD表は出力ポートから導出されるものなので、空判定には数えない
+        if (model.grouped.length === 0 && model.persistenceGrouped.length === 0 && model.externalGrouped.length === 0) {
+            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            return;
+        }
 
         Jig.dom.sidebar.initCollapseBtn();
         bindEvents();

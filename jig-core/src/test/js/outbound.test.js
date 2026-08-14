@@ -78,6 +78,22 @@ test.describe("outbound.js", () => {
     // ----- toCrudChar -----
 
     test.describe("init", () => {
+        test("対象が0件の場合、このドキュメントが空であることを表示する", () => {
+            const doc = setupDom();
+            const main = doc.createElement("main");
+            doc.selectors.set("main", main);
+            globalThis.outboundData = makeEmptyData();
+
+            OutboundApp.init();
+
+            const empty = main.children.find(el => el.className && el.className.includes("jig-empty"));
+            assert.ok(empty, "jig-empty が表示されること");
+            assert.equal(doc.getElementById("outbound-port-list").children.length, 0, "中身のないセクションは描かないこと");
+            assert.equal(doc.getElementById("outbound-crud-panel").children.length, 0, "中身のない表は描かないこと");
+
+            delete globalThis.outboundData;
+        });
+
         test("outboundData がない場合、エラーメッセージを表示する", () => {
             const doc = setupDom();
             const main = doc.createElement("main");
@@ -779,20 +795,18 @@ test.describe("outbound.js", () => {
     // ----- renderOutboundList -----
 
     test.describe("renderOutboundList", () => {
-        test("データなしの場合「データなし」を表示する", () => {
+        test("データなしの場合は何も描画しない", () => {
             const doc = setupDom();
             OutboundApp.renderOutboundList([]);
             const container = doc.getElementById("outbound-port-list");
-            assert.ok(container.children.length > 0);
-            assert.equal(container.children[0].textContent, "データなし");
+            assert.equal(container.children.length, 0);
         });
 
-        test("表示設定で全グループがカードにならない場合も「データなし」を表示する", () => {
+        test("表示設定で全グループがカードにならない場合も何も描画しない", () => {
             const doc = setupDom();
             OutboundApp.renderOutboundList([simpleGroup], {});
             const container = doc.getElementById("outbound-port-list");
-            assert.equal(container.children.length, 1, "孤児の見出しを生成しない");
-            assert.equal(container.children[0].textContent, "データなし");
+            assert.equal(container.children.length, 0, "孤児の見出しを生成しない");
         });
 
         test("パッケージ見出しに続けて出力ポートグループをセクションとして描画する", () => {
@@ -1013,11 +1027,11 @@ test.describe("outbound.js", () => {
     // ----- renderCrudTable -----
 
     test.describe("renderCrudTable", () => {
-        test("永続化操作なしの場合はメッセージを表示する", () => {
+        test("永続化操作なしの場合は表ごと描画しない", () => {
             const doc = setupDom();
             OutboundApp.renderCrudTable([]);
             const container = doc.getElementById("outbound-crud-panel");
-            assert.equal(container.textContent, "永続化操作なし");
+            assert.equal(container.children.length, 0);
         });
 
         test("永続化操作ありの場合はテーブルを描画する", () => {

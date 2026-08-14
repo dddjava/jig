@@ -1925,6 +1925,14 @@ p.jig-data-error code {
     white-space: nowrap;
 }
 
+/* 対象が0件のドキュメント */
+
+.jig-empty {
+    color: var(--color-text-secondary);
+    padding: 1rem;
+    margin: 1rem;
+}
+
 /* 警告メッセージ（optional データ欠落） */
 
 p.jig-data-warning {

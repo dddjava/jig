@@ -9,9 +9,6 @@ const IndexApp = (() => {
     }
 
     function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabelKey, nodeClickUrlCallback) {
-        const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-        packageDiagramContainer.appendChild(domainPackageDiagram);
-
         const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,
@@ -23,17 +20,18 @@ const IndexApp = (() => {
             }
         );
 
-        if (generator("TB")) {
-            // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-            const heading = Jig.dom.createElement("h3", {
-                children: [
-                    Jig.dom.i18nText("span", titleLabelKey),
-                    document.createTextNode(": " + packageRoot)
-                ]
-            });
-            packageDiagramContainer.insertBefore(heading, domainPackageDiagram);
-            Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
-        }
+        // ダイアグラムが出力されない場合もあるので、タイトル行も枠も描けるときだけ追加する
+        if (!generator("TB")) return;
+
+        packageDiagramContainer.appendChild(Jig.dom.createElement("h3", {
+            children: [
+                Jig.dom.i18nText("span", titleLabelKey),
+                document.createTextNode(": " + packageRoot)
+            ]
+        }));
+        const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
+        packageDiagramContainer.appendChild(domainPackageDiagram);
+        Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
     }
 
     function renderSummary() {
@@ -119,6 +117,11 @@ const IndexApp = (() => {
                 commonRoot,
                 "最上位パッケージ"
             );
+        }
+
+        // 図が1つも描けなければ見出しごと出さない
+        if (packageDiagramContainer && packageDiagramContainer.children.length === 0) {
+            document.getElementById("diagrams")?.remove();
         }
 
         updateRelativeTime();

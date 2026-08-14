@@ -1048,6 +1048,35 @@ globalThis.Jig.dom = (() => {
         }));
     }
 
+    /**
+     * このドキュメントの対象が1件もないことを表示する。
+     * ページ内の一部が0件なだけの場合は何も表示せず要素ごと描かない方針のため、
+     * 呼び出すのは主要コンテンツが丸ごと空になったときだけにする。
+     *
+     * @param {object|null} container 表示先。null なら何もしない
+     */
+    function renderEmptyDocument(container) {
+        if (!container) return;
+        const panel = createElement("section", {
+            className: "jig-empty",
+            children: [i18nText("p", "このドキュメントの対象が見つかりませんでした。")]
+        });
+
+        // 絞り込む対象も表示を切り替える対象もないので、サイドバーごと取り除く
+        document.querySelector(".in-page-sidebar")?.remove();
+
+        // 何のドキュメントなのかを併せて示す。本文に出すのでヘッダの「?」からは外す
+        const description = document.getElementById("jig-document-description");
+        if (description && description.textContent) {
+            panel.appendChild(description);
+            description.classList.remove("hidden");
+            document.getElementById("jig-document-help-panel")?.remove();
+            document.querySelector(".jig-help-button")?.remove();
+        }
+
+        container.appendChild(panel);
+    }
+
     function initCommonUi() {
         setupHeaderNavigation();
         setupLanguageSwitcher();
@@ -1123,6 +1152,7 @@ globalThis.Jig.dom = (() => {
         renderTableRows,
         setupSortableTables,
         renderDataLoadError,
+        renderEmptyDocument,
         initCommonUi,
 
         card: {

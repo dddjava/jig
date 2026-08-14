@@ -1021,6 +1021,45 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('renderEmptyDocument', () => {
+        test('対象が0件であることを表示する', () => {
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderEmptyDocument(container);
+
+            const message = container.querySelector('.jig-empty');
+            assert.ok(message, '.jig-empty が追加されること');
+            assert.ok(message.textContent.includes('見つかりませんでした'));
+        });
+
+        test('ドキュメントの説明を空状態のパネルに移して表示する', () => {
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderEmptyDocument(container);
+
+            const description = container.querySelector('#jig-document-description');
+            assert.ok(description, '説明が空状態のパネルに移ること');
+            assert.equal(description.classList.contains('hidden'), false, '説明が表示されること');
+        });
+
+        test('説明を持たないページでは何も移動しない', () => {
+            document.getElementById('jig-document-description').textContent = '';
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderEmptyDocument(container);
+
+            assert.ok(container.querySelector('.jig-empty'), '空であることは表示されること');
+            assert.equal(container.querySelector('#jig-document-description'), null, '空の説明は移さないこと');
+        });
+
+        test('表示先がない場合は何もしない', () => {
+            assert.doesNotThrow(() => Jig.dom.renderEmptyDocument(null));
+        });
+    });
+
     test.describe('setupSortableTables', () => {
         test('table.sortable に click イベントを付与', () => {
             const tableHtml = `

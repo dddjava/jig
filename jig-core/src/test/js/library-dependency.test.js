@@ -127,6 +127,26 @@ test.describe('library-dependency.js', () => {
             return diagram;
         }
 
+        test('ライブラリが0件の場合、コントロールごと取り除いて空であることを表示する', () => {
+            const main = document.createElement('main');
+            const controls = document.createElement('div');
+            controls.className = 'controls';
+            main.appendChild(controls);
+            const list = document.createElement('section');
+            list.id = 'library-list';
+            main.appendChild(list);
+            document.body.appendChild(main);
+            setupDiagram();
+            globalThis.libraryDependencyData = {internalPackages: ['com.example.a.A'], libraries: [], relations: []};
+
+            App.init();
+
+            assert.ok(main.querySelector('.jig-empty'), 'jig-empty が表示されること');
+            assert.equal(main.querySelector('.controls'), null, '操作対象のないコントロールは残さないこと');
+            assert.equal(document.getElementById('library-list'), null, '中身のない一覧は残さないこと');
+            assert.equal(document.getElementById('library-dependency-diagram'), null, '図の枠も残さないこと');
+        });
+
         test('データが無い場合はエラーメッセージを表示する', () => {
             const main = document.createElement('main');
             document.body.appendChild(main);

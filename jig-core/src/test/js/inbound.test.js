@@ -281,12 +281,14 @@ test.describe('inbound.js', () => {
         assert.equal(intermediateLink.getAttribute('href'), '#' + Jig.util.fqnToId('package', 'com.example'));
     });
 
-    test('renderMain should handle empty data', () => {
+    test('対象が0件の場合、このドキュメントが空であることを表示する', () => {
         globalThis.inboundData = {inboundAdapters: []};
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
-        assert.equal(mainList.textContent, 'データなし');
+        const empty = mainList.children.find(el => el.className && el.className.includes('jig-empty'));
+        assert.ok(empty, 'jig-empty が表示されること');
+        assert.equal(mainList.children.filter(el => el !== empty).length, 0, '中身のないセクションは描かないこと');
     });
 
     test('adapter chain: 浅いノードから外部へのエッジは長くなる', () => {

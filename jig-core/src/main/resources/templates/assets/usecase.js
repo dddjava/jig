@@ -1175,10 +1175,7 @@ const UsecaseApp = (() => {
         Jig.mermaid.diagram.unregisterWithin(container);
         container.innerHTML = "";
 
-        if (!usecases || usecases.length === 0) {
-            container.textContent = "データなし";
-            return;
-        }
+        if (!usecases || usecases.length === 0) return;
 
         const methodMap = buildMethodMap(usecases);
         const reverseCallerMap = buildReverseCallerMap(methodMap);
@@ -1303,6 +1300,11 @@ const UsecaseApp = (() => {
         }
 
         Jig.data.resetCache();
+
+        if ((state.data.usecases ?? []).length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("usecase-list"));
+            return;
+        }
 
         initControls();
         render();

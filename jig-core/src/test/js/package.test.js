@@ -114,6 +114,28 @@ test.describe('package.js', () => {
     });
 
     test.describe('init', () => {
+        test('パッケージが0件の場合、タブごと取り除いて空であることを表示する', () => {
+            const doc = setupDocument();
+            const main = doc.createElement('main');
+            doc.selectors.set('main', main);
+            const tabs = doc.createElement('nav');
+            tabs.className = 'package-mode-tabs';
+            main.appendChild(tabs);
+            const panel = doc.createElement('div');
+            panel.className = 'package-tab-panel';
+            main.appendChild(panel);
+            setPackageData({packages: [], relations: [], domainPackageRoots: []}, testContext);
+
+            PackageApp.init();
+
+            const empty = main.children.find(el => el.className && el.className.includes('jig-empty'));
+            assert.ok(empty, 'jig-empty が表示されること');
+            assert.equal(doc.querySelectorAll('.package-mode-tabs').length, 0, 'タブは残さないこと');
+            assert.equal(doc.querySelectorAll('.package-tab-panel').length, 0, 'パネルは残さないこと');
+
+            delete globalThis.packageData;
+        });
+
         test('packageData がない場合、エラーメッセージを表示する', () => {
             const doc = setupDocument();
             const main = doc.createElement('main');

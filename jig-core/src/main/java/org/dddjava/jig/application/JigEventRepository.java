@@ -97,7 +97,8 @@ public class JigEventRepository {
                 "サービスメソッドが見つからないため、サービスに関わる情報は出力されません。@Serviceがない場合は正常です。",
                 "Service method cannot be found. Service method requires class annotated by @Service.")),
         ビジネスルールが見つからないので出力されない通知(List.of(JigDocument.PackageRelation, JigDocument.DomainModel), new LocalizedMessage(
-                "ビジネスルールが識別できないため、パッケージ関連図を出力できません。パッケージ構成を確認してください。",
+                // 紐づくドキュメントが複数あるため、特定のドキュメント名は書かない
+                "ビジネスルールが識別できないため、ビジネスルールに関わる情報は出力されません。パッケージ構成を確認してください。",
                 "Business Rule cannot be found. Please check the package layout.")),
         リポジトリが見つからないので出力されない通知(List.of(JigDocument.OutboundInterface), new LocalizedMessage(
                 "Repositoryのメソッドが見つからないため、データソースに関わる情報は出力されません。@Repositoryがない場合は正常です。",

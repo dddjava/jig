@@ -250,11 +250,16 @@ class Element {
             if (idx !== -1) parent.children.splice(idx, 1);
             this.parentNode = null;
         }
-        // 取り除いた要素は getElementById で引けなくなる
+        // 取り除いた要素とその子孫は getElementById で引けなくなる
+        this.unregisterId();
+    }
+
+    unregisterId() {
         const id = this.getAttribute("id");
         if (id && this.ownerDocument?.elementsById.get(id) === this) {
             this.ownerDocument.elementsById.delete(id);
         }
+        this.children.forEach(child => child.unregisterId());
     }
 
     removeAttribute(name) {

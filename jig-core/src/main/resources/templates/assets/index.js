@@ -89,9 +89,19 @@ const IndexApp = (() => {
         });
     }
 
+    // 図が1つも描けなければ見出しごと出さない
+    function removeDiagramsSectionIfEmpty(packageDiagramContainer) {
+        if (packageDiagramContainer && packageDiagramContainer.children.length === 0) {
+            document.getElementById("diagrams")?.remove();
+        }
+    }
+
     function init() {
+        const packageDiagramContainer = document.getElementById("package-diagram");
+
         // 各ドキュメントへの入口が作れないので、他ページと同様に読み込み失敗として扱う
         if (!Jig.data.navigation.get()) {
+            removeDiagramsSectionIfEmpty(packageDiagramContainer);
             Jig.dom.renderDataLoadError(document.querySelector("main"), "navigation-data.js");
             return;
         }
@@ -99,7 +109,6 @@ const IndexApp = (() => {
         renderSummary();
         renderDocumentLinks();
 
-        const packageDiagramContainer = document.getElementById("package-diagram");
         const packageData = packageDiagramContainer ? getPackageData() : null;
 
         if (packageDiagramContainer && packageData) {
@@ -125,10 +134,7 @@ const IndexApp = (() => {
             );
         }
 
-        // 図が1つも描けなければ見出しごと出さない
-        if (packageDiagramContainer && packageDiagramContainer.children.length === 0) {
-            document.getElementById("diagrams")?.remove();
-        }
+        removeDiagramsSectionIfEmpty(packageDiagramContainer);
 
         updateRelativeTime();
         // 相対時間は data-i18n を持たないため、言語切り替え時に自分で描き直す

@@ -42,4 +42,15 @@ class JigEventRepositoryTest {
         assertTrue(diagnostic.error());
         assertTrue(diagnostic.jigDocuments().isEmpty(), "特定ドキュメントに限らず全体に影響する");
     }
+
+    @Test
+    void 解析は成立している読み取り結果は内容が欠けるドキュメントに紐づける() {
+        var sut = new JigEventRepository(Locale.JAPANESE);
+        sut.recordEvent(ReadStatus.SQLなし);
+
+        Diagnostic diagnostic = sut.diagnostics().get(0);
+
+        assertEquals(false, diagnostic.error());
+        assertEquals(List.of(JigDocument.OutboundInterface), diagnostic.jigDocuments());
+    }
 }

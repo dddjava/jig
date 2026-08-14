@@ -67,7 +67,7 @@ public class JigEventRepository {
     public List<Diagnostic> diagnostics() {
         return Stream.concat(
                         readStatuses.stream()
-                                .map(readStatus -> new Diagnostic(readStatus.name(), readStatus.isError(), List.of(), readStatus.message())),
+                                .map(readStatus -> new Diagnostic(readStatus.name(), readStatus.isError(), readStatus.jigDocuments(), readStatus.message())),
                         warnings.stream()
                                 .map(warning -> new Diagnostic(warning.name(), false, warning.jigDocuments(), warning.message())))
                 .sorted(Comparator.comparing(Diagnostic::code))

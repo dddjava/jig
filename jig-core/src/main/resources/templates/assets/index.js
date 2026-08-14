@@ -90,6 +90,12 @@ const IndexApp = (() => {
     }
 
     function init() {
+        // 各ドキュメントへの入口が作れないので、他ページと同様に読み込み失敗として扱う
+        if (!Jig.data.navigation.get()) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "navigation-data.js");
+            return;
+        }
+
         renderSummary();
         renderDocumentLinks();
 

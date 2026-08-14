@@ -29,9 +29,14 @@ test.describe('index.js', () => {
     test.beforeEach(() => {
         setupDom();
         IndexApp = reloadJigModules();
+        // 各ドキュメントへの入口。無い場合は読み込み失敗として扱われるため、既定では用意しておく
+        globalThis.navigationData = {links: []};
     });
 
-    test.afterEach(teardownDom);
+    test.afterEach(() => {
+        delete globalThis.navigationData;
+        teardownDom();
+    });
 
     test.describe('updateRelativeTime', () => {
         test('要素が存在しない場合は何もしない', () => {
@@ -170,6 +175,18 @@ test.describe('index.js', () => {
     test.describe('init', () => {
         test('summary/document-links/package-diagram が無くても例外を投げない', () => {
             assert.doesNotThrow(() => IndexApp.init());
+        });
+
+        test('navigationData がない場合、エラーメッセージを表示する', () => {
+            const main = document.createElement('main');
+            document.body.appendChild(main);
+            delete globalThis.navigationData;
+
+            IndexApp.init();
+
+            const error = main.querySelector('p.jig-data-error');
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('navigation-data.js'), '読み込めなかったファイル名が示されること');
         });
 
         test('document-links の ul にリンク一覧を描画する', () => {

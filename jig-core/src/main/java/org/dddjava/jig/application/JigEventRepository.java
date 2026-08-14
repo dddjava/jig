@@ -90,17 +90,17 @@ public class JigEventRepository {
      * jigDocuments はこの警告で内容が欠ける（0件になる）ドキュメント。
      */
     private enum Warning {
-        ハンドラメソッドが見つからないので出力されない通知(List.of(JigDocument.InboundInterface), new LocalizedMessage(
+        ハンドラメソッドが見つからないので出力されない通知(List.of(JigDocument.InboundInterface, JigDocument.ListOutput), new LocalizedMessage(
                 "リクエストハンドラメソッドが見つからないため、コントローラーに関わる情報は出力されません。@Controllerや@RestControllerがない場合は正常です。",
                 "Request handler method cannot be found. Request handler method requires class annotated by @Controller or @RestController, and method annotated by @RequestMapping.")),
-        サービスメソッドが見つからないので出力されない通知(List.of(JigDocument.Usecase), new LocalizedMessage(
+        サービスメソッドが見つからないので出力されない通知(List.of(JigDocument.Usecase, JigDocument.ListOutput), new LocalizedMessage(
                 "サービスメソッドが見つからないため、サービスに関わる情報は出力されません。@Serviceがない場合は正常です。",
                 "Service method cannot be found. Service method requires class annotated by @Service.")),
-        ビジネスルールが見つからないので出力されない通知(List.of(JigDocument.PackageRelation, JigDocument.DomainModel), new LocalizedMessage(
+        ビジネスルールが見つからないので出力されない通知(List.of(JigDocument.PackageRelation, JigDocument.DomainModel, JigDocument.ListOutput), new LocalizedMessage(
                 // 紐づくドキュメントが複数あるため、特定のドキュメント名は書かない
                 "ビジネスルールが識別できないため、ビジネスルールに関わる情報は出力されません。パッケージ構成を確認してください。",
                 "Business Rule cannot be found. Please check the package layout.")),
-        リポジトリが見つからないので出力されない通知(List.of(JigDocument.OutboundInterface), new LocalizedMessage(
+        リポジトリが見つからないので出力されない通知(List.of(JigDocument.OutboundInterface, JigDocument.ListOutput), new LocalizedMessage(
                 "Repositoryのメソッドが見つからないため、データソースに関わる情報は出力されません。@Repositoryがない場合は正常です。",
                 "Repository method cannot be found.")),
         ;

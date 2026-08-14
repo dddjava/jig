@@ -28,7 +28,7 @@ class JigEventRepositoryTest {
         List<Diagnostic> diagnostics = sut.diagnostics();
 
         assertEquals(1, diagnostics.size());
-        assertEquals(List.of(JigDocument.InboundInterface), diagnostics.get(0).jigDocuments());
+        assertEquals(List.of(JigDocument.InboundInterface, JigDocument.ListOutput), diagnostics.get(0).jigDocuments());
         assertEquals(false, diagnostics.get(0).error());
     }
 

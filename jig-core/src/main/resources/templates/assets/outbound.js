@@ -862,7 +862,7 @@ const OutboundApp = (() => {
 
         // CRUD表は出力ポートから導出されるものなので、空判定には数えない
         if (model.grouped.length === 0 && model.persistenceGrouped.length === 0 && model.externalGrouped.length === 0) {
-            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "OutboundInterface");
             return;
         }
 

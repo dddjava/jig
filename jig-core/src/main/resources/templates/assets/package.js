@@ -1295,7 +1295,7 @@ const PackageApp = (() => {
             // 探索対象が無いので、タブも操作パネルも取り除く
             document.querySelector(".package-mode-tabs")?.remove();
             document.querySelectorAll(".package-tab-panel").forEach(panel => panel.remove());
-            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "PackageRelation");
             return;
         }
 

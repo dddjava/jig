@@ -1214,7 +1214,7 @@ const DomainApp = (() => {
         }
 
         if (Jig.data.domain.getTypes().length === 0) {
-            Jig.dom.renderEmptyDocument(document.getElementById("domain-main"));
+            Jig.dom.renderEmptyDocument(document.getElementById("domain-main"), "DomainModel");
             return;
         }
 

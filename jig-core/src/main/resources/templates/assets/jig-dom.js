@@ -1049,18 +1049,51 @@ globalThis.Jig.dom = (() => {
     }
 
     /**
+     * 解析中に検出した事象を、言語切り替えに追従する要素にする。
+     */
+    function diagnosticElement(diagnostic, className) {
+        globalThis.Jig.i18n.register(diagnostic.ja, diagnostic.en);
+        return i18nText("p", diagnostic.ja, {className});
+    }
+
+    /**
+     * 解析そのものが成立していないことを、ページ先頭で知らせる。
+     * 0件なのか解析できていないのかを区別するために、対象の有無に関わらず表示する。
+     *
+     * 各ページの描画は main を作り直すため、影響を受けないヘッダ直後に置く。
+     */
+    function renderDiagnosticsBanner() {
+        const errors = globalThis.Jig?.data?.diagnostics?.getErrors() ?? [];
+        if (errors.length === 0) return;
+
+        const header = document.querySelector("header.top") || document.querySelector("header");
+        if (!header) return;
+
+        const banner = createElement("section", {className: "jig-diagnostics"});
+        errors.forEach(diagnostic => banner.appendChild(diagnosticElement(diagnostic)));
+        header.after(banner);
+    }
+
+    /**
      * このドキュメントの対象が1件もないことを表示する。
      * ページ内の一部が0件なだけの場合は何も表示せず要素ごと描かない方針のため、
      * 呼び出すのは主要コンテンツが丸ごと空になったときだけにする。
      *
      * @param {object|null} container 表示先。null なら何もしない
+     * @param {string} [jigDocument] JigDocument の enum 名。渡すと0件の理由を併せて表示する
      */
-    function renderEmptyDocument(container) {
+    function renderEmptyDocument(container, jigDocument) {
         if (!container) return;
         const panel = createElement("section", {
             className: "jig-empty",
             children: [i18nText("p", "このドキュメントの対象が見つかりませんでした。")]
         });
+
+        // なぜ0件になったのかがわかっていれば併せて示す
+        if (jigDocument) {
+            globalThis.Jig.data.diagnostics.getFor(jigDocument)
+                .forEach(diagnostic => panel.appendChild(diagnosticElement(diagnostic, "jig-empty__reason")));
+        }
 
         // 絞り込む対象も表示を切り替える対象もないので、サイドバーごと取り除く
         document.querySelector(".in-page-sidebar")?.remove();
@@ -1081,6 +1114,7 @@ globalThis.Jig.dom = (() => {
         setupHeaderNavigation();
         setupLanguageSwitcher();
         setupDocumentHelp();
+        renderDiagnosticsBanner();
         if (globalThis.Jig?.data?.createTypeLinkResolver) {
             setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
         }
@@ -1153,6 +1187,7 @@ globalThis.Jig.dom = (() => {
         setupSortableTables,
         renderDataLoadError,
         renderEmptyDocument,
+        renderDiagnosticsBanner,
         initCommonUi,
 
         card: {

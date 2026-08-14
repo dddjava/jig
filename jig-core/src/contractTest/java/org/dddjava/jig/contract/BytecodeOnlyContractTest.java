@@ -48,10 +48,10 @@ class BytecodeOnlyContractTest {
     }
 
     /**
-     * 計測値と、Javadocを読み取る用語集。
+     * 計測値と、Javadocを読み取る用語集、およびソースがないこと自体を記録する診断。
      */
     private static final Set<String> 一致を求めない成果物 =
-            Stream.concat(GeneratedSite.MEASUREMENTS.stream(), Stream.of("glossary-data.js"))
+            Stream.concat(GeneratedSite.MEASUREMENTS.stream(), Stream.of("glossary-data.js", "diagnostics-data.js"))
                     .collect(Collectors.toSet());
 
     @Test
@@ -59,6 +59,16 @@ class BytecodeOnlyContractTest {
         assertEquals(
                 GeneratedSite.normalizedContents(withSourcesSite, 一致を求めない成果物),
                 GeneratedSite.normalizedContents(bytecodeOnlySite, 一致を求めない成果物));
+    }
+
+    @Test
+    void ソースがないことは診断に記録される() {
+        String withSources = GeneratedSite.read(withSourcesSite.resolve("data/diagnostics-data.js"));
+        String bytecodeOnly = GeneratedSite.read(bytecodeOnlySite.resolve("data/diagnostics-data.js"));
+
+        assertTrue(bytecodeOnly.contains("テキストソースなし"),
+                () -> "用語が減った理由を生成物から辿れなくなっています: " + bytecodeOnly);
+        assertFalse(withSources.contains("テキストソースなし"), withSources);
     }
 
     @Test

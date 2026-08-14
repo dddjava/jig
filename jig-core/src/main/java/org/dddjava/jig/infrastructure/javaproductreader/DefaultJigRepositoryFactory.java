@@ -27,6 +27,7 @@ import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
+import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
@@ -82,7 +83,7 @@ public class DefaultJigRepositoryFactory {
 
             // errorが1つでもあったら読み取り失敗として分析せず空を返す
             if (jigEventRepository.hasError()) {
-                return JigRepository.empty();
+                return JigRepository.empty(jigEventRepository.diagnostics());
             }
 
             return analyze(sources, repositoryRoot, jigEventRepository, glossaryRepository);
@@ -170,6 +171,11 @@ public class DefaultJigRepositoryFactory {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel);
 
                 return new JigRepository() {
+                    @Override
+                    public List<Diagnostic> diagnostics() {
+                        return jigEventRepository.diagnostics();
+                    }
+
                     @Override
                     public JigTypes fetchJigTypes() {
                         return jigTypes;

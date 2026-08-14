@@ -146,7 +146,7 @@ const InboundApp = (() => {
         }
 
         if ((state.data.inboundAdapters ?? []).length === 0) {
-            Jig.dom.renderEmptyDocument(document.getElementById("inbound-list"));
+            Jig.dom.renderEmptyDocument(document.getElementById("inbound-list"), "InboundInterface");
             return;
         }
 

@@ -1302,7 +1302,7 @@ const UsecaseApp = (() => {
         Jig.data.resetCache();
 
         if ((state.data.usecases ?? []).length === 0) {
-            Jig.dom.renderEmptyDocument(document.getElementById("usecase-list"));
+            Jig.dom.renderEmptyDocument(document.getElementById("usecase-list"), "Usecase");
             return;
         }
 

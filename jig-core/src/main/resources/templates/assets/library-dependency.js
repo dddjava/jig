@@ -17,7 +17,7 @@ const LibraryDependencyApp = (() => {
             document.querySelector(".controls")?.remove();
             document.getElementById("library-dependency-diagram")?.remove();
             document.getElementById("library-list")?.remove();
-            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "LibraryDependency");
             return;
         }
 

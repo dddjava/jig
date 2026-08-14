@@ -17,6 +17,7 @@ test.describe('jig-data.js', () => {
         delete globalThis.listData;
         delete globalThis.navigationData;
         delete globalThis.typeRelationsData;
+        delete globalThis.diagnosticsData;
         jigData.resetCache();
     });
 
@@ -233,6 +234,42 @@ test.describe('jig-data.js', () => {
             const resolver = jigData.createTypeLinkResolver();
             const result = resolver('com.example.Shared');
             assert.ok(result.href.startsWith('domain.html#'));
+        });
+    });
+
+    test.describe('diagnostics', () => {
+        test('データがなければ空', () => {
+            assert.deepEqual(jigData.diagnostics.get(), []);
+            assert.deepEqual(jigData.diagnostics.getErrors(), []);
+            assert.deepEqual(jigData.diagnostics.getFor('Usecase'), []);
+        });
+
+        test('解析が成立していない事象だけを error として取り出す', () => {
+            globalThis.diagnosticsData = {
+                diagnostics: [
+                    {code: 'バイナリソースなし', error: true, jigDocuments: [], ja: 'なし', en: 'none'},
+                    {code: 'サービスなし', error: false, jigDocuments: ['Usecase'], ja: 'なし', en: 'none'},
+                ]
+            };
+
+            const errors = jigData.diagnostics.getErrors();
+
+            assert.equal(errors.length, 1);
+            assert.equal(errors[0].code, 'バイナリソースなし');
+        });
+
+        test('ドキュメントごとの理由は、そのドキュメントに紐づく警告だけを返す', () => {
+            globalThis.diagnosticsData = {
+                diagnostics: [
+                    {code: 'バイナリソースなし', error: true, jigDocuments: [], ja: 'なし', en: 'none'},
+                    {code: 'サービスなし', error: false, jigDocuments: ['Usecase'], ja: 'なし', en: 'none'},
+                    {code: 'ビジネスルールなし', error: false, jigDocuments: ['PackageRelation', 'DomainModel'], ja: 'なし', en: 'none'},
+                ]
+            };
+
+            assert.deepEqual(jigData.diagnostics.getFor('Usecase').map(d => d.code), ['サービスなし']);
+            assert.deepEqual(jigData.diagnostics.getFor('DomainModel').map(d => d.code), ['ビジネスルールなし']);
+            assert.deepEqual(jigData.diagnostics.getFor('Glossary'), [], '紐づく警告がなければ空');
         });
     });
 

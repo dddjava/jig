@@ -185,6 +185,20 @@ globalThis.Jig.data = (() => {
         },
     };
 
+    const diagnostics = {
+        get() {
+            return globalThis.diagnosticsData?.diagnostics ?? [];
+        },
+        /** 解析そのものが成立していない事象。全ドキュメントに影響する */
+        getErrors() {
+            return diagnostics.get().filter(diagnostic => diagnostic.error);
+        },
+        /** 指定ドキュメントの内容が欠ける理由。全体に影響するもの（jigDocumentsが空）は含めない */
+        getFor(jigDocument) {
+            return diagnostics.get().filter(diagnostic => !diagnostic.error && diagnostic.jigDocuments.includes(jigDocument));
+        },
+    };
+
     const summary = {
         get() {
             return globalThis.summaryData;
@@ -264,6 +278,7 @@ globalThis.Jig.data = (() => {
         list,
         library,
         navigation,
+        diagnostics,
         summary,
         typeRelations,
         resetCache,

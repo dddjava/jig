@@ -3,6 +3,7 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
+import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
@@ -16,7 +17,19 @@ import java.util.Optional;
 public interface JigRepository {
 
     static JigRepository empty() {
+        return empty(List.of());
+    }
+
+    /**
+     * 解析が成立しなかった場合のリポジトリ。なぜ空なのかを診断として持つ。
+     */
+    static JigRepository empty(List<Diagnostic> diagnostics) {
         return new JigRepository() {
+            @Override
+            public List<Diagnostic> diagnostics() {
+                return diagnostics;
+            }
+
             @Override
             public JigTypes fetchJigTypes() {
                 return new JigTypes(List.of());
@@ -53,6 +66,11 @@ public interface JigRepository {
             }
         };
     }
+
+    /**
+     * この解析で検出した事象。生成物を読み解くための情報として出力する。
+     */
+    List<Diagnostic> diagnostics();
 
     JigTypes fetchJigTypes();
 

@@ -1044,6 +1044,40 @@ test.describe('jig-dom.js', () => {
             assert.equal(description.classList.contains('hidden'), false, '説明が表示されること');
         });
 
+        test('0件の理由がわかっていれば併せて表示する', () => {
+            globalThis.diagnosticsData = {
+                diagnostics: [
+                    {code: 'サービスなし', error: false, jigDocuments: ['Usecase'], ja: '@Serviceがありません', en: 'No @Service'},
+                    {code: '別ドキュメントの警告', error: false, jigDocuments: ['DomainModel'], ja: '別の理由', en: 'other'},
+                ]
+            };
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderEmptyDocument(container, 'Usecase');
+
+            const reasons = [...container.querySelectorAll('.jig-empty__reason')].map(el => el.textContent);
+            assert.deepEqual(reasons, ['@Serviceがありません'], 'このドキュメントに紐づく理由だけを出すこと');
+
+            delete globalThis.diagnosticsData;
+        });
+
+        test('理由は言語切り替えに追従できるよう辞書に登録する', () => {
+            globalThis.diagnosticsData = {
+                diagnostics: [{code: 'サービスなし', error: false, jigDocuments: ['Usecase'], ja: '@Serviceがありません', en: 'No @Service'}]
+            };
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderEmptyDocument(container, 'Usecase');
+            Jig.i18n.setLanguage('en');
+
+            assert.equal(container.querySelector('.jig-empty__reason').textContent, 'No @Service');
+
+            Jig.i18n.setLanguage('ja');
+            delete globalThis.diagnosticsData;
+        });
+
         test('説明を持たないページでは何も移動しない', () => {
             document.getElementById('jig-document-description').textContent = '';
             const container = document.createElement('div');
@@ -1057,6 +1091,39 @@ test.describe('jig-dom.js', () => {
 
         test('表示先がない場合は何もしない', () => {
             assert.doesNotThrow(() => Jig.dom.renderEmptyDocument(null));
+        });
+    });
+
+    test.describe('renderDiagnosticsBanner', () => {
+        test('解析が成立していない場合、ヘッダ直後に知らせる', () => {
+            globalThis.diagnosticsData = {
+                diagnostics: [
+                    {code: 'バイナリソースなし', error: true, jigDocuments: [], ja: 'classがありません', en: 'no class'},
+                    {code: 'サービスなし', error: false, jigDocuments: ['Usecase'], ja: '@Serviceがありません', en: 'No @Service'},
+                ]
+            };
+
+            Jig.dom.renderDiagnosticsBanner();
+
+            const banner = document.querySelector('.jig-diagnostics');
+            assert.ok(banner, 'ページ内容の描画で消えないようヘッダ直後に置くこと');
+            assert.equal(banner.previousElementSibling.tagName, 'HEADER');
+            assert.deepEqual([...banner.querySelectorAll('p')].map(el => el.textContent), ['classがありません'],
+                'errorだけを出すこと');
+
+            delete globalThis.diagnosticsData;
+        });
+
+        test('解析が成立していれば何も出さない', () => {
+            globalThis.diagnosticsData = {
+                diagnostics: [{code: 'サービスなし', error: false, jigDocuments: ['Usecase'], ja: 'なし', en: 'none'}]
+            };
+
+            Jig.dom.renderDiagnosticsBanner();
+
+            assert.equal(document.querySelector('.jig-diagnostics'), null);
+
+            delete globalThis.diagnosticsData;
         });
     });
 

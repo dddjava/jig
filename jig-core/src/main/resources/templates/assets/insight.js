@@ -185,7 +185,7 @@ const InsightApp = (() => {
         });
 
         if (renderedSections.length === 0) {
-            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "Insight");
             return;
         }
 

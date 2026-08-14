@@ -33,6 +33,10 @@ public enum ReadStatus {
         this.message = message;
     }
 
+    public LocalizedMessage message() {
+        return message;
+    }
+
     public String localizedMessage(Locale locale) {
         return message.forLocale(locale);
     }

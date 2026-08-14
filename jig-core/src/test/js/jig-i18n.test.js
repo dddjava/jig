@@ -129,6 +129,28 @@ test.describe('jig-i18n.js', () => {
         assert.deepEqual(received, ['en', 'ja']);
     });
 
+    test.describe('register', () => {
+        test('解析結果に含まれる文言を辞書に加えると翻訳される', () => {
+            setupPage('<p data-i18n>解析結果由来の文言</p>');
+            Jig = loadI18n();
+
+            Jig.register('解析結果由来の文言', 'Message from analysis');
+            Jig.setLanguage('en');
+
+            assert.equal(document.querySelector('p').textContent, 'Message from analysis');
+        });
+
+        test('日英どちらかが欠けていれば登録しない', () => {
+            setupPage('');
+            Jig = loadI18n();
+
+            Jig.register('日本語だけ', '');
+            Jig.setLanguage('en');
+
+            assert.equal(Jig.t('日本語だけ'), '日本語だけ');
+        });
+    });
+
     test('availableLanguages は ja と builtinDictionaries のキーから導出する', () => {
         setupPage('');
         Jig = loadI18n();

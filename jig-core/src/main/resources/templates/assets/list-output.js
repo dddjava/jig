@@ -328,7 +328,7 @@ const ListOutputApp = (() => {
 
         if (document.querySelectorAll(".list-output-tab").length === 0) {
             document.querySelectorAll(".list-output-tabs").forEach(tabs => tabs.remove());
-            Jig.dom.renderEmptyDocument(document.querySelector("main"));
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "ListOutput");
             return;
         }
 

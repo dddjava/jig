@@ -181,6 +181,19 @@ globalThis.Jig.i18n = (() => {
         return builtinDictionaries[lang] || null;
     }
 
+    /**
+     * 解析結果に含まれる文言（診断メッセージなど）を辞書に加える。
+     * ビルド時に決まらないため builtinDictionaries には持てないが、
+     * 登録すれば data-i18n の仕組みでそのまま言語切り替えに追従する。
+     *
+     * @param {string} japanese 日本語。data-i18n のキーになる
+     * @param {string} english 英語
+     */
+    function register(japanese, english) {
+        if (!japanese || !english) return;
+        builtinDictionaries.en[japanese] = english;
+    }
+
     function resolveLanguage() {
         if (currentLang) return currentLang;
         // 初期言語は HTML の lang 属性から決定する（Java 側で {{lang}} を全テンプレートに置換済み）。
@@ -278,6 +291,7 @@ globalThis.Jig.i18n = (() => {
         currentLanguage,
         setLanguage,
         availableLanguages,
+        register,
         t,
         // テストが明示キー翻訳をセットアップするために参照する
         builtinDictionaries,

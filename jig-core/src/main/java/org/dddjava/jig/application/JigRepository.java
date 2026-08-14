@@ -16,10 +16,6 @@ import java.util.Optional;
 
 public interface JigRepository {
 
-    static JigRepository empty() {
-        return empty(List.of());
-    }
-
     /**
      * 解析が成立しなかった場合のリポジトリ。なぜ空なのかを診断として持つ。
      */

@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.documents;
 import java.util.Locale;
 
 /**
- * サーバ側でログや警告として出力する文字列の i18n を保持する小さなレコード。
+ * 解析中に検出した事象を利用者に伝える文字列の i18n を保持する小さなレコード。
  * <p>
- * クライアントサイドの翻訳辞書（{@code jig-i18n.js} の builtinDictionaries）には載らない、
- * Java から直接 stdout/stderr/ログに書く文言を対象とする。
+ * ビルド時に決まらないため {@code jig-i18n.js} の builtinDictionaries には持てず、
+ * ログ出力と、{@link Diagnostic} として生成物に埋め込む出力の両方で使う。
  */
 public record LocalizedMessage(String japanese, String english) {
 

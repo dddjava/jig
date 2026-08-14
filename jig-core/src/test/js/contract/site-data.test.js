@@ -26,6 +26,7 @@ test.describe('生成サイトとブラウザ資産の境界', () => {
             ['library-dependency-data.js', 'libraryDependencyData'],
             ['navigation-data.js', 'navigationData'],
             ['type-relations-data.js', 'typeRelationsData'],
+            ['diagnostics-data.js', 'diagnosticsData'],
         ];
 
         DATA_GLOBALS.forEach(([fileName, globalName]) => {

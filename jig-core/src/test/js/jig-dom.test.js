@@ -1016,6 +1016,19 @@ test.describe('jig-dom.js', () => {
                 '読み込めなかったファイルのパスが示されること');
         });
 
+        test('操作対象のないサイドバーは取り除く', () => {
+            const sidebar = document.createElement('nav');
+            sidebar.className = 'in-page-sidebar';
+            document.body.appendChild(sidebar);
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderDataLoadError(container, 'domain-data.js');
+
+            assert.equal(document.querySelector('.in-page-sidebar'), null,
+                '絞り込む対象も表示を切り替える対象もないため残さないこと');
+        });
+
         test('表示先がない場合は何もしない', () => {
             assert.doesNotThrow(() => Jig.dom.renderDataLoadError(null, 'domain-data.js'));
         });

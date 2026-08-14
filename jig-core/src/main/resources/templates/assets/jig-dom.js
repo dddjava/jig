@@ -1039,6 +1039,7 @@ globalThis.Jig.dom = (() => {
      */
     function renderDataLoadError(container, dataFileName) {
         if (!container) return;
+        removeSidebar();
         container.appendChild(createElement("p", {
             className: "jig-data-error",
             children: [
@@ -1046,6 +1047,13 @@ globalThis.Jig.dom = (() => {
                 createElement("code", {textContent: `data/${dataFileName}`})
             ]
         }));
+    }
+
+    /**
+     * 絞り込む対象も表示を切り替える対象もないので、サイドバーごと取り除く。
+     */
+    function removeSidebar() {
+        document.querySelector(".in-page-sidebar")?.remove();
     }
 
     /**
@@ -1095,8 +1103,7 @@ globalThis.Jig.dom = (() => {
                 .forEach(diagnostic => panel.appendChild(diagnosticElement(diagnostic, "jig-empty__reason")));
         }
 
-        // 絞り込む対象も表示を切り替える対象もないので、サイドバーごと取り除く
-        document.querySelector(".in-page-sidebar")?.remove();
+        removeSidebar();
 
         // 何のドキュメントなのかを併せて示す。本文に出すのでヘッダの「?」からは外す
         const description = document.getElementById("jig-document-description");

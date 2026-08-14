@@ -262,6 +262,8 @@ const OutboundApp = (() => {
         return Array.from(targetsSet).sort();
     }
 
+    const PANEL_IDS = ["outbound-port-list", "outbound-persistence-list", "outbound-external-list", "outbound-crud-panel"];
+
     function renderAllPanels() {
         const {visibility, data, grouped, persistenceGrouped, externalGrouped} = state;
         if (!data) return;
@@ -271,6 +273,24 @@ const OutboundApp = (() => {
         renderOutboundList(grouped, visibility);
         renderCrudTable(grouped);
         renderSidebar(grouped, persistenceGrouped, externalGrouped);
+        renderVisibilityNotice();
+    }
+
+    /**
+     * 表示設定で全ての要素が消えたことを知らせる。
+     * 対象が0件なのではなく利用者の操作の結果なので、設定を戻せることがわかるようにする。
+     */
+    function renderVisibilityNotice() {
+        document.getElementById("outbound-visibility-notice")?.remove();
+
+        const hasContent = PANEL_IDS.some(id => (document.getElementById(id)?.children.length ?? 0) > 0);
+        if (hasContent) return;
+
+        document.querySelector("main")?.appendChild(
+            Jig.dom.i18nText("p", "表示設定で表示できる要素がありません。", {
+                id: "outbound-visibility-notice",
+                className: "jig-notice"
+            }));
     }
 
     /**
@@ -942,6 +962,7 @@ const OutboundApp = (() => {
         renderExternalList,
         renderCrudTable,
         renderSidebar,
+        renderVisibilityNotice,
         generateOperationMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,

@@ -29,6 +29,7 @@ globalThis.Jig.i18n = (() => {
             "データファイルを読み込めませんでした。JIGを実行してデータファイルを生成してください。":
                 "Failed to load the data file. Run JIG to generate it.",
             "このドキュメントの対象が見つかりませんでした。": "No target was found for this document.",
+            "表示設定で表示できる要素がありません。": "No elements to show with the current display settings.",
             // 相対時間（{n} は経過数に置換される）
             "{n}日前": "{n} days ago",
             "{n}時間前": "{n} hours ago",

@@ -1937,6 +1937,14 @@ p.jig-data-error code {
     color: #f57f17;
 }
 
+/* 表示設定など、利用者の操作の結果を知らせる */
+
+.jig-notice {
+    color: var(--color-text-secondary);
+    padding: 1rem;
+    margin: 1rem;
+}
+
 /* 解析が成立していないことの通知（全ドキュメント共通） */
 
 .jig-diagnostics {

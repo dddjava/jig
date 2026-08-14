@@ -78,6 +78,32 @@ test.describe("outbound.js", () => {
     // ----- toCrudChar -----
 
     test.describe("init", () => {
+        test("表示設定で全ての要素が消えた場合、操作の結果であることを知らせる", () => {
+            const doc = setupDom();
+            const main = doc.createElement("main");
+            doc.selectors.set("main", main);
+
+            // 表示設定を全て外すと、どのパネルにもカードが作られない状態になる
+            OutboundApp.renderVisibilityNotice();
+
+            const notice = doc.getElementById("outbound-visibility-notice");
+            assert.ok(notice, "0件ではなく操作の結果だとわかる文言を出すこと");
+            assert.ok(notice.textContent.includes("表示設定"), notice.textContent);
+            assert.equal(main.children.filter(el => el.className && el.className.includes("jig-empty")).length, 0,
+                "対象が0件のときの表示とは区別すること");
+        });
+
+        test("表示できる要素が残っていれば操作の結果は知らせない", () => {
+            const doc = setupDom();
+            const main = doc.createElement("main");
+            doc.selectors.set("main", main);
+            doc.getElementById("outbound-port-list").appendChild(doc.createElement("section"));
+
+            OutboundApp.renderVisibilityNotice();
+
+            assert.equal(doc.getElementById("outbound-visibility-notice"), null);
+        });
+
         test("対象が0件の場合、このドキュメントが空であることを表示する", () => {
             const doc = setupDom();
             const main = doc.createElement("main");

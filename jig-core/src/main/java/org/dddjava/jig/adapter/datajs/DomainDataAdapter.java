@@ -37,9 +37,6 @@ public class DomainDataAdapter implements DataAdapter {
     @Override
     public String buildJson(JigRepository jigRepository) {
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
-        if (coreDomainJigTypes.isEmpty()) {
-            return "{}";
-        }
         var jigTypes = coreDomainJigTypes.jigTypes();
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
         return buildDomainJson(coreDomainJigTypes, jigTypes, enumModels);

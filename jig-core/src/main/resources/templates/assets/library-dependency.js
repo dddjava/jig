@@ -6,11 +6,11 @@ const LibraryDependencyApp = (() => {
     let onSelectionChanged = () => {};
 
     function init() {
-        const data = Jig.data.library.get() || {
-            internalPackages: [],
-            libraries: [],
-            relations: []
-        };
+        const data = Jig.data.library.get();
+        if (!data) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "library-dependency-data.js");
+            return;
+        }
 
         const diagramEl = document.getElementById("library-dependency-diagram");
         const javaStandardToggle = document.getElementById("show-java-standard-toggle");

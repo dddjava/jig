@@ -209,7 +209,7 @@ const ListOutputApp = (() => {
     }
 
     function getListData() {
-        const listData = Jig.data.list.get() || {};
+        const listData = Jig.data.list.get();
         const emptyBusinessRules = {
             packages: [],
             all: [],
@@ -270,6 +270,11 @@ const ListOutputApp = (() => {
     }
 
     function init() {
+        if (!Jig.data.list.get()) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "list-output-data.js");
+            return;
+        }
+
         const data = getListData();
 
         Object.entries(TABLES).forEach(([name, {items}]) => {

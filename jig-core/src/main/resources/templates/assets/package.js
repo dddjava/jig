@@ -59,8 +59,7 @@ const PackageApp = (() => {
 
     function getPackageRelationData(context) {
         if (context.packageRelationCache) return context.packageRelationCache;
-        const data = Jig.data.package.get() ?? {};
-        context.packageRelationCache = parsePackageRelationData(data);
+        context.packageRelationCache = parsePackageRelationData(Jig.data.package.get());
         return context.packageRelationCache;
     }
 
@@ -1287,6 +1286,11 @@ const PackageApp = (() => {
     }
 
     function init() {
+        if (!Jig.data.package.get()) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "package-data.js");
+            return;
+        }
+
         renderPackageTableHeaders();
         const renderedTabs = new Set();
         setupTabControl(tabName => {

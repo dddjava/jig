@@ -138,6 +138,17 @@ test.describe('inbound.js', () => {
         InboundApp = require('../../main/resources/templates/assets/inbound.js');
     });
 
+    test('inboundData がない場合、エラーメッセージを表示する', () => {
+        delete globalThis.inboundData;
+
+        InboundApp.init();
+
+        const main = document.getElementById('inbound-list');
+        const error = main.children.find(el => el.className && el.className.includes('jig-data-error'));
+        assert.ok(error, 'jig-data-error が表示されること');
+        assert.ok(error.textContent.includes('inbound-data.js'), '読み込めなかったファイル名が示されること');
+    });
+
     test('init should render data from globalThis.inboundData', () => {
         globalThis.inboundData = mockInboundData;
         setGlossaryData(mockGlossaryData);

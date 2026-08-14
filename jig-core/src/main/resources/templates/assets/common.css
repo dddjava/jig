@@ -1920,6 +1920,11 @@ p.jig-data-error {
     border-radius: 2px;
 }
 
+p.jig-data-error code {
+    margin-left: 0.5em;
+    white-space: nowrap;
+}
+
 /* 警告メッセージ（optional データ欠落） */
 
 p.jig-data-warning {

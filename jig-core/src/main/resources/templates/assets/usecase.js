@@ -1297,7 +1297,10 @@ const UsecaseApp = (() => {
         Object.assign(state, createInitialState());
 
         state.data = Jig.data.usecase.get();
-        if (!state.data) return;
+        if (!state.data) {
+            Jig.dom.renderDataLoadError(document.getElementById("usecase-list"), "usecase-data.js");
+            return;
+        }
 
         Jig.data.resetCache();
 

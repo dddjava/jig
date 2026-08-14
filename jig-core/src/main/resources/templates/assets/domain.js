@@ -1209,13 +1209,7 @@ const DomainApp = (() => {
 
         const data = Jig.data.domain.get();
         if (!data) {
-            const main = document.getElementById("domain-main");
-            if (main) {
-                main.appendChild(Jig.dom.createElement("p", {
-                    className: "jig-data-error",
-                    textContent: "ドメインデータ（domain-data.js）が読み込まれていません。JIG を実行してデータファイルを生成してください。"
-                }));
-            }
+            Jig.dom.renderDataLoadError(document.getElementById("domain-main"), "domain-data.js");
             return;
         }
 

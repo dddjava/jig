@@ -573,6 +573,19 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('初期化', () => {
+        test('glossaryData がない場合、エラーメッセージを表示する', () => {
+            const doc = setupDocument();
+            const main = doc.createElement('div');
+            main.id = 'glossary-main';
+            delete globalThis.glossaryData;
+
+            glossary.init();
+
+            const error = main.children.find(el => el.className && el.className.includes('jig-data-error'));
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('glossary-data.js'), '読み込めなかったファイル名が示されること');
+        });
+
         test('DOMContentLoaded で初期描画が行われる', () => {
             const doc = setupDocument();
             const body = doc.createElement('body');

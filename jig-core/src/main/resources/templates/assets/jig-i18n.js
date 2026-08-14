@@ -26,6 +26,8 @@ globalThis.Jig.i18n = (() => {
             "購読先で絞り込み": "Filter by subscription",
             "スケジュールで絞り込み": "Filter by schedule",
             "出力日時": "Generated at",
+            "データファイルを読み込めませんでした。JIGを実行してデータファイルを生成してください。":
+                "Failed to load the data file. Run JIG to generate it.",
             // 相対時間（{n} は経過数に置換される）
             "{n}日前": "{n} days ago",
             "{n}時間前": "{n} hours ago",

@@ -147,14 +147,17 @@ const InsightApp = (() => {
 
     function init() {
         const insightData = parseInsightData();
-        if (insightData) {
-            renderPackageInsights(insightData.packages || []);
-            renderTypeInsights(insightData.types || []);
-            renderMethodInsights(insightData.methods || []);
-            setInsightCount("package-count", (insightData.packages || []).length);
-            setInsightCount("type-count", (insightData.types || []).length);
-            setInsightCount("method-count", (insightData.methods || []).length);
+        if (!insightData) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "insight-data.js");
+            return;
         }
+
+        renderPackageInsights(insightData.packages || []);
+        renderTypeInsights(insightData.types || []);
+        renderMethodInsights(insightData.methods || []);
+        setInsightCount("package-count", (insightData.packages || []).length);
+        setInsightCount("type-count", (insightData.types || []).length);
+        setInsightCount("method-count", (insightData.methods || []).length);
 
         Jig.dom.setupSortableTables();
         setupZoomIcons();

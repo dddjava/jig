@@ -127,8 +127,16 @@ test.describe('library-dependency.js', () => {
             return diagram;
         }
 
-        test('データが無くても例外を投げない', () => {
+        test('データが無い場合はエラーメッセージを表示する', () => {
+            const main = document.createElement('main');
+            document.body.appendChild(main);
+            delete globalThis.libraryDependencyData;
+
             assert.doesNotThrow(() => App.init());
+
+            const error = main.querySelector('p.jig-data-error');
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('library-dependency-data.js'), '読み込めなかったファイル名が示されること');
         });
 
         test('テーブル行クリックで選択がトグルされ is-selected が付与される', () => {

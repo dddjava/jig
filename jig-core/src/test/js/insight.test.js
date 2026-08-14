@@ -51,6 +51,19 @@ test.describe('insight.js', () => {
             assert.equal(result.packages[0].fqn, 'app');
         });
 
+        test('insightDataがない場合、init はエラーメッセージを表示する', () => {
+            const doc = setupDocument();
+            const main = doc.createElement('div');
+            doc.selectors.set('main', main);
+            global.insightData = undefined;
+
+            insight.init();
+
+            const error = main.children.find(el => el.className && el.className.includes('jig-data-error'));
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('insight-data.js'), '読み込めなかったファイル名が示されること');
+        });
+
     });
 
 

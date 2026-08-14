@@ -22,21 +22,6 @@ const OutboundApp = (() => {
 
     const state = {...INITIAL_STATE};
 
-    function loadData() {
-        return Jig.data.outbound.get() || {
-            outboundPorts: [],
-            outboundAdapters: [],
-            persistenceAccessors: [],
-            otherExternalAccessors: [],
-            targets: [],
-            links: {
-                operationToExecution: [],
-                executionToPersistenceAccessor: [],
-                executionToOtherExternalAccessor: []
-            }
-        };
-    }
-
     function buildModel(data) {
         const grouped = groupOperationsByOutboundPort(data);
         const allOperations = grouped.flatMap(group =>
@@ -877,7 +862,11 @@ const OutboundApp = (() => {
     function init() {
         Object.assign(state, INITIAL_STATE);
         state.visibility = {...DEFAULT_VISIBILITY};
-        state.data = loadData();
+        state.data = Jig.data.outbound.get();
+        if (!state.data) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "outbound-data.js");
+            return;
+        }
 
         const model = buildModel(state.data);
         state.grouped = model.grouped;

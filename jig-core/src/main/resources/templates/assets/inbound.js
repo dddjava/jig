@@ -141,6 +141,7 @@ const InboundApp = (() => {
 
         state.data = parseInboundData();
         if (!state.data) {
+            Jig.dom.renderDataLoadError(document.getElementById("inbound-list"), "inbound-data.js");
             return;
         }
 

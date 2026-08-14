@@ -129,6 +129,11 @@ function setupJig() {
         return `"${text.replace(/"/g, "\"\"")}"`;
     };
 
+    // 実際の描画は jig-dom.test.js で検証する。ここでは呼び出しの有無だけ記録する
+    global.Jig.dom.renderDataLoadError = function renderDataLoadError(container, dataFileName) {
+        global.Jig.dom.renderDataLoadError.lastCall = {container, dataFileName};
+    };
+
     global.Jig.dom.renderTableRows = function renderTableRows(tableId, items, buildRow, {clear = false} = {}) {
         const tableBody = global.document.querySelector(`#${tableId} tbody`);
         if (!tableBody) return;
@@ -441,6 +446,23 @@ test.describe('list-output.js', () => {
             });
         });
     });
+    test.describe('init', () => {
+        test('listData がない場合、テーブルを描画せずエラー表示に切り替える', () => {
+            const doc = setupDocument();
+            setupJig();
+            delete globalThis.listData;
+            const table = doc.createElement('table');
+            const tbody = doc.createElement('tbody');
+            table.appendChild(tbody);
+            doc.elementsById.set('controller-list', table);
+
+            ListOutputApp.init();
+
+            assert.equal(Jig.dom.renderDataLoadError.lastCall.dataFileName, 'list-output-data.js');
+            assert.equal(tbody.children.length, 0, 'テーブルは描画されないこと');
+        });
+    });
+
     test.describe('表示用整形', () => {
         test.describe('formatFieldTypes', () => {
             test('使用フィールド型を改行で連結する', () => {

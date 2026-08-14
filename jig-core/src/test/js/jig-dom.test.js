@@ -1002,6 +1002,25 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('renderDataLoadError', () => {
+        test('データファイル名を添えたエラーメッセージを表示する', () => {
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+
+            Jig.dom.renderDataLoadError(container, 'domain-data.js');
+
+            const message = container.querySelector('p.jig-data-error');
+            assert.ok(message, 'p.jig-data-error が追加されること');
+            assert.ok(message.textContent.includes('JIGを実行'), '対処方法が示されること');
+            assert.equal(message.querySelector('code').textContent, 'data/domain-data.js',
+                '読み込めなかったファイルのパスが示されること');
+        });
+
+        test('表示先がない場合は何もしない', () => {
+            assert.doesNotThrow(() => Jig.dom.renderDataLoadError(null, 'domain-data.js'));
+        });
+    });
+
     test.describe('setupSortableTables', () => {
         test('table.sortable に click イベントを付与', () => {
             const tableHtml = `

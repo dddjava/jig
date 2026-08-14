@@ -624,6 +624,28 @@ test.describe('domain.js', () => {
             assert.ok(main.children[0].textContent.includes('domain-data.js'), "エラーメッセージに data ファイル名が含まれること");
         });
 
+        test('解析対象が0件の domainData でもエラーにならず描画できる', () => {
+            const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+
+            setupDomainData([], []);
+            setGlossaryData({});
+            globalThis.typeRelationsData = {relations: []};
+
+            assert.doesNotThrow(() => DomainApp.init());
+            assert.equal(main.children.filter(el => el.className && el.className.includes('jig-data-error')).length, 0,
+                "データは読み込めているのでエラー表示は出ないこと");
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
+
         test('glossaryData が undefined の場合、警告を表示してレンダリング続行する', () => {
             delete globalThis.glossaryData;
             globalThis.typeRelationsData = {relations: []};

@@ -113,6 +113,21 @@ test.describe('package.js', () => {
         setupDomMocks();
     });
 
+    test.describe('init', () => {
+        test('packageData がない場合、エラーメッセージを表示する', () => {
+            const doc = setupDocument();
+            const main = doc.createElement('main');
+            doc.selectors.set('main', main);
+            delete globalThis.packageData;
+
+            PackageApp.init();
+
+            const error = main.children.find(el => el.className && el.className.includes('jig-data-error'));
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('package-data.js'), '読み込めなかったファイル名が示されること');
+        });
+    });
+
     test.describe('データ取得/整形', () => {
         test.describe('ロジック', () => {
             test('parsePackageRelationData: 配列/オブジェクトに対応する', () => {

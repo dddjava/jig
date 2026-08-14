@@ -125,6 +125,17 @@ test.describe('usecase.js', () => {
             };
         });
 
+        test('usecaseData がない場合、エラーメッセージを表示する', () => {
+            delete globalThis.usecaseData;
+
+            UsecaseApp.init();
+
+            const mainList = document.getElementById('usecase-list');
+            const error = mainList.children.find(el => el.className && el.className.includes('jig-data-error'));
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('usecase-data.js'), '読み込めなかったファイル名が示されること');
+        });
+
         test('init should render data from globalThis.usecaseData', () => {
             setGlossaryData({
                 "com.example.ServiceA": {title: "ServiceA", description: "Description of ServiceA"},

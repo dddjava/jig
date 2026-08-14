@@ -1030,6 +1030,24 @@ globalThis.Jig.dom = (() => {
         helpContent.classList.remove("hidden");
     }
 
+    /**
+     * 必須データが読み込めていないことを表示する。0件ではなくデータファイル自体が無い状態なので、
+     * これを表示したページは以降の描画を行わない。
+     *
+     * @param {object|null} container 表示先。null なら何もしない
+     * @param {string} dataFileName データファイル名（例: domain-data.js）
+     */
+    function renderDataLoadError(container, dataFileName) {
+        if (!container) return;
+        container.appendChild(createElement("p", {
+            className: "jig-data-error",
+            children: [
+                i18nText("span", "データファイルを読み込めませんでした。JIGを実行してデータファイルを生成してください。"),
+                createElement("code", {textContent: `data/${dataFileName}`})
+            ]
+        }));
+    }
+
     function initCommonUi() {
         setupHeaderNavigation();
         setupLanguageSwitcher();
@@ -1104,6 +1122,7 @@ globalThis.Jig.dom = (() => {
         downloadCsv,
         renderTableRows,
         setupSortableTables,
+        renderDataLoadError,
         initCommonUi,
 
         card: {

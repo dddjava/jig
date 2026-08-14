@@ -77,6 +77,21 @@ test.describe("outbound.js", () => {
 
     // ----- toCrudChar -----
 
+    test.describe("init", () => {
+        test("outboundData がない場合、エラーメッセージを表示する", () => {
+            const doc = setupDom();
+            const main = doc.createElement("main");
+            doc.selectors.set("main", main);
+            delete globalThis.outboundData;
+
+            OutboundApp.init();
+
+            const error = main.children.find(el => el.className && el.className.includes("jig-data-error"));
+            assert.ok(error, "jig-data-error が表示されること");
+            assert.ok(error.textContent.includes("outbound-data.js"), "読み込めなかったファイル名が示されること");
+        });
+    });
+
     test.describe("toCrudChar", () => {
         test("各SQL操作タイプをCRUD文字に変換する", () => {
             assert.equal(OutboundApp.toCrudChar("SELECT"), "R");

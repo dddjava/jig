@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.sources;
 
+import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.LocalizedMessage;
 
@@ -39,12 +40,8 @@ public enum ReadStatus {
         this.message = message;
     }
 
-    public List<JigDocument> jigDocuments() {
-        return jigDocuments;
-    }
-
-    public LocalizedMessage message() {
-        return message;
+    public Diagnostic createDiagnostic() {
+        return new Diagnostic(name(), isError(), jigDocuments, message);
     }
 
     public String localizedMessage(Locale locale) {

@@ -40,7 +40,7 @@ public enum ReadStatus {
         this.message = message;
     }
 
-    public Diagnostic createDiagnostic() {
+    public Diagnostic toDiagnostic() {
         return new Diagnostic(name(), isError(), jigDocuments, message);
     }
 

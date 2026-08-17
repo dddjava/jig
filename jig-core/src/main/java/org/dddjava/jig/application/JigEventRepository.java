@@ -66,8 +66,8 @@ public class JigEventRepository {
      */
     public List<Diagnostic> diagnostics() {
         return Stream.concat(
-                        readStatuses.stream().map(ReadStatus::createDiagnostic),
-                        warnings.stream().map(Warning::createDiagnostic))
+                        readStatuses.stream().map(ReadStatus::toDiagnostic),
+                        warnings.stream().map(Warning::toDiagnostic))
                 .sorted(Comparator.comparing(Diagnostic::code))
                 .toList();
     }
@@ -110,7 +110,7 @@ public class JigEventRepository {
             this.message = message;
         }
 
-        private Diagnostic createDiagnostic() {
+        private Diagnostic toDiagnostic() {
             return new Diagnostic(name(), false, jigDocuments, message);
         }
 

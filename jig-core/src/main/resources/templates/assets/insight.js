@@ -173,18 +173,19 @@ const InsightApp = (() => {
             return;
         }
 
-        const renderedSections = SECTIONS.filter(section => {
+        let renderedSectionCount = 0;
+        SECTIONS.forEach(section => {
             const items = insightData[section.dataKey] || [];
             if (items.length === 0) {
                 removeSection(section);
-                return false;
+                return;
             }
             section.render(items);
             setInsightCount(section.countId, items.length);
-            return true;
+            renderedSectionCount++;
         });
 
-        if (renderedSections.length === 0) {
+        if (renderedSectionCount === 0) {
             Jig.dom.renderEmptyDocument(document.querySelector("main"), "Insight");
             return;
         }

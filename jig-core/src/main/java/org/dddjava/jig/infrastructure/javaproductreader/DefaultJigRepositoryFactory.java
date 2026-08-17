@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorReposito
 import org.dddjava.jig.domain.model.data.terms.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
@@ -27,7 +28,6 @@ import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
-import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;

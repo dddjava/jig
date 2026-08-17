@@ -45,7 +45,7 @@ public class JigDocumentGenerator {
 
     private List<HandleResult> generateDocuments(JigRepository jigRepository) {
         writeDataFiles(jigRepository);
-        // ドキュメント生成中に記録される警告も含めるため、他のデータを出力し終えてから書く
+        // 警告はデータ構築中に記録されるため、他のデータを出力し終えてから書く
         writeDiagnosticsData(jigRepository);
         return jigDocuments.stream()
                 .map(jigDocument -> {
@@ -67,8 +67,8 @@ public class JigDocumentGenerator {
     }
 
     /**
-     * 解析中に検出した事象を出力する。ソース読み取り時のものはJigRepositoryが、
-     * ドキュメント生成時のものはJigEventRepositoryが持っている。
+     * 解析中に検出した事象を出力する。ソース読み取りの結果はJigRepositoryが、
+     * それ以外の警告はJigEventRepositoryが持っている。
      */
     private void writeDiagnosticsData(JigRepository jigRepository) {
         var diagnostics = Stream.concat(jigRepository.diagnostics().stream(), jigEventRepository.diagnostics().stream())

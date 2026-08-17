@@ -1925,9 +1925,10 @@ p.jig-data-error code {
     white-space: nowrap;
 }
 
-/* 対象が0件のドキュメント */
+/* 対象が0件のドキュメント（.jig-empty）と、利用者の操作の結果の通知（.jig-notice） */
 
-.jig-empty {
+.jig-empty,
+.jig-notice {
     color: var(--color-text-secondary);
     padding: 1rem;
     margin: 1rem;
@@ -1935,14 +1936,6 @@ p.jig-data-error code {
 
 .jig-empty__reason {
     color: #f57f17;
-}
-
-/* 表示設定など、利用者の操作の結果を知らせる */
-
-.jig-notice {
-    color: var(--color-text-secondary);
-    padding: 1rem;
-    margin: 1rem;
 }
 
 /* 解析が成立していないことの通知（全ドキュメント共通） */

@@ -1071,7 +1071,7 @@ globalThis.Jig.dom = (() => {
      * 各ページの描画は main を作り直すため、影響を受けないヘッダ直後に置く。
      */
     function renderDiagnosticsBanner() {
-        const errors = globalThis.Jig?.data?.diagnostics?.getErrors() ?? [];
+        const errors = globalThis.Jig.data.diagnostics.getErrors();
         if (errors.length === 0) return;
 
         const header = document.querySelector("header.top") || document.querySelector("header");

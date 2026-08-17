@@ -19,7 +19,7 @@ jobs:
       ORG_GRADLE_PROJECT_version: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5.6.0
+      - uses: actions/setup-java@v5.7.0
         with:
           distribution: 'temurin'
           # 25はfixtureを最新LTSのクラスファイルへコンパイルするために使う。21をJAVA_HOMEにする
@@ -27,7 +27,7 @@ jobs:
             25
             21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.3.0
       - name: Set up Node.js
         uses: actions/setup-node@v7.0.0
         with:

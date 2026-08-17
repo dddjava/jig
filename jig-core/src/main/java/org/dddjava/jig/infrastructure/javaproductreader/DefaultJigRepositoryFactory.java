@@ -25,7 +25,6 @@ import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -244,15 +243,8 @@ public class DefaultJigRepositoryFactory {
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        var persistenceAccessorsRepository = myBatisReadResult.persistenceAccessorRepository();
-
-        SqlReadStatus sqlReadStatus = myBatisReadResult.status();
-        if (sqlReadStatus == SqlReadStatus.SQLなし && persistenceAccessorsRepository.isEmpty()) {
-            jigEventRepository.recordEvent(sqlReadStatus.toReadStatus());
-        } else if (sqlReadStatus != SqlReadStatus.成功 && sqlReadStatus != SqlReadStatus.SQLなし) {
-            jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
-        }
-        return persistenceAccessorsRepository;
+        myBatisReadResult.readStatus().ifPresent(jigEventRepository::recordEvent);
+        return myBatisReadResult.persistenceAccessorRepository();
     }
 
     record AnalysisState(JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {

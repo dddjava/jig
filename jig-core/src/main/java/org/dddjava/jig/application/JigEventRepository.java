@@ -68,8 +68,7 @@ public class JigEventRepository {
         return Stream.concat(
                         readStatuses.stream()
                                 .map(readStatus -> new Diagnostic(readStatus.name(), readStatus.isError(), readStatus.jigDocuments(), readStatus.message())),
-                        warnings.stream()
-                                .map(warning -> new Diagnostic(warning.name(), false, warning.jigDocuments(), warning.message())))
+                        warnings.stream().map(Warning::createDiagnostic))
                 .sorted(Comparator.comparing(Diagnostic::code))
                 .toList();
     }
@@ -112,12 +111,8 @@ public class JigEventRepository {
             this.message = message;
         }
 
-        List<JigDocument> jigDocuments() {
-            return jigDocuments;
-        }
-
-        LocalizedMessage message() {
-            return message;
+        private Diagnostic createDiagnostic() {
+            return new Diagnostic(name(), false, jigDocuments, message);
         }
 
         public String localizedMessage(Locale locale) {

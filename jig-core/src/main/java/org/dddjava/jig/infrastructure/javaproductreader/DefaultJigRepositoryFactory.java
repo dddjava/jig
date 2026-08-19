@@ -77,8 +77,8 @@ public class DefaultJigRepositoryFactory {
         Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
         try {
             FilesystemSources sources = new ClassOrJavaSourceCollector(jigEventRepository).collectSources(sourceBasePaths);
-            if (sources.emptyClassSources()) jigEventRepository.recordEvent(JigIssue.バイナリソースなし);
-            if (sources.emptyJavaSources()) jigEventRepository.recordEvent(JigIssue.テキストソースなし);
+            if (sources.emptyClassSources()) jigEventRepository.recordIssue(JigIssue.バイナリソースなし);
+            if (sources.emptyJavaSources()) jigEventRepository.recordIssue(JigIssue.テキストソースなし);
 
             // errorが1つでもあったら読み取り失敗として分析せず空を返す
             if (jigEventRepository.hasError()) {
@@ -116,7 +116,7 @@ public class DefaultJigRepositoryFactory {
                             .toList()));
             if (packageInfoParseResults.stream().anyMatch(result -> !result.succeeded())
                     || parseResults.stream().anyMatch(result -> !result.succeeded())) {
-                jigEventRepository.recordEvent(JigIssue.テキストソース読み込み一部失敗);
+                jigEventRepository.recordIssue(JigIssue.テキストソース読み込み一部失敗);
             }
             JavaSourceModel javaSourceModel = parseResults.stream()
                     .map(JavaparserReader.ParseResult::sourceModel)
@@ -243,7 +243,7 @@ public class DefaultJigRepositoryFactory {
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        myBatisReadResult.recordTo(jigEventRepository::recordEvent);
+        myBatisReadResult.recordTo(jigEventRepository::recordIssue);
         return myBatisReadResult.persistenceAccessorRepository();
     }
 

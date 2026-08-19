@@ -23,7 +23,7 @@ public class JigEventRepository {
         this.locale = locale;
     }
 
-    public void recordEvent(JigIssue jigIssue) {
+    public void recordIssue(JigIssue jigIssue) {
         jigIssues.add(jigIssue);
     }
 

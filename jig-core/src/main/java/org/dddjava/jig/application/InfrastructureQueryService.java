@@ -34,7 +34,7 @@ public class InfrastructureQueryService {
             var jigTypes = typesQueryService.jigTypes(jigRepository);
             var accessorRepositories = jigRepository.externalAccessorRepositories();
             var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
-            if (outboundAdapters.isEmpty()) jigEventRepository.recordEvent(JigIssue.リポジトリメソッドなし);
+            if (outboundAdapters.isEmpty()) jigEventRepository.recordIssue(JigIssue.リポジトリメソッドなし);
             return outboundAdapters;
         });
     }

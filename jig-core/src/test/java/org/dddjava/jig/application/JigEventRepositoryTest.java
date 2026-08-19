@@ -23,7 +23,7 @@ class JigEventRepositoryTest {
     @Test
     void 解析結果由来の事象は内容が欠けるドキュメントに紐づける() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(JigIssue.ハンドラメソッドなし);
+        sut.recordIssue(JigIssue.ハンドラメソッドなし);
 
         List<Diagnostic> diagnostics = sut.diagnostics();
 
@@ -35,7 +35,7 @@ class JigEventRepositoryTest {
     @Test
     void 解析が成立しない事象はerrorとして全ドキュメントに関わるものにする() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(JigIssue.バイナリソースなし);
+        sut.recordIssue(JigIssue.バイナリソースなし);
 
         Diagnostic diagnostic = sut.diagnostics().get(0);
 
@@ -46,7 +46,7 @@ class JigEventRepositoryTest {
     @Test
     void 読み取り由来の事象は内容が欠けるドキュメントに紐づける() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(JigIssue.SQLなし);
+        sut.recordIssue(JigIssue.SQLなし);
 
         Diagnostic diagnostic = sut.diagnostics().get(0);
 

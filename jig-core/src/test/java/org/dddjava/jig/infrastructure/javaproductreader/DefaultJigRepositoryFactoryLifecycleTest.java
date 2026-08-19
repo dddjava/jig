@@ -69,6 +69,6 @@ class DefaultJigRepositoryFactoryLifecycleTest {
 
         factory.createJigRepository(sourceBasePaths);
 
-        Mockito.verify(eventRepositoryReference.get()).recordEvent(JigIssue.テキストソース読み込み一部失敗);
+        Mockito.verify(eventRepositoryReference.get()).recordIssue(JigIssue.テキストソース読み込み一部失敗);
     }
 }

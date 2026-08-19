@@ -24,14 +24,14 @@ public class UsecaseQueryService {
 
     public InboundAdapters inboundAdapters(JigRepository jigRepository) {
         var inboundAdapters = InboundAdapters.from(typesQueryService.jigTypes(jigRepository));
-        if (inboundAdapters.isEmpty()) jigEventRepository.recordEvent(JigIssue.ハンドラメソッドなし);
+        if (inboundAdapters.isEmpty()) jigEventRepository.recordIssue(JigIssue.ハンドラメソッドなし);
         return inboundAdapters;
     }
 
     public ServiceMethods serviceMethods(JigRepository jigRepository) {
         JigTypes serviceJigTypes = typesQueryService.serviceTypes(jigRepository);
         ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, typesQueryService.allMethodRelations(jigRepository));
-        if (serviceMethods.isEmpty()) jigEventRepository.recordEvent(JigIssue.サービスメソッドなし);
+        if (serviceMethods.isEmpty()) jigEventRepository.recordIssue(JigIssue.サービスメソッドなし);
         return serviceMethods;
     }
 

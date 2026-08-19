@@ -15,18 +15,12 @@ public record MyBatisReadResult(PersistenceAccessorRepository persistenceAccesso
      * 読み取りで生じた問題を通知する。
      */
     public void recordTo(Consumer<JigIssue> recorder) {
-        switch (status()) {
-            case 成功 -> { } // 記録するものなし
-            case SQLなし -> recorder.accept(JigIssue.SQLなし);
+        switch (sqlReadStatus) {
+            case 成功 -> {
+                if (persistenceAccessorRepository.isEmpty()) recorder.accept(JigIssue.SQLなし);
+            }
             case 読み取り失敗あり -> recorder.accept(JigIssue.SQL読み込み一部失敗);
             case 失敗 -> recorder.accept(JigIssue.SQL読み込み失敗);
         }
-    }
-
-    private SqlReadStatus status() {
-        if (sqlReadStatus == SqlReadStatus.成功 && persistenceAccessorRepository.isEmpty()) {
-            return SqlReadStatus.SQLなし;
-        }
-        return sqlReadStatus;
     }
 }

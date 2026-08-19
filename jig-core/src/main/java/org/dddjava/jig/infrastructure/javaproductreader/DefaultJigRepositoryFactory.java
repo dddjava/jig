@@ -19,13 +19,12 @@ import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorReposit
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.information.outbound.springdata.SpringDataJdbcStatementsReader;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.documents.JigIssue;
 import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
 import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.TypeSourcePaths;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -78,8 +77,8 @@ public class DefaultJigRepositoryFactory {
         Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
         try {
             FilesystemSources sources = new ClassOrJavaSourceCollector(jigEventRepository).collectSources(sourceBasePaths);
-            if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
-            if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
+            if (sources.emptyClassSources()) jigEventRepository.recordIssue(JigIssue.バイナリソースなし);
+            if (sources.emptyJavaSources()) jigEventRepository.recordIssue(JigIssue.テキストソースなし);
 
             // errorが1つでもあったら読み取り失敗として分析せず空を返す
             if (jigEventRepository.hasError()) {
@@ -117,7 +116,7 @@ public class DefaultJigRepositoryFactory {
                             .toList()));
             if (packageInfoParseResults.stream().anyMatch(result -> !result.succeeded())
                     || parseResults.stream().anyMatch(result -> !result.succeeded())) {
-                jigEventRepository.recordEvent(ReadStatus.テキストソース読み込み一部失敗);
+                jigEventRepository.recordIssue(JigIssue.テキストソース読み込み一部失敗);
             }
             JavaSourceModel javaSourceModel = parseResults.stream()
                     .map(JavaparserReader.ParseResult::sourceModel)
@@ -244,15 +243,8 @@ public class DefaultJigRepositoryFactory {
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        var persistenceAccessorsRepository = myBatisReadResult.persistenceAccessorRepository();
-
-        SqlReadStatus sqlReadStatus = myBatisReadResult.status();
-        if (sqlReadStatus == SqlReadStatus.SQLなし && persistenceAccessorsRepository.isEmpty()) {
-            jigEventRepository.recordEvent(sqlReadStatus.toReadStatus());
-        } else if (sqlReadStatus != SqlReadStatus.成功 && sqlReadStatus != SqlReadStatus.SQLなし) {
-            jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
-        }
-        return persistenceAccessorsRepository;
+        myBatisReadResult.recordTo(jigEventRepository::recordIssue);
+        return myBatisReadResult.persistenceAccessorRepository();
     }
 
     record AnalysisState(JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {

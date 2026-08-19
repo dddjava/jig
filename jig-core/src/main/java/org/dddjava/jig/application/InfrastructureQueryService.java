@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.documents.JigIssue;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 
@@ -33,7 +34,7 @@ public class InfrastructureQueryService {
             var jigTypes = typesQueryService.jigTypes(jigRepository);
             var accessorRepositories = jigRepository.externalAccessorRepositories();
             var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
-            if (outboundAdapters.isEmpty()) jigEventRepository.registerリポジトリが見つからない();
+            if (outboundAdapters.isEmpty()) jigEventRepository.recordIssue(JigIssue.リポジトリメソッドなし);
             return outboundAdapters;
         });
     }

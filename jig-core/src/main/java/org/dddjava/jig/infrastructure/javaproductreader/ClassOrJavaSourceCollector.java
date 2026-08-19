@@ -56,7 +56,7 @@ public class ClassOrJavaSourceCollector {
     private List<Path> collectSourcePathList(Path basePath, String suffix) {
         try {
             if (!Files.exists(basePath)) {
-                jigEventRepository.register指定されたパスが存在しない(basePath);
+                jigEventRepository.notify指定されたパスが存在しない(basePath);
                 return List.of();
             }
             try (Stream<Path> pathStream = Files.walk(basePath)) {
@@ -67,7 +67,7 @@ public class ClassOrJavaSourceCollector {
                         .toList();
             }
         } catch (IOException | UncheckedIOException | SecurityException e) {
-            jigEventRepository.registerパスの収集に失敗しました(basePath, originalException(e));
+            jigEventRepository.notifyパスの収集に失敗しました(basePath, originalException(e));
             return List.of();
         }
     }

@@ -52,11 +52,11 @@ public class JigEventRepository {
                 .toList();
     }
 
-    public void register指定されたパスが存在しない(Path basePath) {
+    public void notify指定されたパスが存在しない(Path basePath) {
         logger.info("'{}' が指定されましたが、存在しません。読み飛ばします。", basePath);
     }
 
-    public void registerパスの収集に失敗しました(Path basePath, Exception e) {
+    public void notifyパスの収集に失敗しました(Path basePath, Exception e) {
         logger.warn("パス {} 配下のファイルの収集に失敗しました。スキップして続行しますが、このパス配下の情報は結果に含まれません。" +
                         "読み取れないパスが指定された場合などに発生します。実行環境かパスの指定を見直してください。(type={}, message={})",
                 basePath, e.getClass().getName(), e.getMessage(), e);

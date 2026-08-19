@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 読み取り結果
+ * 読み取りで生じた問題
  *
- * jigDocuments はこの結果で内容が欠けるドキュメント。解析そのものが成立しないものは全体に影響するため空にする。
+ * jigDocuments はこの問題で内容が欠けるドキュメント。解析そのものが成立しないものは全体に影響するため空にする。
  */
-public enum ReadStatus {
+public enum ReadIssue {
     テキストソースなし(List.of(JigDocument.Glossary), new LocalizedMessage(
             "テキストソース(*.javaなど)が見つかりませんでした。ソースディレクトリの指定を確認してください。このメッセージが出る場合、テキストソース由来の情報が出力できません。",
             "Text Source file(*.java, etc) was not found. Check the specification of the source directory. If this message appears, alias can not be output.")),
@@ -35,7 +35,7 @@ public enum ReadStatus {
     private final List<JigDocument> jigDocuments;
     private final LocalizedMessage message;
 
-    ReadStatus(List<JigDocument> jigDocuments, LocalizedMessage message) {
+    ReadIssue(List<JigDocument> jigDocuments, LocalizedMessage message) {
         this.jigDocuments = jigDocuments;
         this.message = message;
     }

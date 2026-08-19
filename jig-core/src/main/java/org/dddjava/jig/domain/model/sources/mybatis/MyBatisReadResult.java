@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.sources.mybatis;
 
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
-import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.sources.ReadIssue;
 
 import java.util.function.Consumer;
 
@@ -12,14 +12,14 @@ public record MyBatisReadResult(PersistenceAccessorRepository persistenceAccesso
     }
 
     /**
-     * 読み取り結果として記録すべき事象を通知する。
+     * 読み取りで生じた問題を通知する。
      */
-    public void recordTo(Consumer<ReadStatus> recorder) {
+    public void recordTo(Consumer<ReadIssue> recorder) {
         switch (status()) {
             case 成功 -> { } // 記録するものなし
-            case SQLなし -> recorder.accept(ReadStatus.SQLなし);
-            case 読み取り失敗あり -> recorder.accept(ReadStatus.SQL読み込み一部失敗);
-            case 失敗 -> recorder.accept(ReadStatus.SQL読み込み失敗);
+            case SQLなし -> recorder.accept(ReadIssue.SQLなし);
+            case 読み取り失敗あり -> recorder.accept(ReadIssue.SQL読み込み一部失敗);
+            case 失敗 -> recorder.accept(ReadIssue.SQL読み込み失敗);
         }
     }
 

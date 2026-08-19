@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.sources.ReadIssue;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -35,7 +35,7 @@ class JigEventRepositoryTest {
     @Test
     void 解析が成立しない事象はerrorとして全ドキュメントに関わるものにする() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(ReadStatus.バイナリソースなし);
+        sut.recordEvent(ReadIssue.バイナリソースなし);
 
         Diagnostic diagnostic = sut.diagnostics().get(0);
 
@@ -46,7 +46,7 @@ class JigEventRepositoryTest {
     @Test
     void 解析は成立している読み取り結果は内容が欠けるドキュメントに紐づける() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(ReadStatus.SQLなし);
+        sut.recordEvent(ReadIssue.SQLなし);
 
         Diagnostic diagnostic = sut.diagnostics().get(0);
 

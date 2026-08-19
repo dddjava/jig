@@ -4,7 +4,7 @@ import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.LocalizedMessage;
-import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.sources.ReadIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 public class JigEventRepository {
     private static final Logger logger = LoggerFactory.getLogger(JigEventRepository.class);
 
-    private final Collection<ReadStatus> readStatuses = EnumSet.noneOf(ReadStatus.class);
+    private final Collection<ReadIssue> readIssues = EnumSet.noneOf(ReadIssue.class);
     private final Set<Warning> warnings = new HashSet<>();
     private final Locale locale;
 
@@ -47,10 +47,10 @@ public class JigEventRepository {
         warnings.stream().map(w -> w.localizedMessage(locale)).forEach(logger::warn);
     }
 
-    public void recordEvent(ReadStatus readStatus) {
-        readStatuses.add(readStatus);
-        var message = readStatus.localizedMessage(locale);
-        if (readStatus.isError()) {
+    public void recordEvent(ReadIssue readIssue) {
+        readIssues.add(readIssue);
+        var message = readIssue.localizedMessage(locale);
+        if (readIssue.isError()) {
             logger.error(message);
         } else {
             logger.warn(message);
@@ -58,7 +58,7 @@ public class JigEventRepository {
     }
 
     public boolean hasError() {
-        return readStatuses.stream().anyMatch(ReadStatus::isError);
+        return readIssues.stream().anyMatch(ReadIssue::isError);
     }
 
     /**
@@ -66,7 +66,7 @@ public class JigEventRepository {
      */
     public List<Diagnostic> diagnostics() {
         return Stream.concat(
-                        readStatuses.stream().map(ReadStatus::toDiagnostic),
+                        readIssues.stream().map(ReadIssue::toDiagnostic),
                         warnings.stream().map(Warning::toDiagnostic))
                 .sorted(Comparator.comparing(Diagnostic::code))
                 .toList();

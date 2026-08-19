@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.sources.ReadIssue;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -69,6 +69,6 @@ class DefaultJigRepositoryFactoryLifecycleTest {
 
         factory.createJigRepository(sourceBasePaths);
 
-        Mockito.verify(eventRepositoryReference.get()).recordEvent(ReadStatus.テキストソース読み込み一部失敗);
+        Mockito.verify(eventRepositoryReference.get()).recordEvent(ReadIssue.テキストソース読み込み一部失敗);
     }
 }

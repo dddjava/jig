@@ -1,6 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.documents.JigIssue;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -23,14 +24,14 @@ public class UsecaseQueryService {
 
     public InboundAdapters inboundAdapters(JigRepository jigRepository) {
         var inboundAdapters = InboundAdapters.from(typesQueryService.jigTypes(jigRepository));
-        if (inboundAdapters.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
+        if (inboundAdapters.isEmpty()) jigEventRepository.recordEvent(JigIssue.ハンドラメソッドなし);
         return inboundAdapters;
     }
 
     public ServiceMethods serviceMethods(JigRepository jigRepository) {
         JigTypes serviceJigTypes = typesQueryService.serviceTypes(jigRepository);
         ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, typesQueryService.allMethodRelations(jigRepository));
-        if (serviceMethods.isEmpty()) jigEventRepository.registerサービスが見つからない();
+        if (serviceMethods.isEmpty()) jigEventRepository.recordEvent(JigIssue.サービスメソッドなし);
         return serviceMethods;
     }
 

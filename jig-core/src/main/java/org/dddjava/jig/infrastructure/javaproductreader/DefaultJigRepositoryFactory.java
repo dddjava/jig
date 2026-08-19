@@ -243,7 +243,7 @@ public class DefaultJigRepositoryFactory {
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        myBatisReadResult.readStatus().ifPresent(jigEventRepository::recordEvent);
+        myBatisReadResult.recordTo(jigEventRepository::recordEvent);
         return myBatisReadResult.persistenceAccessorRepository();
     }
 

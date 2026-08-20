@@ -138,7 +138,5 @@ Conventional Commits 形式で **日本語** で記述する。
 
 使用可能な type: `feat`, `fix`, `refactor`, `docs`, `test`, `other`
 
-フッターは該当する場合のみ `--trailer` オプションで付与する。該当しないフッターは付けない（空値のトレーラーを作らない）。
-
-- issue を解消する場合のみ: `--trailer "Closes: #<番号>"`（`gh issue close` で直接クローズしない。close専用の別コミット・空コミットも作らない）
+フッターは issue を解消する場合のみ `--trailer "Closes: #<番号>"` を付与する（`gh issue close` で直接クローズしない。close専用の別コミット・空コミットも作らない）。
 

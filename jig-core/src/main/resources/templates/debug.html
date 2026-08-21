@@ -182,7 +182,6 @@
         <div id="sidebar-items">読み込み中...</div>
     </nav>
     <div id="main">
-        <div id="jig-document-description" class="hidden"></div>
         <div id="toolbar">
             <span id="current-file">-</span>
             <button id="schema-btn" disabled>Schema</button>
@@ -462,7 +461,7 @@ async function init() {
     });
 
     document.getElementById("json-view").addEventListener("click", e => {
-        if (e.target.classList.contains("json-toggle") || e.target.classList.contains("json-collapsed-marker")) {
+        if (e.target.classList.contains("json-collapsed-marker")) {
             e.target.closest(".json-collapsible").classList.toggle("collapsed");
         } else if (e.target.classList.contains("foldable")) {
             const foldId = e.target.dataset.foldTarget;

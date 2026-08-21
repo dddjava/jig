@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.documents.Diagnostic;
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.documents.JigIssue;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -21,9 +21,9 @@ class JigEventRepositoryTest {
     }
 
     @Test
-    void 警告は内容が欠けるドキュメントに紐づけて返す() {
+    void 解析結果由来の事象は内容が欠けるドキュメントに紐づける() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.registerエントリーポイントが見つからない();
+        sut.recordIssue(JigIssue.ハンドラメソッドなし);
 
         List<Diagnostic> diagnostics = sut.diagnostics();
 
@@ -35,7 +35,7 @@ class JigEventRepositoryTest {
     @Test
     void 解析が成立しない事象はerrorとして全ドキュメントに関わるものにする() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(ReadStatus.バイナリソースなし);
+        sut.recordIssue(JigIssue.バイナリソースなし);
 
         Diagnostic diagnostic = sut.diagnostics().get(0);
 
@@ -44,9 +44,9 @@ class JigEventRepositoryTest {
     }
 
     @Test
-    void 解析は成立している読み取り結果は内容が欠けるドキュメントに紐づける() {
+    void 読み取り由来の事象は内容が欠けるドキュメントに紐づける() {
         var sut = new JigEventRepository(Locale.JAPANESE);
-        sut.recordEvent(ReadStatus.SQLなし);
+        sut.recordIssue(JigIssue.SQLなし);
 
         Diagnostic diagnostic = sut.diagnostics().get(0);
 

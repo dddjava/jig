@@ -31,8 +31,8 @@ class LocalFileFilesystemSourcesFactoryTest {
         assertTrue(source.emptyClassSources());
         assertTrue(source.emptyJavaSources());
 
-        Mockito.verify(jigEventRepository).register指定されたパスが存在しない(invalidClassPath);
-        Mockito.verify(jigEventRepository).register指定されたパスが存在しない(invalidJavaPath);
+        Mockito.verify(jigEventRepository).notify指定されたパスが存在しない(invalidClassPath);
+        Mockito.verify(jigEventRepository).notify指定されたパスが存在しない(invalidJavaPath);
         Mockito.verifyNoMoreInteractions(jigEventRepository);
     }
 }

@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.data.persistence.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisReadResult;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
+import org.dddjava.jig.domain.model.sources.mybatis.MyBatisReadResult.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class MyBatisStatementsReader {
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
         if (classNames.isEmpty())
-            return new MyBatisReadResult(PersistenceAccessorRepository.empty(), SqlReadStatus.成功);
+            return new MyBatisReadResult(Status.成功);
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -80,12 +80,12 @@ public class MyBatisStatementsReader {
             } catch (IOException e) {
                 logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
                         "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
-                return new MyBatisReadResult(SqlReadStatus.失敗);
+                return new MyBatisReadResult(Status.失敗);
             } catch (PersistenceException e) {
                 logger.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
                         "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
                         "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
-                return new MyBatisReadResult(SqlReadStatus.失敗);
+                return new MyBatisReadResult(Status.失敗);
             } finally {
                 Resources.setDefaultClassLoader(previousDefaultClassLoader);
             }
@@ -93,7 +93,7 @@ public class MyBatisStatementsReader {
     }
 
     private MyBatisReadResult extractSql(Collection<String> classNames, ClassLoader classLoader) {
-        SqlReadStatus sqlReadStatus = SqlReadStatus.成功;
+        Status status = Status.成功;
 
         Configuration config = new Configuration();
         for (String className : classNames) {
@@ -104,12 +104,12 @@ public class MyBatisStatementsReader {
                 logger.warn("{} がJIG実行時クラスパスに存在しないクラスに依存しているため読み取れませんでした。このMapperの読み取りはスキップします。" +
                                 "メッセージ={}",
                         className, e.getLocalizedMessage());
-                sqlReadStatus = SqlReadStatus.読み取り失敗あり;
+                status = Status.一部失敗;
             } catch (Exception e) {
                 logger.warn("なんらかの例外により {} の読み取りに失敗しました。このMapperの読み取りはスキップします。" +
                                 "例外メッセージを添えてIssueを作成していただけると、対応できるかもしれません。",
                         className, e);
-                sqlReadStatus = SqlReadStatus.読み取り失敗あり;
+                status = Status.一部失敗;
             }
         }
 
@@ -127,7 +127,7 @@ public class MyBatisStatementsReader {
                     query = getQuery(mappedStatement);
                 } catch (Exception e) {
                     logger.warn("クエリの取得に失敗しました", e);
-                    sqlReadStatus = SqlReadStatus.読み取り失敗あり;
+                    status = Status.一部失敗;
                     query = Optional.empty();
                 }
 
@@ -157,7 +157,7 @@ public class MyBatisStatementsReader {
                 .stream()
                 .map(entry -> PersistenceAccessor.forMyBatis(entry.getKey(), entry.getValue()))
                 .toList());
-        return new MyBatisReadResult(repository, sqlReadStatus);
+        return new MyBatisReadResult(repository, status);
     }
 
     /**

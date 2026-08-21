@@ -159,8 +159,8 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     @Override
     public void visitEnd() {
         // この時点で空はないけどNullableなのでNullでないことを宣言
-        jigTypeHeader = Objects.requireNonNull(jigTypeHeaderBuilder)
-                .build(declarationAnnotationCollector, isStaticNestedClass);
+        var builder = Objects.requireNonNull(jigTypeHeaderBuilder);
+        jigTypeHeader = builder.build(declarationAnnotationCollector, isStaticNestedClass);
 
         super.visitEnd();
     }

@@ -15,12 +15,6 @@ public record JigTypeHeaderBuilder(TypeId id,
                                    List<JigTypeParameter> typeParameters
 ) {
 
-    /**
-     * クラスの読み取りで集めた情報を合わせて構築する。
-     *
-     * @param declarationAnnotations 宣言に付与されたアノテーション
-     * @param staticNestedClass      staticなネストクラスであるか
-     */
     JigTypeHeader build(Collection<JigAnnotationReference> declarationAnnotations, boolean staticNestedClass) {
         EnumSet<JigTypeModifier> modifiers = EnumSet.noneOf(JigTypeModifier.class);
         modifiers.addAll(jigTypeModifiers);

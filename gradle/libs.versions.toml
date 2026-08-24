@@ -1,5 +1,5 @@
 [versions]
-spring-boot-plugin = "4.1.0"
+spring-boot-plugin = "4.1.1"
 asm = "9.10.1"
 javaparser = "3.28.2"
 mybatis = "3.5.19"

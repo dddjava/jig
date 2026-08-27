@@ -11,7 +11,7 @@
     "lint:css": "stylelint \"jig-core/src/main/resources/templates/**/*.css\""
   },
   "devDependencies": {
-    "dompurify": "3.4.13",
+    "dompurify": "3.4.14",
     "jsdom": "^30.0.1",
     "stylelint": "^17.14.1",
     "stylelint-config-recommended": "^18.0.0"

@@ -99,14 +99,17 @@ class JigCliE2eTest {
 
     private static Result runCli(Path projectDirectory, Path outputDirectory, String... additionalArguments)
             throws Exception {
-        List<String> command = new ArrayList<>(List.of(
-                javaCommand(),
-                "-jar", System.getProperty("jig.cli.jar"),
-                "--project.path=" + projectDirectory,
-                "--jig.output.directory=" + outputDirectory));
+        List<String> command = new ArrayList<>();
+        command.add(javaCommand());
+        command.add("-jar");
+        command.add(System.getProperty("jig.cli.jar"));
+        command.add("--project.path");
+        command.add(projectDirectory.toAbsolutePath().toString());
+        command.add("--jig.output.directory");
+        command.add(outputDirectory.toAbsolutePath().toString());
         command.addAll(List.of(additionalArguments));
 
-        Process process = new ProcessBuilder(command)
+        Process process = new ProcessBuilder(command) // nosemgrep: java.lang.security.audit.command-injection-process-builder.command-injection-process-builder
                 .redirectErrorStream(true)
                 .start();
 

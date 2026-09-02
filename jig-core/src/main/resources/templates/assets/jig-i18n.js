@@ -173,6 +173,9 @@ globalThis.Jig.i18n = (() => {
     // セッション中のみ保持する現在言語（永続化しない）。
     let currentLang = null;
 
+    // DOMに適用済みの言語。ja表示中の要素追加で走査を省くために持つ。
+    let appliedLang = null;
+
     // BCP47 タグ（"ja-JP" など）から先頭の言語コード（"ja"）だけを取り出す。
     function toLangCode(tag) {
         return String(tag || "").split('-')[0];
@@ -272,9 +275,13 @@ globalThis.Jig.i18n = (() => {
     function apply() {
         const lang = resolveLanguage();
         document.documentElement.lang = lang;
+        // ja を適用済みなら、増えた要素も原文のままなので走査しない。
+        // 他言語から ja へ戻す場合は原文への復元が要るため走査する。
+        if (lang === "ja" && appliedLang === "ja") return;
         const dict = lang === "ja" ? null : resolveDictionary(lang);
         // <title data-i18n> も document 全体のクエリで一緒に処理される
         translate(document, dict);
+        appliedLang = lang;
     }
 
     function currentLanguage() {

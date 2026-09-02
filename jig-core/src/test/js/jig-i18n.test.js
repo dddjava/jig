@@ -116,6 +116,36 @@ test.describe('jig-i18n.js', () => {
         assert.equal(Jig.currentLanguage(), 'ja');
     });
 
+    test('ja を適用済みなら再適用で文書を走査しない', () => {
+        // 要素が追加されるたびにMutationObserverがapplyを呼ぶため、ja表示での走査は無駄になる
+        setupPage('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
+        Jig = loadI18n();
+        Jig.apply();
+
+        let queried = 0;
+        const querySelectorAll = document.querySelectorAll.bind(document);
+        document.querySelectorAll = selector => {
+            queried += 1;
+            return querySelectorAll(selector);
+        };
+
+        Jig.apply();
+
+        assert.equal(queried, 0);
+    });
+
+    test('他言語からjaへ戻すときは走査して原文へ復元する', () => {
+        setupPage('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
+        Jig = loadI18n();
+        Jig.apply();
+        Jig.setLanguage('en');
+
+        // 表示中の言語がjaでないため、jaへの復元は走査を省略しない
+        Jig.setLanguage('ja');
+
+        assert.equal(document.querySelector('h1').textContent, 'インサイト');
+    });
+
     test('setLanguage は jig:locale-change イベントを発火する', () => {
         setupPage('<h1 data-i18n>インサイト</h1>', {lang: 'ja'});
         Jig = loadI18n();

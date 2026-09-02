@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigMetrics;
 import org.dddjava.jig.domain.model.data.git.GitRepositoryInfo;
 import org.dddjava.jig.infrastructure.git.GitRepositoryReader;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
@@ -28,8 +27,9 @@ public class JigExecutor {
     public static JigResult standard(Configuration configuration, SourceBasePaths sourceBasePaths) {
         Configuration executionConfiguration = configuration.newExecution();
         try {
-            return JigMetrics.init(executionConfiguration)
-                    .record(() -> new JigExecutor(executionConfiguration).execute(sourceBasePaths));
+            return executionConfiguration.jigMetrics()
+                    .record(executionConfiguration.jigDocumentGenerator(),
+                            () -> new JigExecutor(executionConfiguration).execute(sourceBasePaths));
         } finally {
             TypeId.clearCache();
             PackageId.clearCache();

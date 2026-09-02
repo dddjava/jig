@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.documents.JigIssue;
@@ -17,13 +17,13 @@ public class InfrastructureQueryService {
 
     private final Cache<JigRepository, OutboundAdapters> outboundAdaptersCache;
 
-    public InfrastructureQueryService(JigEventRepository jigEventRepository, TypesQueryService typesQueryService) {
+    public InfrastructureQueryService(JigEventRepository jigEventRepository, TypesQueryService typesQueryService, MeterRegistry meterRegistry) {
         this.jigEventRepository = jigEventRepository;
         this.typesQueryService = typesQueryService;
 
         if (System.getProperty("jig.debug", "false").equals("true")) {
             this.outboundAdaptersCache = Caffeine.newBuilder().recordStats().build();
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, outboundAdaptersCache, "outboundAdaptersCache");
+            CaffeineCacheMetrics.monitor(meterRegistry, outboundAdaptersCache, "outboundAdaptersCache");
         } else {
             this.outboundAdaptersCache = Caffeine.newBuilder().build();
         }

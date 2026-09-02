@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -27,7 +27,7 @@ public class TypesQueryService {
     private final Cache<JigRepository, CoreDomainJigTypes> coreDomainJigTypesCache;
     private final Cache<JigRepository, AllMethodRelations> allMethodRelationsCache;
 
-    public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
+    public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository, MeterRegistry meterRegistry) {
         this.coreDomainCondition = coreDomainCondition;
         this.jigEventRepository = jigEventRepository;
 
@@ -35,9 +35,9 @@ public class TypesQueryService {
             this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().recordStats().build();
             this.allMethodRelationsCache = Caffeine.newBuilder().recordStats().build();
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, coreDomainJigTypesCache, "coreDomainJigTypesCache");
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, allMethodRelationsCache, "allMethodRelationsCache");
+            CaffeineCacheMetrics.monitor(meterRegistry, jigTypesCache, "jigTypesCache");
+            CaffeineCacheMetrics.monitor(meterRegistry, coreDomainJigTypesCache, "coreDomainJigTypesCache");
+            CaffeineCacheMetrics.monitor(meterRegistry, allMethodRelationsCache, "allMethodRelationsCache");
         } else {
             this.jigTypesCache = Caffeine.newBuilder().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().build();

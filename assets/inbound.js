@@ -31,7 +31,7 @@ const InboundApp = (() => {
             });
         }
 
-        const allFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
+        const allFqns = new Set(entrypointFqns);
         controller.relations.forEach(edge => {
             allFqns.add(edge.from);
             allFqns.add(edge.to);
@@ -141,6 +141,12 @@ const InboundApp = (() => {
 
         state.data = parseInboundData();
         if (!state.data) {
+            Jig.dom.renderDataLoadError(document.getElementById("inbound-list"), "inbound-data.js");
+            return;
+        }
+
+        if ((state.data.inboundAdapters ?? []).length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("inbound-list"), "InboundInterface");
             return;
         }
 
@@ -501,10 +507,7 @@ const InboundApp = (() => {
         container.innerHTML = "";
         const usecaseData = Jig.data.usecase.get();
 
-        if (!adapters || adapters.length === 0) {
-            container.textContent = "データなし";
-            return;
-        }
+        if (!adapters || adapters.length === 0) return;
 
         const summaryCard = renderSummaryTable(adapters);
         if (summaryCard) container.appendChild(summaryCard);

@@ -245,7 +245,16 @@ const GlossaryApp = (() => {
     }
 
     function init() {
+        if (!Jig.data.glossary.has()) {
+            Jig.dom.renderDataLoadError(document.getElementById("glossary-main"), "glossary-data.js");
+            return;
+        }
+
         const terms = getGlossaryData();
+        if (terms.length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("glossary-main"), "Glossary");
+            return;
+        }
 
         const controls = {
             filterText: '',

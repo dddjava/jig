@@ -90,7 +90,7 @@ const InsightApp = (() => {
 
                 zoomFamilyTables(table, row);
                 // ズーム解除ボタンを表示
-                document.getElementById("cancel-zoom").classList.remove("hidden");
+                document.getElementById("cancel-zoom")?.classList.remove("hidden");
             });
         });
     }
@@ -145,15 +145,49 @@ const InsightApp = (() => {
         })
     }
 
+    const SECTIONS = [
+        {dataKey: "packages", countId: "package-count", headingId: "section-package", tableId: "package-insight-list", render: renderPackageInsights},
+        {dataKey: "types", countId: "type-count", headingId: "section-type", tableId: "type-insight-list", render: renderTypeInsights},
+        {dataKey: "methods", countId: "method-count", headingId: "section-method", tableId: "method-insight-list", render: renderMethodInsights},
+    ];
+
+    /**
+     * 0件のセクションは見出し・テーブル・ナビゲーションリンクごと取り除く。
+     */
+    function removeSection(section) {
+        document.getElementById(section.headingId)?.remove();
+        document.getElementById(section.tableId)?.remove();
+
+        const nav = document.getElementById("insight-section-nav");
+        if (!nav) return;
+        nav.querySelectorAll("a").forEach(link => {
+            if (link.getAttribute("href") === `#${section.headingId}`) link.remove();
+        });
+        if (nav.querySelectorAll("a").length === 0) nav.remove();
+    }
+
     function init() {
         const insightData = parseInsightData();
-        if (insightData) {
-            renderPackageInsights(insightData.packages || []);
-            renderTypeInsights(insightData.types || []);
-            renderMethodInsights(insightData.methods || []);
-            setInsightCount("package-count", (insightData.packages || []).length);
-            setInsightCount("type-count", (insightData.types || []).length);
-            setInsightCount("method-count", (insightData.methods || []).length);
+        if (!insightData) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "insight-data.js");
+            return;
+        }
+
+        let renderedSectionCount = 0;
+        SECTIONS.forEach(section => {
+            const items = insightData[section.dataKey] || [];
+            if (items.length === 0) {
+                removeSection(section);
+                return;
+            }
+            section.render(items);
+            setInsightCount(section.countId, items.length);
+            renderedSectionCount++;
+        });
+
+        if (renderedSectionCount === 0) {
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "Insight");
+            return;
         }
 
         Jig.dom.setupSortableTables();

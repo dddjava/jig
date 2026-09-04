@@ -428,6 +428,20 @@ globalThis.Jig.data = (() => {
         },
     };
 
+    const diagnostics = {
+        get() {
+            return globalThis.diagnosticsData?.diagnostics ?? [];
+        },
+        /** 解析そのものが成立していない事象。全ドキュメントに影響する */
+        getErrors() {
+            return diagnostics.get().filter(diagnostic => diagnostic.error);
+        },
+        /** 指定ドキュメントの内容が欠ける理由。全体に影響するもの（jigDocumentsが空）は含めない */
+        getFor(jigDocument) {
+            return diagnostics.get().filter(diagnostic => !diagnostic.error && diagnostic.jigDocuments.includes(jigDocument));
+        },
+    };
+
     const summary = {
         get() {
             return globalThis.summaryData;
@@ -507,6 +521,7 @@ globalThis.Jig.data = (() => {
         list,
         library,
         navigation,
+        diagnostics,
         summary,
         typeRelations,
         resetCache,
@@ -1487,7 +1502,8 @@ globalThis.Jig.dom = (() => {
 
     function setupSortableTables() {
         function sortTable(event) {
-            const headerColumn = event.target;
+            // th が子要素を持つ場合に target ではその子要素になり列位置を特定できない
+            const headerColumn = event.currentTarget;
             const table = headerColumn.closest("table");
             const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
 
@@ -1517,7 +1533,8 @@ globalThis.Jig.dom = (() => {
                 return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
             });
 
-            rows.forEach(row => table.querySelector("tbody").appendChild(row));
+            const tbody = table.querySelector("tbody");
+            rows.forEach(row => tbody.appendChild(row));
 
             headerColumn.dataset.orderFlag = (!orderFlag).toString();
         }
@@ -1738,10 +1755,98 @@ globalThis.Jig.dom = (() => {
         helpContent.classList.remove("hidden");
     }
 
+    /**
+     * 必須データが読み込めていないことを表示する。0件ではなくデータファイル自体が無い状態なので、
+     * これを表示したページは以降の描画を行わない。
+     *
+     * @param {object|null} container 表示先。null なら何もしない
+     * @param {string} dataFileName データファイル名（例: domain-data.js）
+     */
+    function renderDataLoadError(container, dataFileName) {
+        if (!container) return;
+        removeSidebar();
+        container.appendChild(createElement("p", {
+            className: "jig-data-error",
+            children: [
+                i18nText("span", "データファイルを読み込めませんでした。JIGを実行してデータファイルを生成してください。"),
+                createElement("code", {textContent: `data/${dataFileName}`})
+            ]
+        }));
+    }
+
+    /**
+     * 絞り込む対象も表示を切り替える対象もないので、サイドバーごと取り除く。
+     */
+    function removeSidebar() {
+        document.querySelector(".in-page-sidebar")?.remove();
+    }
+
+    /**
+     * 解析中に検出した事象を、言語切り替えに追従する要素にする。
+     */
+    function diagnosticElement(diagnostic, className) {
+        globalThis.Jig.i18n.register(diagnostic.ja, diagnostic.en);
+        return i18nText("p", diagnostic.ja, {className});
+    }
+
+    /**
+     * 解析そのものが成立していないことを、ページ先頭で知らせる。
+     * 0件なのか解析できていないのかを区別するために、対象の有無に関わらず表示する。
+     *
+     * 各ページの描画は main を作り直すため、影響を受けないヘッダ直後に置く。
+     */
+    function renderDiagnosticsBanner() {
+        const errors = globalThis.Jig.data.diagnostics.getErrors();
+        if (errors.length === 0) return;
+
+        const header = document.querySelector("header.top") || document.querySelector("header");
+        if (!header) return;
+
+        const banner = createElement("section", {className: "jig-diagnostics"});
+        errors.forEach(diagnostic => banner.appendChild(diagnosticElement(diagnostic)));
+        header.after(banner);
+    }
+
+    /**
+     * このドキュメントの対象が1件もないことを表示する。
+     * ページ内の一部が0件なだけの場合は何も表示せず要素ごと描かない方針のため、
+     * 呼び出すのは主要コンテンツが丸ごと空になったときだけにする。
+     *
+     * @param {object|null} container 表示先。null なら何もしない
+     * @param {string} [jigDocument] JigDocument の enum 名。渡すと0件の理由を併せて表示する
+     */
+    function renderEmptyDocument(container, jigDocument) {
+        if (!container) return;
+        const panel = createElement("section", {
+            className: "jig-empty",
+            children: [i18nText("p", "このドキュメントの対象が見つかりませんでした。")]
+        });
+
+        // なぜ0件になったのかがわかっていれば併せて示す
+        if (jigDocument) {
+            globalThis.Jig.data.diagnostics.getFor(jigDocument)
+                .forEach(diagnostic => panel.appendChild(diagnosticElement(diagnostic, "jig-empty__reason")));
+        }
+
+        removeSidebar();
+
+        // 何のドキュメントなのかを併せて示す。本文に出すのでヘッダの「?」からは外す
+        const description = document.getElementById("jig-document-description");
+        if (description && description.textContent) {
+            panel.appendChild(description);
+            description.classList.remove("hidden");
+            document.getElementById("jig-document-help-panel")?.remove();
+            document.querySelector(".jig-help-button")?.remove();
+        }
+
+        container.appendChild(panel);
+    }
+
     function initCommonUi() {
         setupHeaderNavigation();
         setupLanguageSwitcher();
         setupDocumentHelp();
+        renderDiagnosticsBanner();
         if (globalThis.Jig?.data?.createTypeLinkResolver) {
             setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
         }
@@ -1812,6 +1917,9 @@ globalThis.Jig.dom = (() => {
         downloadCsv,
         renderTableRows,
         setupSortableTables,
+        renderDataLoadError,
+        renderEmptyDocument,
+        renderDiagnosticsBanner,
         initCommonUi,
 
         card: {
@@ -1957,6 +2065,7 @@ globalThis.Jig.mermaid = (() => {
                 this.clicks.push(`click ${id} href "${url}"${tooltipPart}`);
             }
 
+            // mermaidはツールチップ単独の構文を持たないため、何も登録していないハンドラ名を置く
             addTooltip(id, tooltip) {
                 if (!id || !tooltip || this.clickSet.has(id)) return;
                 this.clickSet.add(id);
@@ -2060,25 +2169,27 @@ globalThis.Jig.mermaid = (() => {
         }
 
         /**
+         * パッケージ関連図の共通部分（ヘッダ・ノード・エッジ・親パッケージのclassDef）を組み立てる。
+         * 表示する親パッケージの追加条件と、末尾に足すスタイル行は呼び出し側が hooks で与える。
+         *
          * @param {Set<string>} packageFqns
          * @param {Relation[]} uniqueRelations
          * @param {MermaidDiagramSourceOptions} options
+         * @param {{keepParentFqn?: function(string): boolean, appendStyles?: function(string[], Map<string, string>, Set<string>): void}} [hooks]
          */
-        function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
-            const {diagramDirection, focusedPackageFqn, clickHandlerName, nodeClickUrlCallback} = options;
+        function buildPackageDiagramSource(packageFqns, uniqueRelations, options, hooks = {}) {
+            const {diagramDirection, clickHandlerName, nodeClickUrlCallback, showPhysicalName} = options;
+            const {keepParentFqn, appendStyles} = hooks;
 
             // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
             const allParentFqns = buildParentFqns(packageFqns);
             const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
 
-            // 関連のない親パッケージを packageFqns から除外
+            // 関連のない親パッケージを packageFqns から除外する（keepParentFqn で個別に残せる）
             const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
-                // 親パッケージの場合、関連を持つものだけを含める
-                if (allParentFqns.has(fqn)) {
-                    return parentFqnsWithRelations.has(fqn);
-                }
-                // 親パッケージでない場合は常に含める
-                return true;
+                if (!allParentFqns.has(fqn)) return true;
+                if (keepParentFqn?.(fqn)) return true;
+                return parentFqnsWithRelations.has(fqn);
             }));
 
             const lines = [
@@ -2089,7 +2200,7 @@ globalThis.Jig.mermaid = (() => {
                 "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
                 "---",
                 `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName});
             const subgraphNodeIds = new Map();
 
             const nodeLines = buildDiagramNodeLines(
@@ -2103,7 +2214,7 @@ globalThis.Jig.mermaid = (() => {
                     nodeClickUrlCallback,
                     parentFqnsWithRelations,
                     subgraphNodeIds,
-                    showPhysicalName: options.showPhysicalName,
+                    showPhysicalName,
                 }
             );
             const {
@@ -2116,15 +2227,29 @@ globalThis.Jig.mermaid = (() => {
             edgeLines.forEach(line => lines.push(line));
             linkStyles.forEach(styleLine => lines.push(styleLine));
 
-            // ノードのスタイルを指定。どちらも存在しない場合もあるが、classDefに害はないので出力する。
+            // 親パッケージが存在しない場合もあるが、classDefに害はないので常に出力する。
             // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
             lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
-            if (focusedPackageFqn && nodeIdByFqn.has(focusedPackageFqn)) {
-                // 選択されたものがあれば強調表示する
-                lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
-            }
+            appendStyles?.(lines, nodeIdByFqn, packageFqnsToDisplay);
 
             return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+        }
+
+        /**
+         * @param {Set<string>} packageFqns
+         * @param {Relation[]} uniqueRelations
+         * @param {MermaidDiagramSourceOptions} options
+         */
+        function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
+            const {focusedPackageFqn} = options;
+            return buildPackageDiagramSource(packageFqns, uniqueRelations, options, {
+                appendStyles: (lines, nodeIdByFqn) => {
+                    // 選択されたものがあれば強調表示する
+                    if (focusedPackageFqn && nodeIdByFqn.has(focusedPackageFqn)) {
+                        lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
+                    }
+                }
+            });
         }
 
         /**
@@ -2132,72 +2257,32 @@ globalThis.Jig.mermaid = (() => {
          * @param {Set<string>} packageFqns - 表示するパッケージFQNセット
          * @param {Relation[]} uniqueRelations - 表示する関連
          * @param {{targetFqns: Set<string>, callerFqns: Set<string>, calleeFqns: Set<string>, diagramDirection: string, clickHandlerName: string}} options
-         * @returns {{source: string, nodeIdToFqn: Map<string, string>}}
+         * @returns {{source: string, nodeIdToFqn: Map<string, string>, mutualPairs: Set<string>}}
          */
         function buildExploreDiagramSource(packageFqns, uniqueRelations, options) {
-            const {targetFqns, callerFqns, calleeFqns, diagramDirection, clickHandlerName} = options;
+            const {targetFqns, callerFqns, calleeFqns} = options;
+            return buildPackageDiagramSource(packageFqns, uniqueRelations, options, {
+                // 明示的に選択されたターゲットは関連の有無によらず常に表示する
+                keepParentFqn: fqn => !!targetFqns?.has(fqn),
+                appendStyles: (lines, nodeIdByFqn, packageFqnsToDisplay) => {
+                    lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
+                    lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');
+                    lines.push('classDef exploreCallee fill:#FFF0E6,stroke:#CC6600,stroke-width:2px');
 
-            const allParentFqns = buildParentFqns(packageFqns);
-            const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
-
-            const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
-                if (allParentFqns.has(fqn)) {
-                    // 明示的に選択されたターゲットは関連の有無によらず常に表示する
-                    if (targetFqns.has(fqn)) return true;
-                    return parentFqnsWithRelations.has(fqn);
-                }
-                return true;
-            }));
-
-            const lines = [
-                "---",
-                "config:",
-                "  theme: 'default'",
-                "  themeVariables:",
-                "    clusterBkg: '#ffffde'",
-                "---",
-                `graph ${diagramDirection}`];
-            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, {showPhysicalName: options.showPhysicalName});
-            const subgraphNodeIds = new Map();
-
-            const nodeLines = buildDiagramNodeLines(
-                packageFqnsToDisplay,
-                nodeIdByFqn,
-                {
-                    nodeIdToFqn,
-                    nodeLabelById,
-                    escapeMermaidText,
-                    clickHandlerName,
-                    parentFqnsWithRelations,
-                    subgraphNodeIds,
-                    showPhysicalName: options.showPhysicalName,
-                }
-            );
-            const {edgeLines, linkStyles} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
-
-            nodeLines.forEach(line => lines.push(line));
-            edgeLines.forEach(line => lines.push(line));
-            linkStyles.forEach(styleLine => lines.push(styleLine));
-
-            lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
-            lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
-            lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');
-            lines.push('classDef exploreCallee fill:#FFF0E6,stroke:#CC6600,stroke-width:2px');
-
-            // 各ノードにクラスを適用（優先度: target > caller > callee）
-            packageFqnsToDisplay.forEach(fqn => {
-                if (!nodeIdByFqn.has(fqn)) return;
-                const nodeId = nodeIdByFqn.get(fqn);
-                if (targetFqns && targetFqns.has(fqn)) {
-                    lines.push(`class ${nodeId} exploreTarget`);
-                } else if (callerFqns && callerFqns.has(fqn)) {
-                    lines.push(`class ${nodeId} exploreCaller`);
-                } else if (calleeFqns && calleeFqns.has(fqn)) {
-                    lines.push(`class ${nodeId} exploreCallee`);
+                    // 各ノードにクラスを適用（優先度: target > caller > callee）
+                    packageFqnsToDisplay.forEach(fqn => {
+                        if (!nodeIdByFqn.has(fqn)) return;
+                        const nodeId = nodeIdByFqn.get(fqn);
+                        if (targetFqns?.has(fqn)) {
+                            lines.push(`class ${nodeId} exploreTarget`);
+                        } else if (callerFqns?.has(fqn)) {
+                            lines.push(`class ${nodeId} exploreCaller`);
+                        } else if (calleeFqns?.has(fqn)) {
+                            lines.push(`class ${nodeId} exploreCallee`);
+                        }
+                    });
                 }
             });
-
-            return {source: lines.join('\n'), nodeIdToFqn};
         }
 
         /**
@@ -2281,23 +2366,25 @@ globalThis.Jig.mermaid = (() => {
          */
         function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
             const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback, showPhysicalName} = options;
+            // 同時に指定すると1ノードに click 行が2本出て、Mermaid のクリック挙動が後勝ちで不定になる
+            if (clickHandlerName && nodeClickUrlCallback) {
+                throw new Error("clickHandlerName と nodeClickUrlCallback は同時に指定できません");
+            }
 
             const packageFqnList = Array.from(packageFqns).sort();
             const parentFqns = buildParentFqns(packageFqns);
             const rootGroup = buildDiagramGroupTree(packageFqnList, nodeIdByFqn);
+
             const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
                 const fqn = nodeIdToFqn.get(nodeId);
                 const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
                 const nodeDefinition = getNodeDefinition(nodeId, displayLabel, 'package');
                 lines.push(nodeDefinition);
-                if (clickHandlerName) {
+                if (clickHandlerName || (nodeClickUrlCallback && fqn)) {
                     const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
-                    lines.push(`click ${nodeId} ${clickHandlerName} "${tooltip}"`);
-                }
-                if (nodeClickUrlCallback && fqn) {
-                    const url = escapeMermaidText(nodeClickUrlCallback(fqn));
-                    const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
-                    lines.push(`click ${nodeId} href "${url}" "${tooltip}"`);
+                    lines.push(clickHandlerName
+                        ? `click ${nodeId} ${clickHandlerName} "${tooltip}"`
+                        : `click ${nodeId} href "${escapeMermaidText(nodeClickUrlCallback(fqn))}" "${tooltip}"`);
                 }
                 if (fqn && parentFqns.has(fqn)) {
                     lines.push(`class ${nodeId} parentPackage`);
@@ -2702,12 +2789,60 @@ globalThis.Jig.mermaid = (() => {
         }
     })();
 
+    // mermaid の click 関数コールバックは securityLevel が loose のときしか動かず、loose では
+    // ラベルのHTMLがサニタイズされない。描画後のSVGへ自前でバインドし、loose を避ける。
+    const clickHandlers = new Map();
+
+    /**
+     * 図のノードクリックに使うハンドラを名前で登録する。
+     * 解析対象のJavadoc由来の図も同じ描画経路を通るため、登録済みの名前だけをバインドする。
+     *
+     * @param {string} name - 図のソースの click ディレクティブに書く名前
+     * @param {(nodeId: string) => void} handler
+     */
+    function registerClickHandler(name, handler) {
+        if (!name || typeof handler !== "function") return;
+        clickHandlers.set(name, handler);
+    }
+
+    function getClickHandler(name) {
+        return clickHandlers.get(name);
+    }
+
+    // mermaid がノードに振るDOM id。flowchartとclassDiagramでプレフィックスが異なる
+    const NODE_DOM_ID_PATTERN = /^(?:flowchart|classId)-(.+)-\d+$/;
+
+    function collectClickBindings(source) {
+        const bindings = new Map();
+        for (const [, nodeId, handlerName] of source.matchAll(/^\s*click\s+(\S+)\s+(\S+)/gm)) {
+            if (handlerName !== "href") bindings.set(nodeId, handlerName);
+        }
+        return bindings;
+    }
+
+    function bindDiagramClicks(diagram, source) {
+        if (!diagram || !source || typeof diagram.querySelectorAll !== "function") return;
+        const bindings = collectClickBindings(source);
+        if (bindings.size === 0) return;
+        diagram.querySelectorAll('[id^="flowchart-"], [id^="classId-"]').forEach(element => {
+            const nodeId = NODE_DOM_ID_PATTERN.exec(element.id)?.[1];
+            const handler = getClickHandler(bindings.get(nodeId));
+            if (!handler) return;
+            element.addEventListener("click", () => handler(nodeId));
+        });
+    }
+
     function renderMermaidDiagram(diagram) {
+        const source = diagram.textContent;
         const renderResult = globalThis.mermaid.run({nodes: [diagram]});
-        if (typeof renderResult.catch === 'function') {
-            renderResult.catch(error => {
-                console.error('Mermaid rendering error:', error);
-            });
+        if (renderResult && typeof renderResult.then === 'function') {
+            renderResult
+                .then(() => bindDiagramClicks(diagram, source))
+                .catch(error => {
+                    console.error('Mermaid rendering error:', error);
+                });
+        } else {
+            bindDiagramClicks(diagram, source);
         }
         return renderResult;
     }
@@ -2716,8 +2851,9 @@ globalThis.Jig.mermaid = (() => {
         const DEFAULT_MAX_TEXT_SIZE = 50000;
         const EXTENDED_MAX_TEXT_SIZE = 200000;
         const DEFAULT_MAX_EDGES = 500;
-        // click の関数コールバック（package図のノードクリック等）は mermaid 実装上 loose でのみ有効なため strict にできない
-        const MERMAID_SECURITY_LEVEL = "loose";
+        // loose は解析対象のJavadocに書かれた click ディレクティブから任意のグローバル関数を呼べる。
+        // ノードクリックは registerClickHandler で描画後にバインドするため loose にする必要はない。
+        const MERMAID_SECURITY_LEVEL = "strict";
 
         // 描画済み SVG をコンテナ単位・ソース文字列キーでキャッシュする。
         // 同一ソースの再描画（チェック切替の往復・向き切替の戻しなど）で mermaid.run を回避する。
@@ -3137,6 +3273,15 @@ globalThis.Jig.mermaid = (() => {
             panel.style.display = visible ? "" : "none";
         }
 
+        // 呼び出し元のコード（ソース生成・描画関数）が投げた例外を画面に出す。捕捉しないと
+        // 描画開始時に立てた is-rendering が下りず、ローディング表示のまま止まる。
+        function showDiagramError(container, error, diagramEl = null) {
+            console.error("Diagram rendering error:", error);
+            if (diagramEl) diagramEl.style.display = "none";
+            setEdgeWarning(container, {visible: true, message: `図の描画に失敗しました: ${error?.message ?? error}`});
+            setRendering(container, false);
+        }
+
         function baseMermaidConfig(maxEdges) {
             return {
                 startOnLoad: false,
@@ -3253,7 +3398,14 @@ globalThis.Jig.mermaid = (() => {
             const renderDiagram = (newDirection) => {
                 const generation = ++renderGeneration;
                 setRendering(container, true);
-                const currentSource = diagramFn(newDirection, {showPhysicalName}) ?? "";
+                let generated;
+                try {
+                    generated = diagramFn(newDirection, {showPhysicalName});
+                } catch (error) {
+                    showDiagramError(container, error, diagramEl);
+                    return;
+                }
+                const currentSource = generated ?? "";
 
                 if (showControls) {
                     ensureZoomButton(container);
@@ -3373,7 +3525,13 @@ globalThis.Jig.mermaid = (() => {
 
             let initialDirection = direction;
             if (!initialDirection) {
-                const text = diagramFn("LR", {showPhysicalName: false});
+                let text;
+                try {
+                    text = diagramFn("LR", {showPhysicalName: false});
+                } catch (error) {
+                    showDiagramError(container, error, diagramEl);
+                    return;
+                }
                 const graphMatch = text?.match(/^\s*(?:graph|flowchart)\s+(TB|TD|LR)\b/m);
                 const classDiagMatch = text?.match(/^\s*direction\s+(TB|LR)\b/m);
                 initialDirection = graphMatch?.[1] ?? classDiagMatch?.[1] ?? "LR";
@@ -3511,7 +3669,8 @@ globalThis.Jig.mermaid = (() => {
             createDiagramSettingsOverride,
             setupLazyMermaidRender,
             initializeMermaid,
-            setRendering
+            setRendering,
+            showDiagramError
         }
     })();
 
@@ -3529,6 +3688,22 @@ globalThis.Jig.mermaid = (() => {
             }
             const rect = element.getBoundingClientRect();
             return rect.top < window.innerHeight && rect.bottom > 0;
+        }
+
+        /**
+         * renderFn は呼び出し元のコード。例外がここを抜けると IntersectionObserver の
+         * コールバックや設定変更ハンドラごと中断し、同じループの他のダイアグラムまで
+         * 描画されなくなる。捕捉して当該ダイアグラムだけを失敗として表示する。
+         * @returns {boolean} 描画できたか
+         */
+        function renderSafely(container, renderFn) {
+            try {
+                renderFn();
+                return true;
+            } catch (error) {
+                Jig.mermaid.render.showDiagramError(container, error);
+                return false;
+            }
         }
 
         function fixHashScrollAfterRender(renderedContainer) {
@@ -3575,12 +3750,11 @@ globalThis.Jig.mermaid = (() => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
                             renderedContainers.add(entry.target);
+                            observer.unobserve(entry.target); // 一度だけレンダリング
                             const d = diagramRegistry.find(d => d.container === entry.target);
-                            if (d) {
-                                d.renderFn();
+                            if (d && renderSafely(entry.target, d.renderFn)) {
                                 fixHashScrollAfterRender(entry.target);
                             }
-                            observer.unobserve(entry.target); // 一度だけレンダリング
                         }
                     });
                 }, {rootMargin: '100px'});
@@ -3590,7 +3764,7 @@ globalThis.Jig.mermaid = (() => {
             } else {
                 // IntersectionObserver 非サポート時は即座にレンダリング
                 renderedContainers.add(container);
-                renderFn();
+                renderSafely(container, renderFn);
             }
         }
 
@@ -3623,7 +3797,7 @@ globalThis.Jig.mermaid = (() => {
                     // 表示範囲内のみ再レンダリング
                     if (isVisible(container)) {
                         if (!shouldRerender || shouldRerender(container)) {
-                            renderFn();
+                            renderSafely(container, renderFn);
                         }
                     } else {
                         // 表示範囲外は削除のみで、スクロール時に自動再レンダリング
@@ -3827,6 +4001,9 @@ globalThis.Jig.mermaid = (() => {
         render,
         diagram,
         renderMarkdownDiagrams,
+        registerClickHandler,
+        getClickHandler,
+        bindDiagramClicks,
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,
@@ -3835,10 +4012,6 @@ globalThis.Jig.mermaid = (() => {
         nav,
     };
 })();
-
-if (typeof window !== "undefined") {
-    window._jigNoop = () => {};
-}
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
@@ -3880,6 +4053,15 @@ globalThis.Jig.i18n = (() => {
             "購読先で絞り込み": "Filter by subscription",
             "スケジュールで絞り込み": "Filter by schedule",
             "出力日時": "Generated at",
+            "データファイルを読み込めませんでした。JIGを実行してデータファイルを生成してください。":
+                "Failed to load the data file. Run JIG to generate it.",
+            "このドキュメントの対象が見つかりませんでした。": "No target was found for this document.",
+            "表示設定で表示できる要素がありません。": "No elements to show with the current display settings.",
+            // 相対時間（{n} は経過数に置換される）
+            "{n}日前": "{n} days ago",
+            "{n}時間前": "{n} hours ago",
+            "{n}分前": "{n} minutes ago",
+            "たった今": "just now",
             "主要パッケージ関連図": "Key package diagram",
             "ドメインパッケージ": "Domain package",
             "最上位パッケージ": "Top-level package",
@@ -4027,6 +4209,19 @@ globalThis.Jig.i18n = (() => {
         return builtinDictionaries[lang] || null;
     }
 
+    /**
+     * 解析結果に含まれる文言（診断メッセージなど）を辞書に加える。
+     * ビルド時に決まらないため builtinDictionaries には持てないが、
+     * 登録すれば data-i18n の仕組みでそのまま言語切り替えに追従する。
+     *
+     * @param {string} japanese 日本語。data-i18n のキーになる
+     * @param {string} english 英語
+     */
+    function register(japanese, english) {
+        if (!japanese || !english) return;
+        builtinDictionaries.en[japanese] = english;
+    }
+
     function resolveLanguage() {
         if (currentLang) return currentLang;
         // 初期言語は HTML の lang 属性から決定する（Java 側で {{lang}} を全テンプレートに置換済み）。
@@ -4124,6 +4319,7 @@ globalThis.Jig.i18n = (() => {
         currentLanguage,
         setLanguage,
         availableLanguages,
+        register,
         t,
         // テストが明示キー翻訳をセットアップするために参照する
         builtinDictionaries,

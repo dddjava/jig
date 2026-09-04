@@ -11,36 +11,6 @@
     margin-bottom: 12px;
 }
 
-.usecase .depends {
-    background-color: #ffffff;
-    padding: 12px;
-    margin-top: 12px;
-    border-radius: 6px;
-    border: 1px solid #e2e4ea;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.usecase .depends-section {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.usecase .depends-section h4 {
-    margin: 0;
-    font-weight: bold;
-    color: #1b3a66;
-    font-size: var(--jig-font-size-sm);
-}
-
-.usecase .depends-item {
-    color: #333;
-    margin-left: 8px;
-}
-
 .usecase .declaration {
     display: block;
     width: 100%;

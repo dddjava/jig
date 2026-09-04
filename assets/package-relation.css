@@ -144,10 +144,6 @@
     text-align: center;
 }
 
-.package-relation table th.no-sort {
-    cursor: default;
-}
-
 .package-relation table {
     border-collapse: collapse;
     width: 100%;

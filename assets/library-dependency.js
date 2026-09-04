@@ -6,11 +6,20 @@ const LibraryDependencyApp = (() => {
     let onSelectionChanged = () => {};
 
     function init() {
-        const data = Jig.data.library.get() || {
-            internalPackages: [],
-            libraries: [],
-            relations: []
-        };
+        const data = Jig.data.library.get();
+        if (!data) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "library-dependency-data.js");
+            return;
+        }
+
+        if ((data.libraries ?? []).length === 0) {
+            // 表示する依存が無いので、操作対象のないコントロールごと取り除く
+            document.querySelector(".controls")?.remove();
+            document.getElementById("library-dependency-diagram")?.remove();
+            document.getElementById("library-list")?.remove();
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "LibraryDependency");
+            return;
+        }
 
         const diagramEl = document.getElementById("library-dependency-diagram");
         const javaStandardToggle = document.getElementById("show-java-standard-toggle");
@@ -43,12 +52,11 @@ const LibraryDependencyApp = (() => {
             Jig.mermaid.render.renderWithControls(diagramEl, diagramFn, {direction: currentDirection, enableLabelToggle: true});
         };
 
-        // Mermaid のクリックハンドラ。グローバル関数として登録する必要がある。
         // 引数は sanitize 済みのノード ID なので、元の group.id へ逆引きする。
-        globalThis.handleLibraryClick = (nodeIdArg) => {
+        Jig.mermaid.registerClickHandler("handleLibraryClick", (nodeIdArg) => {
             const groupId = libraryIdByNodeId.get(nodeIdArg);
             if (groupId) toggleSelection(groupId);
-        };
+        });
 
         const rerender = () => {
             renderDiagram();
@@ -137,8 +145,8 @@ const LibraryDependencyApp = (() => {
         visibleLibraries.forEach(g => {
             const id = nodeId(g.id);
             libraryIdByNodeId.set(id, g.id);
-            lines.push(`    ${id}@{shape: doc, label: \"${escape(g.displayName)}\"}`);
-            lines.push(`    click ${id} handleLibraryClick \"${escape(g.displayName)}\"`);
+            lines.push(`    ${id}@{shape: doc, label: "${escape(g.displayName)}"}`);
+            lines.push(`    click ${id} handleLibraryClick "${escape(g.displayName)}"`);
         });
 
         visibleEdges.forEach(e => {
@@ -182,11 +190,9 @@ const LibraryDependencyApp = (() => {
         const segmentLabel = (parentFqn && node.fqn.startsWith(parentFqn + '.'))
             ? node.fqn.substring(parentFqn.length + 1)
             : node.fqn;
-        const physicalLabel = segmentLabel;
-        const termLabel = packageTermTitle(node.fqn) || segmentLabel;
-        const label = showPhysicalName ? physicalLabel : termLabel;
+        const label = showPhysicalName ? segmentLabel : (packageTermTitle(node.fqn) || segmentLabel);
         if (node.children.size === 0) {
-            lines.push(`${pad(indent)}${nodeId(node.fqn)}@{shape: st-rect, label: \"${escape(label)}\"}`);
+            lines.push(`${pad(indent)}${nodeId(node.fqn)}@{shape: st-rect, label: "${escape(label)}"}`);
             return;
         }
         if (!node.isLeaf && node.children.size === 1) {
@@ -195,11 +201,11 @@ const LibraryDependencyApp = (() => {
             return;
         }
         const groupId = `${nodeId(node.fqn)}_grp`;
-        lines.push(`${pad(indent)}subgraph ${groupId} [\"${escape(label)}\"]`);
+        lines.push(`${pad(indent)}subgraph ${groupId} ["${escape(label)}"]`);
         if (node.isLeaf) {
             const selfId = nodeId(node.fqn);
             const selfLabel = showPhysicalName ? node.fqn : (packageTermTitle(node.fqn) || node.fqn);
-            lines.push(`${pad(indent + 1)}${selfId}@{shape: st-rect, label: \"${escape(selfLabel)}\"}`);
+            lines.push(`${pad(indent + 1)}${selfId}@{shape: st-rect, label: "${escape(selfLabel)}"}`);
             parentSelfIds.push(selfId);
         }
         renderTreeChildren(node, lines, indent + 1, node.fqn, parentSelfIds, showPhysicalName);

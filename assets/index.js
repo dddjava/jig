@@ -9,9 +9,6 @@ const IndexApp = (() => {
     }
 
     function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabelKey, nodeClickUrlCallback) {
-        const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-        packageDiagramContainer.appendChild(domainPackageDiagram);
-
         const generator = (dir, opts) => Jig.mermaid.createPackageLevelDiagram(
             {fqn: packageRoot},
             allPackages, allPackageRelations,
@@ -23,17 +20,18 @@ const IndexApp = (() => {
             }
         );
 
-        if (generator("TB")) {
-            // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-            const heading = Jig.dom.createElement("h3", {
-                children: [
-                    Jig.dom.i18nText("span", titleLabelKey),
-                    document.createTextNode(": " + packageRoot)
-                ]
-            });
-            packageDiagramContainer.insertBefore(heading, domainPackageDiagram);
-            Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
-        }
+        // ダイアグラムが出力されない場合もあるので、タイトル行も枠も描けるときだけ追加する
+        if (!generator("TB")) return;
+
+        packageDiagramContainer.appendChild(Jig.dom.createElement("h3", {
+            children: [
+                Jig.dom.i18nText("span", titleLabelKey),
+                document.createTextNode(": " + packageRoot)
+            ]
+        }));
+        const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
+        packageDiagramContainer.appendChild(domainPackageDiagram);
+        Jig.mermaid.render.renderWithControls(domainPackageDiagram, generator, {direction: "TB", enableLabelToggle: true});
     }
 
     function renderSummary() {
@@ -91,11 +89,26 @@ const IndexApp = (() => {
         });
     }
 
+    // 図が1つも描けなければ見出しごと出さない
+    function removeDiagramsSectionIfEmpty(packageDiagramContainer) {
+        if (packageDiagramContainer && packageDiagramContainer.children.length === 0) {
+            document.getElementById("diagrams")?.remove();
+        }
+    }
+
     function init() {
+        const packageDiagramContainer = document.getElementById("package-diagram");
+
+        // 各ドキュメントへの入口が作れないので、他ページと同様に読み込み失敗として扱う
+        if (!Jig.data.navigation.get()) {
+            removeDiagramsSectionIfEmpty(packageDiagramContainer);
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "navigation-data.js");
+            return;
+        }
+
         renderSummary();
         renderDocumentLinks();
 
-        const packageDiagramContainer = document.getElementById("package-diagram");
         const packageData = packageDiagramContainer ? getPackageData() : null;
 
         if (packageDiagramContainer && packageData) {
@@ -121,7 +134,11 @@ const IndexApp = (() => {
             );
         }
 
+        removeDiagramsSectionIfEmpty(packageDiagramContainer);
+
         updateRelativeTime();
+        // 相対時間は data-i18n を持たないため、言語切り替え時に自分で描き直す
+        document.addEventListener("jig:locale-change", updateRelativeTime);
     }
 
     function updateRelativeTime() {
@@ -141,18 +158,22 @@ const IndexApp = (() => {
         const diffHour = Math.floor(diffMin / 60);
         const diffDay = Math.floor(diffHour / 24);
 
-        let relativeTime = "";
+        // 数値を含むため data-i18n では扱えない。キーの {n} を経過数に置換する
+        const relative = (key, count) => Jig.i18n.t(key).replace("{n}", count);
+        let relativeTime;
         if (diffDay > 0) {
-            relativeTime = `${diffDay}日前`;
+            relativeTime = relative("{n}日前", diffDay);
         } else if (diffHour > 0) {
-            relativeTime = `${diffHour}時間前`;
+            relativeTime = relative("{n}時間前", diffHour);
         } else if (diffMin > 0) {
-            relativeTime = `${diffMin}分前`;
+            relativeTime = relative("{n}分前", diffMin);
         } else {
-            relativeTime = "たった今";
+            relativeTime = Jig.i18n.t("たった今");
         }
 
-        element.textContent = `${element.textContent.split(' (')[0]} (${relativeTime})`;
+        // 初回の表示テキストを原文として退避し、再描画で相対時間が積み重ならないようにする
+        if (element.dataset.timestampBase == null) element.dataset.timestampBase = element.textContent;
+        element.textContent = `${element.dataset.timestampBase} (${relativeTime})`;
     }
 
     return {

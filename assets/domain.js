@@ -72,12 +72,11 @@ const DomainApp = (() => {
     // nodeId → url。FQN から決定的に導出されるため描画ごとにクリアせず蓄積してよい。
     const _typeNavRegistry = new Map();
     const _typeNavHandlerName = '_jigDomNavType';
-    if (typeof window !== 'undefined') {
-        window[_typeNavHandlerName] = (nodeId) => {
-            const url = _typeNavRegistry.get(nodeId);
-            if (url) window.location.href = url;
-        };
-    }
+    const navigateToType = (nodeId) => {
+        const url = _typeNavRegistry.get(nodeId);
+        if (url) window.location.href = url;
+    };
+    Jig.mermaid.registerClickHandler(_typeNavHandlerName, navigateToType);
 
     function _registerTypeNavClick(builder, fqn) {
         const nodeId = fqnToMermaidId(fqn);
@@ -309,8 +308,8 @@ const DomainApp = (() => {
 
         function edgeTypeFromKinds(kinds) {
             if (!kinds) return 'dependency';
-            if (kinds.includes('継承クラス')) return 'realization';
-            if (kinds.includes('実装インタフェース')) return 'inheritance';
+            if (kinds.includes('継承クラス')) return 'inheritance';
+            if (kinds.includes('実装インタフェース')) return 'realization';
             if (kinds.includes('フィールド型') || kinds.includes('フィールド型引数')) return 'association';
             return 'dependency';
         }
@@ -1210,13 +1209,12 @@ const DomainApp = (() => {
 
         const data = Jig.data.domain.get();
         if (!data) {
-            const main = document.getElementById("domain-main");
-            if (main) {
-                main.appendChild(Jig.dom.createElement("p", {
-                    className: "jig-data-error",
-                    textContent: "ドメインデータ（domain-data.js）が読み込まれていません。JIG を実行してデータファイルを生成してください。"
-                }));
-            }
+            Jig.dom.renderDataLoadError(document.getElementById("domain-main"), "domain-data.js");
+            return;
+        }
+
+        if (Jig.data.domain.getTypes().length === 0) {
+            Jig.dom.renderEmptyDocument(document.getElementById("domain-main"), "DomainModel");
             return;
         }
 

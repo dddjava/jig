@@ -59,8 +59,7 @@ const PackageApp = (() => {
 
     function getPackageRelationData(context) {
         if (context.packageRelationCache) return context.packageRelationCache;
-        const data = Jig.data.package.get() ?? {};
-        context.packageRelationCache = parsePackageRelationData(data);
+        context.packageRelationCache = parsePackageRelationData(Jig.data.package.get());
         return context.packageRelationCache;
     }
 
@@ -84,50 +83,6 @@ const PackageApp = (() => {
         return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
-    function aggregatePackageData(packages, relations, depth) {
-        if (!depth || depth <= 0) return {packages, relations};
-
-        const packageMap = new Map();
-        packages.forEach(pkg => {
-            const aggFqn = Jig.util.getAggregatedFqn(pkg.fqn, depth);
-            if (!packageMap.has(aggFqn)) {
-                packageMap.set(aggFqn, {fqn: aggFqn, classCount: 0});
-            }
-            packageMap.get(aggFqn).classCount += (pkg.classCount ?? 0);
-        });
-
-        const relationKeys = new Set();
-        const aggregatedRelations = [];
-        relations.forEach(rel => {
-            const from = Jig.util.getAggregatedFqn(rel.from, depth);
-            const to = Jig.util.getAggregatedFqn(rel.to, depth);
-            if (from === to) return;
-            const key = `${from}::${to}`;
-            if (!relationKeys.has(key)) {
-                relationKeys.add(key);
-                aggregatedRelations.push({from, to});
-            }
-        });
-
-        return {packages: Array.from(packageMap.values()), relations: aggregatedRelations};
-    }
-
-    function filterByPackageFilter(packages, relations, packageFilterFqn) {
-        if (packageFilterFqn.length === 0) return {packages, relations};
-        return {
-            packages: packages.filter(pkg => Jig.util.isWithinPackageFilters(pkg.fqn, packageFilterFqn)),
-            relations: relations.filter(r =>
-                Jig.util.isWithinPackageFilters(r.from, packageFilterFqn) &&
-                Jig.util.isWithinPackageFilters(r.to, packageFilterFqn)),
-        };
-    }
-
-    function normalizePackageFilterValue(value) {
-        const trimmed = (value ?? '').trim();
-        if (!trimmed) return [];
-        return trimmed.split('\n').map(s => s.trim()).filter(s => s);
-    }
-
     function normalizeAggregationDepthValue(value) {
         const parsed = Number(value);
         return Number.isFinite(parsed) ? parsed : 0;
@@ -144,10 +99,6 @@ const PackageApp = (() => {
         if (!domainPackageRoots?.length) return 0;
         const minDepth = Math.min(...domainPackageRoots.map(fqn => Jig.util.getPackageDepth(fqn)));
         return minDepth + 1;
-    }
-
-    function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
-        return rowFqns.map(fqn => Jig.util.isWithinPackageFilters(fqn, packageFilterFqn));
     }
 
     function traverseGraph(root, adjacencyMap) {
@@ -178,42 +129,6 @@ const PackageApp = (() => {
             Jig.util.addToSetMap(adjacency, key, value);
         });
         return adjacency;
-    }
-
-    function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, focusCalleeMode) {
-        if (!root) return new Set();
-
-        const focusSet = new Set([root]);
-
-        if (focusCallerMode !== '0') {
-            if (focusCallerMode === '1') {
-                relations.forEach(relation => {
-                    const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                    const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                    if (to === root) focusSet.add(from);
-                });
-            } else {
-                const reverseAdjacency = buildAdjacency(relations, aggregationDepth, true);
-                const callers = traverseGraph(root, reverseAdjacency);
-                callers.forEach(caller => focusSet.add(caller));
-            }
-        }
-
-        if (focusCalleeMode !== '0') {
-            if (focusCalleeMode === '1') {
-                relations.forEach(relation => {
-                    const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                    const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                    if (from === root) focusSet.add(to);
-                });
-            } else {
-                const forwardAdjacency = buildAdjacency(relations, aggregationDepth, false);
-                const callees = traverseGraph(root, forwardAdjacency);
-                callees.forEach(callee => focusSet.add(callee));
-            }
-        }
-
-        return focusSet;
     }
 
     function collectExploreNodeSets(targetPackages, relations, callerMode, calleeMode) {
@@ -1218,18 +1133,16 @@ const PackageApp = (() => {
     }
 
     function registerHierarchyDiagramClickHandler(context) {
-        if (typeof window === 'undefined') return;
-        window[HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+        Jig.mermaid.registerClickHandler(HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME, function (nodeId) {
             const fqn = context.diagramNodeIdToFqn.get(nodeId);
             if (!fqn) return;
             context.packageFilterFqn = [fqn];
             renderHierarchyDiagramAndTable(context);
-        };
+        });
     }
 
     function registerExploreDiagramClickHandler(context) {
-        if (typeof window === 'undefined') return;
-        window[EXPLORE_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+        Jig.mermaid.registerClickHandler(EXPLORE_DIAGRAM_CLICK_HANDLER_NAME, function (nodeId) {
             const fqn = context.diagramNodeIdToFqn.get(nodeId);
             if (!fqn) return;
             if (!context.exploreTargetPackages.includes(fqn)) {
@@ -1237,7 +1150,7 @@ const PackageApp = (() => {
                 renderExplorePackageList(context);
                 renderExploreDiagram(context);
             }
-        };
+        });
     }
 
     function renderTab(tabName) {
@@ -1350,7 +1263,7 @@ const PackageApp = (() => {
             });
             const tr = Jig.dom.createElement('tr', {
                 children: headerKeys.map((key, i) => {
-                    if (key === null) return Jig.dom.createElement('th', {className: 'no-sort'});
+                    if (key === null) return Jig.dom.createElement('th');
                     if (i === 1) {
                         // 「定義名」セルには絞り込み input を内包する
                         const input = Jig.dom.createElement('input', {
@@ -1373,8 +1286,20 @@ const PackageApp = (() => {
     }
 
     function init() {
+        if (!Jig.data.package.get()) {
+            Jig.dom.renderDataLoadError(document.querySelector("main"), "package-data.js");
+            return;
+        }
+
+        if (getPackageRelationData(hierarchyState).packages.length === 0) {
+            // 探索対象が無いので、タブも操作パネルも取り除く
+            document.querySelector(".package-mode-tabs")?.remove();
+            document.querySelectorAll(".package-tab-panel").forEach(panel => panel.remove());
+            Jig.dom.renderEmptyDocument(document.querySelector("main"), "PackageRelation");
+            return;
+        }
+
         renderPackageTableHeaders();
-        Jig.dom.setupSortableTables();
         const renderedTabs = new Set();
         setupTabControl(tabName => {
             if (!renderedTabs.has(tabName)) {
@@ -1428,14 +1353,9 @@ const PackageApp = (() => {
         parsePackageRelationData,
         getGlossaryTitle,
         getMaxPackageDepth,
-        aggregatePackageData,
-        filterByPackageFilter,
-        normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,
         getInitialAggregationDepth,
-        buildPackageRowVisibility,
-        collectFocusSet,
         collectExploreNodeSets,
         buildVisibleDiagramElements,
         buildPackageTableRowData,

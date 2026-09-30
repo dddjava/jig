@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
@@ -47,22 +47,26 @@ public class DefaultJigRepositoryFactory {
     private final JavaparserReader javaparserReader;
     private final MyBatisStatementsReader myBatisStatementsReader;
     private final Supplier<AnalysisState> analysisStateFactory;
+    private final MeterRegistry meterRegistry;
 
-    DefaultJigRepositoryFactory(AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, Supplier<AnalysisState> analysisStateFactory) {
+    DefaultJigRepositoryFactory(AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, Supplier<AnalysisState> analysisStateFactory, MeterRegistry meterRegistry) {
         this.asmClassSourceReader = asmClassSourceReader;
         this.javaparserReader = javaparserReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
         this.analysisStateFactory = analysisStateFactory;
+        this.meterRegistry = meterRegistry;
     }
 
     public static DefaultJigRepositoryFactory init(Configuration configuration) {
+        var meterRegistry = configuration.jigMetrics().registry();
         return new DefaultJigRepositoryFactory(
-                new AsmClassSourceReader(),
+                new AsmClassSourceReader(meterRegistry),
                 new JavaparserReader(),
                 new MyBatisStatementsReader(),
                 () -> new AnalysisState(
                         new JigEventRepository(configuration.settings().locale()),
-                        new OnMemoryGlossaryRepository())
+                        new OnMemoryGlossaryRepository()),
+                meterRegistry
         );
     }
 
@@ -74,7 +78,7 @@ public class DefaultJigRepositoryFactory {
         AnalysisState analysisState = analysisStateFactory.get();
         JigEventRepository jigEventRepository = analysisState.jigEventRepository();
         GlossaryRepository glossaryRepository = analysisState.glossaryRepository();
-        Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
+        Timer.Sample sample = Timer.start(meterRegistry);
         try {
             FilesystemSources sources = new ClassOrJavaSourceCollector(jigEventRepository).collectSources(sourceBasePaths);
             if (sources.emptyClassSources()) jigEventRepository.recordIssue(JigIssue.バイナリソースなし);
@@ -90,7 +94,7 @@ public class DefaultJigRepositoryFactory {
             sample.stop(Timer.builder("jig.analysis.time")
                     .description("Time taken for code analysis")
                     .tag("phase", "repository_creation")
-                    .register(io.micrometer.core.instrument.Metrics.globalRegistry));
+                    .register(meterRegistry));
         }
     }
 
@@ -99,18 +103,18 @@ public class DefaultJigRepositoryFactory {
      */
     private JigRepository analyze(FilesystemSources sources, Optional<Path> repositoryRoot, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         var metricName = "jig.analysis.time";
-        return Objects.requireNonNull(Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
+        return Objects.requireNonNull(meterRegistry.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
             Map<PackageId, Path> packageSourcePathMap = new HashMap<>();
-            List<JavaparserReader.PackageInfoParseResult> packageInfoParseResults = Metrics.timer(metricName, "phase", "package_info_parsing").record(() ->
+            List<JavaparserReader.PackageInfoParseResult> packageInfoParseResults = meterRegistry.timer(metricName, "phase", "package_info_parsing").record(() ->
                     javaFilePaths.packageInfoPaths().stream()
                             .map(path -> javaparserReader.parsePackageInfoJavaFile(path, glossaryRepository))
                             .toList());
             packageInfoParseResults.forEach(result -> result.packageId()
                     .ifPresent(packageId -> packageSourcePathMap.put(packageId, result.sourcePath())));
 
-            List<JavaparserReader.ParseResult> parseResults = Objects.requireNonNull(Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
+            List<JavaparserReader.ParseResult> parseResults = Objects.requireNonNull(meterRegistry.timer(metricName, "phase", "java_source_parsing").record(() ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                             .toList()));
@@ -131,10 +135,10 @@ public class DefaultJigRepositoryFactory {
             TypeSourcePaths typeSourcePaths = new TypeSourcePaths(Map.copyOf(typeSourcePathMap), Map.copyOf(packageSourcePathMap));
 
             Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(
-                    Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
+                    meterRegistry.timer(metricName, "phase", "class_file_parsing").record(() ->
                             asmClassSourceReader.readClasses(sources.classFilePaths())));
 
-            PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
+            PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(meterRegistry.timer(metricName, "phase", "mybatis_reading").record(() ->
                     createPersistenceAccessorRepository(sources, classDeclarations, jigEventRepository)));
 
             JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations);
@@ -166,7 +170,7 @@ public class DefaultJigRepositoryFactory {
             OtherExternalAccessorRepository otherExternalAccessorRepository = OtherExternalAccessorRepository.from(jigTypes);
             ExternalAccessorRepositories externalAccessorRepositories = new ExternalAccessorRepositories(persistenceAccessorRepository, otherExternalAccessorRepository);
 
-            return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
+            return meterRegistry.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel);
 
                 return new JigRepository() {

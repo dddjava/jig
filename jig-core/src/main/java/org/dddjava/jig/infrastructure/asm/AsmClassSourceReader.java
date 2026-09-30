@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.domain.model.sources.filesystem.ClassFilePaths;
 import org.objectweb.asm.ClassReader;
@@ -27,7 +27,11 @@ public class AsmClassSourceReader {
 
     private static volatile boolean loggedSkippedModules = false;
 
-    private final Counter counter = Metrics.counter("jig.analysis.class.count");
+    private final Counter counter;
+
+    public AsmClassSourceReader(MeterRegistry meterRegistry) {
+        this.counter = meterRegistry.counter("jig.analysis.class.count");
+    }
 
     public Collection<ClassDeclaration> readClasses(ClassFilePaths classFilePaths) {
         return classFilePaths.values().stream()

@@ -1,5 +1,6 @@
 package testing;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.dddjava.jig.domain.model.data.terms.*;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -83,7 +84,7 @@ public class TestSupport {
      * （名前ベースの推測ロジックなど、未解析の型を前提にした挙動の確認に使う）。
      */
     public static JigTypes buildJigTypes(Class<?>... definitionClasses) {
-        AsmClassSourceReader sut = new AsmClassSourceReader();
+        AsmClassSourceReader sut = new AsmClassSourceReader(new SimpleMeterRegistry());
         List<ClassDeclaration> classDeclarations = List.of(definitionClasses).stream()
                 .map(clz -> sut.classDeclaration(getPathFromClass(clz)).orElseThrow())
                 .toList();

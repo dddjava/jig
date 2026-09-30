@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -39,9 +40,9 @@ public class JigService {
     private final InfrastructureQueryService infrastructureQueryService;
     private final UsecaseQueryService usecaseQueryService;
 
-    public JigService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
-        this.typesQueryService = new TypesQueryService(coreDomainCondition, jigEventRepository);
-        this.infrastructureQueryService = new InfrastructureQueryService(jigEventRepository, this.typesQueryService);
+    public JigService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository, MeterRegistry meterRegistry) {
+        this.typesQueryService = new TypesQueryService(coreDomainCondition, jigEventRepository, meterRegistry);
+        this.infrastructureQueryService = new InfrastructureQueryService(jigEventRepository, this.typesQueryService, meterRegistry);
         this.usecaseQueryService = new UsecaseQueryService(jigEventRepository, this.typesQueryService, this.infrastructureQueryService);
     }
 

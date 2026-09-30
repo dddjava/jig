@@ -10,14 +10,16 @@ public record Configuration(
         JigEventRepository jigEventRepository,
         JigSettings settings,
         JigDocumentGenerator jigDocumentGenerator,
-        JigService jigService
+        JigService jigService,
+        JigMetrics jigMetrics
 ) {
 
     public static Configuration from(JigSettings settings) {
         JigEventRepository jigEventRepository = new JigEventRepository(settings.locale());
+        JigMetrics jigMetrics = JigMetrics.init();
 
         CoreDomainCondition architecture = new CoreDomainCondition(settings.domainPattern());
-        JigService jigService = new JigService(architecture, jigEventRepository);
+        JigService jigService = new JigService(architecture, jigEventRepository, jigMetrics.registry());
 
         JigDocumentGenerator jigDocumentGenerator = new JigDocumentGenerator(settings, jigService, jigEventRepository);
 
@@ -25,7 +27,8 @@ public record Configuration(
                 jigEventRepository,
                 settings,
                 jigDocumentGenerator,
-                jigService
+                jigService,
+                jigMetrics
         );
     }
 

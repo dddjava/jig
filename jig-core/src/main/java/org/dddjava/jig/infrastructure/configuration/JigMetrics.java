@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
@@ -17,22 +17,41 @@ import java.nio.file.Files;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * 実行の計測。
+ *
+ * レジストリは実行ごとに専有する。{@code Metrics.globalRegistry} を使うと
+ * 並行実行中の他インスタンスの記録が混入するため、計測箇所へは {@link #registry()} を渡す。
+ */
 public class JigMetrics {
     private static final Logger logger = LoggerFactory.getLogger(JigMetrics.class);
 
-    private final Configuration configuration;
-    private final JvmGcMetrics jvmGcMetrics;
     private final PrometheusMeterRegistry registry;
 
-    private JigMetrics(Configuration configuration, JvmGcMetrics jvmGcMetrics, PrometheusMeterRegistry registry) {
-        this.configuration = configuration;
-        this.jvmGcMetrics = jvmGcMetrics;
+    private JigMetrics(PrometheusMeterRegistry registry) {
         this.registry = registry;
     }
 
-    public JigResult record(Supplier<JigResult> supplier) {
+    public static JigMetrics init() {
+        return new JigMetrics(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
+    }
+
+    /**
+     * 解析中の計測の記録先。
+     */
+    public MeterRegistry registry() {
+        return registry;
+    }
+
+    public JigResult record(JigDocumentGenerator jigDocumentGenerator, Supplier<JigResult> supplier) {
+        // JVMの計測は実行中のみ必要なので、レジストリの生成時ではなくここで束ねる
+        new UptimeMetrics().bindTo(registry);
+        new JvmMemoryMetrics().bindTo(registry);
+        new JvmThreadMetrics().bindTo(registry);
+        var jvmGcMetrics = new JvmGcMetrics();
+        jvmGcMetrics.bindTo(registry);
+
         try {
-            // Metrics.timer(...)経由だと並行実行中の他インスタンスに記録が混入するためregistryに直接記録する
             var result = registry.timer("jig.execution.time", "phase", "total_execution").record(supplier);
             return Objects.requireNonNull(result);
         } finally {
@@ -44,12 +63,8 @@ public class JigMetrics {
 
             try {
                 // メトリクスを出力
-                JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
                 jigDocumentGenerator.close(outputDirectory -> {
                     var text = registry.scrape();
-
-                    // globalRegistry自体は他の実行も使うため触らず、専有レジストリのみ解除・close する
-                    Metrics.globalRegistry.remove(registry);
                     registry.close();
 
                     // jig-metrics.txt に書き出す
@@ -78,19 +93,5 @@ public class JigMetrics {
                 logger.warn("メトリクスの出力で予期しない例外が発生しました", e);
             }
         }
-    }
-
-    public static JigMetrics init(Configuration configuration) {
-        // 専有レジストリを生成し、globalRegistryには実行中のみ登録する（他実行と共有すると値が混線する）
-        var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-        Metrics.globalRegistry.add(registry);
-
-        new UptimeMetrics().bindTo(registry);
-        new JvmMemoryMetrics().bindTo(registry);
-        new JvmThreadMetrics().bindTo(registry);
-        var jvmGcMetrics = new JvmGcMetrics();
-        jvmGcMetrics.bindTo(registry);
-
-        return new JigMetrics(configuration, jvmGcMetrics, registry);
     }
 }

@@ -10,8 +10,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
@@ -29,10 +27,6 @@ public class ServiceMethods {
                 .flatMap(entry -> entry.serviceMethodList().stream())
                 .map(serviceMethod -> serviceMethod.method().jigMethodId())
                 .collect(toUnmodifiableSet());
-    }
-
-    public <T> Stream<T> streamAndMap(BiFunction<JigType, List<ServiceMethod>, T> biFunction) {
-        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.serviceMethodList));
     }
 
     private record Entry(JigType jigType, List<ServiceMethod> serviceMethodList) {

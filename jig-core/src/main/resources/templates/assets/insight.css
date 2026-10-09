@@ -2,6 +2,117 @@
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
+    /* 長い名前で数値列が押し出されないよう、列幅は colgroup で固定する */
+    table-layout: fixed;
+}
+
+.insight table col.insight-col-zoom {
+    width: 2em;
+}
+
+.insight table col.insight-col-number {
+    width: 6em;
+}
+
+.insight table th {
+    padding: 0;
+    vertical-align: bottom;
+}
+
+.insight table th[aria-sort] .insight-sort__label::after {
+    content: " ▼";
+}
+
+.insight table th[aria-sort="ascending"] .insight-sort__label::after {
+    content: " ▲";
+}
+
+.insight-sort {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0.25em 0.5em;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.insight-sort__label {
+    font-weight: bold;
+}
+
+.insight-sort__title {
+    font-size: var(--jig-font-size-2xs);
+    font-weight: normal;
+}
+
+.insight table td {
+    vertical-align: top;
+}
+
+/* 列ごとの上位1%値を満幅とするバー。外れ値を数字を読まずに見つけるため */
+.insight table td.number {
+    --insight-bar: 0%;
+    padding-right: 0.5em;
+    font-variant-numeric: tabular-nums;
+    background-image: linear-gradient(to left, #9fbf8a var(--insight-bar), transparent var(--insight-bar));
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: 100% 3px;
+}
+
+.insight table td.insight-zero {
+    color: var(--color-text-secondary);
+}
+
+.insight-name {
+    overflow-wrap: anywhere;
+}
+
+.insight-name__main {
+    font-family: monospace;
+}
+
+.insight-name__type {
+    color: var(--kind-color-class);
+    font-weight: bold;
+}
+
+.insight-name__member {
+    color: var(--kind-color-method);
+    font-weight: bold;
+}
+
+.insight-name__params {
+    color: var(--color-text-secondary);
+}
+
+.insight-name__sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1em;
+    font-size: var(--jig-font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.insight-name__package {
+    font-family: monospace;
+}
+
+.insight-name__term {
+    color: #000;
+}
+
+.insight-badge {
+    padding: 0 0.3em;
+    border: 1px solid var(--color-text-secondary);
+    border-radius: 3px;
+    font-family: sans-serif;
+    font-size: var(--jig-font-size-xs);
+    color: var(--color-text-secondary);
 }
 
 /* 拡大アイコンをクリックしたときに非表示にする行のスタイル */

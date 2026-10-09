@@ -1,357 +1,252 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {Element, DocumentStub} = require('./dom-stub.js');
+const {setupDom, teardownDom} = require('./jsdom-env');
 
-function setupDocument() {
-    const doc = new DocumentStub();
-    global.document = doc;
-    return doc;
+const ASSET_MODULES = ['jig-util.js', 'jig-data.js', 'jig-glossary.js', 'jig-i18n.js', 'jig-dom.js', 'jig-bootstrap.js'];
+
+function modulePath(name) {
+    return require.resolve(`../../main/resources/templates/assets/${name}`);
 }
 
-// document グローバルを設定してから jig-dom.js を require する
-setupDocument();
-require('../../main/resources/templates/assets/jig-util.js');
-require('../../main/resources/templates/assets/jig-data.js');
-require('../../main/resources/templates/assets/jig-glossary.js');
-require('../../main/resources/templates/assets/jig-dom.js');
-require('../../main/resources/templates/assets/jig-bootstrap.js');
+function reloadInsightApp() {
+    [...ASSET_MODULES, 'insight.js'].forEach(m => delete require.cache[modulePath(m)]);
+    delete globalThis.Jig;
+    ASSET_MODULES.forEach(m => require(modulePath(m)));
+    return require(modulePath('insight.js'));
+}
 
-const insight = require('../../main/resources/templates/assets/insight.js');
+const PAGE_HTML = `<!DOCTYPE html><html><body class="insight"><main>
+<button id="cancel-zoom" class="hidden"></button>
+<nav id="insight-section-nav">
+  <a href="#section-package"></a><a href="#section-type"></a><a href="#section-method"></a>
+</nav>
+<h2 id="section-package"><span id="package-count">0</span></h2>
+<table id="package-insight-list"><thead></thead><tbody></tbody></table>
+<h2 id="section-type"><span id="type-count">0</span></h2>
+<table id="type-insight-list"><thead></thead><tbody></tbody></table>
+<h2 id="section-method"><span id="method-count">0</span></h2>
+<table id="method-insight-list"><thead></thead><tbody></tbody></table>
+</main></body></html>`;
 
-function buildInsightTables(doc) {
-    const packageTbody = doc.createElement('tbody');
-    const typeTbody = doc.createElement('tbody');
-    const methodTbody = doc.createElement('tbody');
+function method(fqn, metrics = {}) {
+    const typeFqn = fqn.slice(0, fqn.indexOf('#'));
+    return {
+        fqn, typeFqn, packageFqn: typeFqn.slice(0, typeFqn.lastIndexOf('.')),
+        cyclomaticComplexity: 1, numberOfUsingTypes: 0, numberOfUsingMethods: 0, numberOfUsingFields: 0,
+        numberOfUsingOwnFields: 0, numberOfUsingOwnMethods: 0, size: 1,
+        ...metrics,
+    };
+}
 
-    doc.selectors.set('#package-insight-list tbody', packageTbody);
-    doc.selectors.set('#type-insight-list tbody', typeTbody);
-    doc.selectors.set('#method-insight-list tbody', methodTbody);
+function type(fqn, metrics = {}) {
+    return {
+        fqn, packageFqn: fqn.slice(0, fqn.lastIndexOf('.')),
+        numberOfMethods: 1, numberOfUsingTypes: 0, numberOfUsedByTypes: 0, instability: 0, lcom: 0,
+        cyclomaticComplexity: 1, size: 1,
+        ...metrics,
+    };
+}
 
-    return {packageTbody, typeTbody, methodTbody};
+function pkg(fqn, metrics = {}) {
+    return {fqn, numberOfTypes: 1, numberOfMethods: 1, numberOfUsingTypes: 0, cyclomaticComplexity: 1, size: 1, ...metrics};
+}
+
+function rowFqns(tableId) {
+    return [...document.querySelectorAll(`#${tableId} tbody tr`)].map(row => row.dataset.fqn);
+}
+
+function clickHeader(tableId, sortKey) {
+    document.querySelector(`#${tableId} button.insight-sort[data-sort-key="${sortKey}"]`).click();
 }
 
 test.describe('insight.js', () => {
+    let InsightApp;
 
-    // データ読み込みの処理をテスト
-    test.describe('JSON読み込み', () => {
+    test.beforeEach(() => {
+        setupDom(PAGE_HTML);
+        InsightApp = reloadInsightApp();
+        globalThis.glossaryData = {terms: {}};
+    });
 
-        test('データがない場合はnull', () => {
-            setupDocument();
-            global.insightData = undefined;
+    test.afterEach(() => {
+        delete globalThis.insightData;
+        delete globalThis.glossaryData;
+        teardownDom();
+    });
 
-            assert.equal(insight.parseInsightData(), null);
-        });
+    test.describe('データ読み込み', () => {
+        test('insightDataがない場合はデータ読み込みエラーを表示する', () => {
+            InsightApp.init();
 
-        test('insightDataから取得する', () => {
-            setupDocument();
-            global.insightData = {packages: [{fqn: 'app'}]};
-
-            const result = insight.parseInsightData();
-
-            assert.equal(result.packages[0].fqn, 'app');
+            const error = document.querySelector('main .jig-data-error');
+            assert.ok(error, 'jig-data-error が表示されること');
+            assert.ok(error.textContent.includes('insight-data.js'));
         });
 
         test('0件のセクションは見出し・テーブル・ナビゲーションリンクごと取り除く', () => {
-            const doc = setupDocument();
-            buildInsightTables(doc);
+            globalThis.insightData = {packages: [], types: [], methods: [method('app.Type#run()')]};
 
-            const nav = doc.createElement('nav');
-            nav.id = 'insight-section-nav';
-            ['section-package', 'section-type', 'section-method'].forEach(id => {
-                const heading = doc.createElement('h2');
-                heading.id = id;
-                doc.body.appendChild(heading);
-                const link = doc.createElement('a');
-                link.setAttribute('href', `#${id}`);
-                nav.appendChild(link);
-            });
-            ['package-insight-list', 'type-insight-list', 'method-insight-list'].forEach(id => {
-                const table = doc.createElement('table');
-                table.id = id;
-                doc.body.appendChild(table);
-            });
-            doc.body.appendChild(nav);
+            InsightApp.init();
 
-            global.insightData = {
-                packages: [], types: [], methods: [{
-                    fqn: 'app.Type#method()', packageFqn: 'app', typeFqn: 'app.Type',
-                    cyclomaticComplexity: 1, numberOfUsingTypes: 0, numberOfUsingMethods: 0,
-                    numberOfUsingFields: 0, numberOfUsingOwnFields: 0, numberOfUsingOwnMethods: 0, size: 1
-                }]
+            assert.equal(document.getElementById('section-package'), null);
+            assert.equal(document.getElementById('package-insight-list'), null);
+            assert.ok(document.getElementById('method-insight-list'));
+            assert.equal(document.querySelectorAll('#insight-section-nav a').length, 1);
+            assert.equal(document.getElementById('method-count').textContent, '1');
+        });
+    });
+
+    test.describe('parseMethod', () => {
+        test('引数を単純名にし、ネストしたクラス名はパッケージからの相対名にする', () => {
+            const parsed = InsightApp.parseMethod(method('app.domain.Outer$Inner#find(java.lang.String,app.domain.Id)'));
+
+            assert.deepEqual(parsed, {typeName: 'Outer$Inner', methodName: 'find', parameters: ['String', 'Id']});
+        });
+
+        test('引数なしは空配列', () => {
+            assert.deepEqual(InsightApp.parseMethod(method('app.Type#run()')).parameters, []);
+        });
+
+        test('デフォルトパッケージのクラスはFQNをそのままクラス名にする', () => {
+            const parsed = InsightApp.parseMethod({fqn: 'Type#run()', typeFqn: 'Type', packageFqn: '(default)'});
+
+            assert.equal(parsed.typeName, 'Type');
+        });
+    });
+
+    test.describe('名前セル', () => {
+        test('メソッドはクラス名#メソッド名(引数の単純名)とパッケージを1セルに表示する', () => {
+            globalThis.insightData = {packages: [], types: [], methods: [method('app.domain.Order#ship(java.lang.String,app.domain.Address)')]};
+
+            InsightApp.init();
+
+            const cell = document.querySelector('#method-insight-list tbody td.insight-name');
+            assert.equal(cell.querySelector('.insight-name__main').textContent, 'Order#ship(String, Address)');
+            assert.equal(cell.querySelector('.insight-name__package').textContent, 'app.domain');
+            assert.equal(cell.title, 'app.domain.Order#ship(java.lang.String,app.domain.Address)', '完全修飾名はtitleで確認できること');
+        });
+
+        test('用語集に和名があれば併記し、なければ出さない', () => {
+            globalThis.glossaryData = {terms: {'app.domain.Order#ship(java.lang.String)': {title: '出荷する'}}};
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [method('app.domain.Order#ship(java.lang.String)'), method('app.domain.Order#cancel()')],
             };
 
-            insight.init();
+            InsightApp.init();
 
-            assert.equal(doc.getElementById('section-package'), null, '0件セクションの見出しは残さないこと');
-            assert.equal(doc.getElementById('package-insight-list'), null, '0件セクションの表は残さないこと');
-            assert.ok(doc.getElementById('section-method'), '対象があるセクションは残ること');
-            assert.equal(nav.querySelectorAll('a').length, 1, '残ったセクションのリンクだけになること');
+            const terms = [...document.querySelectorAll('#method-insight-list tbody tr')]
+                .map(row => row.querySelector('.insight-name__term')?.textContent ?? null);
+            assert.deepEqual(terms, ['出荷する', null]);
         });
 
-        test('insightDataがない場合、init はエラーメッセージを表示する', () => {
-            const doc = setupDocument();
-            const main = doc.createElement('div');
-            doc.selectors.set('main', main);
-            global.insightData = undefined;
+        test('コンストラクタとstatic初期化はバッジで表示する', () => {
+            globalThis.insightData = {packages: [], types: [], methods: [method('app.Type#<init>()'), method('app.Type#<clinit>()')]};
 
-            insight.init();
+            InsightApp.init();
 
-            const error = main.children.find(el => el.className && el.className.includes('jig-data-error'));
-            assert.ok(error, 'jig-data-error が表示されること');
-            assert.ok(error.textContent.includes('insight-data.js'), '読み込めなかったファイル名が示されること');
+            const badges = [...document.querySelectorAll('#method-insight-list .insight-badge')].map(b => b.textContent);
+            assert.deepEqual(badges, ['コンストラクタ', 'static初期化']);
         });
 
+        test('クラスはパッケージからの相対名とパッケージを表示する', () => {
+            globalThis.insightData = {packages: [], types: [type('app.domain.Outer$Inner')], methods: []};
+
+            InsightApp.init();
+
+            const cell = document.querySelector('#type-insight-list tbody td.insight-name');
+            assert.equal(cell.querySelector('.insight-name__type').textContent, 'Outer$Inner');
+            assert.equal(cell.querySelector('.insight-name__package').textContent, 'app.domain');
+        });
     });
 
+    test.describe('数値列', () => {
+        test('メソッドの引数の数を列として表示する', () => {
+            globalThis.insightData = {packages: [], types: [], methods: [method('app.Type#run(int,int,int)')]};
 
-    // UI要素の構築をテスト（表示フォーマット、セルのレンダリングなど）
-    test.describe('表示部品', () => {
+            InsightApp.init();
 
-        test('件数表示は対象要素に文字列で書き込む', () => {
-
-            const doc = setupDocument();
-
-            const target = new Element('span');
-
-            doc.elementsById.set('package-count', target);
-
-
-            insight.setInsightCount('package-count', 12);
-
-
-            assert.equal(target.textContent, '12');
-
+            const headers = [...document.querySelectorAll('#method-insight-list thead button.insight-sort')].map(b => b.dataset.sortKey);
+            // 先頭はズームのセルで見出しボタンを持たないため1つずれる
+            const paramsCell = document.querySelectorAll('#method-insight-list tbody td')[headers.indexOf('numberOfParameters') + 1];
+            assert.equal(paramsCell.textContent, '3');
         });
 
+        test('比率の列は小数2桁で表示する', () => {
+            globalThis.insightData = {packages: [], types: [type('app.Type', {instability: 0.5})], methods: []};
 
-        test('テーブルセルはテキストとクラス名を設定する', () => {
+            InsightApp.init();
 
-            setupDocument();
-
-            const cell = Jig.dom.createCell('Hello', 'number');
-
-
-            assert.equal(cell.tagName, 'td');
-
-            assert.equal(cell.textContent, 'Hello');
-
-            assert.equal(cell.className, 'number');
-
+            const cells = [...document.querySelectorAll('#type-insight-list tbody td.number')].map(td => td.textContent);
+            assert.ok(cells.includes('0.50'));
         });
 
+        test('バーの満幅は上位1%の値にし、外れ値1件に引きずられない', () => {
+            const items = Array.from({length: 200}, (_, i) => ({v: i < 199 ? 10 : 1000}));
 
-        test('ズームセルはアイコンを追加する', () => {
+            const scales = InsightApp.computeBarScales([{key: 'v'}], items);
 
-            setupDocument();
-
-            const cell = insight.createZoomCell();
-
-
-            assert.equal(cell.tagName, 'td');
-
-            assert.equal(cell.children.length, 1);
-
-            assert.equal(cell.children[0].tagName, 'i');
-
-            assert.equal(cell.children[0].className, 'zoom');
-
+            assert.equal(scales.v, 10);
         });
 
+        test('比率の列は1を満幅にする', () => {
+            const scales = InsightApp.computeBarScales([{key: 'lcom', ratio: true}], [{lcom: 0.2}]);
+
+            assert.equal(scales.lcom, 1);
+        });
     });
 
-
-    // テーブルへのデータレンダリングをテスト（行・セルの追加など）
-    test.describe('テーブル描画', () => {
-
-        test('パッケージ一覧を描画する', () => {
-
-            const doc = setupDocument();
-
-            const {packageTbody} = buildInsightTables(doc);
-
-
-            insight.renderPackageInsights([
-
-                {
-
-                    fqn: 'app',
-
-                    numberOfTypes: 3,
-
-                    numberOfMethods: 5,
-
-                    numberOfUsingTypes: 2,
-
-                    cyclomaticComplexity: 9,
-
-                    size: 11,
-
-                },
-
-            ]);
-
-
-            assert.equal(packageTbody.children.length, 1);
-
-            const row = packageTbody.children[0];
-
-            assert.equal(row.dataset.fqn, 'app');
-
-            assert.equal(row.children[1].textContent, 'app');
-
-            assert.equal(row.children[2].textContent, 'app');
-
-        });
-
-
-        test('型一覧を描画する', () => {
-
-            const doc = setupDocument();
-
-            const {typeTbody} = buildInsightTables(doc);
-
-
-            insight.renderTypeInsights([
-
-                {
-
-                    fqn: 'app.Type',
-
-                    packageFqn: 'app',
-
-                    numberOfMethods: 1,
-
-                    numberOfUsingTypes: 4,
-
-                    numberOfUsedByTypes: 0,
-
-                    instability: 1.0,
-
-                    lcom: 0,
-
-                    cyclomaticComplexity: 2,
-
-                    size: 5,
-
-                },
-
-            ]);
-
-
-            assert.equal(typeTbody.children.length, 1);
-
-            const row = typeTbody.children[0];
-
-            assert.equal(row.dataset.fqn, 'app.Type');
-
-            assert.equal(row.dataset.packageFqn, 'app');
-
-        });
-
-
-        test('メソッド一覧を描画する', () => {
-
-            const doc = setupDocument();
-
-            const {methodTbody} = buildInsightTables(doc);
-
-
-            insight.renderMethodInsights([
-
-                {
-
-                    fqn: 'app.Type#method()',
-
-                    packageFqn: 'app',
-
-                    typeFqn: 'app.Type',
-
-                    cyclomaticComplexity: 1,
-
-                    numberOfUsingTypes: 1,
-
-                    numberOfUsingMethods: 2,
-
-                    numberOfUsingFields: 0,
-
-                    numberOfUsingOwnFields: 0,
-
-                    numberOfUsingOwnMethods: 0,
-
-                    size: 3,
-
-                },
-
-            ]);
-
-
-            assert.equal(methodTbody.children.length, 1);
-
-            const row = methodTbody.children[0];
-
-            assert.equal(row.dataset.fqn, 'app.Type#method()');
-
-            assert.equal(row.dataset.packageFqn, 'app');
-
-            assert.equal(row.dataset.typeFqn, 'app.Type');
-
-        });
-
-    });
-
-    // 不正な入力や不足している要素でも例外が発生しないことを確認
-    test.describe('エッジケース - 必要な要素がない場合', () => {
-
-        test('テーブルの tbody が存在しない場合、各 render メソッドは安全に実行される（例外が発生しない）', () => {
-
-            const doc = setupDocument();
-
-            // 各テーブルの tbody を null に設定
-            doc.selectors.set('#package-insight-list tbody', null);
-            doc.selectors.set('#type-insight-list tbody', null);
-            doc.selectors.set('#method-insight-list tbody', null);
-
-            // 例外が発生しないことを確認
-            const testData = {
-                packages: [{
-                    fqn: 'app',
-                    numberOfTypes: 1,
-                    numberOfMethods: 1,
-                    numberOfUsingTypes: 0,
-                    cyclomaticComplexity: 1,
-                    size: 1
-                }],
-                types: [{
-                    fqn: 'app.Type',
-                    packageFqn: 'app',
-                    numberOfMethods: 1,
-                    numberOfUsingTypes: 0,
-                    numberOfUsedByTypes: 0,
-                    instability: 0,
-                    lcom: 0,
-                    cyclomaticComplexity: 1,
-                    size: 1
-                }],
-                methods: [{
-                    fqn: 'app.Type#method()',
-                    packageFqn: 'app',
-                    typeFqn: 'app.Type',
-                    cyclomaticComplexity: 1,
-                    numberOfUsingTypes: 0,
-                    numberOfUsingMethods: 0,
-                    numberOfUsingFields: 0,
-                    numberOfUsingOwnFields: 0,
-                    numberOfUsingOwnMethods: 0,
-                    size: 1
-                }]
+    test.describe('ソート', () => {
+        test.beforeEach(() => {
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [
+                    method('app.A#a()', {cyclomaticComplexity: 2}),
+                    method('app.B#b()', {cyclomaticComplexity: 10}),
+                    method('app.C#c()', {cyclomaticComplexity: 5}),
+                ],
             };
-
-            // 全てのrenderメソッドは安全に実行される
-            assert.doesNotThrow(() => insight.renderPackageInsights(testData.packages));
-            assert.doesNotThrow(() => insight.renderTypeInsights(testData.types));
-            assert.doesNotThrow(() => insight.renderMethodInsights(testData.methods));
+            InsightApp.init();
         });
 
+        test('数値列は初回クリックで大きい順、再クリックで小さい順', () => {
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+            assert.deepEqual(rowFqns('method-insight-list'), ['app.B#b()', 'app.C#c()', 'app.A#a()']);
+
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+            assert.deepEqual(rowFqns('method-insight-list'), ['app.A#a()', 'app.C#c()', 'app.B#b()']);
+        });
+
+        test('名前列は初回クリックで昇順', () => {
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+            clickHeader('method-insight-list', 'fqn');
+
+            assert.deepEqual(rowFqns('method-insight-list'), ['app.A#a()', 'app.B#b()', 'app.C#c()']);
+        });
+
+        test('並べ替え中の列を aria-sort で示す', () => {
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+
+            const sorted = document.querySelectorAll('#method-insight-list thead th[aria-sort]');
+            assert.equal(sorted.length, 1);
+            assert.equal(sorted[0].getAttribute('aria-sort'), 'descending');
+        });
     });
 
+    test.describe('ズーム', () => {
+        test('ズームした状態は並べ替えても保たれる', () => {
+            globalThis.insightData = {
+                packages: [pkg('app.a'), pkg('app.b')],
+                types: [type('app.a.A'), type('app.b.B')],
+                methods: [method('app.a.A#x()', {size: 1}), method('app.b.B#y()', {size: 9})],
+            };
+            InsightApp.init();
+
+            document.querySelector('#package-insight-list tbody tr[data-fqn="app.a"] i.zoom').click();
+            clickHeader('method-insight-list', 'size');
+
+            const visible = [...document.querySelectorAll('#method-insight-list tbody tr:not(.hidden-by-zoom)')].map(r => r.dataset.fqn);
+            assert.deepEqual(visible, ['app.a.A#x()']);
+        });
+    });
 });

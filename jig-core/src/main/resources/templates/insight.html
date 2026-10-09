@@ -36,7 +36,11 @@
                 <li><strong>使用メソッド数 / 使用フィールド数</strong>: そのメソッドが呼び出しているメソッドや参照しているフィールドの数です。</li>
                 <li><strong>自クラスフィールド使用数</strong>: そのメソッドが参照しているフィールドのうち、宣言クラス自身のフィールドの数です。</li>
                 <li><strong>自クラスメソッド呼び出し数</strong>: そのメソッドが呼び出しているメソッドのうち、宣言クラス自身のメソッドの数です（lambda合成メソッドは除外）。</li>
+                <li><strong>引数の数</strong>: メソッドの引数の数です。多いほど呼び出し側の負担が大きく、責務が広い可能性があります。</li>
             </ul>
+
+            <h3>観点</h3>
+            <p>「複雑なメソッド」などよく見る条件のプリセットです。閾値はプロジェクト間で比べられるよう固定値にしています。選ぶと該当する行だけを条件の値の大きい順に表示し、条件に使っている値を強調します。</p>
         </div>
     </div>
 
@@ -47,6 +51,7 @@
             <input type="search" id="insight-search" class="insight-search" placeholder="名前で絞り込み" data-i18n-attr="placeholder" autocomplete="off">
             <label class="insight-toggle"><input type="checkbox" id="insight-hide-initializers"> <span data-i18n>コンストラクタ・static初期化を除く</span></label>
         </div>
+        <div id="insight-lenses" class="insight-lenses"></div>
         <p id="insight-status" class="insight-status" aria-live="polite"></p>
     </div>
 

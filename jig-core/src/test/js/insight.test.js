@@ -21,6 +21,7 @@ const PAGE_HTML = `<!DOCTYPE html><html><body><main>
   <div id="insight-scope"></div>
   <input type="search" id="insight-search">
   <input type="checkbox" id="insight-hide-initializers">
+  <div id="insight-lenses"></div>
   <p id="insight-status"></p>
 </div>
 <table id="package-insight-list" hidden><thead></thead><tbody></tbody></table>
@@ -66,6 +67,14 @@ function clickTab(viewId) {
 function tabCounts() {
     return Object.fromEntries([...document.querySelectorAll('#insight-tabs button')]
         .map(tab => [tab.dataset.viewId, tab.querySelector('.insight-tab__count').textContent]));
+}
+
+function lensButton(lensId) {
+    return document.querySelector(`#insight-lenses button[data-lens-id="${lensId}"]`);
+}
+
+function lensCount(lensId) {
+    return lensButton(lensId).querySelector('.insight-lens__count').textContent;
 }
 
 async function search(text) {
@@ -385,6 +394,79 @@ test.describe('insight.js', () => {
             clickHeader('method-insight-list', 'size');
 
             assert.deepEqual(visibleFqns('method-insight-list'), ['app.A#z()', 'app.A#x()']);
+        });
+    });
+
+    test.describe('観点', () => {
+        test.beforeEach(() => {
+            globalThis.insightData = {
+                packages: [], types: [type('app.a.A'), type('app.b.B')],
+                methods: [
+                    method('app.a.A#simple()', {cyclomaticComplexity: 1}),
+                    method('app.a.A#complex()', {cyclomaticComplexity: 12}),
+                    method('app.b.B#moreComplex()', {cyclomaticComplexity: 30}),
+                ],
+            };
+            InsightApp.init();
+            clickTab('method');
+        });
+
+        test('観点ごとに該当件数を表示し、0件の観点は押せない', () => {
+            assert.equal(lensCount('complex-method'), '2');
+            assert.equal(lensButton('long-method').disabled, true);
+        });
+
+        test('観点を選ぶと該当行だけを、条件の列で大きい順に表示し、該当セルを強調する', () => {
+            lensButton('complex-method').click();
+
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.b.B#moreComplex()', 'app.a.A#complex()']);
+            assert.equal(lensButton('complex-method').getAttribute('aria-pressed'), 'true');
+            const hitCells = document.querySelectorAll('#method-insight-list tbody tr:not([hidden]) td.insight-hit');
+            assert.deepEqual([...hitCells].map(td => td.textContent), ['30', '12']);
+        });
+
+        test('もう一度押すと解除し、並び順はそのまま残す', () => {
+            lensButton('complex-method').click();
+            lensButton('complex-method').click();
+
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.b.B#moreComplex()', 'app.a.A#complex()', 'app.a.A#simple()']);
+            assert.equal(document.querySelectorAll('#method-insight-list td.insight-hit').length, 0);
+        });
+
+        test('件数は範囲と検索を反映する', async () => {
+            document.querySelector('#method-insight-list tr[data-fqn="app.a.A#simple()"] button.insight-name__package').click();
+            assert.equal(lensCount('complex-method'), '1');
+
+            document.querySelector('#insight-scope button[data-scope-clear]').click();
+            await search('moreComplex');
+            assert.equal(lensCount('complex-method'), '1');
+        });
+
+        test('表を移ると観点は外れる', () => {
+            lensButton('complex-method').click();
+
+            clickTab('type');
+            clickTab('method');
+
+            assert.equal(visibleFqns('method-insight-list').length, 3);
+        });
+    });
+
+    test.describe('観点（複数条件）', () => {
+        test('すべての条件を満たす行だけを該当とする', () => {
+            globalThis.insightData = {
+                packages: [], methods: [],
+                types: [
+                    type('app.Small', {lcom: 0.9, numberOfMethods: 3}),
+                    type('app.Cohesive', {lcom: 0.2, numberOfMethods: 20}),
+                    type('app.Mixed', {lcom: 0.85, numberOfMethods: 12}),
+                ],
+            };
+            InsightApp.init();
+
+            lensButton('low-cohesion').click();
+
+            assert.deepEqual(visibleFqns('type-insight-list'), ['app.Mixed']);
         });
     });
 });

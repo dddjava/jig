@@ -2,6 +2,7 @@ const InsightApp = (() => {
     const Jig = globalThis.Jig;
 
     // label は見出しの短縮名、title は正式名。どちらも i18n キー
+    // lenses は「どこを見るか」のプリセット。閾値はプロジェクト間で比べられるよう固定値にする
     const VIEWS = [
         {
             id: "package", kind: "パッケージ", dataKey: "packages", tableId: "package-insight-list",
@@ -11,6 +12,10 @@ const InsightApp = (() => {
                 {key: "numberOfUsingTypes", label: "使用型", title: "使用クラス数"},
                 {key: "cyclomaticComplexity", label: "複雑度", title: "循環的複雑度合計"},
                 {key: "size", label: "規模", title: "規模合計"},
+            ],
+            lenses: [
+                {id: "large-package", label: "大きいパッケージ", conditions: [{key: "numberOfTypes", min: 15}]},
+                {id: "package-dependencies", label: "多くの型に依存する", conditions: [{key: "numberOfUsingTypes", min: 50}]},
             ],
         },
         {
@@ -23,6 +28,12 @@ const InsightApp = (() => {
                 {key: "lcom", label: "LCOM", title: "凝集度欠如", ratio: true},
                 {key: "cyclomaticComplexity", label: "複雑度", title: "循環的複雑度合計"},
                 {key: "size", label: "規模", title: "規模合計"},
+            ],
+            lenses: [
+                {id: "large-type", label: "大きいクラス", conditions: [{key: "numberOfMethods", min: 30}]},
+                {id: "low-cohesion", label: "凝集度が低い", conditions: [{key: "lcom", min: 0.8}, {key: "numberOfMethods", min: 10}]},
+                {id: "widely-used", label: "多くから使われる", conditions: [{key: "numberOfUsedByTypes", min: 20}]},
+                {id: "type-dependencies", label: "多くの型に依存する", conditions: [{key: "numberOfUsingTypes", min: 20}]},
             ],
         },
         {
@@ -37,6 +48,12 @@ const InsightApp = (() => {
                 {key: "numberOfUsingOwnFields", label: "自参照", title: "自クラスフィールド使用数"},
                 {key: "numberOfUsingOwnMethods", label: "自呼出", title: "自クラスメソッド呼び出し数"},
             ],
+            lenses: [
+                {id: "complex-method", label: "複雑なメソッド", conditions: [{key: "cyclomaticComplexity", min: 10}]},
+                {id: "long-method", label: "長いメソッド", conditions: [{key: "size", min: 50}]},
+                {id: "many-parameters", label: "引数が多い", conditions: [{key: "numberOfParameters", min: 5}]},
+                {id: "method-dependencies", label: "多くの型に依存する", conditions: [{key: "numberOfUsingTypes", min: 15}]},
+            ],
         },
     ];
 
@@ -46,7 +63,7 @@ const InsightApp = (() => {
     /**
      * 画面の状態。scope は {kind: "package", fqn} か {kind: "type", fqn, packageFqn}
      */
-    const state = {viewId: null, scope: null, searchTerms: [], hideInitializers: false};
+    const state = {viewId: null, scope: null, searchTerms: [], hideInitializers: false, lensId: null};
     /** @type {Map<string, {view: object, table: HTMLTableElement, entries: object[], sortState: object}>} */
     const panels = new Map();
 
@@ -241,10 +258,9 @@ const InsightApp = (() => {
     /**
      * 行要素を作り直さずに並べ替える。絞り込みによる非表示状態はそのまま保たれる。
      */
-    function sortPanel(panel, key) {
+    function sortPanel(panel, key, descending) {
         const {table, entries, sortState} = panel;
-        // 数値は大きい順、名前は昇順から始める
-        sortState.descending = sortState.key === key ? !sortState.descending : key !== NAME_SORT_KEY;
+        sortState.descending = descending;
         sortState.key = key;
         entries.sort(compareEntries(key, sortState.descending));
         table.querySelector("tbody").append(...entries.map(entry => entry.row));
@@ -271,7 +287,10 @@ const InsightApp = (() => {
         const panel = {view, table, entries, sortState: {key: null, descending: false}};
         table.querySelector("thead").addEventListener("click", event => {
             const button = event.target.closest("button.insight-sort");
-            if (button) sortPanel(panel, button.dataset.sortKey);
+            if (!button) return;
+            const key = button.dataset.sortKey;
+            // 数値は大きい順、名前は昇順から始める
+            sortPanel(panel, key, panel.sortState.key === key ? !panel.sortState.descending : key !== NAME_SORT_KEY);
         });
         return panel;
     }
@@ -301,17 +320,43 @@ const InsightApp = (() => {
         return state.searchTerms.every(term => entry.searchText.includes(term));
     }
 
+    function meetsCondition(item, condition) {
+        return item[condition.key] >= condition.min;
+    }
+
+    function matchesLens(lens, item) {
+        return lens.conditions.every(condition => meetsCondition(item, condition));
+    }
+
+    function activeLens(panel) {
+        return panel.view.lenses.find(lens => lens.id === state.lensId) ?? null;
+    }
+
+    /**
+     * 行の表示を切り替え、レンズの該当セルを強調する。レンズの件数はレンズ以外の条件で数える。
+     */
     function applyFilters(panel) {
+        const lens = activeLens(panel);
+        const lensCounts = new Map(panel.view.lenses.map(l => [l.id, 0]));
+        const hitColumnIndexes = new Set(lens ? lens.conditions.map(c => panel.view.columns.findIndex(col => col.key === c.key)) : []);
         let scopedCount = 0;
         let visibleCount = 0;
         panel.entries.forEach(entry => {
             const scoped = inScope(panel.view.id, entry.item);
-            const visible = scoped && matchesFilters(entry);
+            const filtered = scoped && matchesFilters(entry);
+            if (filtered) panel.view.lenses.forEach(l => {
+                if (matchesLens(l, entry.item)) lensCounts.set(l.id, lensCounts.get(l.id) + 1);
+            });
+            const visible = filtered && (!lens || matchesLens(lens, entry.item));
             if (scoped) scopedCount++;
             if (visible) visibleCount++;
             entry.row.hidden = !visible;
+            panel.view.columns.forEach((column, i) => {
+                // 先頭は名前のセル
+                entry.row.cells[i + 1].classList.toggle("insight-hit", hitColumnIndexes.has(i));
+            });
         });
-        return {scopedCount, visibleCount};
+        return {scopedCount, visibleCount, lensCounts};
     }
 
     // --- 画面部品 ---
@@ -364,6 +409,43 @@ const InsightApp = (() => {
         container.replaceChildren(...children);
     }
 
+    function createLensRule(view, lens) {
+        return Jig.dom.createElement("span", {
+            className: "insight-lens__rule",
+            children: lens.conditions.flatMap((condition, i) => [
+                i ? ", " : null,
+                Jig.dom.i18nText("span", view.columns.find(column => column.key === condition.key).label),
+                `≥${condition.min}`,
+            ]),
+        });
+    }
+
+    function renderLenses(view, lensCounts) {
+        const container = document.getElementById("insight-lenses");
+        if (view.lenses.length === 0) {
+            container.replaceChildren();
+            return;
+        }
+        container.replaceChildren(
+            Jig.dom.i18nText("span", "観点", {className: "insight-lenses__label"}),
+            ...view.lenses.map(lens => {
+                const count = lensCounts.get(lens.id);
+                const active = lens.id === state.lensId;
+                const button = Jig.dom.createElement("button", {
+                    className: "insight-lens",
+                    attributes: {"aria-pressed": String(active)},
+                    children: [
+                        Jig.dom.i18nText("span", lens.label),
+                        createLensRule(view, lens),
+                        Jig.dom.createElement("span", {className: "insight-lens__count", textContent: count}),
+                    ],
+                });
+                button.disabled = count === 0 && !active;
+                button.dataset.lensId = lens.id;
+                return button;
+            }));
+    }
+
     function renderStatus({scopedCount, visibleCount}) {
         document.getElementById("insight-status").replaceChildren(
             Jig.dom.i18nText("span", "表示"),
@@ -377,7 +459,10 @@ const InsightApp = (() => {
         });
         renderTabs();
         renderScope();
-        renderStatus(applyFilters(panels.get(state.viewId)));
+        const panel = panels.get(state.viewId);
+        const result = applyFilters(panel);
+        renderLenses(panel.view, result.lensCounts);
+        renderStatus(result);
         const hideInitializers = document.getElementById("insight-hide-initializers");
         if (hideInitializers) hideInitializers.disabled = state.viewId !== "method";
     }
@@ -389,11 +474,33 @@ const InsightApp = (() => {
         return {kind: "type", fqn: dataset.scopeFqn, packageFqn: dataset.scopePackageFqn};
     }
 
+    function selectView(viewId) {
+        // レンズは表ごとに異なるため、表を移ったら外す
+        if (viewId !== state.viewId) state.lensId = null;
+        state.viewId = viewId;
+    }
+
+    /**
+     * 選んだレンズの最初の条件で大きい順に並べる。外したときは並び順を変えない。
+     */
+    function toggleLens(lensId) {
+        const panel = panels.get(state.viewId);
+        state.lensId = state.lensId === lensId ? null : lensId;
+        const lens = activeLens(panel);
+        if (lens) sortPanel(panel, lens.conditions[0].key, true);
+    }
+
     function setupEvents(main) {
         main.addEventListener("click", event => {
             const tab = event.target.closest("button.insight-tab");
             if (tab) {
-                state.viewId = tab.dataset.viewId;
+                selectView(tab.dataset.viewId);
+                render();
+                return;
+            }
+            const lensButton = event.target.closest("button.insight-lens");
+            if (lensButton) {
+                toggleLens(lensButton.dataset.lensId);
                 render();
                 return;
             }
@@ -404,7 +511,7 @@ const InsightApp = (() => {
             } else {
                 state.scope = scopeFromDataset(link.dataset);
                 if (link.dataset.drillViewId && panels.has(link.dataset.drillViewId)) {
-                    state.viewId = link.dataset.drillViewId;
+                    selectView(link.dataset.drillViewId);
                 }
             }
             render();

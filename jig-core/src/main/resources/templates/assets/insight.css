@@ -87,6 +87,55 @@
     font-variant-numeric: tabular-nums;
 }
 
+.insight-lenses {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.insight-lenses__label {
+    font-size: var(--jig-font-size-sm);
+    color: var(--color-text-secondary);
+    margin-right: 0.3em;
+}
+
+.insight-lens {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    padding: 0.15em 0.7em;
+    border: 1px solid #bbb;
+    border-radius: 999px;
+    background: #fff;
+    color: #000;
+    font: inherit;
+    font-size: var(--jig-font-size-sm);
+    cursor: pointer;
+}
+
+.insight-lens[aria-pressed="true"] {
+    border-color: #b4441d;
+    background: #f8e1d6;
+}
+
+.insight-lens:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.insight-lens__rule {
+    font-size: var(--jig-font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.insight-lens__count {
+    font-size: var(--jig-font-size-xs);
+    font-weight: bold;
+    color: #b4441d;
+    font-variant-numeric: tabular-nums;
+}
+
 /* 範囲を絞り込むリンク。見た目は文字のまま、押せることだけ示す */
 .insight-link {
     padding: 0;
@@ -175,6 +224,13 @@
 
 .insight table td.insight-zero {
     color: var(--color-text-secondary);
+}
+
+/* 選んだ観点の条件に使っている列 */
+.insight table td.insight-hit {
+    color: #b4441d;
+    font-weight: bold;
+    background-image: linear-gradient(to left, #b4441d var(--insight-bar), transparent var(--insight-bar));
 }
 
 .insight-name {

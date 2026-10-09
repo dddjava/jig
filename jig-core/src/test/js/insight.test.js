@@ -215,6 +215,15 @@ test.describe('insight.js', () => {
             assert.equal(paramsCell.textContent, '3');
         });
 
+        test('整数は3桁区切りで表示する', () => {
+            globalThis.insightData = {packages: [pkg('app', {size: 12345})], types: [], methods: []};
+
+            InsightApp.init();
+
+            const cells = [...document.querySelectorAll('#package-insight-list tbody td.number')].map(td => td.textContent);
+            assert.ok(cells.includes('12,345'), cells.join());
+        });
+
         test('比率の列は小数2桁で表示する', () => {
             globalThis.insightData = {packages: [], types: [type('app.Type', {instability: 0.5})], methods: []};
 
@@ -381,6 +390,20 @@ test.describe('insight.js', () => {
             checkbox.dispatchEvent(new Event('change'));
 
             assert.deepEqual(visibleFqns('method-insight-list'), ['app.Type#run()']);
+        });
+
+        test('ゼブラは表示中の行の並びで交互に付ける', async () => {
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [method('app.A#a()'), method('app.B#b()'), method('app.A#c()'), method('app.A#d()')],
+            };
+            InsightApp.init();
+
+            await search('app.A#');
+
+            const stripes = [...document.querySelectorAll('#method-insight-list tbody tr:not([hidden])')]
+                .map(row => row.classList.contains('insight-row-alt'));
+            assert.deepEqual(stripes, [false, true, false]);
         });
 
         test('絞り込んだ状態は並べ替えても保たれる', async () => {

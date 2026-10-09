@@ -167,6 +167,16 @@
 
 /* 数千行をスクロールしても列の意味を見失わないよう、見出しを画面上端に留める。
    body が 100vh のためページヘッダーはスクロールで抜けるので、その分は空けない */
+/* 縦罫線は数値列が多いと視線の横移動を妨げるため、行の区切り線だけにする */
+.insight table tr > * {
+    border: 0;
+    border-bottom: 1px solid #d9ddd3;
+}
+
+.insight table tr.insight-row-alt {
+    background-color: #f3f5f0;
+}
+
 /* 共通の青い見出しは数値列の短縮名・正式名の2段だと重いため、淡い背景にする */
 .insight table thead {
     color: #000;
@@ -179,7 +189,7 @@
     z-index: 1;
     /* 留めた見出しの下に行が透けないよう th にも背景を敷く */
     background-color: #f2f4ef;
-    border-bottom-width: 2px;
+    border-bottom: 2px solid #9aa392;
     padding: 0;
     vertical-align: bottom;
 }

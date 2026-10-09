@@ -67,6 +67,13 @@ const InsightApp = (() => {
     /** @type {Map<string, {view: object, table: HTMLTableElement, entries: object[], sortState: object}>} */
     const panels = new Map();
 
+    // 桁の多い合計値を読み違えないよう3桁区切りにする
+    const integerFormat = new Intl.NumberFormat("en-US");
+
+    function formatCount(value) {
+        return integerFormat.format(value);
+    }
+
     function parseInsightData() {
         return Jig.data.insight.get();
     }
@@ -197,7 +204,7 @@ const InsightApp = (() => {
     function createNumberCell(value, column, scale) {
         const cell = Jig.dom.createElement("td", {
             className: value === 0 ? "number insight-zero" : "number",
-            textContent: column.ratio ? value.toFixed(2) : value,
+            textContent: column.ratio ? value.toFixed(2) : formatCount(value),
         });
         cell.style.setProperty("--insight-bar", `${(Math.min(1, value / scale) * 100).toFixed(1)}%`);
         return cell;
@@ -264,12 +271,25 @@ const InsightApp = (() => {
         sortState.key = key;
         entries.sort(compareEntries(key, sortState.descending));
         table.querySelector("tbody").append(...entries.map(entry => entry.row));
+        stripeVisibleRows(entries);
         table.querySelectorAll("thead th").forEach(th => {
             if (th.querySelector("button.insight-sort")?.dataset.sortKey === key) {
                 th.setAttribute("aria-sort", sortState.descending ? "descending" : "ascending");
             } else {
                 th.removeAttribute("aria-sort");
             }
+        });
+    }
+
+    /**
+     * 非表示の行があると :nth-child の縞がずれるため、表示中の行の並び順で交互に付ける
+     */
+    function stripeVisibleRows(entries) {
+        let visibleIndex = 0;
+        entries.forEach(entry => {
+            if (entry.row.hidden) return;
+            entry.row.classList.toggle("insight-row-alt", visibleIndex % 2 === 1);
+            visibleIndex++;
         });
     }
 
@@ -356,6 +376,7 @@ const InsightApp = (() => {
                 entry.row.cells[i + 1].classList.toggle("insight-hit", hitColumnIndexes.has(i));
             });
         });
+        stripeVisibleRows(panel.entries);
         return {scopedCount, visibleCount, lensCounts};
     }
 
@@ -371,7 +392,7 @@ const InsightApp = (() => {
                 children: [
                     Jig.dom.kind.badgeElement(view.kind),
                     Jig.dom.i18nText("span", view.kind),
-                    Jig.dom.createElement("span", {className: "insight-tab__count", textContent: count}),
+                    Jig.dom.createElement("span", {className: "insight-tab__count", textContent: formatCount(count)}),
                 ],
             });
             tab.dataset.viewId = view.id;
@@ -437,7 +458,7 @@ const InsightApp = (() => {
                     children: [
                         Jig.dom.i18nText("span", lens.label),
                         createLensRule(view, lens),
-                        Jig.dom.createElement("span", {className: "insight-lens__count", textContent: count}),
+                        Jig.dom.createElement("span", {className: "insight-lens__count", textContent: formatCount(count)}),
                     ],
                 });
                 button.disabled = count === 0 && !active;
@@ -449,7 +470,7 @@ const InsightApp = (() => {
     function renderStatus({scopedCount, visibleCount}) {
         document.getElementById("insight-status").replaceChildren(
             Jig.dom.i18nText("span", "表示"),
-            ` ${visibleCount} / ${scopedCount}`,
+            ` ${formatCount(visibleCount)} / ${formatCount(scopedCount)}`,
         );
     }
 

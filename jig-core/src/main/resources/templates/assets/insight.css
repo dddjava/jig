@@ -213,13 +213,13 @@
 
 /* 同じ値の行に残っている直前の並び順 */
 .insight table th[data-sort-secondary] .insight-sort__label::after {
-    content: " ▼2";
-    font-size: var(--jig-font-size-2xs);
-    color: var(--color-text-secondary);
+    content: " ▽";
+    font-weight: normal;
+    color: #aaa;
 }
 
 .insight table th[data-sort-secondary="ascending"] .insight-sort__label::after {
-    content: " ▲2";
+    content: " △";
 }
 
 .insight-sort {

@@ -26,7 +26,7 @@
 }
 
 .insight-tab[aria-selected="true"] {
-    border-bottom-color: #465DAA;
+    border-bottom-color: #243D1E;
     color: #000;
     font-weight: bold;
 }
@@ -167,12 +167,19 @@
 
 /* 数千行をスクロールしても列の意味を見失わないよう、見出しを画面上端に留める。
    body が 100vh のためページヘッダーはスクロールで抜けるので、その分は空けない */
+/* 共通の青い見出しは数値列の短縮名・正式名の2段だと重いため、淡い背景にする */
+.insight table thead {
+    color: #000;
+    background-color: #f2f4ef;
+}
+
 .insight table th {
     position: sticky;
     top: 0;
     z-index: 1;
-    /* 背景は thead 側にあるため、留めた見出しの下に行が透けないよう th にも敷く */
-    background-color: #465DAA;
+    /* 留めた見出しの下に行が透けないよう th にも背景を敷く */
+    background-color: #f2f4ef;
+    border-bottom-width: 2px;
     padding: 0;
     vertical-align: bottom;
 }
@@ -205,6 +212,7 @@
 .insight-sort__title {
     font-size: var(--jig-font-size-2xs);
     font-weight: normal;
+    color: var(--color-text-secondary);
 }
 
 .insight table td {

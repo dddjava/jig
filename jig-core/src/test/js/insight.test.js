@@ -15,17 +15,17 @@ function reloadInsightApp() {
     return require(modulePath('insight.js'));
 }
 
-const PAGE_HTML = `<!DOCTYPE html><html><body class="insight"><main>
-<button id="cancel-zoom" class="hidden"></button>
-<nav id="insight-section-nav">
-  <a href="#section-package"></a><a href="#section-type"></a><a href="#section-method"></a>
-</nav>
-<h2 id="section-package"><span id="package-count">0</span></h2>
-<table id="package-insight-list"><thead></thead><tbody></tbody></table>
-<h2 id="section-type"><span id="type-count">0</span></h2>
-<table id="type-insight-list"><thead></thead><tbody></tbody></table>
-<h2 id="section-method"><span id="method-count">0</span></h2>
-<table id="method-insight-list"><thead></thead><tbody></tbody></table>
+const PAGE_HTML = `<!DOCTYPE html><html><body><main>
+<div id="insight-controls">
+  <div id="insight-tabs"></div>
+  <div id="insight-scope"></div>
+  <input type="search" id="insight-search">
+  <input type="checkbox" id="insight-hide-initializers">
+  <p id="insight-status"></p>
+</div>
+<table id="package-insight-list" hidden><thead></thead><tbody></tbody></table>
+<table id="type-insight-list" hidden><thead></thead><tbody></tbody></table>
+<table id="method-insight-list" hidden><thead></thead><tbody></tbody></table>
 </main></body></html>`;
 
 function method(fqn, metrics = {}) {
@@ -53,6 +53,27 @@ function pkg(fqn, metrics = {}) {
 
 function rowFqns(tableId) {
     return [...document.querySelectorAll(`#${tableId} tbody tr`)].map(row => row.dataset.fqn);
+}
+
+function visibleFqns(tableId) {
+    return [...document.querySelectorAll(`#${tableId} tbody tr:not([hidden])`)].map(row => row.dataset.fqn);
+}
+
+function clickTab(viewId) {
+    document.querySelector(`#insight-tabs button[data-view-id="${viewId}"]`).click();
+}
+
+function tabCounts() {
+    return Object.fromEntries([...document.querySelectorAll('#insight-tabs button')]
+        .map(tab => [tab.dataset.viewId, tab.querySelector('.insight-tab__count').textContent]));
+}
+
+async function search(text) {
+    const input = document.getElementById('insight-search');
+    input.value = text;
+    input.dispatchEvent(new Event('input'));
+    // 入力は間引いてから反映される
+    await new Promise(resolve => setTimeout(resolve, 200));
 }
 
 function clickHeader(tableId, sortKey) {
@@ -83,16 +104,30 @@ test.describe('insight.js', () => {
             assert.ok(error.textContent.includes('insight-data.js'));
         });
 
-        test('0件のセクションは見出し・テーブル・ナビゲーションリンクごと取り除く', () => {
-            globalThis.insightData = {packages: [], types: [], methods: [method('app.Type#run()')]};
+        test('insightDataがない場合は操作部品を残さない', () => {
+            InsightApp.init();
+
+            assert.equal(document.getElementById('insight-controls'), null);
+        });
+
+        test('0件の表はタブごと取り除き、最初のタブを表示する', () => {
+            globalThis.insightData = {packages: [], types: [type('app.Type')], methods: [method('app.Type#run()')]};
 
             InsightApp.init();
 
-            assert.equal(document.getElementById('section-package'), null);
             assert.equal(document.getElementById('package-insight-list'), null);
-            assert.ok(document.getElementById('method-insight-list'));
-            assert.equal(document.querySelectorAll('#insight-section-nav a').length, 1);
-            assert.equal(document.getElementById('method-count').textContent, '1');
+            assert.deepEqual(tabCounts(), {type: '1', method: '1'});
+            assert.equal(document.getElementById('type-insight-list').hidden, false);
+            assert.equal(document.getElementById('method-insight-list').hidden, true);
+        });
+
+        test('すべて0件なら空のドキュメントとして表示する', () => {
+            globalThis.insightData = {packages: [], types: [], methods: []};
+
+            InsightApp.init();
+
+            assert.ok(document.querySelector('main .jig-empty'));
+            assert.equal(document.getElementById('insight-controls'), null);
         });
     });
 
@@ -167,8 +202,7 @@ test.describe('insight.js', () => {
             InsightApp.init();
 
             const headers = [...document.querySelectorAll('#method-insight-list thead button.insight-sort')].map(b => b.dataset.sortKey);
-            // 先頭はズームのセルで見出しボタンを持たないため1つずれる
-            const paramsCell = document.querySelectorAll('#method-insight-list tbody td')[headers.indexOf('numberOfParameters') + 1];
+            const paramsCell = document.querySelectorAll('#method-insight-list tbody td')[headers.indexOf('numberOfParameters')];
             assert.equal(paramsCell.textContent, '3');
         });
 
@@ -233,20 +267,124 @@ test.describe('insight.js', () => {
         });
     });
 
-    test.describe('ズーム', () => {
-        test('ズームした状態は並べ替えても保たれる', () => {
+    test.describe('タブ', () => {
+        test('タブを押すとその表だけを表示する', () => {
+            globalThis.insightData = {packages: [pkg('app')], types: [type('app.Type')], methods: [method('app.Type#run()')]};
+            InsightApp.init();
+
+            clickTab('method');
+
+            assert.equal(document.getElementById('package-insight-list').hidden, true);
+            assert.equal(document.getElementById('method-insight-list').hidden, false);
+            assert.equal(document.querySelector('#insight-tabs [aria-selected="true"]').dataset.viewId, 'method');
+        });
+    });
+
+    test.describe('範囲', () => {
+        test.beforeEach(() => {
             globalThis.insightData = {
-                packages: [pkg('app.a'), pkg('app.b')],
-                types: [type('app.a.A'), type('app.b.B')],
-                methods: [method('app.a.A#x()', {size: 1}), method('app.b.B#y()', {size: 9})],
+                packages: [pkg('app.a'), pkg('app.a.sub'), pkg('app.b')],
+                types: [type('app.a.A'), type('app.a.A$Inner'), type('app.a.sub.S'), type('app.b.B')],
+                methods: [method('app.a.A#x()'), method('app.a.A$Inner#y()'), method('app.a.sub.S#z()'), method('app.b.B#w()')],
+            };
+            InsightApp.init();
+        });
+
+        test('パッケージ名を押すと配下（サブパッケージ含む）のクラス表へ移る', () => {
+            document.querySelector('#package-insight-list tr[data-fqn="app.a"] button.insight-link').click();
+
+            assert.equal(document.getElementById('type-insight-list').hidden, false);
+            assert.deepEqual(visibleFqns('type-insight-list'), ['app.a.A', 'app.a.A$Inner', 'app.a.sub.S']);
+            assert.deepEqual(tabCounts(), {package: '2', type: '3', method: '3'});
+        });
+
+        test('クラス名を押すとそのクラス（ネストしたクラス含む）のメソッド表へ移る', () => {
+            clickTab('type');
+            document.querySelector('#type-insight-list tr[data-fqn="app.a.A"] button.insight-name__type').click();
+
+            assert.equal(document.getElementById('method-insight-list').hidden, false);
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.a.A#x()', 'app.a.A$Inner#y()']);
+            clickTab('package');
+            assert.deepEqual(visibleFqns('package-insight-list'), ['app.a'], 'パッケージ表はクラスの属するパッケージだけ');
+        });
+
+        test('メソッド表のパッケージ名を押すと表を移らず範囲だけ変わる', () => {
+            clickTab('method');
+            document.querySelector('#method-insight-list tr[data-fqn="app.b.B#w()"] button.insight-name__package').click();
+
+            assert.equal(document.getElementById('method-insight-list').hidden, false);
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.b.B#w()']);
+        });
+
+        test('パンくずに範囲を表示し、「すべて」で解除する', () => {
+            clickTab('type');
+            document.querySelector('#type-insight-list tr[data-fqn="app.a.A"] button.insight-name__type').click();
+
+            const scopeText = document.getElementById('insight-scope').textContent;
+            assert.ok(scopeText.includes('app.a') && scopeText.includes('A'), scopeText);
+
+            document.querySelector('#insight-scope button[data-scope-clear]').click();
+
+            assert.equal(visibleFqns('method-insight-list').length, 4);
+        });
+
+        test('件数は「表示 / 範囲内」で示す', () => {
+            document.querySelector('#package-insight-list tr[data-fqn="app.b"] button.insight-link').click();
+
+            assert.ok(document.getElementById('insight-status').textContent.endsWith('1 / 1'));
+        });
+    });
+
+    test.describe('検索・除外', () => {
+        test('空白区切りの語をすべて含む行だけを表示する', async () => {
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [method('app.order.Order#ship()'), method('app.order.Order#cancel()'), method('app.user.User#ship()')],
             };
             InsightApp.init();
 
-            document.querySelector('#package-insight-list tbody tr[data-fqn="app.a"] i.zoom').click();
+            await search('ORDER ship');
+
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.order.Order#ship()']);
+            assert.ok(document.getElementById('insight-status').textContent.endsWith('1 / 3'));
+        });
+
+        test('用語集の和名でも検索できる', async () => {
+            globalThis.glossaryData = {terms: {'app.Order#ship()': {title: '出荷する'}}};
+            globalThis.insightData = {packages: [], types: [], methods: [method('app.Order#ship()'), method('app.Order#cancel()')]};
+            InsightApp.init();
+
+            await search('出荷');
+
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.Order#ship()']);
+        });
+
+        test('コンストラクタ・static初期化は既定で表示し、チェックで除外する', () => {
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [method('app.Type#<init>()'), method('app.Type#<clinit>()'), method('app.Type#run()')],
+            };
+            InsightApp.init();
+            assert.equal(visibleFqns('method-insight-list').length, 3);
+
+            const checkbox = document.getElementById('insight-hide-initializers');
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change'));
+
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.Type#run()']);
+        });
+
+        test('絞り込んだ状態は並べ替えても保たれる', async () => {
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [method('app.A#x()', {size: 1}), method('app.B#y()', {size: 9}), method('app.A#z()', {size: 5})],
+            };
+            InsightApp.init();
+
+            await search('app.A#');
             clickHeader('method-insight-list', 'size');
 
-            const visible = [...document.querySelectorAll('#method-insight-list tbody tr:not(.hidden-by-zoom)')].map(r => r.dataset.fqn);
-            assert.deepEqual(visible, ['app.a.A#x()']);
+            assert.deepEqual(visibleFqns('method-insight-list'), ['app.A#z()', 'app.A#x()']);
         });
     });
 });

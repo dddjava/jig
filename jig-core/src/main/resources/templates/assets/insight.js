@@ -4,7 +4,7 @@ const InsightApp = (() => {
     // label は見出しの短縮名、title は正式名。どちらも i18n キー
     const VIEWS = [
         {
-            id: "package", dataKey: "packages", countId: "package-count", headingId: "section-package", tableId: "package-insight-list",
+            id: "package", kind: "パッケージ", dataKey: "packages", tableId: "package-insight-list",
             columns: [
                 {key: "numberOfTypes", label: "クラス数"},
                 {key: "numberOfMethods", label: "メソッド数"},
@@ -14,7 +14,7 @@ const InsightApp = (() => {
             ],
         },
         {
-            id: "type", dataKey: "types", countId: "type-count", headingId: "section-type", tableId: "type-insight-list",
+            id: "type", kind: "クラス", dataKey: "types", tableId: "type-insight-list",
             columns: [
                 {key: "numberOfMethods", label: "メソッド数"},
                 {key: "numberOfUsingTypes", label: "Ce", title: "使用クラス数"},
@@ -26,7 +26,7 @@ const InsightApp = (() => {
             ],
         },
         {
-            id: "method", dataKey: "methods", countId: "method-count", headingId: "section-method", tableId: "method-insight-list",
+            id: "method", kind: "メソッド", dataKey: "methods", tableId: "method-insight-list",
             columns: [
                 {key: "cyclomaticComplexity", label: "複雑度", title: "循環的複雑度"},
                 {key: "size", label: "規模"},
@@ -41,16 +41,17 @@ const InsightApp = (() => {
     ];
 
     const NAME_SORT_KEY = "fqn";
+    const SEARCH_DEBOUNCE_MS = 150;
+
+    /**
+     * 画面の状態。scope は {kind: "package", fqn} か {kind: "type", fqn, packageFqn}
+     */
+    const state = {viewId: null, scope: null, searchTerms: [], hideInitializers: false};
+    /** @type {Map<string, {view: object, table: HTMLTableElement, entries: object[], sortState: object}>} */
+    const panels = new Map();
 
     function parseInsightData() {
         return Jig.data.insight.get();
-    }
-
-    function setInsightCount(elementId, count) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.textContent = count;
-        }
     }
 
     function typeNameInPackage(typeFqn, packageFqn) {
@@ -70,6 +71,10 @@ const InsightApp = (() => {
             methodName: method.fqn.slice(hashIdx + 1, parenIdx),
             parameters: paramsText ? paramsText.split(",").map(param => param.slice(param.lastIndexOf(".") + 1)) : [],
         };
+    }
+
+    function isInitializer(methodName) {
+        return methodName === "<init>" || methodName === "<clinit>";
     }
 
     // 用語集に和名がある場合だけ返す（フォールバックの単純名は表示済みなので出さない）
@@ -93,28 +98,49 @@ const InsightApp = (() => {
         return title ? Jig.dom.createElement("span", {className: "insight-name__term", textContent: title}) : null;
     }
 
-    function createPackageElement(packageFqn) {
-        return Jig.dom.createElement("span", {className: "insight-name__package", textContent: packageFqn});
+    /**
+     * クリックで範囲を絞り込むリンク。drillViewId があればその表へ移る。
+     */
+    function createScopeLink(className, textContent, scope, drillViewId) {
+        const button = Jig.dom.createElement("button", {className: `insight-link ${className}`, textContent});
+        button.dataset.scopeKind = scope.kind;
+        button.dataset.scopeFqn = scope.fqn;
+        if (scope.packageFqn != null) button.dataset.scopePackageFqn = scope.packageFqn;
+        if (drillViewId) button.dataset.drillViewId = drillViewId;
+        return button;
+    }
+
+    function createPackageLink(packageFqn) {
+        return createScopeLink("insight-name__package", packageFqn, {kind: "package", fqn: packageFqn});
     }
 
     const NAME_CELL_BUILDERS = {
         package(pkg) {
             const simpleName = pkg.fqn.slice(pkg.fqn.lastIndexOf(".") + 1);
-            return createNameCell(
-                [pkg.fqn],
-                [createTermElement(glossaryTitle(Jig.glossary.getPackageTerm(pkg.fqn), simpleName))],
-                pkg.fqn);
+            const term = glossaryTitle(Jig.glossary.getPackageTerm(pkg.fqn), simpleName);
+            return {
+                cell: createNameCell(
+                    [createScopeLink("", pkg.fqn, {kind: "package", fqn: pkg.fqn}, "type")],
+                    [createTermElement(term)],
+                    pkg.fqn),
+                term,
+            };
         },
         type(type) {
             const typeName = typeNameInPackage(type.fqn, type.packageFqn);
             const simpleName = type.fqn.slice(type.fqn.lastIndexOf(".") + 1);
-            return createNameCell(
-                [Jig.dom.createElement("span", {className: "insight-name__type", textContent: typeName})],
-                [createPackageElement(type.packageFqn), createTermElement(glossaryTitle(Jig.glossary.getTypeTerm(type.fqn), simpleName))],
-                type.fqn);
+            const term = glossaryTitle(Jig.glossary.getTypeTerm(type.fqn), simpleName);
+            return {
+                cell: createNameCell(
+                    [createScopeLink("insight-name__type", typeName, {kind: "type", fqn: type.fqn, packageFqn: type.packageFqn}, "method")],
+                    [createPackageLink(type.packageFqn), createTermElement(term)],
+                    type.fqn),
+                term,
+            };
         },
         method(method) {
             const {typeName, methodName, parameters} = parseMethod(method);
+            const term = glossaryTitle(Jig.glossary.getMethodTerm(method.fqn, true), methodName);
             const member = methodName === "<init>"
                 ? Jig.dom.i18nText("span", "コンストラクタ", {className: "insight-badge"})
                 : methodName === "<clinit>"
@@ -125,10 +151,13 @@ const InsightApp = (() => {
                 className: "insight-name__params",
                 children: ["(", ...parameters.flatMap((param, i) => i ? [", ", Jig.dom.createElement("wbr"), param] : [param]), ")"],
             });
-            return createNameCell(
-                [Jig.dom.createElement("span", {className: "insight-name__type", textContent: typeName}), "#", member, params],
-                [createPackageElement(method.packageFqn), createTermElement(glossaryTitle(Jig.glossary.getMethodTerm(method.fqn, true), methodName))],
-                method.fqn);
+            return {
+                cell: createNameCell(
+                    [createScopeLink("insight-name__type", typeName, {kind: "type", fqn: method.typeFqn, packageFqn: method.packageFqn}), "#", member, params],
+                    [createPackageLink(method.packageFqn), createTermElement(term)],
+                    method.fqn),
+                term,
+            };
         },
     };
 
@@ -157,24 +186,18 @@ const InsightApp = (() => {
         return cell;
     }
 
-    function createZoomCell() {
-        return Jig.dom.createElement("td", {
-            children: [Jig.dom.createElement("i", {className: "zoom"})]
-        });
-    }
-
-    function createRow(view, item, scales) {
+    function createEntry(view, item, scales) {
+        const {cell, term} = NAME_CELL_BUILDERS[view.id](item);
         const row = Jig.dom.createElement("tr", {
-            children: [
-                createZoomCell(),
-                NAME_CELL_BUILDERS[view.id](item),
-                ...view.columns.map(column => createNumberCell(item[column.key], column, scales[column.key])),
-            ],
+            children: [cell, ...view.columns.map(column => createNumberCell(item[column.key], column, scales[column.key]))],
         });
         row.dataset.fqn = item.fqn;
-        if (item.packageFqn != null) row.dataset.packageFqn = item.packageFqn;
-        if (item.typeFqn != null) row.dataset.typeFqn = item.typeFqn;
-        return row;
+        return {
+            item,
+            row,
+            searchText: `${item.fqn} ${term ?? ""}`.toLowerCase(),
+            initializer: view.id === "method" && isInitializer(parseMethod(item).methodName),
+        };
     }
 
     function createHeaderCell(sortKey, label, title) {
@@ -192,14 +215,12 @@ const InsightApp = (() => {
     function renderHeader(table, view) {
         const colgroup = Jig.dom.createElement("colgroup", {
             children: [
-                Jig.dom.createElement("col", {className: "insight-col-zoom"}),
                 Jig.dom.createElement("col"),
                 ...view.columns.map(() => Jig.dom.createElement("col", {className: "insight-col-number"})),
             ],
         });
         const headerRow = Jig.dom.createElement("tr", {
             children: [
-                Jig.dom.createElement("th"),
                 createHeaderCell(NAME_SORT_KEY, "名前"),
                 ...view.columns.map(column => createHeaderCell(column.key, column.label, column.title)),
             ],
@@ -218,17 +239,17 @@ const InsightApp = (() => {
     }
 
     /**
-     * 行要素を作り直さずに並べ替える。ズームで付けた非表示状態を保つため。
+     * 行要素を作り直さずに並べ替える。絞り込みによる非表示状態はそのまま保たれる。
      */
-    function sortTable(table, entries, sortState, key) {
+    function sortPanel(panel, key) {
+        const {table, entries, sortState} = panel;
         // 数値は大きい順、名前は昇順から始める
         sortState.descending = sortState.key === key ? !sortState.descending : key !== NAME_SORT_KEY;
         sortState.key = key;
         entries.sort(compareEntries(key, sortState.descending));
         table.querySelector("tbody").append(...entries.map(entry => entry.row));
         table.querySelectorAll("thead th").forEach(th => {
-            const button = th.querySelector("button.insight-sort");
-            if (button && button.dataset.sortKey === key) {
+            if (th.querySelector("button.insight-sort")?.dataset.sortKey === key) {
                 th.setAttribute("aria-sort", sortState.descending ? "descending" : "ascending");
             } else {
                 th.removeAttribute("aria-sort");
@@ -236,145 +257,201 @@ const InsightApp = (() => {
         });
     }
 
-    function renderView(view, rawItems) {
+    function createPanel(view, rawItems) {
         const table = document.getElementById(view.tableId);
-        const tbody = table?.querySelector("tbody");
-        if (!tbody) return;
         const items = enrichItems(view, rawItems);
         const scales = computeBarScales(view.columns, items);
-        const entries = items.map(item => ({item, row: createRow(view, item, scales)}));
+        const entries = items.map(item => createEntry(view, item, scales));
 
         renderHeader(table, view);
         const fragment = document.createDocumentFragment();
         entries.forEach(entry => fragment.appendChild(entry.row));
-        tbody.replaceChildren(fragment);
+        table.querySelector("tbody").replaceChildren(fragment);
 
-        const sortState = {key: null, descending: false};
+        const panel = {view, table, entries, sortState: {key: null, descending: false}};
         table.querySelector("thead").addEventListener("click", event => {
             const button = event.target.closest("button.insight-sort");
-            if (button) sortTable(table, entries, sortState, button.dataset.sortKey);
+            if (button) sortPanel(panel, button.dataset.sortKey);
         });
+        return panel;
     }
 
-    function setupZoomIcons() {
-        // 行が増えても addEventListener が増えないよう tbody 単位で委譲する
-        document.querySelectorAll("table").forEach(table => {
-            const tbody = table.querySelector("tbody");
-            if (!tbody) return;
-            tbody.addEventListener("click", (event) => {
-                const icon = event.target.closest("i.zoom");
-                if (!icon) return;
+    // --- 絞り込み ---
 
-                const row = icon.closest("tr");
-                if (!row) return;
-                const fqn = row.dataset.fqn;
+    function isUnderPackage(packageFqn, scopePackageFqn) {
+        return packageFqn === scopePackageFqn || packageFqn.startsWith(scopePackageFqn + ".");
+    }
 
-                // クリックされた行以外を非表示にする
-                tbody.querySelectorAll("tr").forEach(r => {
-                    if (r !== row && !fqnStartsWith(fqn, r)) {
-                        r.classList.add("hidden-by-zoom");
-                    }
-                });
+    function isUnderType(typeFqn, scopeTypeFqn) {
+        return typeFqn === scopeTypeFqn || typeFqn.startsWith(scopeTypeFqn + "$");
+    }
 
-                zoomFamilyTables(table, row);
-                // ズーム解除ボタンを表示
-                document.getElementById("cancel-zoom")?.classList.remove("hidden");
+    function inScope(viewId, item) {
+        const scope = state.scope;
+        if (!scope) return true;
+        if (scope.kind === "package") {
+            return isUnderPackage(viewId === "package" ? item.fqn : item.packageFqn, scope.fqn);
+        }
+        if (viewId === "package") return item.fqn === scope.packageFqn;
+        return isUnderType(viewId === "type" ? item.fqn : item.typeFqn, scope.fqn);
+    }
+
+    function matchesFilters(entry) {
+        if (state.hideInitializers && entry.initializer) return false;
+        return state.searchTerms.every(term => entry.searchText.includes(term));
+    }
+
+    function applyFilters(panel) {
+        let scopedCount = 0;
+        let visibleCount = 0;
+        panel.entries.forEach(entry => {
+            const scoped = inScope(panel.view.id, entry.item);
+            const visible = scoped && matchesFilters(entry);
+            if (scoped) scopedCount++;
+            if (visible) visibleCount++;
+            entry.row.hidden = !visible;
+        });
+        return {scopedCount, visibleCount};
+    }
+
+    // --- 画面部品 ---
+
+    function renderTabs() {
+        const tabs = document.getElementById("insight-tabs");
+        tabs.replaceChildren(...[...panels.values()].map(({view, entries}) => {
+            const count = entries.filter(entry => inScope(view.id, entry.item)).length;
+            const tab = Jig.dom.createElement("button", {
+                className: "insight-tab",
+                attributes: {role: "tab", "aria-selected": String(view.id === state.viewId), "aria-controls": view.tableId},
+                children: [
+                    Jig.dom.kind.badgeElement(view.kind),
+                    Jig.dom.i18nText("span", view.kind),
+                    Jig.dom.createElement("span", {className: "insight-tab__count", textContent: count}),
+                ],
             });
-        });
+            tab.dataset.viewId = view.id;
+            return tab;
+        }));
     }
 
-    function cancelZoom(buttonEl) {
-        document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
-            row.classList.remove("hidden-by-zoom");
-        });
-        if (buttonEl) buttonEl.classList.add("hidden");
+    function createScopeCrumb(kind, text, scope) {
+        return [
+            Jig.dom.kind.badgeElement(kind),
+            scope ? createScopeLink("insight-scope__crumb", text, scope)
+                : Jig.dom.createElement("span", {className: "insight-scope__crumb", textContent: text}),
+        ];
     }
 
-    function fqnStartsWith(prefix, targetRow) {
-        return targetRow.dataset.fqn.startsWith(prefix);
-    }
-
-    function zoomFamilyTables(baseTable, baseRow) {
-        baseTable.parentElement.querySelectorAll("table").forEach(table => {
-            if (table === baseTable) return;
-
-            const allRows = table.querySelectorAll("tbody tr");
-
-            // zoomされているものがあったら一旦解除して
-            const hiddenRows = table.querySelectorAll("tbody tr.hidden-by-zoom");
-            if (hiddenRows.length > 0) {
-                allRows.forEach(r => {
-                    r.classList.remove("hidden-by-zoom");
-                });
+    function renderScope() {
+        const container = document.getElementById("insight-scope");
+        const scope = state.scope;
+        const children = [Jig.dom.i18nText("span", "範囲", {className: "insight-scope__label"})];
+        if (!scope) {
+            children.push(Jig.dom.i18nText("span", "すべて", {className: "insight-scope__crumb"}));
+        } else {
+            const clear = Jig.dom.i18nText("button", "すべて", {className: "insight-link insight-scope__crumb"});
+            clear.dataset.scopeClear = "";
+            children.push(clear, " › ");
+            if (scope.kind === "package") {
+                children.push(...createScopeCrumb("パッケージ", scope.fqn));
+            } else {
+                children.push(
+                    ...createScopeCrumb("パッケージ", scope.packageFqn, {kind: "package", fqn: scope.packageFqn}),
+                    " › ",
+                    ...createScopeCrumb("クラス", typeNameInPackage(scope.fqn, scope.packageFqn)));
             }
-
-            // 関係するもの以外を非表示にする
-            // 元テーブルと対象テーブルの組み合わせでprefixが変わる
-            let prefix = baseRow.dataset.fqn;
-            if (baseTable.id.includes("package")) {
-                prefix = prefix + '.';
-            } else if (baseTable.id.includes("type")) {
-                if (table.id.includes("package")) {
-                    prefix = baseRow.dataset.packageFqn;
-                } else if (table.id.includes("method")) {
-                    prefix = prefix + '#';
-                }
-            } else if (baseTable.id.includes("method")) {
-                if (table.id.includes("package")) {
-                    prefix = baseRow.dataset.packageFqn;
-                }
-                if (table.id.includes("type")) {
-                    prefix = baseRow.dataset.typeFqn;
-                }
-            }
-            allRows.forEach(r => {
-                if (!fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
-            });
-        })
+        }
+        container.replaceChildren(...children);
     }
 
-    /**
-     * 0件のセクションは見出し・テーブル・ナビゲーションリンクごと取り除く。
-     */
-    function removeSection(view) {
-        document.getElementById(view.headingId)?.remove();
-        document.getElementById(view.tableId)?.remove();
+    function renderStatus({scopedCount, visibleCount}) {
+        document.getElementById("insight-status").replaceChildren(
+            Jig.dom.i18nText("span", "表示"),
+            ` ${visibleCount} / ${scopedCount}`,
+        );
+    }
 
-        const nav = document.getElementById("insight-section-nav");
-        if (!nav) return;
-        nav.querySelectorAll("a").forEach(link => {
-            if (link.getAttribute("href") === `#${view.headingId}`) link.remove();
+    function render() {
+        panels.forEach(panel => {
+            panel.table.hidden = panel.view.id !== state.viewId;
         });
-        if (nav.querySelectorAll("a").length === 0) nav.remove();
+        renderTabs();
+        renderScope();
+        renderStatus(applyFilters(panels.get(state.viewId)));
+        const hideInitializers = document.getElementById("insight-hide-initializers");
+        if (hideInitializers) hideInitializers.disabled = state.viewId !== "method";
+    }
+
+    // --- イベント ---
+
+    function scopeFromDataset(dataset) {
+        if (dataset.scopeKind === "package") return {kind: "package", fqn: dataset.scopeFqn};
+        return {kind: "type", fqn: dataset.scopeFqn, packageFqn: dataset.scopePackageFqn};
+    }
+
+    function setupEvents(main) {
+        main.addEventListener("click", event => {
+            const tab = event.target.closest("button.insight-tab");
+            if (tab) {
+                state.viewId = tab.dataset.viewId;
+                render();
+                return;
+            }
+            const link = event.target.closest("button.insight-link");
+            if (!link) return;
+            if ("scopeClear" in link.dataset) {
+                state.scope = null;
+            } else {
+                state.scope = scopeFromDataset(link.dataset);
+                if (link.dataset.drillViewId && panels.has(link.dataset.drillViewId)) {
+                    state.viewId = link.dataset.drillViewId;
+                }
+            }
+            render();
+        });
+
+        let searchTimer;
+        document.getElementById("insight-search")?.addEventListener("input", event => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                state.searchTerms = event.target.value.toLowerCase().split(/\s+/).filter(Boolean);
+                render();
+            }, SEARCH_DEBOUNCE_MS);
+        });
+
+        document.getElementById("insight-hide-initializers")?.addEventListener("change", event => {
+            state.hideInitializers = event.target.checked;
+            render();
+        });
     }
 
     function init() {
+        const main = document.querySelector("main");
         const insightData = parseInsightData();
         if (!insightData) {
-            Jig.dom.renderDataLoadError(document.querySelector("main"), "insight-data.js");
+            document.getElementById("insight-controls")?.remove();
+            Jig.dom.renderDataLoadError(main, "insight-data.js");
             return;
         }
 
-        let renderedSectionCount = 0;
         VIEWS.forEach(view => {
             const items = insightData[view.dataKey] || [];
             if (items.length === 0) {
-                removeSection(view);
+                document.getElementById(view.tableId)?.remove();
                 return;
             }
-            renderView(view, items);
-            setInsightCount(view.countId, items.length);
-            renderedSectionCount++;
+            panels.set(view.id, createPanel(view, items));
         });
 
-        if (renderedSectionCount === 0) {
-            Jig.dom.renderEmptyDocument(document.querySelector("main"), "Insight");
+        if (panels.size === 0) {
+            document.getElementById("insight-controls")?.remove();
+            Jig.dom.renderEmptyDocument(main, "Insight");
             return;
         }
 
-        setupZoomIcons();
-        const cancelBtn = document.getElementById("cancel-zoom");
-        cancelBtn?.addEventListener("click", () => cancelZoom(cancelBtn));
+        state.viewId = panels.keys().next().value;
+        setupEvents(main);
+        render();
     }
 
     return {

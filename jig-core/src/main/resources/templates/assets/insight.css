@@ -1,20 +1,129 @@
+#insight-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-top: 0.5em;
+}
+
+.insight-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em;
+    border-bottom: 1px solid #ccc;
+}
+
+.insight-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.4em 0.8em;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: none;
+    color: var(--color-text-secondary);
+    font: inherit;
+    cursor: pointer;
+}
+
+.insight-tab[aria-selected="true"] {
+    border-bottom-color: #465DAA;
+    color: #000;
+    font-weight: bold;
+}
+
+.insight-tab .kind-badge {
+    margin-right: 0;
+}
+
+.insight-tab__count {
+    font-size: var(--jig-font-size-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+.insight-scope {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em;
+    font-size: var(--jig-font-size-sm);
+}
+
+.insight-scope__label {
+    color: var(--color-text-secondary);
+    margin-right: 0.3em;
+}
+
+.insight-scope__crumb {
+    font-family: monospace;
+    overflow-wrap: anywhere;
+}
+
+.insight-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1.5em;
+}
+
+.insight-search {
+    flex: 0 1 30em;
+    min-width: 0;
+    padding: 0.3em 0.5em;
+    font: inherit;
+}
+
+.insight-toggle {
+    font-size: var(--jig-font-size-sm);
+}
+
+.insight-toggle:has(input:disabled) {
+    color: var(--color-text-secondary);
+}
+
+.insight-status {
+    margin: 0;
+    font-size: var(--jig-font-size-sm);
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* 範囲を絞り込むリンク。見た目は文字のまま、押せることだけ示す */
+.insight-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.insight-link:hover {
+    text-decoration: underline;
+}
+
 .insight table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
     /* 長い名前で数値列が押し出されないよう、列幅は colgroup で固定する */
     table-layout: fixed;
-}
-
-.insight table col.insight-col-zoom {
-    width: 2em;
+    /* 狭い画面でも名前列が潰れないよう、表の幅を確保してページ側をスクロールさせる */
+    min-width: 64em;
 }
 
 .insight table col.insight-col-number {
     width: 6em;
 }
 
+/* 数千行をスクロールしても列の意味を見失わないよう、見出しを画面上端に留める。
+   body が 100vh のためページヘッダーはスクロールで抜けるので、その分は空けない */
 .insight table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    /* 背景は thead 側にあるため、留めた見出しの下に行が透けないよう th にも敷く */
+    background-color: #465DAA;
     padding: 0;
     vertical-align: bottom;
 }
@@ -113,18 +222,4 @@
     font-family: sans-serif;
     font-size: var(--jig-font-size-xs);
     color: var(--color-text-secondary);
-}
-
-/* 拡大アイコンをクリックしたときに非表示にする行のスタイル */
-
-.insight table tr.hidden-by-zoom {
-    display: none;
-}
-
-.insight table i.zoom {
-    cursor: pointer;
-}
-
-.insight table i.zoom::before {
-    content: "🔍";
 }

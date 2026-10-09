@@ -40,28 +40,25 @@
         </div>
     </div>
 
-    <button id="cancel-zoom" class="hidden">ズーム解除</button>
+    <div id="insight-controls">
+        <div id="insight-tabs" class="insight-tabs" role="tablist"></div>
+        <div id="insight-scope" class="insight-scope"></div>
+        <div class="insight-filters">
+            <input type="search" id="insight-search" class="insight-search" placeholder="名前で絞り込み" data-i18n-attr="placeholder" autocomplete="off">
+            <label class="insight-toggle"><input type="checkbox" id="insight-hide-initializers"> <span data-i18n>コンストラクタ・static初期化を除く</span></label>
+        </div>
+        <p id="insight-status" class="insight-status" aria-live="polite"></p>
+    </div>
 
-    <nav id="insight-section-nav">
-        <a href="#section-package">パッケージ</a>
-        <a href="#section-type">クラス</a>
-        <a href="#section-method">メソッド</a>
-    </nav>
-
-    <h2 id="section-package">パッケージ (<span id="package-count">0</span>)</h2>
-    <table id="package-insight-list" class="insight-table">
+    <table id="package-insight-list" class="insight-table" role="tabpanel" hidden>
         <thead></thead>
         <tbody></tbody>
     </table>
-
-    <h2 id="section-type">クラス (<span id="type-count">0</span>)</h2>
-    <table id="type-insight-list" class="insight-table">
+    <table id="type-insight-list" class="insight-table" role="tabpanel" hidden>
         <thead></thead>
         <tbody></tbody>
     </table>
-
-    <h2 id="section-method">メソッド (<span id="method-count">0</span>)</h2>
-    <table id="method-insight-list" class="insight-table">
+    <table id="method-insight-list" class="insight-table" role="tabpanel" hidden>
         <thead></thead>
         <tbody></tbody>
     </table>

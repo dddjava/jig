@@ -19,7 +19,7 @@ public record MethodInsight(JigMethod jigMethod) {
     }
 
     public int numberOfUsingMethods() {
-        return Math.toIntExact(jigMethod.usingMethods().invokedMethodStream()
+        return Math.toIntExact(jigMethod.lambdaInlinedMethodCallStream()
                 // この除外はusingのほうに持って行った方がいい気はする
                 .filter(methodCall -> methodCall.isNotJSL())
                 .distinct()
@@ -27,20 +27,19 @@ public record MethodInsight(JigMethod jigMethod) {
     }
 
     public int numberOfUsingFields() {
-        // lambdaが展開できていない
-        return jigMethod.usingFields().jigFieldIds().size();
+        return Math.toIntExact(jigMethod.lambdaInlinedFieldReferenceStream().count());
     }
 
     public int numberOfUsingOwnFields() {
         TypeId declaringType = typeId();
-        return Math.toIntExact(jigMethod.usingFields().jigFieldIds().stream()
+        return Math.toIntExact(jigMethod.lambdaInlinedFieldReferenceStream()
                 .filter(fieldId -> fieldId.declaringTypeId().equals(declaringType))
                 .count());
     }
 
     public int numberOfUsingOwnMethods() {
         TypeId declaringType = typeId();
-        return Math.toIntExact(jigMethod.usingMethods().invokedMethodStream()
+        return Math.toIntExact(jigMethod.lambdaInlinedMethodCallStream()
                 .filter(methodCall -> !methodCall.isLambda())
                 .filter(methodCall -> methodCall.methodOwner().equals(declaringType))
                 .distinct()
@@ -48,8 +47,7 @@ public record MethodInsight(JigMethod jigMethod) {
     }
 
     public int size() {
-        // lambdaが展開できていない
-        return jigMethod.instructions().instructions().size();
+        return jigMethod.instructions().lambdaInlinedSize();
     }
 
     public TypeId typeId() {

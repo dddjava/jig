@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.insight;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -9,6 +10,8 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.not;
 
 public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsights) {
     public String fqn() {
@@ -53,7 +56,9 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
         int F = instanceFields.size();
         if (F == 0) return 0.0;
 
-        var instanceMethods = jigType.instanceJigMethodStream().toList();
+        var instanceMethods = jigType.instanceJigMethodStream()
+                .filter(not(JigMethod::isLambdaSyntheticMethod))
+                .toList();
         int M = instanceMethods.size();
         if (M <= 1) return 0.0;
 
@@ -63,7 +68,7 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
 
         double sumMF = fieldIds.stream()
                 .mapToLong(fieldId -> instanceMethods.stream()
-                        .filter(m -> m.usingFields().jigFieldIds().contains(fieldId))
+                        .filter(m -> m.lambdaInlinedFieldReferenceStream().anyMatch(fieldId::equals))
                         .count())
                 .sum();
 

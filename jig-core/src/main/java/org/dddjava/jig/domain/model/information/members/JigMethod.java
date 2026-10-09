@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
@@ -137,6 +138,14 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration) {
 
     public Stream<MethodCall> lambdaInlinedMethodCallStream() {
         return instructions().lambdaInlinedMethodCallStream();
+    }
+
+    public Stream<JigFieldId> lambdaInlinedFieldReferenceStream() {
+        return instructions().lambdaInlinedFieldReferenceStream();
+    }
+
+    public boolean isLambdaSyntheticMethod() {
+        return header().isLambdaSyntheticMethod();
     }
 
     public boolean isDeprecated() {

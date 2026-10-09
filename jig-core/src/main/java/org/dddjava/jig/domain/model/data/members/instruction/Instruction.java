@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.stream.Stream;
@@ -35,6 +36,20 @@ public sealed interface Instruction
      */
     default Stream<MethodCall> lambdaInlinedMethodCallStream() {
         return methodCallStream();
+    }
+
+    /**
+     * lambdaの中身をインライン化したフィールド参照
+     */
+    default Stream<JigFieldId> lambdaInlinedFieldReferenceStream() {
+        return Stream.empty();
+    }
+
+    /**
+     * lambdaの中身をインライン化した命令数
+     */
+    default int lambdaInlinedSize() {
+        return 1;
     }
 
     /**

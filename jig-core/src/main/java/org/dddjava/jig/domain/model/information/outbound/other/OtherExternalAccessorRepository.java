@@ -42,7 +42,7 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
                     // private staticメソッドに引数でインスタンスを渡して呼ぶようなケースもあったりするので、当面はこれで。
                     var operations = jigType.allJigMethodStream()
                             // lambdaメソッドを除外する。ここで除外しておかないと二重で登録されることになる
-                            .filter(jigMethod -> !jigMethod.jigMethodDeclaration().header().isLambdaSyntheticMethod())
+                            .filter(jigMethod -> !jigMethod.isLambdaSyntheticMethod())
                             .flatMap(jigMethod -> {
                                 // lambdaの中のメソッド呼び出しも展開して探索する
                                 var externalMethodCalls = jigMethod.lambdaInlinedMethodCallStream()

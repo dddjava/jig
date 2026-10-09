@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.function.Predicate;
@@ -37,6 +38,17 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
                 // lambdaの中身
                 lambdaExpressionInstructions.associatedTypeStream()
         ).flatMap(stream -> stream);
+    }
+
+    @Override
+    public Stream<JigFieldId> lambdaInlinedFieldReferenceStream() {
+        return lambdaExpressionInstructions.lambdaInlinedFieldReferenceStream();
+    }
+
+    @Override
+    public int lambdaInlinedSize() {
+        // 呼び出し自体の1命令にlambdaの中身を足す
+        return 1 + lambdaExpressionInstructions.lambdaInlinedSize();
     }
 
     @Override

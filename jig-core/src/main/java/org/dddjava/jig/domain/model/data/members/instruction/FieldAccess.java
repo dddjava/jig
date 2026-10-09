@@ -31,6 +31,11 @@ public sealed interface FieldAccess extends Instruction
     default Stream<TypeId> associatedTypeStream() {
         return Stream.of(fieldTypeId(), jigFieldId().declaringTypeId());
     }
+
+    @Override
+    default Stream<JigFieldId> lambdaInlinedFieldReferenceStream() {
+        return Stream.of(jigFieldId());
+    }
 }
 
 record GetAccess(TypeId fieldTypeId, JigFieldId jigFieldId) implements FieldAccess {

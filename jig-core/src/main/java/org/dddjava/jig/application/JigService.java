@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.inbound.InboundAdapters;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.relation.methods.AllMethodRelations;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
@@ -151,6 +153,8 @@ public class JigService {
         return new Insights(
                 jigTypes.orderedStream()
                         .flatMap(JigType::allJigMethodStream)
+                        // lambdaの中身は外側のメソッドの値に含めるので、合成メソッド自体は数えない
+                        .filter(not(JigMethod::isLambdaSyntheticMethod))
                         .map(MethodInsight::new)
                         .toList(),
                 glossary(repository),

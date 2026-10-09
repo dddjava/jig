@@ -258,25 +258,42 @@ const InsightApp = (() => {
         if (key === NAME_SORT_KEY) {
             return (a, b) => a.item.fqn.localeCompare(b.item.fqn) * (descending ? -1 : 1);
         }
-        return (a, b) => (descending ? b.item[key] - a.item[key] : a.item[key] - b.item[key])
-            || a.item.fqn.localeCompare(b.item.fqn);
+        // 同じ値の行は直前の並び順を残す（Array.prototype.sort は安定ソート）
+        return (a, b) => descending ? b.item[key] - a.item[key] : a.item[key] - b.item[key];
+    }
+
+    function directionOf(descending) {
+        return descending ? "descending" : "ascending";
     }
 
     /**
      * 行要素を作り直さずに並べ替える。絞り込みによる非表示状態はそのまま保たれる。
+     * 直前の並び順は同じ値の行に残るため、効いている直前の条件も見出しに示す。
      */
     function sortPanel(panel, key, descending) {
         const {table, entries, sortState} = panel;
-        sortState.descending = descending;
+        if (key === NAME_SORT_KEY) {
+            // 名前は重複しないので、それ以前の並び順は残らない
+            sortState.previous = null;
+        } else if (sortState.key !== key && sortState.key !== null) {
+            sortState.previous = sortState.key === NAME_SORT_KEY ? null : {key: sortState.key, descending: sortState.descending};
+        }
         sortState.key = key;
-        entries.sort(compareEntries(key, sortState.descending));
+        sortState.descending = descending;
+        entries.sort(compareEntries(key, descending));
         table.querySelector("tbody").append(...entries.map(entry => entry.row));
         stripeVisibleRows(entries);
         table.querySelectorAll("thead th").forEach(th => {
-            if (th.querySelector("button.insight-sort")?.dataset.sortKey === key) {
-                th.setAttribute("aria-sort", sortState.descending ? "descending" : "ascending");
+            const thKey = th.querySelector("button.insight-sort")?.dataset.sortKey;
+            if (thKey === key) {
+                th.setAttribute("aria-sort", directionOf(descending));
             } else {
                 th.removeAttribute("aria-sort");
+            }
+            if (thKey === sortState.previous?.key) {
+                th.dataset.sortSecondary = directionOf(sortState.previous.descending);
+            } else {
+                delete th.dataset.sortSecondary;
             }
         });
     }
@@ -304,7 +321,7 @@ const InsightApp = (() => {
         entries.forEach(entry => fragment.appendChild(entry.row));
         table.querySelector("tbody").replaceChildren(fragment);
 
-        const panel = {view, table, entries, sortState: {key: null, descending: false}};
+        const panel = {view, table, entries, sortState: {key: null, descending: false, previous: null}};
         table.querySelector("thead").addEventListener("click", event => {
             const button = event.target.closest("button.insight-sort");
             if (!button) return;

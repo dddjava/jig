@@ -276,12 +276,53 @@ test.describe('insight.js', () => {
             assert.deepEqual(rowFqns('method-insight-list'), ['app.A#a()', 'app.B#b()', 'app.C#c()']);
         });
 
+        test('同じ列で向きを変えても直前の条件は残る', () => {
+            clickHeader('method-insight-list', 'size');
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+
+            const secondary = document.querySelector('#method-insight-list thead th[data-sort-secondary]');
+            assert.equal(secondary.querySelector('button').dataset.sortKey, 'size');
+        });
+
+        test('名前で並べ替えると直前の条件は消え、その後の数値列の直前の条件にもならない', () => {
+            clickHeader('method-insight-list', 'size');
+            clickHeader('method-insight-list', 'fqn');
+            assert.equal(document.querySelectorAll('#method-insight-list thead th[data-sort-secondary]').length, 0);
+
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+            assert.equal(document.querySelectorAll('#method-insight-list thead th[data-sort-secondary]').length, 0);
+        });
+
         test('並べ替え中の列を aria-sort で示す', () => {
             clickHeader('method-insight-list', 'cyclomaticComplexity');
 
             const sorted = document.querySelectorAll('#method-insight-list thead th[aria-sort]');
             assert.equal(sorted.length, 1);
             assert.equal(sorted[0].getAttribute('aria-sort'), 'descending');
+        });
+    });
+
+    test.describe('ソート（同じ値）', () => {
+        test('同じ値の行は直前の並び順を残し、直前の条件を見出しに示す', () => {
+            globalThis.insightData = {
+                packages: [], types: [],
+                methods: [
+                    method('app.A#a()', {cyclomaticComplexity: 1, size: 5}),
+                    method('app.B#b()', {cyclomaticComplexity: 2, size: 1}),
+                    method('app.C#c()', {cyclomaticComplexity: 1, size: 9}),
+                ],
+            };
+            InsightApp.init();
+
+            clickHeader('method-insight-list', 'size');
+            clickHeader('method-insight-list', 'cyclomaticComplexity');
+
+            assert.deepEqual(rowFqns('method-insight-list'), ['app.B#b()', 'app.C#c()', 'app.A#a()']);
+            const secondary = document.querySelectorAll('#method-insight-list thead th[data-sort-secondary]');
+            assert.equal(secondary.length, 1);
+            assert.equal(secondary[0].querySelector('button').dataset.sortKey, 'size');
+            assert.equal(secondary[0].dataset.sortSecondary, 'descending');
         });
     });
 

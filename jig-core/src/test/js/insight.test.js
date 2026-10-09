@@ -346,6 +346,26 @@ test.describe('insight.js', () => {
             assert.equal(visibleFqns('method-insight-list').length, 4);
         });
 
+        test('範囲のパッケージは階層ごとに押して上位へ広げられる', () => {
+            document.querySelector('#package-insight-list tr[data-fqn="app.a.sub"] button.insight-link').click();
+
+            const links = [...document.querySelectorAll('#insight-scope button.insight-link:not([data-scope-clear])')];
+            assert.deepEqual(links.map(link => link.textContent), ['app', 'a'], '現在の階層はリンクにしない');
+            assert.deepEqual(visibleFqns('type-insight-list'), ['app.a.sub.S']);
+
+            links[1].click();
+
+            assert.deepEqual(visibleFqns('type-insight-list'), ['app.a.A', 'app.a.A$Inner', 'app.a.sub.S']);
+        });
+
+        test('クラスの範囲ではパッケージの全階層を押せる', () => {
+            clickTab('type');
+            document.querySelector('#type-insight-list tr[data-fqn="app.a.A"] button.insight-name__type').click();
+
+            const links = [...document.querySelectorAll('#insight-scope button.insight-link:not([data-scope-clear])')];
+            assert.deepEqual(links.map(link => link.dataset.scopeFqn), ['app', 'app.a']);
+        });
+
         test('件数は「表示 / 範囲内」で示す', () => {
             document.querySelector('#package-insight-list tr[data-fqn="app.b"] button.insight-link').click();
 

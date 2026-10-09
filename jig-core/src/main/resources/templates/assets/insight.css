@@ -151,6 +151,15 @@
     text-decoration: underline;
 }
 
+/* パンくずの階層は押せることが分かるよう、普段から点線の下線を付ける */
+.insight-scope .insight-link {
+    text-decoration: underline dotted;
+}
+
+.insight-scope .insight-link:hover {
+    text-decoration: underline;
+}
+
 .insight table {
     border-collapse: collapse;
     width: 100%;

@@ -400,12 +400,23 @@ const InsightApp = (() => {
         }));
     }
 
-    function createScopeCrumb(kind, text, scope) {
-        return [
-            Jig.dom.kind.badgeElement(kind),
-            scope ? createScopeLink("insight-scope__crumb", text, scope)
-                : Jig.dom.createElement("span", {className: "insight-scope__crumb", textContent: text}),
-        ];
+    /**
+     * パッケージの各階層をリンクにし、上位のパッケージへ範囲を広げられるようにする。
+     * linkLast が false なら末尾（現在の範囲）はリンクにしない。
+     */
+    function createPackageCrumbs(packageFqn, linkLast) {
+        const segments = packageFqn.split(".");
+        const crumbs = Jig.dom.createElement("span", {
+            className: "insight-scope__crumb",
+            children: segments.flatMap((segment, i) => {
+                const isLast = i === segments.length - 1;
+                const node = isLast && !linkLast
+                    ? Jig.dom.createElement("span", {textContent: segment})
+                    : createScopeLink("", segment, {kind: "package", fqn: segments.slice(0, i + 1).join(".")});
+                return i ? [".", node] : [node];
+            }),
+        });
+        return [Jig.dom.kind.badgeElement("パッケージ"), crumbs];
     }
 
     function renderScope() {
@@ -419,12 +430,13 @@ const InsightApp = (() => {
             clear.dataset.scopeClear = "";
             children.push(clear, " › ");
             if (scope.kind === "package") {
-                children.push(...createScopeCrumb("パッケージ", scope.fqn));
+                children.push(...createPackageCrumbs(scope.fqn, false));
             } else {
                 children.push(
-                    ...createScopeCrumb("パッケージ", scope.packageFqn, {kind: "package", fqn: scope.packageFqn}),
+                    ...createPackageCrumbs(scope.packageFqn, true),
                     " › ",
-                    ...createScopeCrumb("クラス", typeNameInPackage(scope.fqn, scope.packageFqn)));
+                    Jig.dom.kind.badgeElement("クラス"),
+                    Jig.dom.createElement("span", {className: "insight-scope__crumb", textContent: typeNameInPackage(scope.fqn, scope.packageFqn)}));
             }
         }
         container.replaceChildren(...children);

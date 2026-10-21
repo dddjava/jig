@@ -1,6 +1,6 @@
 [versions]
 spring-boot-plugin = "4.1.1"
-asm = "9.11"
+asm = "9.11.1"
 javaparser = "3.28.2"
 mybatis = "3.5.19"
 junit-bom = "6.1.3"

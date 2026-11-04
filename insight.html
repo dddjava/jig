@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./assets/common.css?v=1793458295629" rel="stylesheet">
-    <link href="./assets/insight.css?v=1793458295629" rel="stylesheet">
-    <link rel="icon" href="./assets/favicon.ico?v=1793458295629">
+    <link href="./assets/common.css?v=1793776323739" rel="stylesheet">
+    <link href="./assets/insight.css?v=1793776323739" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico?v=1793776323739">
     <title data-i18n>インサイト</title>
 </head>
 <body class="insight">
@@ -15,6 +15,8 @@
 <main>
     <div id="jig-document-description" class="hidden">
         <div class="metric-description">
+            <p>lambda式の中身は、それを書いたメソッドの値に含めます。コンパイラが生成するlambdaの合成メソッドは一覧に出しません。</p>
+
             <h3>共通メトリクス</h3>
             <ul>
                 <li><strong>クラス数 / メソッド数</strong>: 対象に含まれるクラスやメソッドの総数です。規模の把握に使用します。</li>
@@ -35,71 +37,36 @@
             <ul>
                 <li><strong>使用メソッド数 / 使用フィールド数</strong>: そのメソッドが呼び出しているメソッドや参照しているフィールドの数です。</li>
                 <li><strong>自クラスフィールド使用数</strong>: そのメソッドが参照しているフィールドのうち、宣言クラス自身のフィールドの数です。</li>
-                <li><strong>自クラスメソッド呼び出し数</strong>: そのメソッドが呼び出しているメソッドのうち、宣言クラス自身のメソッドの数です（lambda合成メソッドは除外）。</li>
+                <li><strong>自クラスメソッド呼び出し数</strong>: そのメソッドが呼び出しているメソッドのうち、宣言クラス自身のメソッドの数です。</li>
+                <li><strong>引数の数</strong>: メソッドの引数の数です。多いほど呼び出し側の負担が大きく、責務が広い可能性があります。</li>
             </ul>
+
+            <h3>観点</h3>
+            <p>「複雑なメソッド」などよく見る条件のプリセットです。閾値はプロジェクト間で比べられるよう固定値にしています。選ぶと該当する行だけを条件の値の大きい順に表示し、条件に使っている値を強調します。</p>
         </div>
     </div>
 
-    <button id="cancel-zoom" class="hidden">ズーム解除</button>
+    <div id="insight-controls">
+        <div id="insight-tabs" class="insight-tabs" role="tablist"></div>
+        <div id="insight-scope" class="insight-scope"></div>
+        <div class="insight-filters">
+            <input type="search" id="insight-search" class="insight-search" placeholder="名前で絞り込み" data-i18n-attr="placeholder" autocomplete="off">
+            <label class="insight-toggle"><input type="checkbox" id="insight-hide-initializers"> <span data-i18n>コンストラクタ・static初期化を除く</span></label>
+        </div>
+        <div id="insight-lenses" class="insight-lenses"></div>
+        <p id="insight-status" class="insight-status" aria-live="polite"></p>
+    </div>
 
-    <nav id="insight-section-nav">
-        <a href="#section-package">パッケージ</a>
-        <a href="#section-type">クラス</a>
-        <a href="#section-method">メソッド</a>
-    </nav>
-
-    <h2 id="section-package">パッケージ (<span id="package-count">0</span>)</h2>
-    <table id="package-insight-list" class="zebra sortable">
-        <thead>
-        <tr>
-            <th class="no-sort"></th>
-            <th data-i18n>完全修飾名</th>
-            <th data-i18n>名称</th>
-            <th data-i18n>クラス数</th>
-            <th data-i18n>メソッド数</th>
-            <th data-i18n>使用クラス数</th>
-            <th data-i18n>循環的複雑度合計</th>
-            <th data-i18n>規模合計</th>
-        </tr>
-        </thead>
+    <table id="package-insight-list" class="insight-table" role="tabpanel" hidden>
+        <thead></thead>
         <tbody></tbody>
     </table>
-
-    <h2 id="section-type">クラス (<span id="type-count">0</span>)</h2>
-    <table id="type-insight-list" class="zebra sortable">
-        <thead>
-        <tr>
-            <th class="no-sort"></th>
-            <th data-i18n>完全修飾名</th>
-            <th data-i18n>名称</th>
-            <th data-i18n>メソッド数</th>
-            <th data-i18n>使用クラス数(Ce)</th>
-            <th data-i18n>被使用クラス数(Ca)</th>
-            <th data-i18n>不安定性(I)</th>
-            <th data-i18n>凝集度欠如(LCOM)</th>
-            <th data-i18n>循環的複雑度合計</th>
-            <th data-i18n>規模合計</th>
-        </tr>
-        </thead>
+    <table id="type-insight-list" class="insight-table" role="tabpanel" hidden>
+        <thead></thead>
         <tbody></tbody>
     </table>
-
-    <h2 id="section-method">メソッド (<span id="method-count">0</span>)</h2>
-    <table id="method-insight-list" class="zebra sortable">
-        <thead>
-        <tr>
-            <th class="no-sort"></th>
-            <th data-i18n>完全修飾名</th>
-            <th data-i18n>名称</th>
-            <th data-i18n>循環的複雑度</th>
-            <th data-i18n>使用クラス数</th>
-            <th data-i18n>使用メソッド数</th>
-            <th data-i18n>使用フィールド数</th>
-            <th data-i18n>自クラスフィールド使用数</th>
-            <th data-i18n>自クラスメソッド呼び出し数</th>
-            <th data-i18n>規模</th>
-        </tr>
-        </thead>
+    <table id="method-insight-list" class="insight-table" role="tabpanel" hidden>
+        <thead></thead>
         <tbody></tbody>
     </table>
 </main>
@@ -107,10 +74,10 @@
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.14/dist/purify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
-<script src="./assets/jig-bundle.js?v=1793458295629"></script>
-<script src="./data/navigation-data.js?v=1793458295629"></script>
-<script src="./data/diagnostics-data.js?v=1793458295629"></script>
-<script src="./data/insight-data.js?v=1793458295629"></script>
-<script src="./assets/insight.js?v=1793458295629"></script>
+<script src="./assets/jig-bundle.js?v=1793776323739"></script>
+<script src="./data/navigation-data.js?v=1793776323739"></script>
+<script src="./data/diagnostics-data.js?v=1793776323739"></script>
+<script src="./data/insight-data.js?v=1793776323739"></script>
+<script src="./assets/insight.js?v=1793776323739"></script>
 </body>
 </html>

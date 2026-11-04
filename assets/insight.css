@@ -1,19 +1,319 @@
+#insight-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-top: 0.5em;
+}
+
+.insight-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em;
+    border-bottom: 1px solid #ccc;
+}
+
+.insight-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.4em 0.8em;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: none;
+    color: var(--color-text-secondary);
+    font: inherit;
+    cursor: pointer;
+}
+
+.insight-tab[aria-selected="true"] {
+    border-bottom-color: #243D1E;
+    color: #000;
+    font-weight: bold;
+}
+
+.insight-tab .kind-badge {
+    margin-right: 0;
+}
+
+.insight-tab__count {
+    font-size: var(--jig-font-size-xs);
+    font-variant-numeric: tabular-nums;
+}
+
+.insight-scope {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3em;
+    font-size: var(--jig-font-size-sm);
+}
+
+.insight-scope__label {
+    color: var(--color-text-secondary);
+    margin-right: 0.3em;
+}
+
+.insight-scope__crumb {
+    font-family: monospace;
+    overflow-wrap: anywhere;
+}
+
+.insight-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1.5em;
+}
+
+.insight-search {
+    flex: 0 1 30em;
+    min-width: 0;
+    padding: 0.3em 0.5em;
+    font: inherit;
+}
+
+.insight-toggle {
+    font-size: var(--jig-font-size-sm);
+}
+
+.insight-toggle:has(input:disabled) {
+    color: var(--color-text-secondary);
+}
+
+.insight-status {
+    margin: 0;
+    font-size: var(--jig-font-size-sm);
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.insight-lenses {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.insight-lenses__label {
+    font-size: var(--jig-font-size-sm);
+    color: var(--color-text-secondary);
+    margin-right: 0.3em;
+}
+
+.insight-lens {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    padding: 0.15em 0.7em;
+    border: 1px solid #bbb;
+    border-radius: 999px;
+    background: #fff;
+    color: #000;
+    font: inherit;
+    font-size: var(--jig-font-size-sm);
+    cursor: pointer;
+}
+
+.insight-lens[aria-pressed="true"] {
+    border-color: #b4441d;
+    background: #f8e1d6;
+}
+
+.insight-lens:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.insight-lens__rule {
+    font-size: var(--jig-font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.insight-lens__count {
+    font-size: var(--jig-font-size-xs);
+    font-weight: bold;
+    color: #b4441d;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 範囲を絞り込むリンク。見た目は文字のまま、押せることだけ示す */
+.insight-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.insight-link:hover {
+    text-decoration: underline;
+}
+
+/* パンくずの階層は押せることが分かるよう、普段から点線の下線を付ける */
+.insight-scope .insight-link {
+    text-decoration: underline dotted;
+}
+
+.insight-scope .insight-link:hover {
+    text-decoration: underline;
+}
+
 .insight table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
+    /* 長い名前で数値列が押し出されないよう、列幅は colgroup で固定する */
+    table-layout: fixed;
+    /* 狭い画面でも名前列が潰れないよう、表の幅を確保してページ側をスクロールさせる */
+    min-width: 64em;
 }
 
-/* 拡大アイコンをクリックしたときに非表示にする行のスタイル */
-
-.insight table tr.hidden-by-zoom {
-    display: none;
+.insight table col.insight-col-number {
+    width: 6em;
 }
 
-.insight table i.zoom {
+/* 数千行をスクロールしても列の意味を見失わないよう、見出しを画面上端に留める。
+   body が 100vh のためページヘッダーはスクロールで抜けるので、その分は空けない */
+/* 縦罫線は数値列が多いと視線の横移動を妨げるため、行の区切り線だけにする */
+.insight table tr > * {
+    border: 0;
+    border-bottom: 1px solid #d9ddd3;
+}
+
+.insight table tr.insight-row-alt {
+    background-color: #f3f5f0;
+}
+
+/* 共通の青い見出しは数値列の短縮名・正式名の2段だと重いため、淡い背景にする */
+.insight table thead {
+    color: #000;
+    background-color: #f2f4ef;
+}
+
+.insight table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    /* 留めた見出しの下に行が透けないよう th にも背景を敷く */
+    background-color: #f2f4ef;
+    border-bottom: 2px solid #9aa392;
+    padding: 0;
+    vertical-align: bottom;
+}
+
+.insight table th[aria-sort] .insight-sort__label::after {
+    content: " ▼";
+}
+
+.insight table th[aria-sort="ascending"] .insight-sort__label::after {
+    content: " ▲";
+}
+
+/* 同じ値の行に残っている直前の並び順 */
+.insight table th[data-sort-secondary] .insight-sort__label::after {
+    content: " ▽";
+    font-weight: normal;
+    color: #aaa;
+}
+
+.insight table th[data-sort-secondary="ascending"] .insight-sort__label::after {
+    content: " △";
+}
+
+.insight-sort {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0.25em 0.5em;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
     cursor: pointer;
 }
 
-.insight table i.zoom::before {
-    content: "🔍";
+.insight-sort__label {
+    font-weight: bold;
+}
+
+.insight-sort__title {
+    font-size: var(--jig-font-size-2xs);
+    font-weight: normal;
+    color: var(--color-text-secondary);
+}
+
+.insight table td {
+    vertical-align: top;
+}
+
+/* 列ごとの上位1%値を満幅とするバー。外れ値を数字を読まずに見つけるため */
+.insight table td.number {
+    --insight-bar: 0%;
+    padding-right: 0.5em;
+    font-variant-numeric: tabular-nums;
+    background-image: linear-gradient(to left, #9fbf8a var(--insight-bar), transparent var(--insight-bar));
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: 100% 3px;
+}
+
+.insight table td.insight-zero {
+    color: var(--color-text-secondary);
+}
+
+/* 選んだ観点の条件に使っている列 */
+.insight table td.insight-hit {
+    color: #b4441d;
+    font-weight: bold;
+    background-image: linear-gradient(to left, #b4441d var(--insight-bar), transparent var(--insight-bar));
+}
+
+.insight-name {
+    overflow-wrap: anywhere;
+}
+
+.insight-name__main {
+    font-family: monospace;
+}
+
+.insight-name__type {
+    color: var(--kind-color-class);
+    font-weight: bold;
+}
+
+.insight-name__member {
+    color: var(--kind-color-method);
+    font-weight: bold;
+}
+
+.insight-name__params {
+    color: var(--color-text-secondary);
+}
+
+.insight-name__sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1em;
+    font-size: var(--jig-font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.insight-name__package {
+    font-family: monospace;
+}
+
+.insight-name__term {
+    color: #000;
+}
+
+.insight-badge {
+    padding: 0 0.3em;
+    border: 1px solid var(--color-text-secondary);
+    border-radius: 3px;
+    font-family: sans-serif;
+    font-size: var(--jig-font-size-xs);
+    color: var(--color-text-secondary);
 }
